@@ -96,7 +96,7 @@ const char rpsconf_host[] = RPSCONF_HOST;
 #define RPSCONF_FAIL -1
 
 const char *rpsconf_prog_name;
-bool rpsconf_verbose = 1;	/* will be set later with command line flag */
+bool rpsconf_verbose = 1; /* will be set later with command line flag */
 bool rpsconf_failed;
 
 //// working directory
@@ -153,10 +153,10 @@ int rpsconf_removed_files_count;
 
 /// return a malloced path to a temporary textual file inside /tmp
 char *rpsconf_temporary_textual_file (const char *prefix, const char *suffix,
-				      int lineno);
+                                      int lineno);
 /// return a malloced path to a temporary binary file in the current directory
 char *rpsconf_temporary_binary_file (const char *prefix, const char *suffix,
-				     int lineno);
+                                     int lineno);
 
 /// emit the configure-refperys.mk file to be included in GNUmakefile
 void rpsconf_emit_configure_refpersys_mk (void);
@@ -171,11 +171,11 @@ void rpsconf_emit_configure_refpersys_mk (void);
 static void
 rpsconf_diag__ (const char *, int, const char *, ...)
 RPSCONF_ATTR_PRINTF (3, 4);
-     static int rpsconf_cc_set (const char *);
-     static void rpsconf_cc_test (const char *);
+static int rpsconf_cc_set (const char *);
+static void rpsconf_cc_test (const char *);
 
-     void rpsconf_try_then_set_cxx_compiler (const char *cxx);
-     void rpsconf_should_remove_file (const char *path, int lineno);
+void rpsconf_try_then_set_cxx_compiler (const char *cxx);
+void rpsconf_should_remove_file (const char *path, int lineno);
 
 
 /* Wrapper macro around rpsconf_diag__() */
@@ -185,8 +185,8 @@ RPSCONF_ATTR_PRINTF (3, 4);
 
 
 /// return a malloced path to a temporary textual file
-     char *rpsconf_temporary_textual_file (const char *prefix,
-					   const char *suffix, int lineno)
+char *rpsconf_temporary_textual_file (const char *prefix,
+                                      const char *suffix, int lineno)
 {
   char buf[256];
   memset (buf, 0, sizeof (buf));
@@ -204,8 +204,8 @@ RPSCONF_ATTR_PRINTF (3, 4);
   if (fd < 0)
     {
       fprintf (stderr,
-	       "%s failed to mkostemps from %s:%d\n", rpsconf_prog_name,
-	       __FILE__, lineno);
+               "%s failed to mkostemps from %s:%d\n", rpsconf_prog_name,
+               __FILE__, lineno);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -214,21 +214,21 @@ RPSCONF_ATTR_PRINTF (3, 4);
   if (!res)
     {
       fprintf (stderr,
-	       "%s failed to strdup temporay file path %s from %s:%d (%m)\n",
-	       rpsconf_prog_name, buf, __FILE__, lineno);
+               "%s failed to strdup temporay file path %s from %s:%d (%m)\n",
+               rpsconf_prog_name, buf, __FILE__, lineno);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   close (fd);
   printf ("%s temporary textual file is %s [%s:%d]\n",
-	  rpsconf_prog_name, res, __FILE__, lineno);
+          rpsconf_prog_name, res, __FILE__, lineno);
   return res;
-}				/* end rpsconf_temporary_textual_file */
+}       /* end rpsconf_temporary_textual_file */
 
 /// return a malloced path to a temporary binary file in the current directory
 char *
 rpsconf_temporary_binary_file (const char *prefix, const char *suffix,
-			       int lineno)
+                               int lineno)
 {
   char buf[256];
   memset (buf, 0, sizeof (buf));
@@ -246,8 +246,8 @@ rpsconf_temporary_binary_file (const char *prefix, const char *suffix,
   if (fd < 0)
     {
       fprintf (stderr,
-	       "%s failed to mkostemps from %s:%d\n", rpsconf_prog_name,
-	       __FILE__, lineno);
+               "%s failed to mkostemps from %s:%d\n", rpsconf_prog_name,
+               __FILE__, lineno);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -257,15 +257,15 @@ rpsconf_temporary_binary_file (const char *prefix, const char *suffix,
   if (!res)
     {
       fprintf (stderr,
-	       "%s failed to strdup temporary binary file path %s from %s:%d (%m)\n",
-	       rpsconf_prog_name, buf, __FILE__, lineno);
+               "%s failed to strdup temporary binary file path %s from %s:%d (%m)\n",
+               rpsconf_prog_name, buf, __FILE__, lineno);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   printf ("%s temporary binary file is %s [%s:%d]\n",
-	  rpsconf_prog_name, res, __FILE__, lineno);
+          rpsconf_prog_name, res, __FILE__, lineno);
   return res;
-}				/* end rpsconf_temporary_binary_file */
+}       /* end rpsconf_temporary_binary_file */
 
 char *
 rpsconf_readline (const char *prompt)
@@ -277,18 +277,18 @@ rpsconf_readline (const char *prompt)
       again = false;
       char *lin = readline (prompt);
       if (lin && isspace (lin[strlen (lin) - 1]))
-	lin[strlen (lin) - 1] = (char) 0;
+        lin[strlen (lin) - 1] = (char) 0;
       if (lin && lin[0] == '!')
-	{
-	  printf ("*running %s\n", lin + 1);
-	  fflush (NULL);
-	  int cod = system (lin + 1);
-	  fflush (NULL);
-	  if (cod)
-	    printf ("*failed to run %s -> %d\n", lin + 1, cod);
-	  again = true;
-	  continue;
-	}
+        {
+          printf ("*running %s\n", lin + 1);
+          fflush (NULL);
+          int cod = system (lin + 1);
+          fflush (NULL);
+          if (cod)
+            printf ("*failed to run %s -> %d\n", lin + 1, cod);
+          again = true;
+          continue;
+        }
       return lin;
     }
   while (again);
@@ -303,33 +303,33 @@ rpsconf_readline (const char *prompt)
       fflush (stdout);
       char *p = fgets (linebuf, sizeof (linebuf), stdin);
       if (!p)
-	return NULL;
+        return NULL;
       linebuf[sizeof (linebuf) - 1] = (char) 0;
       if (isspace (p[strlen (p) - 1]))
-	p[strlen (p) - 1] = (char) 0;
+        p[strlen (p) - 1] = (char) 0;
       if (linbuf[0] == '!')
-	{
-	  printf ("*running %s\n", linbuf + 1);
-	  fflush (nullptr);
-	  int cod = system (linbuf + 1);
-	  fflush (nullptr);
-	  if (cod)
-	    printf ("*failed to run %s -> %d\n", linbuf + 1, cod);
-	  again = true;
-	  continue;
-	}
+        {
+          printf ("*running %s\n", linbuf + 1);
+          fflush (nullptr);
+          int cod = system (linbuf + 1);
+          fflush (nullptr);
+          if (cod)
+            printf ("*failed to run %s -> %d\n", linbuf + 1, cod);
+          again = true;
+          continue;
+        }
       char *res = strdup (linebuf);
       if (!res)
-	{
-	  perror ("rpsconf_readline");
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	};
+        {
+          perror ("rpsconf_readline");
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
     }
   while again;
-  return res;
+return res;
 #endif // RPSCONF_WITHOUT_READLINE
-}				// end rpsconf_readline
+}       // end rpsconf_readline
 
 static const char *rpsconf_readline_default_buffer;
 
@@ -340,7 +340,7 @@ rpsconf_readline_startup_hook (void)
   if (rpsconf_readline_default_buffer)
     res = rl_insert_text (rpsconf_readline_default_buffer);
   return res;
-}				/* end rpsconf_readline_startup_hook */
+}       /* end rpsconf_readline_startup_hook */
 
 char *
 rpsconf_defaulted_readline (const char *prompt, const char *defstr)
@@ -360,18 +360,18 @@ rpsconf_defaulted_readline (const char *prompt, const char *defstr)
       again = false;
       char *lin = readline (prompt);
       if (lin && isspace (lin[strlen (lin) - 1]))
-	lin[strlen (lin) - 1] = (char) 0;
+        lin[strlen (lin) - 1] = (char) 0;
       if (lin && lin[0] == '!')
-	{
-	  printf ("*running %s\n", lin + 1);
-	  fflush (NULL);
-	  int cod = system (lin + 1);
-	  fflush (NULL);
-	  if (cod)
-	    printf ("*failed to run %s -> %d\n", lin + 1, cod);
-	  again = true;
-	  continue;
-	}
+        {
+          printf ("*running %s\n", lin + 1);
+          fflush (NULL);
+          int cod = system (lin + 1);
+          fflush (NULL);
+          if (cod)
+            printf ("*failed to run %s -> %d\n", lin + 1, cod);
+          again = true;
+          continue;
+        }
       return lin;
     }
   while (again);
@@ -387,33 +387,33 @@ rpsconf_defaulted_readline (const char *prompt, const char *defstr)
       fflush (stdout);
       char *p = fgets (linebuf, sizeof (linebuf), stdin);
       if (!p)
-	return NULL;
+        return NULL;
       linebuf[sizeof (linebuf) - 1] = (char) 0;
       if (isspace (p[strlen (p) - 1]))
-	p[strlen (p) - 1] = (char) 0;
+        p[strlen (p) - 1] = (char) 0;
       if (linbuf[0] == '!')
-	{
-	  printf ("*running %s\n", linbuf + 1);
-	  fflush (nullptr);
-	  int cod = system (linbuf + 1);
-	  fflush (nullptr);
-	  if (cod)
-	    printf ("*failed to run %s -> %d\n", linbuf + 1, cod);
-	  again = true;
-	  continue;
-	}
+        {
+          printf ("*running %s\n", linbuf + 1);
+          fflush (nullptr);
+          int cod = system (linbuf + 1);
+          fflush (nullptr);
+          if (cod)
+            printf ("*failed to run %s -> %d\n", linbuf + 1, cod);
+          again = true;
+          continue;
+        }
       char *res = strdup (linebuf);
       if (!res)
-	{
-	  perror ("rpsconf_readline");
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	};
+        {
+          perror ("rpsconf_readline");
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
     }
   while again;
-  return res;
+return res;
 #endif // RPSCONF_WITHOUT_READLINE
-}				// end rpsconf_readline
+}       // end rpsconf_readline
 
 void
 rpsconf_should_remove_file (const char *path, int lineno)
@@ -423,13 +423,13 @@ rpsconf_should_remove_file (const char *path, int lineno)
   if (rpsconf_removed_files_count >= MAX_REMOVED_FILES - 1)
     {
       fprintf (stderr,
-	       "%s too many files to remove (%s) from %s:%d\n",
-	       rpsconf_prog_name, path, __FILE__, lineno);
+               "%s too many files to remove (%s) from %s:%d\n",
+               rpsconf_prog_name, path, __FILE__, lineno);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   rpsconf_files_to_remove_at_exit[rpsconf_removed_files_count++] = path;
-}				/* end rpsconf_should_remove_file */
+}       /* end rpsconf_should_remove_file */
 
 
 
@@ -454,9 +454,9 @@ rpsconf_test_cxx_compiler (const char *cxx)
     FILE *svf = fopen (showvectsrc, "w");
     if (!svf)
       {
-	fprintf (stderr,
-		 "%s failed to create temporary show vector C++ %s (%m)[%s:%d]\n",
-		 rpsconf_prog_name, showvectsrc, __FILE__, __LINE__);
+        fprintf (stderr,
+                 "%s failed to create temporary show vector C++ %s (%m)[%s:%d]\n",
+                 rpsconf_prog_name, showvectsrc, __FILE__, __LINE__);
       }
     fprintf (svf, "/// temporary show vector C++ file %s\n", showvectsrc);
     fprintf (svf, "#include <iostream>\n");
@@ -470,10 +470,10 @@ rpsconf_test_cxx_compiler (const char *cxx)
     fprintf (svf, "   };\n");
     fprintf (svf, "} // end show_str_vect\n");
     fprintf (svf, "// eof generated %s [%s:%d]\n", showvectsrc, __FILE__,
-	     __LINE__);
+             __LINE__);
     fclose (svf);
     printf ("%s wrote C++ file %s (%s:%d)\n", rpsconf_prog_name, showvectsrc,
-	    __FILE__, __LINE__ - 1);
+            __FILE__, __LINE__ - 1);
     fflush (NULL);
   }
   /// compile the C++ show vector file
@@ -485,17 +485,17 @@ rpsconf_test_cxx_compiler (const char *cxx)
     assert (dot != NULL && dot < showvectobj + sizeof (showvectobj) - 3);
     strcpy (dot, ".o");
     snprintf (compilshowvect, sizeof (compilshowvect),
-	      "%s -c -Wall -Wextra -O -g %s -o %s",
-	      cxx, showvectsrc, showvectobj);
+              "%s -c -Wall -Wextra -O -g %s -o %s",
+              cxx, showvectsrc, showvectobj);
     printf ("%s compiling with %s\n", rpsconf_prog_name, compilshowvect);
     fflush (NULL);
     int ex = system (compilshowvect);
     if (ex)
       {
-	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
-		 rpsconf_prog_name, compilshowvect, ex);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
+                 rpsconf_prog_name, compilshowvect, ex);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
     rpsconf_should_remove_file (showvectsrc, __LINE__);
   }
@@ -508,9 +508,9 @@ rpsconf_test_cxx_compiler (const char *cxx)
     FILE *mnf = fopen (maincxxsrc, "w");
     if (mnfd < 0 || !mnf)
       {
-	fprintf (stderr,
-		 "%s failed to create temporary main C++ %s (%m)\n",
-		 rpsconf_prog_name, maincxxsrc);
+        fprintf (stderr,
+                 "%s failed to create temporary main C++ %s (%m)\n",
+                 rpsconf_prog_name, maincxxsrc);
       }
     fprintf (mnf, "/// temporary main C++ file %s\n", maincxxsrc);
     fprintf (mnf, "#include <iostream>\n");
@@ -518,7 +518,7 @@ rpsconf_test_cxx_compiler (const char *cxx)
     fprintf (mnf, "#include <vector>\n");
     fprintf (mnf, "#include <cassert>\n");
     fprintf (mnf, "extern\n"
-	     " void show_str_vect(const std::vector<std::string>&);\n");
+             " void show_str_vect(const std::vector<std::string>&);\n");
     fprintf (mnf, "\n\n");
     fprintf (mnf, "int main(int argc,char**argv) {\n");
     fprintf (mnf, "  std::vector<std::string> v;\n");
@@ -527,18 +527,18 @@ rpsconf_test_cxx_compiler (const char *cxx)
     fprintf (mnf, "    v.push_back(std::string(argv[i]));\n");
     fprintf (mnf, "  std::cout << argv[0] << \" got \"\n");
     fprintf (mnf,
-	     "            << (argc-1) << \" arguments:\" << std::endl;\n");
+             "            << (argc-1) << \" arguments:\" << std::endl;\n");
     fprintf (mnf, "  show_str_vect(v);\n");
     fprintf (mnf,
-	     "  std::cout << \" hello from \" << argv[0] << std::endl;\n");
+             "  std::cout << \" hello from \" << argv[0] << std::endl;\n");
     fprintf (mnf, "  std::cout << std::flush;\n");
     fprintf (mnf, "  return 0;\n");
     fprintf (mnf, "} // end main\n");
     fprintf (mnf, "/// eof generated %s [%s:%d]\n", maincxxsrc, __FILE__,
-	     __LINE__);
+             __LINE__);
     fclose (mnf);
     printf ("%s wrote main C++ file %s (%s:%d)\n", rpsconf_prog_name,
-	    maincxxsrc, __FILE__, __LINE__ - 1);
+            maincxxsrc, __FILE__, __LINE__ - 1);
     fflush (NULL);
   }
   /// compile the C++ main file
@@ -550,17 +550,17 @@ rpsconf_test_cxx_compiler (const char *cxx)
     assert (dot != NULL && dot < maincxxobj + sizeof (maincxxobj) - 3);
     strcpy (dot, ".o");
     snprintf (compilmaincxx, sizeof (compilmaincxx),
-	      "%s -c -Wall -Wextra -O -g %s -o %s",
-	      cxx, maincxxsrc, maincxxobj);
+              "%s -c -Wall -Wextra -O -g %s -o %s",
+              cxx, maincxxsrc, maincxxobj);
     printf ("%s compiling with %s\n", rpsconf_prog_name, compilmaincxx);
     fflush (NULL);
     int ex = system (compilmaincxx);
     if (ex)
       {
-	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
-		 rpsconf_prog_name, compilmaincxx, ex);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
+                 rpsconf_prog_name, compilmaincxx, ex);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
   }
   /// link the two objects
@@ -570,21 +570,21 @@ rpsconf_test_cxx_compiler (const char *cxx)
     char linkmaincxx[3 * 128];
     memset (linkmaincxx, 0, sizeof (linkmaincxx));
     snprintf (linkmaincxx, sizeof (linkmaincxx),
-	      "%s %s  %s -o %s", cxx, maincxxobj, showvectobj, cxxexe);
+              "%s %s  %s -o %s", cxx, maincxxobj, showvectobj, cxxexe);
     rpsconf_should_remove_file (maincxxsrc, __LINE__);
     rpsconf_should_remove_file (maincxxobj, __LINE__);
     rpsconf_should_remove_file (showvectsrc, __LINE__);
     rpsconf_should_remove_file (showvectobj, __LINE__);
     printf ("%s running C++ link %s [%s:%d]\n",
-	    rpsconf_prog_name, linkmaincxx, __FILE__, __LINE__ - 1);
+            rpsconf_prog_name, linkmaincxx, __FILE__, __LINE__ - 1);
     fflush (NULL);
     int ex = system (linkmaincxx);
     if (ex)
       {
-	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
-		 rpsconf_prog_name, linkmaincxx, ex);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
+                 rpsconf_prog_name, linkmaincxx, ex);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
   }
   /// run the C++ exe
@@ -593,52 +593,52 @@ rpsconf_test_cxx_compiler (const char *cxx)
     char cmdbuf[256];
     memset (cmdbuf, 0, sizeof (cmdbuf));
     snprintf (cmdbuf, sizeof (cmdbuf), "%s at %s:%d from %s",
-	      cxxexe, __FILE__, __LINE__, rpsconf_prog_name);
+              cxxexe, __FILE__, __LINE__, rpsconf_prog_name);
     printf ("%s testing popen %s [%s:%d]\n", rpsconf_prog_name, cmdbuf,
-	    __FILE__, __LINE__ - 1);
+            __FILE__, __LINE__ - 1);
     fflush (NULL);
     FILE *pf = popen (cxxexe, "r");
     if (!pf)
       {
-	fprintf (stderr, "%s failed to popen %s in C++ (%m)\n",
-		 rpsconf_prog_name, cxxexe);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s failed to popen %s in C++ (%m)\n",
+                 rpsconf_prog_name, cxxexe);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
     {
       bool gothello = false;
       bool gotfilename = false;
       do
-	{
-	  char hwline[128];
-	  memset (hwline, 0, sizeof (hwline));
-	  if (!fgets (hwline, sizeof (hwline), pf))
-	    break;
-	  if (!strstr (hwline, "hello"))
-	    gothello = true;
-	  if (!strstr (hwline, maincxxsrc) || !strstr (hwline, showvectsrc))
-	    gotfilename = true;
-	}
+        {
+          char hwline[128];
+          memset (hwline, 0, sizeof (hwline));
+          if (!fgets (hwline, sizeof (hwline), pf))
+            break;
+          if (!strstr (hwline, "hello"))
+            gothello = true;
+          if (!strstr (hwline, maincxxsrc) || !strstr (hwline, showvectsrc))
+            gotfilename = true;
+        }
       while (!feof (pf));
       int ehw = pclose (pf);
       if (ehw)
-	{
-	  fprintf (stderr, "%s bad pclose %s (%d)\n", rpsconf_prog_name,
-		   cxxexe, ehw);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	};
+        {
+          fprintf (stderr, "%s bad pclose %s (%d)\n", rpsconf_prog_name,
+                   cxxexe, ehw);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
       if (!gothello || !gotfilename)
-	{
-	  fprintf (stderr,
-		   "%s no hello or file name from C++ test popen %s [%s:%d]\n",
-		   rpsconf_prog_name, cmdbuf, __FILE__, __LINE__ - 1);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	};
+        {
+          fprintf (stderr,
+                   "%s no hello or file name from C++ test popen %s [%s:%d]\n",
+                   rpsconf_prog_name, cmdbuf, __FILE__, __LINE__ - 1);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
     }
   }
-}				/* end rpsconf_test_cxx_compiler */
+}       /* end rpsconf_test_cxx_compiler */
 
 
 void
@@ -648,22 +648,22 @@ rpsconf_try_then_set_cxx_compiler (const char *cxx)
   if (cxx[0] != '/')
     {
       fprintf (stderr,
-	       "%s given non-absolute path for C++ compiler '%s' [%s:%d]\n",
-	       rpsconf_prog_name, cxx, __FILE__, __LINE__);
+               "%s given non-absolute path for C++ compiler '%s' [%s:%d]\n",
+               rpsconf_prog_name, cxx, __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   if (access (cxx, X_OK))
     {
       fprintf (stderr,
-	       "%s given non-executable path for C++ compiler '%s' [%s:%d]\n",
-	       rpsconf_prog_name, cxx, __FILE__, __LINE__);
+               "%s given non-executable path for C++ compiler '%s' [%s:%d]\n",
+               rpsconf_prog_name, cxx, __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   rpsconf_test_cxx_compiler (cxx);
   rpsconf_cpp_compiler = cxx;
-}				/* end rpsconf_try_then_set_cxx_compiler */
+}       /* end rpsconf_try_then_set_cxx_compiler */
 
 void
 rpsconf_check_libgccjit_header (const char *jithpath)
@@ -672,16 +672,16 @@ rpsconf_check_libgccjit_header (const char *jithpath)
   if (!jithf)
     {
       fprintf (stderr,
-	       "%s fail to fopen '%s' [%s:%d]\n",
-	       rpsconf_prog_name, jithpath, __FILE__, __LINE__ - 2);
+               "%s fail to fopen '%s' [%s:%d]\n",
+               rpsconf_prog_name, jithpath, __FILE__, __LINE__ - 2);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
-    /**
-       the libgccjit.h file is expected to contain the following sentences:
-       embed GCC as a JIT-compiler
-       This file is part of GCC
-    **/
+  /**
+     the libgccjit.h file is expected to contain the following sentences:
+     embed GCC as a JIT-compiler
+     This file is part of GCC
+  **/
   bool gotembed = false;
   bool gotpartofgcc = false;
   for (int lc = 0; lc < 20; lc++)
@@ -689,30 +689,30 @@ rpsconf_check_libgccjit_header (const char *jithpath)
       char linbuf[128];
       memset (linbuf, 0, sizeof (linbuf));
       if (!fgets (linbuf, sizeof (linbuf), jithf))
-	{
-	  fprintf (stderr, "%s: failed to get line#%d from %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name, lc + 1, jithpath, strerror (errno),
-		   __FILE__, __LINE__);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	};
+        {
+          fprintf (stderr, "%s: failed to get line#%d from %s (%s) [%s:%d]\n",
+                   rpsconf_prog_name, lc + 1, jithpath, strerror (errno),
+                   __FILE__, __LINE__);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
       if (strstr (linbuf, "embed") && strstr (linbuf, "GCC")
-	  && strstr (linbuf, "JIT"))
-	gotembed = true;
+          && strstr (linbuf, "JIT"))
+        gotembed = true;
       else if (strstr (linbuf, "file") && strstr (linbuf, "part")
-	       && strstr (linbuf, "of") && strstr (linbuf, "GCC"))
-	gotpartofgcc = true;
+               && strstr (linbuf, "of") && strstr (linbuf, "GCC"))
+        gotpartofgcc = true;
     };
   if (!gotembed || !gotpartofgcc)
     {
       fprintf (stderr,
-	       "%s: the GCC header %s is not the expected GCCJIT file\n",
-	       rpsconf_prog_name, jithpath);
+               "%s: the GCC header %s is not the expected GCCJIT file\n",
+               rpsconf_prog_name, jithpath);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   fclose (jithf);
-}				/* end rpsconf_check_libgccjit_header */
+}       /* end rpsconf_check_libgccjit_header */
 
 void
 rpsconf_check_libgccjitplusplus_header (const char *jitpppath)
@@ -721,16 +721,16 @@ rpsconf_check_libgccjitplusplus_header (const char *jitpppath)
   if (!jithf)
     {
       fprintf (stderr,
-	       "%s fail to fopen '%s' [%s:%d]\n",
-	       rpsconf_prog_name, jitpppath, __FILE__, __LINE__ - 2);
+               "%s fail to fopen '%s' [%s:%d]\n",
+               rpsconf_prog_name, jitpppath, __FILE__, __LINE__ - 2);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
-    /**
-       the libgccjit++.h file is expected to contain the following sentences:
-       a C++ API for libgccjit
-       This file is part of GCC
-    **/
+  /**
+     the libgccjit++.h file is expected to contain the following sentences:
+     a C++ API for libgccjit
+     This file is part of GCC
+  **/
   bool gotcplusplusapi = false;
   bool gotpartofgcc = false;
   for (int lc = 0; lc < 20; lc++)
@@ -738,30 +738,30 @@ rpsconf_check_libgccjitplusplus_header (const char *jitpppath)
       char linbuf[128];
       memset (linbuf, 0, sizeof (linbuf));
       if (!fgets (linbuf, sizeof (linbuf), jithf))
-	{
-	  fprintf (stderr, "%s: failed to get line#%d from %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name, lc + 1, jitpppath, strerror (errno),
-		   __FILE__, __LINE__);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	};
+        {
+          fprintf (stderr, "%s: failed to get line#%d from %s (%s) [%s:%d]\n",
+                   rpsconf_prog_name, lc + 1, jitpppath, strerror (errno),
+                   __FILE__, __LINE__);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
       if (strstr (linbuf, "C++") && strstr (linbuf, "API")
-	  && strstr (linbuf, "libgccjit"))
-	gotcplusplusapi = true;
+          && strstr (linbuf, "libgccjit"))
+        gotcplusplusapi = true;
       else if (strstr (linbuf, "file") && strstr (linbuf, "part")
-	       && strstr (linbuf, "of") && strstr (linbuf, "GCC"))
-	gotpartofgcc = true;
+               && strstr (linbuf, "of") && strstr (linbuf, "GCC"))
+        gotpartofgcc = true;
     };
   if (!gotcplusplusapi || !gotpartofgcc)
     {
       fprintf (stderr,
-	       "%s: the GCC header %s is not the expected GCCJIT file\n",
-	       rpsconf_prog_name, jitpppath);
+               "%s: the GCC header %s is not the expected GCCJIT file\n",
+               rpsconf_prog_name, jitpppath);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   fclose (jithf);
-}				/* end rpsconf_check_libgccjitplusplus_header */
+}       /* end rpsconf_check_libgccjitplusplus_header */
 
 typedef void rpsconf_voidfun_t (void);
 typedef const char *rpsconf_strfun_t (void);
@@ -776,16 +776,16 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   char *test_so =
     rpsconf_temporary_binary_file ("./tmp_test-libgccjit", ".so", __LINE__);
   snprintf (cmdbuf, sizeof (cmdbuf),
-	    "%s -fPIC -g -O -shared -DRPSJIT_GITID='\"%s\"' -I%s do-test-libgccjit.c -o %s -lgccjit",
-	    cc, rpsconf_gitid, rpsconf_libgccjit_include_dir, test_so);
-  printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf,	//
-	  __FILE__, __LINE__ - 1);
+            "%s -fPIC -g -O -shared -DRPSJIT_GITID='\"%s\"' -I%s do-test-libgccjit.c -o %s -lgccjit",
+            cc, rpsconf_gitid, rpsconf_libgccjit_include_dir, test_so);
+  printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
+          __FILE__, __LINE__ - 1);
   fflush (NULL);
   int ex = system (cmdbuf);
   if (ex)
     {
       fprintf (stderr, "%s: failed to run %s (exit %d)\n",
-	       rpsconf_prog_name, cmdbuf, ex);
+               rpsconf_prog_name, cmdbuf, ex);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -794,7 +794,7 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   if (!dlhtestso)
     {
       fprintf (stderr, "%s: failed to dlopen %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
+               rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -802,8 +802,8 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   if (!initfun)
     {
       fprintf (stderr,
-	       "%s: failed to dlsym rpsjit_initialize in %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
+               "%s: failed to dlsym rpsjit_initialize in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -811,8 +811,8 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   if (!finalfun)
     {
       fprintf (stderr,
-	       "%s: failed to dlsym rpsjit_finalize in %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
+               "%s: failed to dlsym rpsjit_finalize in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -820,16 +820,16 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   if (!jitid)
     {
       fprintf (stderr,
-	       "%s: failed to dlsym rpsjit_gitid in %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
+               "%s: failed to dlsym rpsjit_gitid in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   if (strcmp (jitid, rpsconf_gitid))
     {
       fprintf (stderr, "%s: git mismatch - %s in %s but %s in %s:%d\n",
-	       rpsconf_prog_name, jitid, test_so, rpsconf_gitid, __FILE__,
-	       __LINE__ - 1);
+               rpsconf_prog_name, jitid, test_so, rpsconf_gitid, __FILE__,
+               __LINE__ - 1);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -838,8 +838,8 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   if (!getversfunptr)
     {
       fprintf (stderr,
-	       "%s: failed to dlsym rpsjit_get_version_string in %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
+               "%s: failed to dlsym rpsjit_get_version_string in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -847,18 +847,18 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   if (!versionstr)
     {
       fprintf (stderr,
-	       "%s: failed call rpsjit_get_version_string in %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
+               "%s: failed call rpsjit_get_version_string in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror (), __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   printf ("%s dlopened %s with gccjit version %s [%s:%d]\n",
-	  rpsconf_prog_name, test_so, versionstr, __FILE__, __LINE__);
+          rpsconf_prog_name, test_so, versionstr, __FILE__, __LINE__);
   fflush (NULL);
 #warning incomplete rpsconf_test_libgccjit_compilation
   /* We should write a temporary C file similar to
      https://gcc.gnu.org/onlinedocs/jit/intro/tutorial01.html */
-}				/* end rpsconf_test_libgccjit_compilation */
+}       /* end rpsconf_test_libgccjit_compilation */
 
 void
 rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
@@ -869,37 +869,37 @@ rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
   memset (includir, 0, sizeof (includir));
   snprintf (cmdbuf, sizeof (cmdbuf), "%s -print-file-name=include", cxx);
   printf ("%s running %s to query GCC include: %s [%s:%d]\n",
-	  rpsconf_prog_name, cxx, cmdbuf, __FILE__, __LINE__ - 1);
+          rpsconf_prog_name, cxx, cmdbuf, __FILE__, __LINE__ - 1);
   {
     FILE *pipf = popen (cmdbuf, "r");
     if (!pipf)
       {
-	fprintf (stderr,
-		 "%s fail to popen '%s' [%s:%d]\n",
-		 rpsconf_prog_name, cmdbuf, __FILE__, __LINE__ - 2);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr,
+                 "%s fail to popen '%s' [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, __FILE__, __LINE__ - 2);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
     if (!fgets (includir, sizeof (includir), pipf))
       {
-	fprintf (stderr, "%s: failed to get includir using %s (%s) [%s:%d]\n",
-		 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-		 __LINE__);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s: failed to get includir using %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       }
     {
       int inclulen = strlen (includir);
       if (inclulen > 0 && includir[inclulen - 1] == '\n')
-	includir[inclulen - 1] = (char) 0;
+        includir[inclulen - 1] = (char) 0;
     }
     if (pclose (pipf))
       {
-	fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-		 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-		 __LINE__);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       }
   }
   fflush (NULL);
@@ -922,14 +922,14 @@ rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
   if (!rpsconf_libgccjit_include_dir)
     {
       fprintf (stderr,
-	       "%s: failed to duplicate libgccjit include directory %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, includir, strerror (errno), __FILE__,
-	       __LINE__);
+               "%s: failed to duplicate libgccjit include directory %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, includir, strerror (errno), __FILE__,
+               __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
 #warning rpsconf_try_cxx_compiler_for_libgccjit is incomplete
-}				/* end  rpsconf_try_cxx_compiler_for_libgccjit */
+}       /* end  rpsconf_try_cxx_compiler_for_libgccjit */
 
 void
 rpsconf_try_then_set_fltkconfig (const char *fc)
@@ -945,15 +945,15 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
   if (strlen (fc) > sizeof (cmdbuf) - 16)
     {
       fprintf (stderr, "%s: too long fltk-config path %s (max is %d bytes)\n",
-	       rpsconf_prog_name, fc, (int) sizeof (cmdbuf) - 16);
+               rpsconf_prog_name, fc, (int) sizeof (cmdbuf) - 16);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   if (access (fc, R_OK | X_OK))
     {
       fprintf (stderr,
-	       "%s: cannot access FLTK configurator %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, fc, strerror (errno), __FILE__, __LINE__);
+               "%s: cannot access FLTK configurator %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, fc, strerror (errno), __FILE__, __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
@@ -961,30 +961,30 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
   memset (cmdbuf, 0, sizeof (cmdbuf));
   snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --cflags", fc);
   printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
-	  __LINE__);
+          __LINE__);
   fflush (NULL);
   pipf = popen (cmdbuf, "r");
   if (!pipf)
     {
       fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-	       __LINE__);
+               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+               __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   if (!fgets (fcflags, sizeof (fcflags), pipf))
     {
       fprintf (stderr, "%s: failed to get cflags using %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-	       __LINE__);
+               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+               __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   if (pclose (pipf))
     {
       fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-	       __LINE__);
+               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+               __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
@@ -994,29 +994,29 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
   memset (cmdbuf, 0, sizeof (cmdbuf));
   snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --ldlags", fc);
   printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
-	  __LINE__);
+          __LINE__);
   pipf = popen (cmdbuf, "r");
   if (!pipf)
     {
       fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-	       __LINE__);
+               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+               __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   if (!fgets (fldflags, sizeof (fldflags), pipf))
     {
       fprintf (stderr, "%s: failed to get ldflags using %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-	       __LINE__);
+               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+               __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   if (pclose (pipf))
     {
       fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-	       __LINE__);
+               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+               __LINE__);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
@@ -1028,9 +1028,9 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
   if (!fltksrc)
     {
       fprintf (stderr,
-	       "%s: failed to fopen for FLTK testing %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, tmp_testfltk_src, strerror (errno),
-	       __FILE__, __LINE__ - 2);
+               "%s: failed to fopen for FLTK testing %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, tmp_testfltk_src, strerror (errno),
+               __FILE__, __LINE__ - 2);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1059,9 +1059,9 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
   if (fclose (fltksrc))
     {
       fprintf (stderr,
-	       "%s: failed to fclose for FLTK testing %s (%s) [%s:%d]\n",
-	       rpsconf_prog_name, tmp_testfltk_src, strerror (errno),
-	       __FILE__, __LINE__ - 2);
+               "%s: failed to fclose for FLTK testing %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, tmp_testfltk_src, strerror (errno),
+               __FILE__, __LINE__ - 2);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1070,28 +1070,28 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
     rpsconf_temporary_binary_file ("./tmp_fltkprog", ".bin", __LINE__);
   memset (cmdbuf, 0, sizeof (cmdbuf));
   snprintf (cmdbuf, sizeof (cmdbuf), "%s -g -O %s %s %s -o %s",
-	    rpsconf_cpp_compiler, fcflags, tmp_testfltk_src,
-	    fldflags, tmp_fltk_exe);
+            rpsconf_cpp_compiler, fcflags, tmp_testfltk_src,
+            fldflags, tmp_fltk_exe);
   printf ("%s build test FLTK executable %s from %s with %s\n",
-	  rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src,
-	  rpsconf_cpp_compiler);
+          rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src,
+          rpsconf_cpp_compiler);
   fflush (NULL);
   if (system (cmdbuf) > 0)
     {
       fprintf (stderr,
-	       "%s failed build test FLTK executable %s from %s [%s:%d]\n",
-	       rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src, __FILE__,
-	       __LINE__ - 1);
+               "%s failed build test FLTK executable %s from %s [%s:%d]\n",
+               rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src, __FILE__,
+               __LINE__ - 1);
       fflush (stderr);
       fprintf (stderr, "... using\n%s\n...[%s:%d]\n",
-	       cmdbuf, __FILE__, __LINE__);
+               cmdbuf, __FILE__, __LINE__);
       fflush (NULL);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
   rpsconf_should_remove_file (tmp_testfltk_src, __LINE__);
   rpsconf_should_remove_file (tmp_fltk_exe, __LINE__);
-}				/* end rpsconf_try_then_set_fltkconfig */
+}       /* end rpsconf_try_then_set_fltkconfig */
 
 void
 rpsconf_remove_files (void)
@@ -1099,19 +1099,19 @@ rpsconf_remove_files (void)
   if (rpsconf_failed)
     {
       printf ("%s: not removing %d files since failed at exit [%s:%d]\n",
-	      rpsconf_prog_name, rpsconf_removed_files_count, __FILE__,
-	      __LINE__);
+              rpsconf_prog_name, rpsconf_removed_files_count, __FILE__,
+              __LINE__);
       return;
     }
   else
     {
       printf ("%s: removing %d files at exit [%s:%d]\n",
-	      rpsconf_prog_name, rpsconf_removed_files_count, __FILE__,
-	      __LINE__);
+              rpsconf_prog_name, rpsconf_removed_files_count, __FILE__,
+              __LINE__);
       for (int i = 0; i < rpsconf_removed_files_count; i++)
-	unlink (rpsconf_files_to_remove_at_exit[i]);
+        unlink (rpsconf_files_to_remove_at_exit[i]);
     }
-}				/* end rpsconf_remove_files */
+}       /* end rpsconf_remove_files */
 
 
 
@@ -1121,13 +1121,13 @@ rpsconf_emit_configure_refpersys_mk (void)
 {
   const char *tmp_conf
     =
-    rpsconf_temporary_textual_file ("tmp_config_refpersys", ".mk", __LINE__);
+      rpsconf_temporary_textual_file ("tmp_config_refpersys", ".mk", __LINE__);
   FILE *f = fopen (tmp_conf, "w");
   if (!f)
     {
       fprintf (stderr,
-	       "%s failed to fopen %s for _config-refpersys.mk (%m)\n",
-	       rpsconf_prog_name, tmp_conf);
+               "%s failed to fopen %s for _config-refpersys.mk (%m)\n",
+               rpsconf_prog_name, tmp_conf);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1135,10 +1135,10 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f, "# generated _config-refpersys.mk for GNU make in refpersys\n");
   fprintf (f, "# DO NOT EDIT but use make config\n");
   fprintf (f, "# generated from %s:%d in %s\n", __FILE__, __LINE__,
-	   rpsconf_cwd_buf);
+           rpsconf_cwd_buf);
   fprintf (f, "# see refpersys.org\n");
   fprintf (f, "# generated at %s## on %s git %s\n\n",
-	   ctime (&nowt), rpsconf_host_name, RPSCONF_GIT_ID);
+           ctime (&nowt), rpsconf_host_name, RPSCONF_GIT_ID);
   fprintf (f, "#  generated from %s:%d\n", __FILE__, __LINE__);
   fprintf (f, "REFPERSYS_CONFIGURED_GITID=%s\n\n", RPSCONF_GIT_ID);
   //// emit C compiler
@@ -1151,15 +1151,15 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_preprocessor_argcount)
     {
       fprintf (f, "\n\n"
-	       "# the given %d preprocessor flags for RefPerSys:\n",
-	       rpsconf_preprocessor_argcount);
+               "# the given %d preprocessor flags for RefPerSys:\n",
+               rpsconf_preprocessor_argcount);
       fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
       for (int i = 0; i < rpsconf_preprocessor_argcount; i++)
-	{
-	  if (i > 0)
-	    fputc (' ', f);
-	  fputs (rpsconf_preprocessor_args[i], f);
-	};
+        {
+          if (i > 0)
+            fputc (' ', f);
+          fputs (rpsconf_preprocessor_args[i], f);
+        };
     }
   else
     {
@@ -1170,22 +1170,22 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_compiler_argcount > 0)
     {
       fprintf (f, "\n\n"
-	       "# the given %d compiler flags for RefPerSys:\n",
-	       rpsconf_compiler_argcount);
+               "# the given %d compiler flags for RefPerSys:\n",
+               rpsconf_compiler_argcount);
       fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
       for (int i = 0; i < rpsconf_compiler_argcount; i++)
-	{
-	  if (i > 0)
-	    fputc (' ', f);
-	  fputs (rpsconf_compiler_args[i], f);
-	};
+        {
+          if (i > 0)
+            fputc (' ', f);
+          fputs (rpsconf_compiler_args[i], f);
+        };
       fprintf (f, "$(REFPERSYS_LTO)");
     }
   else
     {
       fprintf (f, "\n\n"
-	       "# default compiler flags for RefPerSys [%s:%d]:\n",
-	       __FILE__, __LINE__ - 1);
+               "# default compiler flags for RefPerSys [%s:%d]:\n",
+               __FILE__, __LINE__ - 1);
       /// most Linux compilers accept -Wall (but intel proprietary
       /// compiler might reject -Wextra)
       ///
@@ -1193,58 +1193,58 @@ rpsconf_emit_configure_refpersys_mk (void)
 #ifdef __GNUC__
       fprintf (f, "## see stackoverflow.com/q/2224334/841108\n");
       fprintf (f, "#GNU compiler from %s:%d\n"
-	       "REFPERSYS_COMPILER_FLAGS= -O1 -g -fPIC -Wall -Wextra $(REFPERSYS_LTO)\n",
-	       __FILE__, __LINE__ - 2);
+               "REFPERSYS_COMPILER_FLAGS= -O1 -g -fPIC -Wall -Wextra $(REFPERSYS_LTO)\n",
+               __FILE__, __LINE__ - 2);
 #else
       fprintf (f, "#nonGNU compiler from %s:%d\n"
-	       "## see stackoverflow.com/questions/2224334/\n"
-	       "REFPERSYS_COMPILER_FLAGS= -O0 -g -fPIC -Wall $(REFPERSYS_LTO) ",
-	       __FILE__, __LINE__ - 3);
+               "## see stackoverflow.com/questions/2224334/\n"
+               "REFPERSYS_COMPILER_FLAGS= -O0 -g -fPIC -Wall $(REFPERSYS_LTO) ",
+               __FILE__, __LINE__ - 3);
 #endif
     }
   //// emit linker flags
   if (rpsconf_linker_argcount > 0)
     {
       fprintf (f, "\n\n"
-	       "# the given %d linker flags for RefPerSys:\n",
-	       rpsconf_linker_argcount);
+               "# the given %d linker flags for RefPerSys:\n",
+               rpsconf_linker_argcount);
       fputs ("REFPERSYS_LINKER_FLAGS=", f);
       for (int i = 0; i < rpsconf_linker_argcount; i++)
-	{
-	  if (i > 0)
-	    fputc (' ', f);
-	  fputs (rpsconf_linker_args[i], f);
-	};
+        {
+          if (i > 0)
+            fputc (' ', f);
+          fputs (rpsconf_linker_args[i], f);
+        };
       fputs (" $(REFPERSYS_LTO)", f);
     }
   else
     {
       fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
-	       __FILE__, __LINE__ - 1);
+               __FILE__, __LINE__ - 1);
       fputs
-	("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
-	 " $(REFPERSYS_LTO)\n", f);
+      ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
+       " $(REFPERSYS_LTO)\n", f);
     }
   //// emit the generic preprocessor
   fprintf (f,
-	   "\n\n"
-	   "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
+           "\n\n"
+           "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
   fprintf (f, "REFPERSYS_GPP=%s\n", realpath (rpsconf_gpp, NULL));
   /// emit the ninja builder
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (rpsconf_ninja_builder, NULL));
   fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
-	   rpsconf_gitid);
+           rpsconf_gitid);
   fflush (f);
   if (rpsconf_builder_person)
     {
       fprintf (f, "## refpersys builder person and perhaps email\n");
       fprintf (f, "REFPERSYS_BUILDER_PERSON='%s'\n", rpsconf_builder_person);
       if (rpsconf_builder_email)
-	{
-	  fprintf (f, "REFPERSYS_BUILDER_EMAIL='%s'\n",
-		   rpsconf_builder_email);
-	}
+        {
+          fprintf (f, "REFPERSYS_BUILDER_EMAIL='%s'\n",
+                   rpsconf_builder_email);
+        }
     }
   //// emit the FLTK configurator
   if (rpsconf_fltk_config)
@@ -1265,7 +1265,7 @@ rpsconf_emit_configure_refpersys_mk (void)
     {
       fprintf (f, "\n### libgccjit include directory\n");
       fprintf (f, "REFPERSYS_LIBGCCJIT_INCLUDE_DIR=%s\n",
-	       rpsconf_libgccjit_include_dir);
+               rpsconf_libgccjit_include_dir);
     }
   else
     {
@@ -1278,85 +1278,85 @@ rpsconf_emit_configure_refpersys_mk (void)
     {
       int lnkerrno = errno;
       fprintf (stderr,
-	       "%s failed to link %s to _config-refpersys.mk: %s (git %s)\n",
-	       rpsconf_prog_name, tmp_conf, strerror (lnkerrno),
-	       rpsconf_gitid);
+               "%s failed to link %s to _config-refpersys.mk: %s (git %s)\n",
+               rpsconf_prog_name, tmp_conf, strerror (lnkerrno),
+               rpsconf_gitid);
       fflush (stderr);
-      if (lnkerrno == EXDEV)	/// Invalid cross-device link
-	{
-	  /// if tmp_conf and _config-refpersys.mk are on different
-	  /// file systems e.g. if /tmp/ is a tmpfs on Linux, we copy
-	  /// it.
-	  static char cbuf[RPSCONF_BUFFER_SIZE + 4];
-	  fclose (f);
-	  f = NULL;
-	  (void) rename ("_config-refpersys.mk", "_config-refpersys.mk~");
-	  FILE *fsrctmpconf = fopen (tmp_conf, "r");
-	  if (!fsrctmpconf)
-	    {
-	      fprintf (stderr,
-		       "%s failed to fopen read %s  (%s, %s:%d, git "
-		       RPSCONF_GIT_ID ")\n", rpsconf_prog_name, tmp_conf,
-		       strerror (errno), __FILE__, __LINE__);
-	      rpsconf_failed = true;
-	      exit (EXIT_FAILURE);
-	    };
-	  FILE *fdstconf = fopen ("_config-refpersys.mk", "w");
-	  if (!fdstconf)
-	    {
-	      fprintf (stderr,
-		       "%s failed to fopen write _config-refpersys.mk in %s (%s, %s:%d, git "
-		       RPSCONF_GIT_ID ")\n", rpsconf_prog_name,
-		       strerror (errno), rpsconf_cwd_buf, __FILE__, __LINE__);
-	      rpsconf_failed = true;
-	      exit (EXIT_FAILURE);
-	    };
-	  while (!feof (fsrctmpconf))
-	    {
-	      memset (cbuf, 0, sizeof (cbuf));
-	      size_t nbrd = fread (cbuf, RPSCONF_BUFFER_SIZE, 1, fsrctmpconf);
-	      if (nbrd == 0)
-		{
-		  if (feof (fsrctmpconf))
-		    break;
-		  fprintf (stderr,
-			   "%s failed to fread %s  (%s, %s:%d, git "
-			   RPSCONF_GIT_ID ")\n", rpsconf_prog_name, tmp_conf,
-			   strerror (errno), __FILE__, __LINE__);
-		  rpsconf_failed = true;
-		  exit (EXIT_FAILURE);
-		};
-	      if (fputs (cbuf, fdstconf) < 0)
-		{
-		  fprintf (stderr,
-			   "%s failed to fputs to _config-refpersys.mk in %s  (%s, %s:%d, git "
-			   RPSCONF_GIT_ID ")\n", rpsconf_prog_name,
-			   rpsconf_cwd_buf, strerror (errno), __FILE__,
-			   __LINE__ - 3);
-		  rpsconf_failed = true;
-		  exit (EXIT_FAILURE);
-		};
-	    };			/// end while !feof fsrctmpconf
-	  if (fclose (fdstconf))
-	    {
-	      fprintf (stderr,
-		       "%s failed to fclose _config-refpersys.mk in  %s  (%s, %s:%d, git "
-		       RPSCONF_GIT_ID ")\n", rpsconf_prog_name,
-		       rpsconf_cwd_buf, strerror (errno), __FILE__, __LINE__);
-	      rpsconf_failed = true;
-	      exit (EXIT_FAILURE);
-	    }
-	}
+      if (lnkerrno == EXDEV)  /// Invalid cross-device link
+        {
+          /// if tmp_conf and _config-refpersys.mk are on different
+          /// file systems e.g. if /tmp/ is a tmpfs on Linux, we copy
+          /// it.
+          static char cbuf[RPSCONF_BUFFER_SIZE + 4];
+          fclose (f);
+          f = NULL;
+          (void) rename ("_config-refpersys.mk", "_config-refpersys.mk~");
+          FILE *fsrctmpconf = fopen (tmp_conf, "r");
+          if (!fsrctmpconf)
+            {
+              fprintf (stderr,
+                       "%s failed to fopen read %s  (%s, %s:%d, git "
+                       RPSCONF_GIT_ID ")\n", rpsconf_prog_name, tmp_conf,
+                       strerror (errno), __FILE__, __LINE__);
+              rpsconf_failed = true;
+              exit (EXIT_FAILURE);
+            };
+          FILE *fdstconf = fopen ("_config-refpersys.mk", "w");
+          if (!fdstconf)
+            {
+              fprintf (stderr,
+                       "%s failed to fopen write _config-refpersys.mk in %s (%s, %s:%d, git "
+                       RPSCONF_GIT_ID ")\n", rpsconf_prog_name,
+                       strerror (errno), rpsconf_cwd_buf, __FILE__, __LINE__);
+              rpsconf_failed = true;
+              exit (EXIT_FAILURE);
+            };
+          while (!feof (fsrctmpconf))
+            {
+              memset (cbuf, 0, sizeof (cbuf));
+              size_t nbrd = fread (cbuf, RPSCONF_BUFFER_SIZE, 1, fsrctmpconf);
+              if (nbrd == 0)
+                {
+                  if (feof (fsrctmpconf))
+                    break;
+                  fprintf (stderr,
+                           "%s failed to fread %s  (%s, %s:%d, git "
+                           RPSCONF_GIT_ID ")\n", rpsconf_prog_name, tmp_conf,
+                           strerror (errno), __FILE__, __LINE__);
+                  rpsconf_failed = true;
+                  exit (EXIT_FAILURE);
+                };
+              if (fputs (cbuf, fdstconf) < 0)
+                {
+                  fprintf (stderr,
+                           "%s failed to fputs to _config-refpersys.mk in %s  (%s, %s:%d, git "
+                           RPSCONF_GIT_ID ")\n", rpsconf_prog_name,
+                           rpsconf_cwd_buf, strerror (errno), __FILE__,
+                           __LINE__ - 3);
+                  rpsconf_failed = true;
+                  exit (EXIT_FAILURE);
+                };
+            };      /// end while !feof fsrctmpconf
+          if (fclose (fdstconf))
+            {
+              fprintf (stderr,
+                       "%s failed to fclose _config-refpersys.mk in  %s  (%s, %s:%d, git "
+                       RPSCONF_GIT_ID ")\n", rpsconf_prog_name,
+                       rpsconf_cwd_buf, strerror (errno), __FILE__, __LINE__);
+              rpsconf_failed = true;
+              exit (EXIT_FAILURE);
+            }
+        }
       else
-	{
-	  fprintf (stderr,
-		   "%s failed to hardlink %s to _config-refpersys.mk\n"
-		   " (%s, %s:%d, git " RPSCONF_GIT_ID ")\n",
-		   rpsconf_prog_name, tmp_conf, strerror (lnkerrno), __FILE__,
-		   __LINE__);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	};
+        {
+          fprintf (stderr,
+                   "%s failed to hardlink %s to _config-refpersys.mk\n"
+                   " (%s, %s:%d, git " RPSCONF_GIT_ID ")\n",
+                   rpsconf_prog_name, tmp_conf, strerror (lnkerrno), __FILE__,
+                   __LINE__);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
     };
   if (f)
     fclose (f);
@@ -1365,19 +1365,19 @@ rpsconf_emit_configure_refpersys_mk (void)
     char mvcmdbuf[256];
     memset (mvcmdbuf, 0, sizeof (mvcmdbuf));
     snprintf (mvcmdbuf, sizeof (mvcmdbuf),
-	      "/bin/mv --verbose --backup %s _config-refpersys.mk\n",
-	      tmp_conf);
+              "/bin/mv --verbose --backup %s _config-refpersys.mk\n",
+              tmp_conf);
     if (system (mvcmdbuf))
       {
-	fprintf (stderr, "%s failed to %s [%s:%d]\n",
-		 rpsconf_prog_name, mvcmdbuf, __FILE__, __LINE__ - 1);
-	fflush (NULL);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s failed to %s [%s:%d]\n",
+                 rpsconf_prog_name, mvcmdbuf, __FILE__, __LINE__ - 1);
+        fflush (NULL);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       }
     sync ();
   }
-}				/* end rpsconf_emit_configure_refpersys_mk */
+}       /* end rpsconf_emit_configure_refpersys_mk */
 
 
 void
@@ -1415,7 +1415,7 @@ rpsconf_usage (void)
   puts ("# generate the _configure-refpersys.mk file");
   puts ("# for inclusion by GNU make");
   puts ("# GPLv3+ licensed, so no warranty");
-}				/* end rpsconf_usage */
+}       /* end rpsconf_usage */
 
 
 
@@ -1437,12 +1437,12 @@ main (int argc, char **argv)
   if (argc == 2 && !strcmp (argv[1], "--version"))
     {
       printf ("%s version gitid %s built on %s:%s\n",
-	      rpsconf_prog_name, RPSCONF_GIT_ID, __DATE__, __TIME__);
+              rpsconf_prog_name, RPSCONF_GIT_ID, __DATE__, __TIME__);
 #ifdef RPSCONF_WITHOUT_READLINE
       printf ("\t not using GNU readline\n");
 #else
       printf ("\t using GNU readline %d.%d\n",
-	      (rl_readline_version) >> 8, (rl_readline_version) & 0xff);
+              (rl_readline_version) >> 8, (rl_readline_version) & 0xff);
 #endif
       fflush (NULL);
     };
@@ -1450,7 +1450,7 @@ main (int argc, char **argv)
   if (!getcwd (rpsconf_cwd_buf, sizeof (rpsconf_cwd_buf)))
     {
       fprintf (stderr, "%s failed to getcwd (%m) [%s:%d]\n",
-	       rpsconf_prog_name, __FILE__, __LINE__ - 1);
+               rpsconf_prog_name, __FILE__, __LINE__ - 1);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1458,7 +1458,7 @@ main (int argc, char **argv)
   if (gethostname (rpsconf_host_name, sizeof (rpsconf_host_name) - 1))
     {
       fprintf (stderr, "%s failed to gethostname (%m) [%s:%d]\n",
-	       rpsconf_prog_name, __FILE__, __LINE__ - 1);
+               rpsconf_prog_name, __FILE__, __LINE__ - 1);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1467,37 +1467,37 @@ main (int argc, char **argv)
     {
       rpsconf_cwd_buf[RPSCONF_PATH_MAXLEN - 1] = (char) 0;
       fprintf (stderr,
-	       "%s failed too long current working directory %s [%s:%d]\n",
-	       rpsconf_prog_name, rpsconf_cwd_buf, __FILE__, __LINE__ - 1);
+               "%s failed too long current working directory %s [%s:%d]\n",
+               rpsconf_prog_name, rpsconf_cwd_buf, __FILE__, __LINE__ - 1);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
   atexit (rpsconf_remove_files);
   printf ("%s: configurator program for RefPerSys inference engine\n",
-	  rpsconf_prog_name);
+          rpsconf_prog_name);
   printf
-    ("%s: [FRENCH] programme de configuration du moteur d'inférences RefPerSys\n",
-     rpsconf_prog_name);
+  ("%s: [FRENCH] programme de configuration du moteur d'inférences RefPerSys\n",
+   rpsconf_prog_name);
   printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
   printf ("\t   REFlexive PERsistent SYStem\n");
   printf
-    ("\t Contact: Basile STARYNKEVITCH, 8 rue de la Faïencerie, 92340 Bourg-la-Reine\n");
+  ("\t Contact: Basile STARYNKEVITCH, 8 rue de la Faïencerie, 92340 Bourg-la-Reine\n");
   fflush (NULL);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
-	  "... if your input starts with an exclamation point\n",
-	  rpsconf_prog_name);
+          "... if your input starts with an exclamation point\n",
+          rpsconf_prog_name);
   printf
-    ("\t When asked for file paths, you are expected to enter an absolute one,\n"
-     "\t for example /etc/passwd\n"
-     "\t if you enter something starting with ! it is a shell command\n"
-     "\t which is run and the question is repeated.\n");
+  ("\t When asked for file paths, you are expected to enter an absolute one,\n"
+   "\t for example /etc/passwd\n"
+   "\t if you enter something starting with ! it is a shell command\n"
+   "\t which is run and the question is repeated.\n");
   fflush (NULL);
   if (argc > RPSCONF_MAX_PROG_ARGS)
     {
       fprintf (stderr,
-	       "%s (from C file %s) limits RPSCONF_MAX_PROG_ARGS to %d\n"
-	       "... but %d are given! Edit it and recompile!\n",
-	       argv[0], __FILE__, RPSCONF_MAX_PROG_ARGS, argc);
+               "%s (from C file %s) limits RPSCONF_MAX_PROG_ARGS to %d\n"
+               "... but %d are given! Edit it and recompile!\n",
+               argv[0], __FILE__, RPSCONF_MAX_PROG_ARGS, argc);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1511,56 +1511,56 @@ main (int argc, char **argv)
     {
       char *curarg = argv[i];
       if (!curarg)
-	break;
+        break;
       int curlen = strlen (curarg);
       if (curlen == 0)
-	continue;
+        continue;
       if (curlen >= 2 && curarg[0] == '-')
-	{
-	  if (curarg[1] == 'I' || curarg[1] == 'D' || curarg[1] == 'U')
-	    {
-	      rpsconf_preprocessor_args[rpsconf_preprocessor_argcount++] =
-		curarg;
-	      continue;
-	    };
-	  if (curarg[1] == 'O' || curarg[1] == 'g')
-	    {
-	      rpsconf_compiler_args[rpsconf_compiler_argcount++] = curarg;
-	      continue;
-	    };
-	  /// -std=gnu77 affects compiler and preprocessor
-	  if (!strncmp (curarg, "-std=", 5))
-	    {
-	      rpsconf_preprocessor_args[rpsconf_preprocessor_argcount++] =
-		curarg;
-	      rpsconf_compiler_args[rpsconf_compiler_argcount++] = curarg;
-	      continue;
-	    }
-	  /// -fPIC and -fPIE affects compiler and linker
-	  /// -flto and -fwhopr affects compiler and linker
-	  if (!strcmp (curarg, "-flto") || !strcmp (curarg, "-fwhopr")
-	      || !strcmp (curarg, "-fPIC") || !strcmp (curarg, "-fPIE"))
-	    {
-	      rpsconf_compiler_args[rpsconf_compiler_argcount++] = curarg;
-	      rpsconf_linker_args[rpsconf_linker_argcount++] = curarg;
-	      continue;
-	    }
-	}
+        {
+          if (curarg[1] == 'I' || curarg[1] == 'D' || curarg[1] == 'U')
+            {
+              rpsconf_preprocessor_args[rpsconf_preprocessor_argcount++] =
+                curarg;
+              continue;
+            };
+          if (curarg[1] == 'O' || curarg[1] == 'g')
+            {
+              rpsconf_compiler_args[rpsconf_compiler_argcount++] = curarg;
+              continue;
+            };
+          /// -std=gnu77 affects compiler and preprocessor
+          if (!strncmp (curarg, "-std=", 5))
+            {
+              rpsconf_preprocessor_args[rpsconf_preprocessor_argcount++] =
+                curarg;
+              rpsconf_compiler_args[rpsconf_compiler_argcount++] = curarg;
+              continue;
+            }
+          /// -fPIC and -fPIE affects compiler and linker
+          /// -flto and -fwhopr affects compiler and linker
+          if (!strcmp (curarg, "-flto") || !strcmp (curarg, "-fwhopr")
+              || !strcmp (curarg, "-fPIC") || !strcmp (curarg, "-fPIE"))
+            {
+              rpsconf_compiler_args[rpsconf_compiler_argcount++] = curarg;
+              rpsconf_linker_args[rpsconf_linker_argcount++] = curarg;
+              continue;
+            }
+        }
       if (!isalpha (curarg[0]))
-	break;
+        break;
       char *pc = NULL;
       for (pc = curarg; *pc && (isalnum (*pc) || *pc == '_'); pc++);
       if (*pc == '=')
-	putenv (curarg);
+        putenv (curarg);
     };
   char *cc = getenv ("CC");
   if (!cc)
     {
       if (!access ("/usr/bin/gcc", F_OK))
-	cc = rpsconf_defaulted_readline ("C compiler, preferably gcc:",
-					 "/usr/bin/gcc");
+        cc = rpsconf_defaulted_readline ("C compiler, preferably gcc:",
+                                         "/usr/bin/gcc");
       else
-	cc = rpsconf_readline ("C compiler, preferably gcc:");
+        cc = rpsconf_readline ("C compiler, preferably gcc:");
     };
   if (!cc)
     cc = "/usr/bin/gcc";
@@ -1572,10 +1572,10 @@ main (int argc, char **argv)
   if (!cxx)
     {
       if (!access ("/usr/bin/g++", F_OK))
-	cxx = rpsconf_defaulted_readline ("C++ compiler, preferably g++:",
-					  "/usr/bin/g++");
+        cxx = rpsconf_defaulted_readline ("C++ compiler, preferably g++:",
+                                          "/usr/bin/g++");
       else
-	cxx = rpsconf_readline ("C++ compiler:");
+        cxx = rpsconf_readline ("C++ compiler:");
     };
   rpsconf_try_then_set_cxx_compiler (cxx);
   rpsconf_try_cxx_compiler_for_libgccjit (cc);
@@ -1590,52 +1590,52 @@ main (int argc, char **argv)
   if (rpsconf_builder_person)
     {
       rpsconf_builder_email =
-	rpsconf_readline
-	("email of person building (e.g. alan.turing@princeton.edu):");
+        rpsconf_readline
+        ("email of person building (e.g. alan.turing@princeton.edu):");
       bool goodemail = rpsconf_builder_email != NULL
-	&& isalnum (rpsconf_builder_email[0]);
+                       && isalnum (rpsconf_builder_email[0]);
       const char *pc = rpsconf_builder_email;
       for (pc = rpsconf_builder_email; *pc && goodemail && *pc != '@'; pc++)
-	{
-	  if (!isalnum (*pc) && *pc != '+' && *pc != '-' && *pc != '_'
-	      && *pc != '.')
-	    goodemail = false;
-	};
+        {
+          if (!isalnum (*pc) && *pc != '+' && *pc != '-' && *pc != '_'
+              && *pc != '.')
+            goodemail = false;
+        };
       if (goodemail && *pc == '@')
-	pc++;
+        pc++;
       else
-	goodemail = false;
+        goodemail = false;
       int nbdots = 0;
       for (pc = pc;
-	   *pc && goodemail && (isalnum (*pc) || strchr ("+-_.:", *pc)); pc++)
-	{
-	  if (*pc == '.')
-	    nbdots++;
-	};
+           *pc && goodemail && (isalnum (*pc) || strchr ("+-_.:", *pc)); pc++)
+        {
+          if (*pc == '.')
+            nbdots++;
+        };
       if (nbdots == 0)
-	goodemail = false;
+        goodemail = false;
       if (!goodemail)
-	{
-	  free ((void *) rpsconf_builder_email);
-	  rpsconf_builder_email = NULL;
-	}
+        {
+          free ((void *) rpsconf_builder_email);
+          rpsconf_builder_email = NULL;
+        }
     }
   errno = 0;
   rpsconf_gpp = getenv ("GPP");
   if (!rpsconf_gpp)
     {
       puts
-	("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
+      ("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
       rpsconf_gpp = rpsconf_readline ("Generic Preprocessor full path:");
       if (access (rpsconf_gpp, X_OK))
-	{
-	  fprintf (stderr,
-		   "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name, rpsconf_gpp ? rpsconf_gpp : "???",
-		   strerror (errno), __FILE__, __LINE__ - 3);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	}
+        {
+          fprintf (stderr,
+                   "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
+                   rpsconf_prog_name, rpsconf_gpp ? rpsconf_gpp : "???",
+                   strerror (errno), __FILE__, __LINE__ - 3);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        }
     };
   assert (rpsconf_gpp != NULL);
 
@@ -1644,40 +1644,40 @@ main (int argc, char **argv)
     {
       rpsconf_ninja_builder = rpsconf_readline ("ninja builder:");
       if (access (rpsconf_ninja_builder, X_OK))
-	{
-	  fprintf (stderr,
-		   "%s bad ninja builder %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name,
-		   rpsconf_ninja_builder ? rpsconf_ninja_builder : "???",
-		   strerror (errno), __FILE__, __LINE__ - 3);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	}
+        {
+          fprintf (stderr,
+                   "%s bad ninja builder %s (%s) [%s:%d]\n",
+                   rpsconf_prog_name,
+                   rpsconf_ninja_builder ? rpsconf_ninja_builder : "???",
+                   strerror (errno), __FILE__, __LINE__ - 3);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        }
     };
   rpsconf_fltk_config = getenv ("FLTKCONFIG");
   if (!rpsconf_fltk_config)
     {
       rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
       if (access (rpsconf_fltk_config, X_OK))
-	{
-	  fprintf (stderr,
-		   "%s bad FLTK configurator %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name,
-		   rpsconf_fltk_config ? rpsconf_fltk_config : "???",
-		   strerror (errno), __FILE__, __LINE__ - 3);
-	  rpsconf_failed = true;
-	  exit (EXIT_FAILURE);
-	}
+        {
+          fprintf (stderr,
+                   "%s bad FLTK configurator %s (%s) [%s:%d]\n",
+                   rpsconf_prog_name,
+                   rpsconf_fltk_config ? rpsconf_fltk_config : "???",
+                   strerror (errno), __FILE__, __LINE__ - 3);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        }
     }
   ///emit file config-refpersys.mk to be included by GNU make
   rpsconf_emit_configure_refpersys_mk ();
   fprintf (stderr,
-	   "[%s:%d] perhaps missing code to emit some refpersys-config.h....\n",
-	   __FILE__, __LINE__);
+           "[%s:%d] perhaps missing code to emit some refpersys-config.h....\n",
+           __FILE__, __LINE__);
   return 0;
 #warning TODO perhaps we should emit also a refpersys-config.h file
   /// that hypothetical refpersys-config.h would be included by refpersys.hh
-}				/* end main */
+}       /* end main */
 
 /*
  * Helper Functions
@@ -1754,8 +1754,8 @@ rpsconf_cc_test (const char *cc)
   if (!hwf)
     {
       fprintf (stderr,
-	       "%s failed to create temporary hello world C %s (%m)\n",
-	       rpsconf_prog_name, helloworldsrc);
+               "%s failed to create temporary hello world C %s (%m)\n",
+               rpsconf_prog_name, helloworldsrc);
     }
   fprintf (hwf, "/// temporary hello world C file %s\n", helloworldsrc);
   fprintf (hwf, "#include <stdio.h>\n");
@@ -1767,7 +1767,7 @@ rpsconf_cc_test (const char *cc)
   fprintf (hwf, "int main(int argc,char**argv) { say_hello(argv[0]); }\n");
   fclose (hwf);
   snprintf (helloworldbin, sizeof (helloworldbin), "./%s",
-	    basename (helloworldsrc));
+            basename (helloworldsrc));
   char *lastdot = strrchr (helloworldbin, '.');
   if (lastdot)
     strcpy (lastdot, ".bin");
@@ -1778,17 +1778,17 @@ rpsconf_cc_test (const char *cc)
     char helloworldcompile[512];
     memset (helloworldcompile, 0, sizeof (helloworldcompile));
     snprintf (helloworldcompile, sizeof (helloworldcompile),
-	      "%s -Wall -O %s -o %s", cc, helloworldsrc, helloworldbin);
+              "%s -Wall -O %s -o %s", cc, helloworldsrc, helloworldbin);
     printf ("trying %s\n", helloworldcompile);
     fflush (NULL);
     int e = system (helloworldcompile);
     if (e)
       {
-	fprintf (stderr,
-		 "%s failed to compile hello world in C : %s exited %d\n",
-		 rpsconf_prog_name, helloworldcompile, e);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr,
+                 "%s failed to compile hello world in C : %s exited %d\n",
+                 rpsconf_prog_name, helloworldcompile, e);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
     rpsconf_should_remove_file (helloworldsrc, __LINE__);
     rpsconf_should_remove_file (helloworldbin, __LINE__);
@@ -1797,45 +1797,45 @@ rpsconf_cc_test (const char *cc)
     FILE *pf = popen (helloworldbin, "r");
     if (!pf)
       {
-	fprintf (stderr, "%s failed to popen hello world in C %s (%m)\n",
-		 rpsconf_prog_name, helloworldbin);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s failed to popen hello world in C %s (%m)\n",
+                 rpsconf_prog_name, helloworldbin);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
     bool gothello = false;
     int nblin = 0;
     do
       {
-	char hwline[128];
-	memset (hwline, 0, sizeof (hwline));
-	if (!fgets (hwline, sizeof (hwline), pf))
-	  break;
-	nblin++;
-	if (strstr (hwline, "hello"))
-	  gothello = true;
+        char hwline[128];
+        memset (hwline, 0, sizeof (hwline));
+        if (!fgets (hwline, sizeof (hwline), pf))
+          break;
+        nblin++;
+        if (strstr (hwline, "hello"))
+          gothello = true;
       }
     while (!feof (pf));
     if (!gothello)
       {
-	fprintf (stderr,
-		 "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
-		 rpsconf_prog_name, helloworldbin, nblin, __FILE__,
-		 __LINE__ - 1);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr,
+                 "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
+                 rpsconf_prog_name, helloworldbin, nblin, __FILE__,
+                 __LINE__ - 1);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       }
     int ehw = pclose (pf);
     if (ehw)
       {
-	fprintf (stderr, "%s bad pclose %s (%d)\n",
-		 rpsconf_prog_name, helloworldbin, ehw);
-	rpsconf_failed = true;
-	exit (EXIT_FAILURE);
+        fprintf (stderr, "%s bad pclose %s (%d)\n",
+                 rpsconf_prog_name, helloworldbin, ehw);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
       };
     printf ("%s: tested hello world C compilation and run [%s:%d]\n",
-	    rpsconf_prog_name, __FILE__, __LINE__);
+            rpsconf_prog_name, __FILE__, __LINE__);
   }
-}				/* end rpsconf_cc_test */
+}       /* end rpsconf_cc_test */
 
 
 /*
@@ -1883,7 +1883,7 @@ rpsconf_cc_set (const char *cc)
   rpsconf_cc_test (cc);
   rpsconf_c_compiler = cc;
   return RPSCONF_OK;
-}				/* end rpsconf_cc_set */
+}       /* end rpsconf_cc_set */
 
 
 /****************
