@@ -236,9 +236,8 @@ refpersys: objects |  GNUmakefile
 
 plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile do-build-plugin do-scan-pkgconfig
 
-plugins_dir/%.so: plugins_dir/%.cc refpersys.hh build-plugin.sh |GNUmakefile do-build-plugin
+plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	@printf "RefPerSys-gnumaking plugin %s MAKE is %s RPS_MAKE is %s\n" "$@" "$(MAKE)" "$(RPS_MAKE)"
 	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
 
 
