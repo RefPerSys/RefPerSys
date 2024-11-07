@@ -150,6 +150,7 @@ bp_version (void)
             << "::" << rps_gnu_make_version  << std::endl;
   std::cerr << "\t ninja is " << rps_ninja_builder << "::" << rps_ninja_version << std::endl;
   std::cerr << "# run " << bp_progname  <<" --help for details." << std::endl;
+  std::cerr << "\t\t see refpersys.org and github.com/RefPerSys/RefPerSys" << std::endl;
 } // end bp_version
 
 
@@ -160,9 +161,14 @@ bp_usage(void)
 {
   std::cerr << "usage: " << bp_progname
             << " <plugin-source-code> ... -o <plugin-shared-object>" << std::endl;
-  std::cerr << '\t' << bp_progname << " --version #give also defaults" << std::endl;
-  std::cerr << '\t' << bp_progname << " --help" << std::endl;
-  std::cerr << "\t\t from " << __FILE__ << " git " << bp_git_id << std::endl;
+  std::cerr << '\t' << bp_progname << " --version | -V #give also defaults" << std::endl;
+  std::cerr << '\t' << bp_progname << " --verbose | -v #verbose execution" << std::endl;
+  std::cerr << '\t' << bp_progname << " --output=PLUGIN | -o PLUGIN #output generated .so" << std::endl;
+  std::cerr << '\t' << bp_progname << " --shell=CMD | -S CMD #run shell command" << std::endl;
+  std::cerr << '\t' << bp_progname << " --help | -h #this help" << std::endl;
+  std::cerr << '\t' << bp_progname << " --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script" << std::endl;
+  std::cerr << "\t\t #from " << __FILE__ << ':' << __LINE__ << " git " << bp_git_id << std::endl;
+  std::cerr << "\t\t see refpersys.org and github.com/RefPerSys/RefPerSys" << std::endl;
 } // end bp_usage
 
 
@@ -432,7 +438,7 @@ bp_prog_options(int argc, char**argv)
         case 'v':			// --verbose
           bp_verbose= true;
           break;
-        case 'o':
+        case 'o':		// --output=PLUGIN
           bp_plugin_binary = optarg;
           break;
         }
