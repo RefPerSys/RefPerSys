@@ -1437,18 +1437,20 @@ main (int argc, char** argv)
   if (argc>1 && !strcmp(argv[1], "--version"))
     versionwanted = true;
   //// if --locale is given then process it quicky
-  for (int lix=1; lix<argc; lix++) {
-    if (!strcmp(argv[lix], "--locale") && lix+1<argc)
-      mylocale = argv[lix+1];
-    else if (!strncmp(argv[lix], "--locale=", strlen("--locale=")))
-      mylocale = argv[lix]+strlen("--locale=");
-  }
-  if (mylocale) {
-    char*l = setlocale(LC_ALL, mylocale);
-    if (!l)
-      RPS_FATALOUT("failed to set locale to " << mylocale);
-    rps_stored_locale = l;
-  }
+  for (int lix=1; lix<argc; lix++)
+    {
+      if (!strcmp(argv[lix], "--locale") && lix+1<argc)
+        mylocale = argv[lix+1];
+      else if (!strncmp(argv[lix], "--locale=", strlen("--locale=")))
+        mylocale = argv[lix]+strlen("--locale=");
+    }
+  if (mylocale)
+    {
+      char*l = setlocale(LC_ALL, mylocale);
+      if (!l)
+        RPS_FATALOUT("failed to set locale to " << mylocale);
+      rps_stored_locale = l;
+    }
   else
     rps_stored_locale = setlocale(LC_ALL, nullptr);
   RPS_ASSERT(rps_stored_locale != nullptr);
