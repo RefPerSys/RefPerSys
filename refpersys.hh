@@ -139,7 +139,7 @@
 #include "generated/rpsdata.h"
 #endif //RPS_WITH_DATA
 
-extern "C" const char*const rps_locale(void);
+extern "C" const char* rps_locale(void);
 
 
 /// keep the debug options in alphabetical order

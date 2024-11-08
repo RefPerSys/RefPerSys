@@ -1419,7 +1419,7 @@ rps_exiting(void)
 
 static char*rps_stored_locale;
 
-const char*const
+const char*
 rps_locale(void)
 {
   return rps_stored_locale;
