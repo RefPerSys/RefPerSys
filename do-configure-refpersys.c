@@ -1225,6 +1225,10 @@ rpsconf_emit_configure_refpersys_mk (void)
       ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
        " $(REFPERSYS_LTO)\n", f);
     }
+
+
+  /* We don't seem to require either GPP or ninja build, so disabling for now */
+#if 0
   //// emit the generic preprocessor
   fprintf (f,
            "\n\n"
@@ -1235,6 +1239,8 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (rpsconf_ninja_builder, NULL));
   fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
            rpsconf_gitid);
+#endif /* 0 */
+
   fflush (f);
   if (rpsconf_builder_person)
     {
