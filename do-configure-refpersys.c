@@ -1235,11 +1235,11 @@ rpsconf_emit_configure_refpersys_mk (void)
            "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
   fprintf (f, "REFPERSYS_GPP=%s\n", realpath (rpsconf_gpp, NULL));
   /// emit the ninja builder
+#endif /* 0 */
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (rpsconf_ninja_builder, NULL));
   fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
            rpsconf_gitid);
-#endif /* 0 */
 
   fflush (f);
   if (rpsconf_builder_person)
