@@ -407,8 +407,6 @@ extern "C" const char rps_building_opersysname[]; /// with only letters, digits,
 extern "C" const char rps_building_machine[];
 extern "C" const char rps_building_machname[]; /// with only letters, digits, underscores
 
-/// the installed path of GNU lightning
-extern "C" const char rps_gnu_lightning_source_dir[];
 /// current utsname
 extern "C" struct utsname rps_utsname;
 
@@ -1545,7 +1543,7 @@ enum class Rps_Type : std::int16_t
   PaylFltkWindow = -24,
   PaylFltkThing = -23,
   PaylCplusplusGen = -22,    // for C++ code generation
-  PaylLightCodeGen = -21,    // for GNU lightning code generation
+  PaylGccjitCodeGen = -21,    // for GNU libgccjit code generation
   PaylEnviron = -20,         // for environments
   PaylObjMap = -19,          // for object maps
   PaylCppStream = -18,     // for transient C++ streams

@@ -54,6 +54,37 @@ const char rps_gccjit_shortgitid[]= RPS_SHORTGITID;
 extern "C" gccjit::context rps_gccjit_top_ctxt;
 gccjit::context rps_gccjit_top_ctxt;
 
+/// temporary payload for GNU libgccjit code generation:
+class Rps_PayloadGccjitCodeGen : public Rps_Payload
+{
+  friend Rps_PayloadGccjitCodeGen*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadGccjitCodeGen,Rps_ObjectZone*>(Rps_ObjectZone*);
+public:
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  inline Rps_PayloadGccjitCodeGen(Rps_ObjectZone*owner);
+  Rps_PayloadGccjitCodeGen(Rps_ObjectRef obr) :
+    Rps_PayloadGccjitCodeGen(obr?obr.optr():nullptr) {};
+  virtual const std::string payload_type_name(void) const
+  {
+    return "gccjitcode_generator";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+};				// end class Rps_PayloadGccjitCodeGen
+
+Rps_PayloadGccjitCodeGen::Rps_PayloadGccjitCodeGen(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylGccjitCodeGen,owner)
+{
+} // end of Rps_PayloadGccjitCodeGen::Rps_PayloadGccjitCodeGen
+
 void
 rps_gccjit_initialize(void)
 {
