@@ -318,11 +318,8 @@ extern "C" {
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"
 #endif /*RPS_USE_CURL*/
-
-  // GNU lightning on https://www.gnu.org/software/lightning/ for
-  // machine code generation
-
-#include "lightning.h"
+  
+// before November 2024 we used GNU lightning from https://www.gnu.org/software/lightning
 
 
 };
@@ -5297,7 +5294,6 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 //////////////// initial Read-Eval-Print-Loop using GNU readline
 
 extern "C" std::string rps_repl_version(void); // in repl_rps.cc
-extern "C" std::string rps_mlpack_get_version(void); // in machlearn_rps.cc
 
 /// Interpret from either a given input stream,
 /// or using readline if inp is null. In repl_rps.cc

@@ -672,7 +672,6 @@ rps_show_version(void)
 #if RPS_USE_CURL
             << " libCURL for web client: " << rps_curl_version() << std::endl
 #endif /*RPS_USE_CURL*/
-            << " mlpack for machine learning: " << rps_mlpack_get_version() << std::endl
             << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
             << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
             << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl

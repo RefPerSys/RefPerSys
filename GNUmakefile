@@ -90,7 +90,7 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
 ## libgccjit is https://gcc.gnu.org/onlinedocs/jit/ but not useful yet
 ## not using GNU lightning is from https://www.gnu.org/software/lightning/ (for machine code generation)
-REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
+REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace -lgmp
 ## TODO after june 2024, add the libgccjit...
 
 ### desired plugins (their basename under plugins_dir/)

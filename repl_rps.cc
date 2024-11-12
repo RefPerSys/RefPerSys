@@ -1766,7 +1766,6 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
   for (int cix=0; cix<nbcmd; cix++)
     {
       RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: " << cmdvec[cix]);
-      int count=0;
       char bufpath[64];
       memset (bufpath, 0, sizeof(bufpath));
       snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]", cix);

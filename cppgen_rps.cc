@@ -620,7 +620,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
   // TODO: we probably need a selector to send some message related to C++ declaration emission
   //
   // it could happen that the components number of the module is changing during the loop
-  for (int cix=0; cix<_f.obmodule->nb_components(&_); cix++)
+  for (int cix=0; cix<(int)_f.obmodule->nb_components(&_); cix++)
     {
       _f.obcomp = nullptr;
       std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
@@ -664,7 +664,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
   // TODO: we probably need a selector to send some message related to C++ definition emission
   //
   // It could happen that the components number of the module is changing during the loop
-  for (int cix=0; cix<_f.obmodule->nb_components(&_); cix++)
+  for (int cix=0; cix<(int)_f.obmodule->nb_components(&_); cix++)
     {
       _f.obcomp = nullptr;
       _f.vcomp = _f.obmodule->component_at(&_, cix, /*dontfail=*/true);
