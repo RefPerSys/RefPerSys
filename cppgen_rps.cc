@@ -765,9 +765,9 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     out << std::flush;
   });
   RPS_WARNOUT("incomplete rps_generate_cplusplus_code obmodule="
-	      << _f.obmodule << " generator=" << _f.obgenerator
-	      << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code"));
+              << _f.obmodule << " generator=" << _f.obgenerator
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code"));
   return false;
 } // end rps_generate_cplusplus_code
 
