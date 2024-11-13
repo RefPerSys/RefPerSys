@@ -113,6 +113,7 @@
 #include <pthread.h>
 #include <limits.h>
 #include <locale.h>
+#include <libintl.h> //// gettext(3) and friends
 #include <stdlib.h>
 #include <sys/poll.h>
 #include <sys/personality.h>
@@ -255,7 +256,7 @@ class Rps_PayloadTasklet;
 class Rps_PayloadUnixProcess;   // transient payload for forked processes
 class Rps_PayloadPopenedFile;   // transient payload for popened command
 class Rps_PayloadCppStream;     // transient payload for C++ streams
-class Rps_PayloadGccJit;  // transient payload for libgccjit
+class Rps_PayloadGccJit;  //  payload for libgccjit
 // code generation
 #if RPS_WITH_FLTK
 class Rps_PayloadFltkThing;
@@ -1543,7 +1544,7 @@ enum class Rps_Type : std::int16_t
   PaylFltkWindow = -24,
   PaylFltkThing = -23,
   PaylCplusplusGen = -22,    // for C++ code generation
-  PaylGccjitCodeGen = -21,    // for GNU libgccjit code generation
+  PaylGccjit = -21,    // for GNU libgccjit code generation
   PaylEnviron = -20,         // for environments
   PaylObjMap = -19,          // for object maps
   PaylCppStream = -18,     // for transient C++ streams
