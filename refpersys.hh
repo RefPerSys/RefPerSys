@@ -5326,10 +5326,10 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 //// true on successful code generation.
 ////................................................................
 
-/// approved on Whatsapp by Abishek Chakravarti on July, 24, 2023
-extern "C" bool rps_generate_lightning_code(Rps_CallFrame*callerframe,
-    Rps_ObjectRef obmodule,
-    Rps_Value genparamv=nullptr);
+/// GNU lightning approved on Whatsapp by Abishek Chakravarti on July,
+/// 24, 2023 but given that it is too difficult to compile we phase
+/// out GNU lightning and will use libgccjit (see gcc.gnu.org/onlinedocs/jit ...) instead.
+/// so no more Rps_generate_lightning_code
 extern "C" bool rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     Rps_ObjectRef obmodule,
     Rps_Value genparamv=nullptr);
