@@ -126,6 +126,7 @@ Rps_PayloadGccjit::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadGccjit::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
+  Json::Value jarr(Json::arrayValue);
   for (auto it: _gji_rpsobj2jit)
     {
       Rps_ObjectRef obr = it.first;
@@ -134,8 +135,11 @@ Rps_PayloadGccjit::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
       /// TODO: dump obr and add it somehow to jv
       if (job)
         {
+          jarr.append(job);
         }
     };
+  jv["payload"] = "gccjit"; // since rpsldpy_gccjit exists
+  jv["jitseq"] = jarr;
 #warning incomplete Rps_PayloadGccjit::dump_json_content
 } // end Rps_PayloadGccjit::dump_json_content
 
@@ -158,7 +162,9 @@ void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
                 << " spacid=" << spacid
                 << " lineno=" << lineno);
   auto paylgccj= obz->put_new_plain_payload<Rps_PayloadGccjit>();
+  Json::Value jseq = jv["jitseq"];
   RPS_ASSERT(paylgccj);
+  /// should iterate on jseq and create appropriate libgccjit data
 #warning incomplete rpsldpy_gccjit
 } // end of rpsldpy_gccjit
 
