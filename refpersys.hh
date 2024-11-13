@@ -319,7 +319,7 @@ extern "C" {
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"
 #endif /*RPS_USE_CURL*/
-  
+
 // before November 2024 we used GNU lightning from https://www.gnu.org/software/lightning
 
 
