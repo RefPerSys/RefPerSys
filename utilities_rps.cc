@@ -626,8 +626,14 @@ rps_show_version(void)
   memset (exepath, 0, sizeof(exepath));
   static char realexepath[PATH_MAX];
   memset (realexepath, 0, sizeof(realexepath));
-  readlink("/proc/self/exe", exepath, sizeof(exepath));
-  (void) realpath(exepath, realexepath);
+  {
+    ssize_t sz = readlink("/proc/self/exe", exepath, sizeof(exepath));
+    RPS_ASSERT(sz>0 && exepath[0]);
+  }
+  {
+    char*rp= realpath(exepath, realexepath);
+    RPS_ASSERT(rp != nullptr);
+  }
   std::cout << "RefPerSys "<< rps_get_major_version() << "."
             << rps_get_minor_version() //
             << ", an open source Artificial Intelligence system" << std::endl;
