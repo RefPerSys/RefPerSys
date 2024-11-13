@@ -54,9 +54,19 @@ const char rps_gccjit_shortgitid[]= RPS_SHORTGITID;
 extern "C" gccjit::context rps_gccjit_top_ctxt;
 gccjit::context rps_gccjit_top_ctxt;
 
-/// temporary payload for GNU libgccjit code generation:
+/// payload for GNU libgccjit code generation:
 class Rps_PayloadGccjit : public Rps_Payload
 {
+  /**
+   * This class should store the data to generate code (probably a
+   * dlopen-able plugin) from some libgccjit compatible and rather
+   * portable representation.
+   **/
+  gccjit::context _gji_ctxt;  // child context for code generation
+  /// We maintain a mapping between RefPerSys objects representing
+  /// code and the gccjit::object-s for them.
+  /// TODO: document the representation of GCCJIT code.
+  std::map<Rps_ObjectRef, gccjit::object> _gji_rpsobj2jit;
   friend Rps_PayloadGccjit*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadGccjit,Rps_ObjectZone*>(Rps_ObjectZone*);
 public:
@@ -64,8 +74,8 @@ public:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   inline Rps_PayloadGccjit(Rps_ObjectZone*owner);
- Rps_PayloadGccjit(Rps_ObjectRef obr) :
-   Rps_PayloadGccjit(obr?obr.optr():nullptr) {};
+  Rps_PayloadGccjit(Rps_ObjectRef obr) :
+    Rps_PayloadGccjit(obr?obr.optr():nullptr) {};
   virtual const std::string payload_type_name(void) const
   {
     return "gccjit";
@@ -79,10 +89,12 @@ public:
     return false;
   };
   virtual ~Rps_PayloadGccjit();
-};				// end classRps_PayloadGccjit
+};        // end classRps_PayloadGccjit
 
 Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
-  : Rps_Payload(Rps_Type::PaylGccjit,owner)
+  : Rps_Payload(Rps_Type::PaylGccjit,owner), // is that thread-safe?
+    _gji_ctxt(rps_gccjit_top_ctxt),
+    _gji_rpsobj2jit()
 {
 #warning incomplete Rps_PayloadGccjit::Rps_PayloadGccjit
 } // end of Rps_PayloadGccjit::Rps_PayloadGccjit
@@ -90,23 +102,46 @@ Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
 void
 Rps_PayloadGccjit::gc_mark(Rps_GarbageCollector&gc) const
 {
+  for (auto it: _gji_rpsobj2jit)
+    {
+      Rps_ObjectRef obr = it.first;
+      RPS_ASSERT(obr);
+      obr->gc_mark(gc);
+    }
 #warning incomplete Rps_PayloadGccjit::gc_mark
 } // end Rps_PayloadGccjit::gc_mark
 
-void 
+void
 Rps_PayloadGccjit::dump_scan(Rps_Dumper*du) const
 {
+  for (auto it: _gji_rpsobj2jit)
+    {
+      Rps_ObjectRef obr = it.first;
+      RPS_ASSERT(obr);
+      rps_dump_scan_object(du, obr);
+    };
 #warning incomplete Rps_PayloadGccjit::dump_scan
 } // end Rps_PayloadGccjit::dump_scan
 
-void 
+void
 Rps_PayloadGccjit::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
+  for (auto it: _gji_rpsobj2jit)
+    {
+      Rps_ObjectRef obr = it.first;
+      RPS_ASSERT(obr);
+      Json::Value job = rps_dump_json_objectref(du, obr);
+      /// TODO: dump obr and add it somehow to jv
+      if (job)
+        {
+        }
+    };
 #warning incomplete Rps_PayloadGccjit::dump_json_content
 } // end Rps_PayloadGccjit::dump_json_content
 
 Rps_PayloadGccjit::~Rps_PayloadGccjit()
 {
+  _gji_rpsobj2jit.clear();
 } // end of Rps_PayloadGccjit::~Rps_PayloadGccjit
 
 /// loading of Gccjit payload; see above
@@ -122,9 +157,12 @@ void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
                 << " jv=" << jv
                 << " spacid=" << spacid
                 << " lineno=" << lineno);
-  auto paylwebh = obz->put_new_plain_payload<Rps_PayloadGccjit>();
-  RPS_ASSERT(paylwebh);
-} // endf rpsldpy_gccjit
+  auto paylgccj= obz->put_new_plain_payload<Rps_PayloadGccjit>();
+  RPS_ASSERT(paylgccj);
+#warning incomplete rpsldpy_gccjit
+} // end of rpsldpy_gccjit
+
+
 void
 rps_gccjit_initialize(void)
 {
