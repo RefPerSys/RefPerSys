@@ -826,6 +826,9 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
 void
 Rps_Loader::load_all_state_files(void)
 {
+  const char*thisprog = (rps_progexe[0]?rps_progexe
+                         :rps_progname?rps_progname:"*RefPerSys*");
+  RPS_ASSERT(thisprog != nullptr);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files start this@" << (void*)this
                 << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
   int spacecnt1 = 0, spacecnt2 = 0;
@@ -833,14 +836,13 @@ Rps_Loader::load_all_state_files(void)
   first_pass_space(initialspaceid);
   spacecnt1++;
   initialize_root_objects();
-  int todocount = 0;
   for (Rps_Id spacid: ld_spaceset)
     {
       if (spacid != initialspaceid)
         first_pass_space(spacid);
       spacecnt1++;
     }
-  RPS_INFORMOUT("loaded " << spacecnt1 << " space files in first pass");
+  RPS_INFORM("%s loaded %d space files in first pass", thisprog, spacecnt1);
   initialize_constant_objects();
   /// conceptually, the second pass might be done in parallel
   /// (multi-threaded, with different threads working on different
@@ -857,11 +859,19 @@ Rps_Loader::load_all_state_files(void)
       // we sleep a tiny bit, so elapsed time is growing...
       usleep(20);
     };
-  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@" << (void*)this);
-  RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
-                << ld_mapobjects.size() << " objects and " << todocount << " todos" << std::endl);
-  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@" << (void*)this
-                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@"
+                << (void*)this);
+  RPS_INFORM("%s loaded %d space files in first pass,\n"
+             " %d space files in second passes,\n"
+             " %ld objects from directory %s,\n"
+             " in %.2f real sec (pid %ld on host %s git %s)",
+             thisprog,
+             spacecnt1, spacecnt2, (long)ld_mapobjects.size(),
+             ld_topdir.c_str(), rps_wallclock_real_time() - ld_startclock,
+             (long)getpid(), rps_hostname(), rps_shortgitid);
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@"
+                << (void*)this << std::endl
+                << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
 } // end Rps_Loader::load_all_state_files
 
 
