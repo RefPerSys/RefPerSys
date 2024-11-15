@@ -54,9 +54,16 @@ const char rps_gccjit_shortgitid[]= RPS_SHORTGITID;
 extern "C" gccjit::context rps_gccjit_top_ctxt;
 gccjit::context rps_gccjit_top_ctxt;
 
+extern "C" void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
+
+
+
 /// payload for GNU libgccjit code generation:
 class Rps_PayloadGccjit : public Rps_Payload
 {
+  friend void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld,
+                             const Json::Value& jv, Rps_Id spacid,
+                             unsigned lineno);
   /**
    * This class should store the data to generate code (probably a
    * dlopen-able plugin) from some libgccjit compatible and rather
@@ -89,6 +96,8 @@ public:
     return false;
   };
   virtual ~Rps_PayloadGccjit();
+protected:
+  void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
 };        // end classRps_PayloadGccjit
 
 Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
@@ -98,6 +107,18 @@ Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
 {
 #warning incomplete Rps_PayloadGccjit::Rps_PayloadGccjit
 } // end of Rps_PayloadGccjit::Rps_PayloadGccjit
+
+
+/* Should transform a JSON value into data relevant to GCCJIT and
+   create if needed the necessary code. */
+void
+Rps_PayloadGccjit::load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq)
+{
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::load_jit_json spacid="
+               << spacid << " lineno=" << lineno << " jseq=" << jseq);
+#warning unimplemented load_jit_json
+}
+
 
 void
 Rps_PayloadGccjit::gc_mark(Rps_GarbageCollector&gc) const
@@ -165,6 +186,23 @@ void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   Json::Value jseq = jv["jitseq"];
   RPS_ASSERT(paylgccj);
   /// should iterate on jseq and create appropriate libgccjit data
+  if (jseq.type() == Json::arrayValue)
+    {
+      unsigned seqsiz = jseq.size();
+      for (unsigned ix=0; ix<seqsiz; ix++)
+        {
+          Json::Value jvcurelem = jseq[ix];
+          paylgccj->load_jit_json(ld,spacid, lineno, jvcurelem);
+        }
+    }
+  else
+    {
+      char spacename[24];
+      memset (spacename, 0, sizeof(spacename));
+      spacid.to_cbuf24(spacename);
+      RPS_WARN("bad jitseq JSON attribute for gccjit data in space %s:%d",
+               spacename, lineno);
+    }
 #warning incomplete rpsldpy_gccjit
 } // end of rpsldpy_gccjit
 
