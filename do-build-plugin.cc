@@ -38,6 +38,8 @@
 #include <unistd.h>
 #include <getopt.h>
 
+#warning perhaps replace pkg-config with https://github.com/pkgconf/pkgconf
+
 extern "C" {
 #include "__timestamp.c"
   const char bp_git_id[]=GIT_ID;
