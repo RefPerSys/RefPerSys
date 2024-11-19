@@ -29,16 +29,21 @@
 #%    You should have received a copy of the GNU General Public License
 #%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if git status | grep -q "nothing to commit" ; then
-    dirty=""
-else
-    dirty="+"
-fi
+main()
+{
+	if git status | grep -q "nothing to commit" ; then
+    		dirty=""
+	else
+    		dirty="+"
+	fi
 
-if [ "$1" = "-s" ]; then
-    printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') "${dirty}"
-else
-    (git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
-     echo "${dirty}")
-fi
+	if [ "$1" = "-s" ]; then
+    		printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') "${dirty}"
+	else
+    		(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
+     		echo "${dirty}")
+	fi
+}
+
+main "$@"
 
