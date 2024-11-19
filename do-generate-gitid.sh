@@ -29,6 +29,13 @@
 #%    You should have received a copy of the GNU General Public License
 #%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+getid()
+{
+    	gitid="$(git log --format=oneline -q -1 \
+		| cut '-d ' -f 1 \
+		| tr -d '\n')"
+}
+
 isdirty()
 {
 	if git status | grep -q "nothing to commit" ; then
@@ -38,26 +45,20 @@ isdirty()
 	fi
 }
 
-verbose()
+output()
 {
-    	(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
-     	echo "${dirty}")
-}
-
-short()
-{
-    	printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') "${dirty}"
+	if [ "$1" = "-s" ]; then
+    		printf "%.12s%s\n" "${gitid}" "${dirty}"
+	else
+    		printf "%s%s\n" "${gitid}" "${dirty}"
+	fi
 }
 
 main()
 {
+	getid
 	isdirty
-
-	if [ "$1" = "-s" ]; then
-		short
-	else
-		verbose
-	fi
+	output "$@"
 }
 
 main "$@"
