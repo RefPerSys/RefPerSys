@@ -29,6 +29,16 @@
 #%    You should have received a copy of the GNU General Public License
 #%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+usage()
+{
+	echo "usage: ./do-generate-gitid.sh [-hlsv]"
+	echo "options:"
+	echo "  -h  show usage"
+	echo "  -l  show license" 
+	echo "  -s  print short git ID" 
+	echo "  -v  show version" 
+}
+
 version()
 {
 	maj="$(grep -R RPS_MAJOR_VERSION . \
@@ -72,6 +82,7 @@ main()
 	getid
 	isdirty
 	output "$@"
+	usage
 }
 
 main "$@"
