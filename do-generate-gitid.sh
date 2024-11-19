@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+
 #% SPDX-License-Identifier: GPL-3.0-or-later
 # RefPerSys file do-generate-gitid.sh - see refpersys.org
 ###
@@ -27,15 +28,17 @@
 #%
 #%    You should have received a copy of the GNU General Public License
 #%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-if git status|grep -q 'nothing to commit' ; then
-    endgitid=''
+
+if git status | grep -q "nothing to commit" ; then
+    dirty=""
 else
-    endgitid='+'
+    dirty="+"
 fi
 
 if [ "$1" = "-s" ]; then
-    printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') $endgitid     
+    printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') "${dirty}"
 else
     (git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
-     echo $endgitid)
+     echo "${dirty}")
 fi
+
