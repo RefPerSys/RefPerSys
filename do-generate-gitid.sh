@@ -29,6 +29,12 @@
 #%    You should have received a copy of the GNU General Public License
 #%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+license()
+{
+	cat ./COPYING-SHORT
+	exit 0
+}
+
 usage()
 {
 	echo "usage: ./do-generate-gitid.sh [-hlsv]"
@@ -37,11 +43,6 @@ usage()
 	echo "  -l  show license" 
 	echo "  -s  print short git ID" 
 	echo "  -v  show version" 
-}
-
-license()
-{
-	cat ./COPYING-SHORT
 }
 
 version()
@@ -55,6 +56,22 @@ version()
 		| cut -d ' ' -f 3)"
 
 	echo "v${maj}.${min}"
+	exit 0
+}
+
+opt()
+{
+	isshort=0
+
+	while getopts "hlsv" flag ; do
+		case ${flag} in
+			h) usage ; exit 0 ;;
+			l) license ;;
+			s) isshort=1 ;;
+			v) version ;;
+			*) usage ; exit 1 ;;
+		esac
+	done
 }
 
 getid()
@@ -75,7 +92,10 @@ isdirty()
 
 output()
 {
-	if [ "$1" = "-s" ]; then
+	getid
+	isdirty
+
+	if [ $isshort -eq 1 ]; then
     		printf "%.12s%s\n" "${gitid}" "${dirty}"
 	else
     		printf "%s%s\n" "${gitid}" "${dirty}"
@@ -84,10 +104,8 @@ output()
 
 main()
 {
-	getid
-	isdirty
-	output "$@"
-	license
+	opt "$@"
+	output
 }
 
 main "$@"
