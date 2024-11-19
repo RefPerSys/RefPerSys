@@ -29,6 +29,19 @@
 #%    You should have received a copy of the GNU General Public License
 #%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+version()
+{
+	maj="$(grep -R RPS_MAJOR_VERSION . \
+		| head -n 1 \
+		| cut -d ' ' -f 3)"
+
+	min="$(grep -R RPS_MINOR_VERSION . \
+		| head -n 1 \
+		| cut -d ' ' -f 3)"
+
+	echo "v${maj}.${min}"
+}
+
 getid()
 {
     	gitid="$(git log --format=oneline -q -1 \
