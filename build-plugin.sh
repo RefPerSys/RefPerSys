@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/dash
 # file build-plugin.sh in RefPerSys - see http://refpersys.org/
 # Author(s):
 #      Basile Starynkevitch <basile@starynkevitch.net>
