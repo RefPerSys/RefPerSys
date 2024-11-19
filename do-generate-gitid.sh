@@ -39,6 +39,11 @@ usage()
 	echo "  -v  show version" 
 }
 
+license()
+{
+	cat ./COPYING-SHORT
+}
+
 version()
 {
 	maj="$(grep -R RPS_MAJOR_VERSION . \
@@ -82,7 +87,7 @@ main()
 	getid
 	isdirty
 	output "$@"
-	usage
+	license
 }
 
 main "$@"
