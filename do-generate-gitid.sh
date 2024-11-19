@@ -29,19 +29,34 @@
 #%    You should have received a copy of the GNU General Public License
 #%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-main()
+isdirty()
 {
 	if git status | grep -q "nothing to commit" ; then
     		dirty=""
 	else
     		dirty="+"
 	fi
+}
+
+verbose()
+{
+    	(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
+     	echo "${dirty}")
+}
+
+short()
+{
+    	printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') "${dirty}"
+}
+
+main()
+{
+	isdirty
 
 	if [ "$1" = "-s" ]; then
-    		printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') "${dirty}"
+		short
 	else
-    		(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
-     		echo "${dirty}")
+		verbose
 	fi
 }
 
