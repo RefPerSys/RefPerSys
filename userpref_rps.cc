@@ -94,4 +94,7 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   /// see also file etc/user-preferences-refpersys.txt as example
 } // end rps_parse_user_preferences
 
+#warning perhaps consider using https://github.com/benhoyt/inih for user preferences
+/// TODO: look into https://github.com/OSSystems/inih
+
 ////// end of file userpref_rps.cc
