@@ -27,7 +27,8 @@ since commit 559ea329f46a (2024, Nov, 20).
 
 [HorizonEurope](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/programmes/horizon)
 or [ITEA](https://itea4.org/) consortia interested by
-[RefPerSys](http://refpersys.org/) are welcome to contact us.
+[RefPerSys](http://refpersys.org/) are welcome to contact us. Likewise for students or academics or passionate open source developers 
+wanting to contribute.
 
 ## A research project
 
@@ -55,7 +56,8 @@ We absolutely want to avoid any
 Don't expect anything useful from RefPerSys before at least 2024. But
 you could have fun sharing our ideas and experimenting yours.
 
-A rewrite of RefPerSys in C was attempted on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c).
+A rewrite of RefPerSys in C was attempted on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c) but is abandonned 
+in commit 559ea329f46a28 (nov. 2024).
 
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
@@ -123,8 +125,7 @@ intelligence](https://en.wikipedia.org/wiki/Artificial_intelligence)
 goals) and [open source](https://en.wikipedia.org/wiki/Open_source)
 please mention them to [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) (France) by email to
-`basile@starynkevitch.net` (personal email) or
-`basile.starynkevitch@cea.fr` (professional email).
+`basile@starynkevitch.net` (personal email) or by snail mail, e.g. postcards are also welcome.
 
 ## persistent values
 
