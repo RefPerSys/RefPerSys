@@ -435,6 +435,8 @@ bp_prog_options(int argc, char**argv)
   do
     {
       opt = getopt_long(argc, argv, "Vhvo:N:S:", bp_options, &ix);
+      if (ix >= argc)
+	break;
       switch (opt)
         {
         case 'V':       // --version
@@ -494,9 +496,9 @@ bp_prog_options(int argc, char**argv)
           fflush(nullptr);
         }
         break;
-        }
+        } // end switch opt
     }
-  while (opt);
+  while (opt > 0 && ix < argc);
   fflush(nullptr);
   asm volatile ("nop; nop");
   while (optind < argc)
@@ -549,11 +551,16 @@ main(int argc, char**argv)
     {
       bp_version();
       return 0;
-    };
-  if (argc>1 && !strcmp(argv[1], "--help"))
+    }
+  else if (argc>1 && !strcmp(argv[1], "--help"))
     {
       bp_usage();
       return 0;
+    }
+  else if (argc>1 &&
+	   (!strcmp(argv[1], "--verbose") || !strcmp(argv[1], "-v")))
+    {
+      bp_verbose = true;
     };
   bp_prog_options(argc, argv);
   for (std::string cursrc: bp_vect_cpp_sources)
