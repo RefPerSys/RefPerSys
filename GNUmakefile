@@ -33,8 +33,8 @@
 ## tell GNU make to export all variables by default
 export
 
-RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
-RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
+RPS_GIT_ID:= $(shell ./rps-generate-gitid.sh)
+RPS_SHORTGIT_ID:= $(shell ./rps-generate-gitid.sh -s)
 RPS_MAKE:= $(MAKE)
 RPS_BISON := /usr/bin/bison
 RPS_HOST := $(shell /bin/hostname -f)
@@ -141,8 +141,8 @@ config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
 	./do-configure-refpersys
 	$(MAKE) _scanned-pkgconfig.mk
 
-do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
-	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+do-configure-refpersys: do-configure-refpersys.c |GNUmakefile rps-generate-gitid.sh
+	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               -DRPSCONF_OPERSYS=\"$(RPS_OPERSYS)\" \
               -DRPSCONF_ARCH=\"$(RPS_ARCH)\" \
               -DRPSCONF_HOST=\"$(RPS_HOST)\" \
@@ -152,12 +152,12 @@ do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.
 ## if GNU ncurses library is unavailable add
 ## -DRPSCONF_WITHOUT_NCURSES above and remove the -lncurses above
 
-do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
-	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile rps-generate-gitid.sh
+	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@
 
 do-build-plugin: do-build-plugin.cc __timestamp.c
-	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $(CFLAGS) -g $^ -o $@
+	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $(CFLAGS) -g $^ -o $@
 
 
 
@@ -198,7 +198,7 @@ __timestamp.c: do-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh generat
 	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./do-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
-	$(CC) -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
+	$(CC) -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
 
 #was
 #refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
@@ -275,7 +275,7 @@ else
 	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
 	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
-	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
+	        "$$(git config --get user.email)" "$$(./rps-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
 	if [ -x $$HOME/bin/push-refpersys ]; then $$HOME/bin/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); fi
 	$(SYNC)
