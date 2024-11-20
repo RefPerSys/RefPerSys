@@ -224,6 +224,24 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Forcibly disable Adress Space Layout Randomization. Might not work.\n", //
     /*group:*/0 ///
   },
+  /* ======= display the full git id ======= */
+  {/*name:*/ "full-git", ///
+    /*key:*/ RPSPROGOPT_FULL_GIT, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Output just the full gitid of the binary\n"
+    " (suffixed by + if locally changed)\n", //
+    /*group:*/0 ///
+  },
+  /* ======= display the short suffixed git id ======= */
+  {/*name:*/ "short-git", ///
+    /*key:*/ RPSPROGOPT_SHORT_GIT, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Output just the short gitid of the binary\n"
+    " (suffixed by + if locally changed)\n", //
+    /*group:*/0 ///
+  },
   /* ======= without quick tests ======= */
   {/*name:*/ "no-quick-tests", ///
     /*key:*/ RPSPROGOPT_NO_QUICK_TESTS, ///
