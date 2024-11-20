@@ -3014,8 +3014,12 @@ public:
   virtual void display(std::ostream&out) const;
 };                                                            // end Rps_StringTokenSource
 
+class Rps_MemoryFileTokenSource;
+extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
+
 class Rps_MemoryFileTokenSource : public Rps_TokenSource
 {
+  friend void  rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
   const std::string toksrcmfil_path;
   const char*toksrcmfil_start; // page-aligned, in memory
   const char*toksrcmfil_line;  // pointer to start of current line

@@ -32,8 +32,15 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG INIReader
+//@@PKGCONFIG inih
+
 #include "refpersys.hh"
 
+/// from /github.com/benhoyt/inih or /github.com/OSSystems/inih
+/// packaged as libinih-dev & libinih1
+#include "INIReader.h"
 
 extern "C" const char rps_userpref_gitid[];
 const char rps_userpref_gitid[]= RPS_GITID;
@@ -90,7 +97,10 @@ void
 rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
 {
   RPS_ASSERT(mts);
+  RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_parse_user_preferences
+  RPS_FATALOUT("unimplemented rps_parse_user_preferences from "
+	       << mts->path());
   /// see also file etc/user-preferences-refpersys.txt as example
 } // end rps_parse_user_preferences
 
