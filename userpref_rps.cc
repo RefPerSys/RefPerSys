@@ -99,6 +99,11 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   RPS_ASSERT(mts);
   RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_parse_user_preferences
+  INIReader ird(mts->path());
+  if (int pe = ird.ParseError()) {
+    RPS_FATALOUT("failed to parse user preference "
+		 << mts->path() << ":" << pe);
+  }
   RPS_FATALOUT("unimplemented rps_parse_user_preferences from "
 	       << mts->path());
   /// see also file etc/user-preferences-refpersys.txt as example
