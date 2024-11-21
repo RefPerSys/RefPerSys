@@ -27,6 +27,14 @@
 ##    
 ##
 ##
+if [ -z $GPP ]; then
+    GPP=$(which gpp)
+    if [ -z $GPP ]; then
+	printf "%s missing gpp\n" $0 2>&1
+	exit 1
+    fi
+    export GPP
+fi
 printf "/// invocation: %s %s in %s\n" $0 "$*" "$(realpath $(pwd))"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
