@@ -33,7 +33,7 @@
 
 #include "refpersys.hh"
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
 //@@PKGCONFIG glib-2.0

@@ -1,4 +1,4 @@
-/// file do-scan-pkgconfig.c in refpersys.org
+/// file do-scan-refpersys-pkgconfig.c in refpersys.org
 /// SPDX-License-Identifier: GPL-3.0-or-later
 ///
 /// Description:
@@ -325,4 +325,4 @@ main (int argc, char **argv)
 }       /* end function main */
 
 
-/// end of file do-scan-pkgconfig.c
+/// end of file do-scan-refpersys-pkgconfig.c

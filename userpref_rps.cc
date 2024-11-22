@@ -32,7 +32,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG INIReader
 //@@PKGCONFIG inih
 

@@ -137,7 +137,7 @@ lto-refpersys:
                $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
-config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
+config: do-configure-refpersys do-scan-refpersys-pkgconfig GNUmakefile
 	./do-configure-refpersys
 	$(MAKE) _scanned-pkgconfig.mk
 
@@ -152,7 +152,7 @@ do-configure-refpersys: do-configure-refpersys.c |GNUmakefile rps-generate-gitid
 ## if GNU ncurses library is unavailable add
 ## -DRPSCONF_WITHOUT_NCURSES above and remove the -lncurses above
 
-do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile rps-generate-gitid.sh
+do-scan-refpersys-pkgconfig: do-scan-refpersys-pkgconfig.c |GNUmakefile rps-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@
 
@@ -163,7 +163,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
-	$(RM) do-scan-pkgconfig do-configure-refpersys do-build-refpersys-plugin 
+	$(RM) do-scan-refpersys-pkgconfig do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
 	$(RM) *.gch
@@ -184,14 +184,14 @@ clean-plugins:
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
 	$(RM) __*.mkdep Make-dependencies/__*.mkdep
-	$(RM) do-scan-pkgconfig
+	$(RM) do-scan-refpersys-pkgconfig
 
 -include _scanned-pkgconfig.mk
 
 -include $(wildcard Make-dependencies/__*.mkdep)
 
-_scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
-	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
+_scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-refpersys-pkgconfig
+	./do-scan-refpersys-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
 __timestamp.c: do-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
 	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)" GPP is "$(REFPERSYS_GPP)" and "$(GPP)"
@@ -234,7 +234,7 @@ refpersys: objects |  GNUmakefile
 
 %.ii: %.cc | refpersys.hh GNUmakefile
 
-plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile do-build-refpersys-plugin do-scan-pkgconfig
+plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
@@ -392,7 +392,7 @@ print-plugin-settings:
 
 indent:
 	$(ASTYLE) $(ASTYLEFLAGS) do-configure-refpersys.c
-	$(ASTYLE) $(ASTYLEFLAGS) do-scan-pkgconfig.c
+	$(ASTYLE) $(ASTYLEFLAGS) do-scan-refpersys-pkgconfig.c
 	$(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
 	$(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
 	$(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh

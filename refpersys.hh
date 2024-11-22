@@ -335,7 +335,7 @@ extern "C" {
 
 
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp
 // JsonCPP https://github.com/open-source-parsers/jsoncpp
 #include "json/json.h"

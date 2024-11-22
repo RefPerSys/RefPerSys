@@ -34,7 +34,7 @@
 #include "refpersys.hh"
 
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG curlpp
 
 #include <curlpp/cURLpp.hpp>

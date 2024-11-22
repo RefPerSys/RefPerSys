@@ -49,7 +49,7 @@ extern "C" const char rps_dump_shortgitid[];
 const char rps_dump_shortgitid[]= RPS_SHORTGITID;
 
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp
 
 std::string
