@@ -1,9 +1,14 @@
 ## refpersys.org file .gitignore
 ## SPDX-License-Identifier: GPL-3.0-or-later
 _*
+# utilities
 do-configure-refpersys
-do-scan-pkgconfig
+do-scan-refpersys-pkgconfig
+do-build-refpersys-plugin
+# generated binary
+lto-refpersys
 refpersys
+# temporary files (by make config)
 tmp_*
 *.o
 *.orig
@@ -17,4 +22,3 @@ generated/rpsdata.h
 doc/design-ideas/refpersys-design.out
 doc/design-ideas/refpersys-design.pdf
 doc/design-ideas/refpersys-design.aux
-lto-refpersys
