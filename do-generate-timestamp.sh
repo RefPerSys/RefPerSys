@@ -41,6 +41,10 @@ export LC_ALL=en_US.UTF-8
 export LC_TIME=en_US.UTF-8
 printf "// generated C file %s by %s -- DONT EDIT - see refpersys.org\n" $1 $0
 printf "// to restore %s from a  %%%%__timestamp.c%%%% file edit there lines with @REFPERSYS_HOME.\n" $1
+
+printf "// environment is:\n"
+printenv | /bin/sed 's:^://~ :'
+printf "\n\n"
 date +"const char rps_timestamp[]=\"%c\";%nconst unsigned long rps_timelong=%sL;"
 printf "const char rps_topdirectory[]=\"%s\";\n" $(realpath $(pwd))
 
