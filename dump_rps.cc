@@ -535,7 +535,7 @@ Rps_Dumper::scan_code_addr(const void*ad)
     {
       /// see GNUmakefile near its comment line containing:
       ///       # **generated binary modules.
-      /// and the do-generate-timestamp.sh script.
+      /// and the rps-generate-timestamp.sh script.
       snprintf(rpsmodfmt, sizeof(rpsmodfmt),
                "__rps_%s_%s_%%-mod.so",
                rps_building_machname, rps_building_opersysname);
