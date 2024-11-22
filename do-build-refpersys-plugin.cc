@@ -177,6 +177,8 @@ bp_usage(void)
   std::cerr << '\t' << bp_progname << " --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script" << std::endl;
   std::cerr << "\t\t #from " << __FILE__ << ':' << __LINE__ << " git " << bp_git_id << std::endl;
   std::cerr << "\t\t see refpersys.org and github.com/RefPerSys/RefPerSys" << std::endl;
+  std::cerr << "\t\t uses $RPSPLUGIN_CXXFLAGS and $RPSPLUGIN_LDFLAGS if provided"
+	    << std::endl;
 } // end bp_usage
 
 
@@ -387,16 +389,27 @@ bp_write_prologue_ninja(const char*njpath)
       fprintf(bp_ninja_file, "object_files =\n");
       bp_set_objects.insert(std::string(objbuf));
     }
-  fprintf(bp_ninja_file, "deps = gcc\n");
+  fprintf(bp_ninja_file, "#from %s:%d\n", __FILE__, __LINE__);
   fprintf(bp_ninja_file, "cxx = %s\n", rps_cxx_compiler_realpath);
   fprintf(bp_ninja_file, "cxxflags = -Wall -Wextra -I%s",
           rps_topdirectory);
+  {
+    const char*envcxx = getenv("RPSPLUGIN_CXXFLAGS");
+    if (envcxx)
+      fprintf(bp_ninja_file, " %s", envcxx);
+  }
   fprintf(bp_ninja_file, " $rps_cxx_compiler_flags\n");
-  fprintf(bp_ninja_file, "ldflags = -rdynamic -L/usr/local/lib\n");
+  fprintf(bp_ninja_file, "ldflags = -rdynamic -L/usr/local/lib");
+  {
+    const char*envld = getenv("RPSPLUGIN_LDFLAGS");
+    if (envld)
+      fprintf(bp_ninja_file, " %s", envld);
+  }
   fprintf(bp_ninja_file, "\n\n"
           "rule R_CXX\n"
+          "  deps = gcc\n"
           "  depfile = Make-dependencies/__$base_in.mkd\n"
-          "  command = $cxx $cxxflags -c $in -MD -MF Make-dependencies/__$base_in.mkd -o $out\n");
+          "  command = $cxx $cxxflags -c $in -MD -MF Make-dependencies/__$base_in.mkd -o $out\n\n");
   fprintf(bp_ninja_file, "\n"
           "rule R_LINKSHARED\n"
           "  command = $cxx -rdynamic -shared $in -o $out\n");
