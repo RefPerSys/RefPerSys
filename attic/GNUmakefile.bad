@@ -481,7 +481,7 @@ __ltotimestamp.c: GNUmakefile do-generate-timestamp.sh
 	$(MV) --backup $@-tmp $@
 	$(SYNC)
 
-## for plugins, see build-plugin.sh
+## for plugins, see obsolete build-plugin.sh and do-build-refpersys-plugin.cc
 print-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" $(RPS_BUILD_CXX)
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(CXXFLAGS)"

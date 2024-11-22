@@ -916,13 +916,13 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       needchdir = cwdpath != std::string{};
       //// our compilation command is...
       std::string buildplugincmd{rps_topdirectory};
-      buildplugincmd += "/build-plugin.sh ";
+      buildplugincmd += "/do-build-refpersys-plugin ";
       buildplugincmd += tempcppfilename;
-      buildplugincmd += " ";
+      buildplugincmd += " -o ";
       buildplugincmd += tempsofilename;
       RPS_WARNOUT("rps_edit_run_cplusplus_code incomplete for C++ code in "<< tempcppfilename
                   << " should compile into " << tempsofilename
-                  << " using either make plugin or build-plugin.sh"
+                  << " using either make plugin or do-build-refpersys-plugin"
                   << std::endl
                   << " - from "
                   << Rps_ShowCallFrame(&_)

@@ -81,7 +81,7 @@ printf "//// end refpersys.toc\n"
 
 (echo -n 'const char rps_md5sum[]="' ; cat $(/bin/grep -v '/$' /tmp/refpersys-$$.toc ) | /usr/bin/md5sum | /usr/bin/tr -d '\n -'  ;  echo '";')
 
-(echo  'const char*const rps_files[]= {'; /bin/grep -v '/$' /tmp/refpersys-$$.toc  | /usr/bin/tr -s " \n"  | /usr/bin/sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
+(echo  'const char*const rps_files[]= {'; /bin/egrep -v '/$\|attic/' /tmp/refpersys-$$.toc  | /usr/bin/tr -s " \n"  | /usr/bin/sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
 (echo  'const char*const rps_subdirectories[]= {' ; /bin/grep  '/$' /tmp/refpersys-$$.toc | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
@@ -111,7 +111,7 @@ printf "const char rps_building_machine[]=\"%s\";\n" $(/bin/uname -m)
 
 printf "const char rps_building_machname[]=\"%s\";\n" $(/bin/uname -m | /bin/sed 's/[^A-Za-z0-9]/_/')
 
-printf "const char rps_plugin_builder[]=\"%s\";\n" $(realpath do-build-plugin)
+printf "const char rps_plugin_builder[]=\"%s\";\n" $(realpath do-build-refpersys-plugin)
 
 printf "const char rps_cxx_compiler_realpath[]=\"%s\";\n" $(realpath $CXX)
 

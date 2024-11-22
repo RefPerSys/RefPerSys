@@ -5327,7 +5327,7 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 ////................................................................
 //// Code generation routines (either C++ files later compiled as a
-//// dlopen-able plugin using the build-plugin.sh script, or in-memory
+//// dlopen-able plugin using the do-build-refpersys-plugin, or in-memory
 //// code generation of using GNU lightning).  Both routines return
 //// true on successful code generation.
 ////................................................................

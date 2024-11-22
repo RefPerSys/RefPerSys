@@ -2502,10 +2502,10 @@ Rps_Loader::parse_manifest_file(void)
                 {
                   std::string buildcmdstr;
                   buildcmdstr += rps_topdirectory;
-                  buildcmdstr += "/build-plugin.sh";
+                  buildcmdstr += "/do-build-refpersys-plugin";
                   buildcmdstr += " ";
                   buildcmdstr += pluginsrcpath;
-                  buildcmdstr += " ";
+                  buildcmdstr += " -o ";
                   buildcmdstr += pluginsopath;
                   RPS_INFORMOUT("before building plugin #" << ix << " using " << buildcmdstr);
                   fflush(nullptr);

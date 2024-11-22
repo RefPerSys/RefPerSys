@@ -12,7 +12,7 @@ than a few days or weeks of work.
 
 ## TODO List
 
-Improve both GNUmakefile and do-build-plugin.cc to have secondary
+Improve both GNUmakefile and do-build-refpersys-plugin.cc to have secondary
 plugin C++ files
 
 ### context

@@ -1,4 +1,4 @@
-/// file do-build-plugin.cc in refpersys.org
+/// file do-build-refpersys-plugin.cc in refpersys.org
 /// SPDX-License-Identifier: GPL-3.0-or-later
 ///
 /// Description:
@@ -9,10 +9,11 @@
 ///
 /// Purpose: build a plugin for RefPerSys
 ///
-/// Caveat: this program should run quickly and uses ninja.
+/// Caveat: this do-build-refpersys-plugin program should run quickly
+/// and uses ninja from ninja-build.org
 ///
-/// invocation: do-build-plugin <plugin-c++-source> -o <plugin-shared-object>
-/// e.g. do-build-plugin plugins_dir/foo.cc -o /tmp/foo.so
+/// invocation: do-build-refpersys-plugin <plugin-c++-source> -o <plugin-shared-object>
+/// e.g. do-build-refpersys-plugin plugins_dir/foo.cc -o /tmp/foo.so
 ///
 /// Author(s):
 ///      Basile Starynkevitch <basile@starynkevitch.net>
@@ -38,12 +39,17 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#warning perhaps replace pkg-config with https://github.com/pkgconf/pkgconf
+
+///
+#define BP_HEAD_LINES_THRESHOLD 512
+
+#warning perhaps replace pkg-config with "https://github.com/pkgconf/pkgconf"
 
 extern "C" {
 #include "__timestamp.c"
   const char bp_git_id[]=GIT_ID;
   const char* bp_progname;
+  const char** bp_envprog;
   std::vector<std::string> bp_vect_cpp_sources;
   const char* bp_plugin_binary;
   std::string bp_base;
@@ -334,12 +340,16 @@ bp_complete_ninja(FILE*f, const std::string& src)
       src.pop_back();
       src.append(".cc");
       fprintf(f, "\n"
-              "build %s : CC %s\n", ob.c_str(), src.c_str());
-      fprintf (f, "object_files =$object_files %s\n", ob.c_str());
+              "build %s : R_CXX %s\n", ob.c_str(), src.c_str());
+      fprintf(f, "  base_in=%s\n", basename(src.c_str()));
+      fprintf(f, "  base_out=%s\n", basename(ob.c_str()));
     }
   fprintf(f, "\n\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
-  fprintf(f, "build %s : LINKSHARED $object_files\n",
+  fprintf(f, "build %s : R_LINKSHARED",
           bp_plugin_binary);
+  for (std::string ob: bp_set_objects)
+    fprintf(f, " %s", ob.c_str());
+  fputc('\n', f);
   fflush (f);
 } // end bp_complete_ninja
 
@@ -379,15 +389,16 @@ bp_write_prologue_ninja(const char*njpath)
     }
   fprintf(bp_ninja_file, "deps = gcc\n");
   fprintf(bp_ninja_file, "cxx = %s\n", rps_cxx_compiler_realpath);
-  fprintf(bp_ninja_file, "cflags = -Wall -Wextra -I%s %s\n",
-          rps_topdirectory, rps_cxx_compiler_flags);
+  fprintf(bp_ninja_file, "cxxflags = -Wall -Wextra -I%s",
+          rps_topdirectory);
+  fprintf(bp_ninja_file, " $rps_cxx_compiler_flags\n");
   fprintf(bp_ninja_file, "ldflags = -rdynamic -L/usr/local/lib\n");
   fprintf(bp_ninja_file, "\n\n"
-          "rule CC\n"
-          "  depfile = $out.mkd\n"
-          "  command = $cxx $cflags -c $in -MD -MF $out.mkd -o $out\n");
+          "rule R_CXX\n"
+          "  depfile = Make-dependencies/__$base_in.mkd\n"
+          "  command = $cxx $cxxflags -c $in -MD -MF Make-dependencies/__$base_in.mkd -o $out\n");
   fprintf(bp_ninja_file, "\n"
-          "rule LINKSHARED\n"
+          "rule R_LINKSHARED\n"
           "  command = $cxx -rdynamic -shared $in -o $out\n");
   fprintf(bp_ninja_file, "\n""#end prologue from <%s:%d>\n\n",
           __FILE__, __LINE__-1);
@@ -536,12 +547,13 @@ bp_prog_options(int argc, char**argv)
 } // end bp_prog_options
 
 int
-main(int argc, char**argv)
+main(int argc, char**argv, const char**env)
 {
-#warning do-build-plugin should be much improved
+#warning do-build-refpersys-plugin should be much improved
   ///TODO to accept secondary source files for the plugin and more
   ///program options and improve GNUmakefile
   bp_progname = argv[0];
+  bp_envprog = env;
   if (argc<2)
     {
       bp_usage();
@@ -657,6 +669,6 @@ main(int argc, char**argv)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "make do-build-plugin" ;;
+ ** compile-command: "make do-build-refpersys-plugin" ;;
  ** End: ;;
  ****************/

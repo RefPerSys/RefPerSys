@@ -112,7 +112,7 @@ all:
 	   exit 1 ; \
 	fi
 	$(MAKE) refpersys
-	$(MAKE) do-build-plugin
+	$(MAKE) do-build-refpersys-plugin
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
 
@@ -156,14 +156,14 @@ do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile rps-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@
 
-do-build-plugin: do-build-plugin.cc __timestamp.c
+do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $(CFLAGS) -g $^ -o $@
 
 
 
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
-	$(RM) do-scan-pkgconfig do-configure-refpersys do-build-plugin 
+	$(RM) do-scan-pkgconfig do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
 	$(RM) *.gch
@@ -234,11 +234,11 @@ refpersys: objects |  GNUmakefile
 
 %.ii: %.cc | refpersys.hh GNUmakefile
 
-plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile do-build-plugin do-scan-pkgconfig build-plugin.sh
+plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile do-build-refpersys-plugin do-scan-pkgconfig
 
-plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-plugin |GNUmakefile
+plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
+	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v $< -o $@
 
 
 
@@ -384,7 +384,7 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) -c -std=gnu++17 -g -O $< -o $@
 
-## for plugins, see build-plugin.sh
+## for plugins, see do-build-refpersys-plugin.cc
 print-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" "$(REFPERSYS_CXX)"
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) $(shell pkg-config --cflags $(PKGLIST_refpersys))"

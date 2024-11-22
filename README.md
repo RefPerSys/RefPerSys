@@ -293,7 +293,7 @@ conventionally named `generated/_`*objid*`.cc`
 Binary modules are conventionally named `generated/__rps_*.so`, see in
 our `GNUmakefile` the line around comment `**generated binary modules`
 
-See our shell script `build-plugin.sh` to understand compiling
+See our C++ utility `do-build-refpersys-plugin.cc` to understand compiling
 conventions in binary modules or plugins. In particular, if the first
 fifty (50) lines of a generated C++ file contain - probably inside a
 comment - @RPSCOMPILEFLAGS= that is used to compile the plugin. If
@@ -361,7 +361,7 @@ and sometimes [`clang++`](http://clang.llvm.org/) whose warnings are different.
 Look into, and perhaps improve, our `GNUmakefile`. Check with `g++ --version`. Build using `make -j 3` or more.
  
 You may need the [ninja](https://ninja-build.org/) build utility; in commit 559ea329f46a and before 
-it is used by our `do-build-plugin` utility.
+it is used by our `do-refpersys-build-plugin` utility.
 
 You need the `glibmm` from GTK suite. And some `gtkmm` for some RefPerSys plugins.
 

@@ -191,7 +191,7 @@ int rpsint_lineno;
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_simpinterp.cc /tmp/rpsplug_simpinterp.so" ;;
+ ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins_dir/rpsplug_simpinterp.cc -o /tmp/rpsplug_simpinterp.so" ;;
  ** End: ;;
  ****************/
 
