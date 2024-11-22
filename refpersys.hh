@@ -3017,6 +3017,18 @@ public:
 class Rps_MemoryFileTokenSource;
 extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
 
+extern "C" std::string rps_userpref_get_string(const std::string& section, const std::string& name,
+    const std::string& default_value);
+extern "C" long rps_userpref_get_long(const std::string& section, const std::string& name, long default_value);
+
+extern "C" double rps_userpref_get_double(const std::string& section, const std::string& name, double default_value);
+
+extern "C" bool rps_userpref_get_bool(const std::string& section, const std::string& name, bool default_value);
+
+extern "C" bool rps_userpref_has_section(const std::string& section);
+
+extern "C" bool rps_userpref_has_value(const std::string& section, const std::string& name);
+
 class Rps_MemoryFileTokenSource : public Rps_TokenSource
 {
   friend void  rps_parse_user_preferences(Rps_MemoryFileTokenSource*);

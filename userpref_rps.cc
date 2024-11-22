@@ -51,6 +51,8 @@ const char rps_userpref_date[]= __DATE__;
 extern "C" const char rps_userpref_shortgitid[];
 const char rps_userpref_shortgitid[]= RPS_SHORTGITID;
 
+static INIReader* rps_userpref_ird;
+
 extern "C" void rps_set_user_preferences(char*);
 
 extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts);
@@ -64,6 +66,9 @@ rps_delete_user_preferences(void)
   if (rps_userpref_mts)
     delete rps_userpref_mts;
   rps_userpref_mts = nullptr;
+  if (rps_userpref_ird)
+    delete rps_userpref_ird;
+  rps_userpref_ird = nullptr;
 } // end rps_delete_user_preferences
 
 void
@@ -87,9 +92,6 @@ rps_set_user_preferences(char*path)
     };
   rps_parse_user_preferences(rps_userpref_mts);
   atexit(rps_delete_user_preferences);
-#warning unimplemented rps_set_user_preferences
-  RPS_FATALOUT("unimplemented user preferences file '"
-               << Rps_Cjson_String(path) << "'");
 } // end  rps_set_user_preferences
 
 
@@ -98,16 +100,72 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
 {
   RPS_ASSERT(mts);
   RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(mts->toksrcmfil_line > mts->toksrcmfil_start
+             && mts->toksrcmfil_line <  mts->toksrcmfil_end);
+  int curlineno = mts->line();
 #warning unimplemented rps_parse_user_preferences
-  INIReader ird(mts->path());
-  if (int pe = ird.ParseError()) {
-    RPS_FATALOUT("failed to parse user preference "
-		 << mts->path() << ":" << pe);
-  }
+  rps_userpref_ird = new INIReader(mts->toksrcmfil_line,
+                                   mts->toksrcmfil_end - mts->toksrcmfil_line);
+  if (int pe = rps_userpref_ird->ParseError())
+    {
+      RPS_FATALOUT("failed to parse user preference "
+                   << mts->path() << ":" << pe+curlineno);
+    }
   RPS_FATALOUT("unimplemented rps_parse_user_preferences from "
-	       << mts->path());
+               << mts->path());
   /// see also file etc/user-preferences-refpersys.txt as example
 } // end rps_parse_user_preferences
+
+std::string
+rps_userpref_get_string(const std::string& section, const std::string& name,
+                        const std::string& default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetString(section,name,default_value);
+} // end rps_userpref_get_string
+
+long
+rps_userpref_get_long(const std::string& section, const std::string& name, long default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetInteger(section,name,default_value);
+} // end rps_userpref_get_long
+
+double
+rps_userpref_get_double(const std::string& section, const std::string& name, double default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetReal(section,name,default_value);
+} // end rps_userpref_get_double
+
+
+bool
+rps_userpref_get_bool(const std::string& section, const std::string& name, bool default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetBoolean(section,name,default_value);
+} // end rps_userpref_get_bool
+
+bool
+rps_userpref_has_section(const std::string& section)
+{
+  if (!rps_userpref_ird)
+    return false;
+  return rps_userpref_ird->HasSection(section);
+} // end rps_userpref_has_section
+
+bool
+rps_userpref_has_value(const std::string& section, const std::string& name)
+{
+  if (!rps_userpref_ird)
+    return false;
+  return rps_userpref_ird->HasValue(section,name);
+} // end rps_userpref_has_value
+
 
 #warning perhaps consider using https://github.com/benhoyt/inih for user preferences
 /// TODO: look into https://github.com/OSSystems/inih
