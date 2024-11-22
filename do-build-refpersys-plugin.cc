@@ -97,50 +97,7 @@ extern "C" {
       .val= 0
     },
   };        // end bp_options
-  extern error_t bp_parseopt(int key, char*arg, struct argp_state* astate);
 };
-
-error_t
-bp_parse_arg(int key, char*arg)
-{
-#warning incomplete bp_parseopt
-  switch (key)
-    {
-    case 'o':     // --output name
-      bp_plugin_binary = arg;
-      break;
-    case 'V':     // --version
-      printf("%s version git %s built on %s\n",
-             bp_progname, bp_git_id, __DATE__ "@" __TIME__);
-      break;
-    case 'v':     //  --verbose
-      bp_verbose = true;
-      break;
-    case 'N':     // --ninja=NINJAFILE
-      if (access(arg, R_OK))
-        {
-          fprintf(stderr, "%s failed to access ninja file %s [%s:%d]\n",
-                  bp_progname, arg, __FILE__, __LINE__-1);
-          exit(EXIT_FAILURE);
-        };
-      bp_vect_ninja.push_back(std::string(arg));
-      break;
-    case 'S':     // --shell=COMMAND
-      if (arg && arg[0])
-        {
-          int f = system(arg);
-          if (f)
-            {
-              fprintf(stderr, "%s failed to run command %s [%s:%d]\n",
-                      bp_progname, arg, __FILE__, __LINE__-1);
-              exit(EXIT_FAILURE);
-            }
-        }
-    default:
-      break;
-    }
-  return -1;
-} // end bp_parse_arg
 
 void
 bp_version (void)
@@ -178,7 +135,7 @@ bp_usage(void)
   std::cerr << "\t\t #from " << __FILE__ << ':' << __LINE__ << " git " << bp_git_id << std::endl;
   std::cerr << "\t\t see refpersys.org and github.com/RefPerSys/RefPerSys" << std::endl;
   std::cerr << "\t\t uses $RPSPLUGIN_CXXFLAGS and $RPSPLUGIN_LDFLAGS if provided"
-	    << std::endl;
+            << std::endl;
 } // end bp_usage
 
 
@@ -475,8 +432,18 @@ bp_prog_options(int argc, char**argv)
           bp_verbose= true;
           break;
         case 'o':   // --output=PLUGIN
+        {
+          char bufbak[256];
+          memset (bufbak, 0, sizeof(bufbak));
           bp_plugin_binary = optarg;
-          break;
+          if (!access(optarg, F_OK) && strlen(optarg)<sizeof(bufbak)-2)
+            {
+              snprintf(bufbak, sizeof(bufbak), "%s~", optarg);
+              if (!rename(optarg, bufbak) && bp_verbose)
+                printf("%s renamed old plugin: %s -> %s\n", bp_progname, optarg, bufbak);
+            };
+        }
+        break;
         case 'N':   // --ninja NINJA
         {
           int njix = 1+(int)bp_vect_ninja.size();
