@@ -170,26 +170,86 @@ rps_userpref_has_value(const std::string& section, const std::string& name)
 
 const char*
 rps_userpref_find_dup_cstring(bool *pfound,
-			      const char*csection, const char* cname)
+                              const char*csection, const char* cname)
 {
   RPS_ASSERT(pfound);
   RPS_ASSERT(csection);
   RPS_ASSERT(cname);
   std::string section(csection);
   std::string name(cname);
-  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name)) {
-    *pfound = false;
-    return nullptr;
-  };
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return nullptr;
+    };
   std::string val = rps_userpref_ird->GetString(section,name,"");
   const char*res = strdup(val.c_str());
-  if (!res) {
-    *pfound = false;
-    return nullptr;
-  };
+  if (!res)
+    {
+      *pfound = false;
+      return nullptr;
+    };
   *pfound = true;
   return res;
-}		      // end rps_userpref_find_dup_cstring
+}         // end rps_userpref_find_dup_cstring
+
+long
+rps_userpref_find_clong(bool *pfound,
+                        const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return 0L;
+    };
+  long res = rps_userpref_ird->GetInteger(section,name,0L);
+  *pfound = true;
+  return res;
+} // end rps_userpref_find_clong
+
+double
+rps_userpref_find_cdouble(bool *pfound,
+                          const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return 0.0;
+    };
+  double res = rps_userpref_ird->GetReal(section,name,0.0);
+  *pfound = true;
+  return res;
+}         // end rps_userpref_find_cdouble
+
+bool
+rps_userpref_find_cbool(bool *pfound,
+                        const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return false;
+    };
+  bool res = rps_userpref_ird->GetBoolean(section,name,false);
+  *pfound = true;
+  return res;
+}          // end rps_userpref_find_cbool
+
 
 #warning using https://github.com/benhoyt/inih for user preferences
 /// TODO: look into https://github.com/OSSystems/inih

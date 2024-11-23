@@ -3020,15 +3020,28 @@ extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
 extern "C" std::string rps_userpref_get_string(const std::string& section, const std::string& name,
     const std::string& default_value);
 /// C compatible: all arguments are non-null pointers, returns an
-/// strdup-ed string.
+/// strdup-ed string. Sets *pfound iff found the preference
 extern "C" const char*rps_userpref_find_dup_cstring(bool *pfound,
     const char*csection, const char* cname);
 
 extern "C" long rps_userpref_get_long(const std::string& section, const std::string& name, long default_value);
+/// C compatible: all arguments are non-null pointers, returns a long
+/// preference or else 0. Sets *pfound iff found the preference
+extern "C" long rps_userpref_find_clong(bool *pfound,
+                                        const char*csection, const char* cname);
 
 extern "C" double rps_userpref_get_double(const std::string& section, const std::string& name, double default_value);
+/// C compatible: all arguments are non-null pointers, returns a
+/// double preference or else 0.0. Sets *pfound iff found the preference
+extern "C" double rps_userpref_find_cdouble(bool *pfound,
+    const char*csection, const char* cname);
 
 extern "C" bool rps_userpref_get_bool(const std::string& section, const std::string& name, bool default_value);
+/// C compatible: all arguments are non-null pointers, returns a
+/// boolean preference or else false. Sets *pfound iff found the
+/// preference
+extern "C"  bool rps_userpref_find_cbool(bool *pfound,
+    const char*csection, const char* cname);
 
 extern "C" bool rps_userpref_has_section(const std::string& section);
 
