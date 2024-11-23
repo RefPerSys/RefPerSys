@@ -250,6 +250,24 @@ rps_userpref_find_cbool(bool *pfound,
   return res;
 }          // end rps_userpref_find_cbool
 
+bool
+rps_userpref_with_csection(const char*csection)
+{
+  if (!csection || !rps_userpref_ird)
+    return false;
+  std::string section(csection);
+  return rps_userpref_ird->HasSection(section);
+}         // end rps_userpref_with_csection
+
+bool
+rps_userpref_with_cvalue(const char*csection, const char*cname)
+{
+  if (!csection || !cname || !rps_userpref_ird)
+    return false;
+  std::string section(csection);
+  std::string name(cname);
+  return rps_userpref_ird->HasValue(section, name);
+}         // end rps_userpref_with_cvalue
 
 #warning using https://github.com/benhoyt/inih for user preferences
 /// TODO: look into https://github.com/OSSystems/inih

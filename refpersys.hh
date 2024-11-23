@@ -3044,9 +3044,14 @@ extern "C"  bool rps_userpref_find_cbool(bool *pfound,
     const char*csection, const char* cname);
 
 extern "C" bool rps_userpref_has_section(const std::string& section);
+extern "C" bool rps_userpref_with_csection(const char*csection);
 
 extern "C" bool rps_userpref_has_value(const std::string& section, const std::string& name);
+extern "C" bool rps_userpref_with_cvalue(const char*csection, const char*cname);
 
+
+
+////////////////
 class Rps_MemoryFileTokenSource : public Rps_TokenSource
 {
   friend void  rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
