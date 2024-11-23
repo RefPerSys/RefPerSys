@@ -167,7 +167,31 @@ rps_userpref_has_value(const std::string& section, const std::string& name)
 } // end rps_userpref_has_value
 
 
-#warning perhaps consider using https://github.com/benhoyt/inih for user preferences
+
+const char*
+rps_userpref_find_dup_cstring(bool *pfound,
+			      const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name)) {
+    *pfound = false;
+    return nullptr;
+  };
+  std::string val = rps_userpref_ird->GetString(section,name,"");
+  const char*res = strdup(val.c_str());
+  if (!res) {
+    *pfound = false;
+    return nullptr;
+  };
+  *pfound = true;
+  return res;
+}		      // end rps_userpref_find_dup_cstring
+
+#warning using https://github.com/benhoyt/inih for user preferences
 /// TODO: look into https://github.com/OSSystems/inih
 
 ////// end of file userpref_rps.cc

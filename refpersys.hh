@@ -3019,6 +3019,11 @@ extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
 
 extern "C" std::string rps_userpref_get_string(const std::string& section, const std::string& name,
     const std::string& default_value);
+/// C compatible: all arguments are non-null pointers, returns an
+/// strdup-ed string.
+extern "C" const char*rps_userpref_find_dup_cstring(bool *pfound,
+    const char*csection, const char* cname);
+
 extern "C" long rps_userpref_get_long(const std::string& section, const std::string& name, long default_value);
 
 extern "C" double rps_userpref_get_double(const std::string& section, const std::string& name, double default_value);
