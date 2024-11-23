@@ -678,7 +678,7 @@ rps_show_version(void)
 #if RPS_USE_CURL
             << " libCURL for web client: " << rps_curl_version() << std::endl
 #endif /*RPS_USE_CURL*/
-    ;
+            ;
   ////
   RPS_POSSIBLE_BREAKPOINT();
   ////
