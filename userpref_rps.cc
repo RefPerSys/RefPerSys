@@ -193,6 +193,20 @@ rps_userpref_find_dup_cstring(bool *pfound,
   return res;
 }         // end rps_userpref_find_dup_cstring
 
+/// TODO: maybe this function cannot work, we need to check.
+const char*
+rps_userpref_raw_cstring(const char*csection, const char*cname)
+{
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    return nullptr;
+  const std::string &val = rps_userpref_ird->GetString(section,name,"");
+  return val.c_str();
+} // end rps_userpref_raw_cstring
+
 long
 rps_userpref_find_clong(bool *pfound,
                         const char*csection, const char* cname)

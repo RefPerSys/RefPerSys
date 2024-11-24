@@ -3023,6 +3023,9 @@ extern "C" std::string rps_userpref_get_string(const std::string& section, const
 /// strdup-ed string. Sets *pfound iff found the preference
 extern "C" const char*rps_userpref_find_dup_cstring(bool *pfound,
     const char*csection, const char* cname);
+/// returns the raw preference cstring without duplication or null if
+/// not found. It might not work....
+extern "C" const char*rps_userpref_raw_cstring(const char*csection, const char*cname);
 
 extern "C" long rps_userpref_get_long(const std::string& section, const std::string& name, long default_value);
 /// C compatible: all arguments are non-null pointers, returns a long
