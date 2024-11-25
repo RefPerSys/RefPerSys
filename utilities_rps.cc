@@ -33,7 +33,7 @@
 
 #include "refpersys.hh"
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
 //@@PKGCONFIG glib-2.0
@@ -665,7 +665,7 @@ rps_show_version(void)
             << std::endl;
 #endif
   std::cout << " GCCJIT version:" << gcc_jit_version_major()
-            << "." << gcc_jit_version_minor() << "." << gcc_jit_version_patchlevel << std::endl;
+            << "." << gcc_jit_version_minor() << "." << gcc_jit_version_patchlevel() << std::endl;
   std::cout << std::endl
             /* TODO: near commit 191d55e1b31c, march 2023; decide
                which parser generator to really use... and drop the
@@ -678,7 +678,11 @@ rps_show_version(void)
 #if RPS_USE_CURL
             << " libCURL for web client: " << rps_curl_version() << std::endl
 #endif /*RPS_USE_CURL*/
-            << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
+            ;
+  ////
+  RPS_POSSIBLE_BREAKPOINT();
+  ////
+  std::cout << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
             << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
             << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl
             << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
@@ -872,6 +876,18 @@ rps_early_initialization(int argc, char** argv)
              err);
       exit(EXIT_FAILURE);
     };
+  if (argc == 2 && !strcmp(argv[1], "--full-git"))   /// see also rps_parse1opt
+    {
+      printf("%s\n", rps_gitid);
+      fflush(nullptr);
+      exit(EXIT_SUCCESS);
+    }
+  else if (argc == 2 && !strcmp(argv[1], "--short-git"))  /// see also rps_parse1opt
+    {
+      printf("%s\n", rps_shortgitid);
+      fflush(nullptr);
+      exit(EXIT_SUCCESS);
+    }
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   if (!inside_emacs)
@@ -1298,6 +1314,26 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
       if (side_effect)
         rps_pidfile_path = arg;
+    }
+    return 0;
+    case RPSPROGOPT_FULL_GIT:
+    {
+      if (side_effect)   /// see also rps_early_initialization
+        {
+          printf("%s\n", rps_gitid);
+          fflush(nullptr);
+          exit(EXIT_SUCCESS);
+        }
+    }
+    return 0;
+    case RPSPROGOPT_SHORT_GIT:
+    {
+      if (side_effect)   /// see also rps_early_initialization
+        {
+          printf("%s\n", rps_shortgitid);
+          fflush(nullptr);
+          exit(EXIT_SUCCESS);
+        }
     }
     return 0;
     case RPSPROGOPT_NO_ASLR:

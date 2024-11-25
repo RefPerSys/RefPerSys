@@ -86,6 +86,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_createcommutativeoperator.cc /tmp/rpsplug_createcommutativeoperator.so" ;;
+ ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins/rpsplug_createcommutativeoperator.cc -o /tmp/rpsplug_createcommutativeoperator.so" ;;
  ** End: ;;
  ****************/

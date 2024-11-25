@@ -1,4 +1,4 @@
-/// file do-scan-pkgconfig.c in refpersys.org
+/// file do-scan-refpersys-pkgconfig.c in refpersys.org
 /// SPDX-License-Identifier: GPL-3.0-or-later
 ///
 /// Description:
@@ -60,10 +60,10 @@
 #endif
 
 
-/// Caution, this MY_HEAD_LINES_THRESHOLD should also be in
-/// build-plugin.sh ... better yet, add a --print-head-lines-threshold
-/// argument to this program, or even inside refpersys heap and in some
-/// generated/*.h file.
+/// Caution, this MY_HEAD_LINES_THRESHOLD should also be
+/// BP_HEAD_LINES_THRESHOLD in do-build-refpersys-plugin.cc ... better
+/// yet, add a --print-head-lines-threshold argument to this program,
+/// or even inside refpersys heap and in some generated/*.h file.
 
 #ifndef MY_HEAD_LINES_THRESHOLD
 #define MY_HEAD_LINES_THRESHOLD 512
@@ -325,4 +325,4 @@ main (int argc, char **argv)
 }       /* end function main */
 
 
-/// end of file do-scan-pkgconfig.c
+/// end of file do-scan-refpersys-pkgconfig.c

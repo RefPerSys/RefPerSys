@@ -152,6 +152,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_createnamedselector.cc /tmp/rpsplug_createnamedselector.so" ;;
+ ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins_dir/rpsplug_createnamedselector.cc -o /tmp/rpsplug_createnamedselector.so" ;;
  ** End: ;;
  ****************/

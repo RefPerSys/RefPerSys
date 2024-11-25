@@ -335,7 +335,7 @@ extern "C" {
 
 
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp
 // JsonCPP https://github.com/open-source-parsers/jsoncpp
 #include "json/json.h"
@@ -360,7 +360,7 @@ extern "C" {
 
 #define RPS_FRIEND_CLASS(Suffix) friend class Rps_##Suffix
 
-// generated in __timestamp.c by do-generate-timestamp.sh utility script
+// generated in __timestamp.c by rps-generate-timestamp.sh utility script
 extern "C" const char rps_timestamp[];
 extern "C" unsigned long rps_timelong;
 extern "C" const char rps_topdirectory[];
@@ -805,6 +805,8 @@ enum rps_progoption_en
   RPSPROGOPT_TYPEINFO,
   RPSPROGOPT_SYSLOG,
   RPSPROGOPT_DAEMON,
+  RPSPROGOPT_FULL_GIT,
+  RPSPROGOPT_SHORT_GIT,
   RPSPROGOPT_PID_FILE,
   RPSPROGOPT_NO_TERMINAL,
   RPSPROGOPT_NO_ASLR,
@@ -3012,8 +3014,50 @@ public:
   virtual void display(std::ostream&out) const;
 };                                                            // end Rps_StringTokenSource
 
+class Rps_MemoryFileTokenSource;
+extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
+
+extern "C" std::string rps_userpref_get_string(const std::string& section, const std::string& name,
+    const std::string& default_value);
+/// C compatible: all arguments are non-null pointers, returns an
+/// strdup-ed string. Sets *pfound iff found the preference
+extern "C" const char*rps_userpref_find_dup_cstring(bool *pfound,
+    const char*csection, const char* cname);
+/// returns the raw preference cstring without duplication or null if
+/// not found. It might not work....
+extern "C" const char*rps_userpref_raw_cstring(const char*csection, const char*cname);
+
+extern "C" long rps_userpref_get_long(const std::string& section, const std::string& name, long default_value);
+/// C compatible: all arguments are non-null pointers, returns a long
+/// preference or else 0. Sets *pfound iff found the preference
+extern "C" long rps_userpref_find_clong(bool *pfound,
+                                        const char*csection, const char* cname);
+
+extern "C" double rps_userpref_get_double(const std::string& section, const std::string& name, double default_value);
+/// C compatible: all arguments are non-null pointers, returns a
+/// double preference or else 0.0. Sets *pfound iff found the preference
+extern "C" double rps_userpref_find_cdouble(bool *pfound,
+    const char*csection, const char* cname);
+
+extern "C" bool rps_userpref_get_bool(const std::string& section, const std::string& name, bool default_value);
+/// C compatible: all arguments are non-null pointers, returns a
+/// boolean preference or else false. Sets *pfound iff found the
+/// preference
+extern "C"  bool rps_userpref_find_cbool(bool *pfound,
+    const char*csection, const char* cname);
+
+extern "C" bool rps_userpref_has_section(const std::string& section);
+extern "C" bool rps_userpref_with_csection(const char*csection);
+
+extern "C" bool rps_userpref_has_value(const std::string& section, const std::string& name);
+extern "C" bool rps_userpref_with_cvalue(const char*csection, const char*cname);
+
+
+
+////////////////
 class Rps_MemoryFileTokenSource : public Rps_TokenSource
 {
+  friend void  rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
   const std::string toksrcmfil_path;
   const char*toksrcmfil_start; // page-aligned, in memory
   const char*toksrcmfil_line;  // pointer to start of current line
@@ -5321,7 +5365,7 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 ////................................................................
 //// Code generation routines (either C++ files later compiled as a
-//// dlopen-able plugin using the build-plugin.sh script, or in-memory
+//// dlopen-able plugin using the do-build-refpersys-plugin, or in-memory
 //// code generation of using GNU lightning).  Both routines return
 //// true on successful code generation.
 ////................................................................

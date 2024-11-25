@@ -32,8 +32,15 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+// comment for our do-scan-refpersys-pkgconfig.c utility
+//@@PKGCONFIG INIReader
+//@@PKGCONFIG inih
+
 #include "refpersys.hh"
 
+/// from /github.com/benhoyt/inih or /github.com/OSSystems/inih
+/// packaged as libinih-dev & libinih1
+#include "INIReader.h"
 
 extern "C" const char rps_userpref_gitid[];
 const char rps_userpref_gitid[]= RPS_GITID;
@@ -43,6 +50,8 @@ const char rps_userpref_date[]= __DATE__;
 
 extern "C" const char rps_userpref_shortgitid[];
 const char rps_userpref_shortgitid[]= RPS_SHORTGITID;
+
+static INIReader* rps_userpref_ird;
 
 extern "C" void rps_set_user_preferences(char*);
 
@@ -57,6 +66,9 @@ rps_delete_user_preferences(void)
   if (rps_userpref_mts)
     delete rps_userpref_mts;
   rps_userpref_mts = nullptr;
+  if (rps_userpref_ird)
+    delete rps_userpref_ird;
+  rps_userpref_ird = nullptr;
 } // end rps_delete_user_preferences
 
 void
@@ -80,9 +92,6 @@ rps_set_user_preferences(char*path)
     };
   rps_parse_user_preferences(rps_userpref_mts);
   atexit(rps_delete_user_preferences);
-#warning unimplemented rps_set_user_preferences
-  RPS_FATALOUT("unimplemented user preferences file '"
-               << Rps_Cjson_String(path) << "'");
 } // end  rps_set_user_preferences
 
 
@@ -90,8 +99,191 @@ void
 rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
 {
   RPS_ASSERT(mts);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(mts->toksrcmfil_line > mts->toksrcmfil_start
+             && mts->toksrcmfil_line <  mts->toksrcmfil_end);
+  int curlineno = mts->line();
 #warning unimplemented rps_parse_user_preferences
+  rps_userpref_ird = new INIReader(mts->toksrcmfil_line,
+                                   mts->toksrcmfil_end - mts->toksrcmfil_line);
+  if (int pe = rps_userpref_ird->ParseError())
+    {
+      RPS_FATALOUT("failed to parse user preference "
+                   << mts->path() << ":" << pe+curlineno);
+    }
+  RPS_FATALOUT("unimplemented rps_parse_user_preferences from "
+               << mts->path());
   /// see also file etc/user-preferences-refpersys.txt as example
 } // end rps_parse_user_preferences
+
+std::string
+rps_userpref_get_string(const std::string& section, const std::string& name,
+                        const std::string& default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetString(section,name,default_value);
+} // end rps_userpref_get_string
+
+long
+rps_userpref_get_long(const std::string& section, const std::string& name, long default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetInteger(section,name,default_value);
+} // end rps_userpref_get_long
+
+double
+rps_userpref_get_double(const std::string& section, const std::string& name, double default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetReal(section,name,default_value);
+} // end rps_userpref_get_double
+
+
+bool
+rps_userpref_get_bool(const std::string& section, const std::string& name, bool default_value)
+{
+  if (!rps_userpref_ird)
+    return default_value;
+  return rps_userpref_ird->GetBoolean(section,name,default_value);
+} // end rps_userpref_get_bool
+
+bool
+rps_userpref_has_section(const std::string& section)
+{
+  if (!rps_userpref_ird)
+    return false;
+  return rps_userpref_ird->HasSection(section);
+} // end rps_userpref_has_section
+
+bool
+rps_userpref_has_value(const std::string& section, const std::string& name)
+{
+  if (!rps_userpref_ird)
+    return false;
+  return rps_userpref_ird->HasValue(section,name);
+} // end rps_userpref_has_value
+
+
+
+const char*
+rps_userpref_find_dup_cstring(bool *pfound,
+                              const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return nullptr;
+    };
+  std::string val = rps_userpref_ird->GetString(section,name,"");
+  const char*res = strdup(val.c_str());
+  if (!res)
+    {
+      *pfound = false;
+      return nullptr;
+    };
+  *pfound = true;
+  return res;
+}         // end rps_userpref_find_dup_cstring
+
+/// TODO: maybe this function cannot work, we need to check.
+const char*
+rps_userpref_raw_cstring(const char*csection, const char*cname)
+{
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    return nullptr;
+  const std::string &val = rps_userpref_ird->GetString(section,name,"");
+  return val.c_str();
+} // end rps_userpref_raw_cstring
+
+long
+rps_userpref_find_clong(bool *pfound,
+                        const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return 0L;
+    };
+  long res = rps_userpref_ird->GetInteger(section,name,0L);
+  *pfound = true;
+  return res;
+} // end rps_userpref_find_clong
+
+double
+rps_userpref_find_cdouble(bool *pfound,
+                          const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return 0.0;
+    };
+  double res = rps_userpref_ird->GetReal(section,name,0.0);
+  *pfound = true;
+  return res;
+}         // end rps_userpref_find_cdouble
+
+bool
+rps_userpref_find_cbool(bool *pfound,
+                        const char*csection, const char* cname)
+{
+  RPS_ASSERT(pfound);
+  RPS_ASSERT(csection);
+  RPS_ASSERT(cname);
+  std::string section(csection);
+  std::string name(cname);
+  if (!rps_userpref_ird || !rps_userpref_ird->HasValue(section,name))
+    {
+      *pfound = false;
+      return false;
+    };
+  bool res = rps_userpref_ird->GetBoolean(section,name,false);
+  *pfound = true;
+  return res;
+}          // end rps_userpref_find_cbool
+
+bool
+rps_userpref_with_csection(const char*csection)
+{
+  if (!csection || !rps_userpref_ird)
+    return false;
+  std::string section(csection);
+  return rps_userpref_ird->HasSection(section);
+}         // end rps_userpref_with_csection
+
+bool
+rps_userpref_with_cvalue(const char*csection, const char*cname)
+{
+  if (!csection || !cname || !rps_userpref_ird)
+    return false;
+  std::string section(csection);
+  std::string name(cname);
+  return rps_userpref_ird->HasValue(section, name);
+}         // end rps_userpref_with_cvalue
+
+#warning using https://github.com/benhoyt/inih for user preferences
+/// TODO: look into https://github.com/OSSystems/inih
 
 ////// end of file userpref_rps.cc

@@ -69,6 +69,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_fillmutsetclass.cc /tmp/rpsplug_fillmutsetclass.so" ;;
+ ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins/rpsplug_fillmutsetclass.cc -o /tmp/rpsplug_fillmutsetclass.so" ;;
  ** End: ;;
  ****************/

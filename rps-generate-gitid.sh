@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #% SPDX-License-Identifier: GPL-3.0-or-later
-# RefPerSys file do-generate-gitid.sh - see refpersys.org
+# RefPerSys file rps-generate-gitid.sh - see refpersys.org
 ###
 # it just emits a string with the full git commit id, appending + if
 # the git status is not clean.
@@ -37,7 +37,7 @@ license()
 
 usage()
 {
-	echo "usage: ./do-generate-gitid.sh [-hlsv]"
+	echo "usage: ./rps-generate-gitid.sh [-hlsv]"
 	echo "options:"
 	echo "  -h  show usage"
 	echo "  -l  show license" 

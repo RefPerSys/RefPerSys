@@ -49,7 +49,7 @@ extern "C" const char rps_dump_shortgitid[];
 const char rps_dump_shortgitid[]= RPS_SHORTGITID;
 
 
-// comment for our do-scan-pkgconfig.c utility
+// comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp
 
 std::string
@@ -535,7 +535,7 @@ Rps_Dumper::scan_code_addr(const void*ad)
     {
       /// see GNUmakefile near its comment line containing:
       ///       # **generated binary modules.
-      /// and the do-generate-timestamp.sh script.
+      /// and the rps-generate-timestamp.sh script.
       snprintf(rpsmodfmt, sizeof(rpsmodfmt),
                "__rps_%s_%s_%%-mod.so",
                rps_building_machname, rps_building_opersysname);

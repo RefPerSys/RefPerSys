@@ -125,6 +125,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_createclass.cc /tmp/rpsplug_createclass.so" ;;
+ ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins_dir/rpsplug_createclass.cc -o /tmp/rpsplug_createclass.so" ;;
  ** End: ;;
  ****************/

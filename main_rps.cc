@@ -224,6 +224,24 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Forcibly disable Adress Space Layout Randomization. Might not work.\n", //
     /*group:*/0 ///
   },
+  /* ======= display the full git id ======= */
+  {/*name:*/ "full-git", ///
+    /*key:*/ RPSPROGOPT_FULL_GIT, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Output just the full gitid of the binary\n"
+    " (suffixed by + if locally changed)\n", //
+    /*group:*/0 ///
+  },
+  /* ======= display the short suffixed git id ======= */
+  {/*name:*/ "short-git", ///
+    /*key:*/ RPSPROGOPT_SHORT_GIT, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Output just the short gitid of the binary\n"
+    " (suffixed by + if locally changed)\n", //
+    /*group:*/0 ///
+  },
   /* ======= without quick tests ======= */
   {/*name:*/ "no-quick-tests", ///
     /*key:*/ RPSPROGOPT_NO_QUICK_TESTS, ///
@@ -898,13 +916,13 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       needchdir = cwdpath != std::string{};
       //// our compilation command is...
       std::string buildplugincmd{rps_topdirectory};
-      buildplugincmd += "/build-plugin.sh ";
+      buildplugincmd += "/do-build-refpersys-plugin ";
       buildplugincmd += tempcppfilename;
-      buildplugincmd += " ";
+      buildplugincmd += " -o ";
       buildplugincmd += tempsofilename;
       RPS_WARNOUT("rps_edit_run_cplusplus_code incomplete for C++ code in "<< tempcppfilename
                   << " should compile into " << tempsofilename
-                  << " using either make plugin or build-plugin.sh"
+                  << " using either make plugin or do-build-refpersys-plugin"
                   << std::endl
                   << " - from "
                   << Rps_ShowCallFrame(&_)

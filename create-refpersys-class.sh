@@ -47,8 +47,8 @@ if [ ! -f "plugins/rpsplug_createclass.cc" ]; then
     exit 1
 fi
 
-make refpersys
-./build-plugin.sh plugins/rpsplug_createclass.cc /tmp/rpsplug_createclass.so
+make refpersys do-build-refpesys-plugin
+./do-build-refpersys-plugin plugins/rpsplug_createclass.cc -o /tmp/rpsplug_createclass.so
 
 
 if [ ! -f /tmp/rpsplug_createclass.so ]; then

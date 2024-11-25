@@ -33,8 +33,8 @@
 ## tell GNU make to export all variables by default
 export
 
-RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
-RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
+RPS_GIT_ID:= $(shell ./rps-generate-gitid.sh)
+RPS_SHORTGIT_ID:= $(shell ./rps-generate-gitid.sh -s)
 RPS_MAKE:= $(MAKE)
 RPS_BISON := /usr/bin/bison
 RPS_HOST := $(shell /bin/hostname -f)
@@ -112,7 +112,7 @@ all:
 	   exit 1 ; \
 	fi
 	$(MAKE) refpersys
-	$(MAKE) do-build-plugin
+	$(MAKE) do-build-refpersys-plugin
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
 
@@ -137,12 +137,12 @@ lto-refpersys:
                $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
-config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
+config: do-configure-refpersys do-scan-refpersys-pkgconfig GNUmakefile
 	./do-configure-refpersys
 	$(MAKE) _scanned-pkgconfig.mk
 
-do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
-	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+do-configure-refpersys: do-configure-refpersys.c |GNUmakefile rps-generate-gitid.sh
+	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               -DRPSCONF_OPERSYS=\"$(RPS_OPERSYS)\" \
               -DRPSCONF_ARCH=\"$(RPS_ARCH)\" \
               -DRPSCONF_HOST=\"$(RPS_HOST)\" \
@@ -152,18 +152,18 @@ do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.
 ## if GNU ncurses library is unavailable add
 ## -DRPSCONF_WITHOUT_NCURSES above and remove the -lncurses above
 
-do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
-	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+do-scan-refpersys-pkgconfig: do-scan-refpersys-pkgconfig.c |GNUmakefile rps-generate-gitid.sh
+	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@
 
-do-build-plugin: do-build-plugin.cc __timestamp.c
-	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $(CFLAGS) -g $^ -o $@
+do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
+	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $(CFLAGS) -g $^ -o $@
 
 
 
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
-	$(RM) do-scan-pkgconfig do-configure-refpersys do-build-plugin 
+	$(RM) do-scan-refpersys-pkgconfig do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
 	$(RM) *.gch
@@ -184,21 +184,21 @@ clean-plugins:
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
 	$(RM) __*.mkdep Make-dependencies/__*.mkdep
-	$(RM) do-scan-pkgconfig
+	$(RM) do-scan-refpersys-pkgconfig
 
 -include _scanned-pkgconfig.mk
 
 -include $(wildcard Make-dependencies/__*.mkdep)
 
-_scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
-	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
+_scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-refpersys-pkgconfig
+	./do-scan-refpersys-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
-__timestamp.c: do-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
+__timestamp.c: rps-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
 	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)" GPP is "$(REFPERSYS_GPP)" and "$(GPP)"
-	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./do-generate-timestamp.sh $@ > $@
+	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
-	$(CC) -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
+	$(CC) -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
 
 #was
 #refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
@@ -234,11 +234,11 @@ refpersys: objects |  GNUmakefile
 
 %.ii: %.cc | refpersys.hh GNUmakefile
 
-plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile do-build-plugin do-scan-pkgconfig
+plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 
-plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-plugin |GNUmakefile
+plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
+	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v $< -o $@
 
 
 
@@ -275,7 +275,7 @@ else
 	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
 	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
-	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
+	        "$$(git config --get user.email)" "$$(./rps-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
 	if [ -x $$HOME/bin/push-refpersys ]; then $$HOME/bin/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); fi
 	$(SYNC)
@@ -384,7 +384,7 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) -c -std=gnu++17 -g -O $< -o $@
 
-## for plugins, see build-plugin.sh
+## for plugins, see do-build-refpersys-plugin.cc
 print-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" "$(REFPERSYS_CXX)"
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) $(shell pkg-config --cflags $(PKGLIST_refpersys))"
@@ -392,7 +392,7 @@ print-plugin-settings:
 
 indent:
 	$(ASTYLE) $(ASTYLEFLAGS) do-configure-refpersys.c
-	$(ASTYLE) $(ASTYLEFLAGS) do-scan-pkgconfig.c
+	$(ASTYLE) $(ASTYLEFLAGS) do-scan-refpersys-pkgconfig.c
 	$(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
 	$(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
 	$(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh

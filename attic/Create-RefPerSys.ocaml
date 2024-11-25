@@ -39,8 +39,8 @@ let this_script_basename : string =
 let short_gitid : string =
   let res = ref "" in begin
       let cmdch = Stdlib.open_process_args_in
-                    (refpersys_topdir ^ "/" ^ "do-generate-gitid.sh")
-                    [| "do-generate-gitid.sh" ; "-s" |]
+                    (refpersys_topdir ^ "/" ^ "rps-generate-gitid.sh")
+                    [| "rps-generate-gitid.sh" ; "-s" |]
       in
       res := Stdlib.input_line cmdch;
       Stdlib.close_in cmdch;
