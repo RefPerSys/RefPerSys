@@ -496,7 +496,7 @@ bp_prog_options(int argc, char**argv)
         break;
         }
     }
-  while (opt);
+  while (opt > 0);
   fflush(nullptr);
   asm volatile ("nop; nop");
   while (optind < argc)
