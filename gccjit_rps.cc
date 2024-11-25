@@ -114,10 +114,16 @@ Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
 void
 Rps_PayloadGccjit::load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq)
 {
+  if (jseq.type() != Json::objectValue)
+    {
+      RPS_WARNOUT("Rps_PayloadGccjit::load_jit_json bad jseq=" << jseq
+                  << "in spacid=" << spacid
+                  << " lineno=" << lineno);
+    };
   RPS_FATALOUT("unimplemented Rps_PayloadGccjit::load_jit_json spacid="
                << spacid << " lineno=" << lineno << " jseq=" << jseq);
 #warning unimplemented load_jit_json
-}
+} // end Rps_PayloadGccjit::load_jit_json
 
 
 void
