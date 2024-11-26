@@ -99,16 +99,28 @@ public:
   gccjit::location make_csrc_location(const char*filename, int line, int col)
   {
     RPS_ASSERT(filename);
+    RPS_ASSERT(filename[0] != '_');
+    std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
     return  _gji_ctxt.gccjit::context::new_location(filename, line, col);
   };
   gccjit::location make_string_src_location(const std::string&filen, int line, int col)
   {
     RPS_ASSERT(!filen.empty());
+    RPS_ASSERT(filen[0] != '_');
+    std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
     return  _gji_ctxt.gccjit::context::new_location(filen.c_str(), line, col);
   };
+  // an arbitrary refpersys object may represent a fictuous "source file"
+  gccjit::location make_rpsobj_location(Rps_ObjectRef ob, int line, int col=0);
+  void locked_register_object_jit(Rps_ObjectRef ob,  gccjit::object jit);
+  void locked_unregister_object_jit(Rps_ObjectRef ob);
 protected:
   void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
-};        // end classRps_PayloadGccjit
+  void raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit);
+  void raw_unregister_object_jit(Rps_ObjectRef ob);
+};        // end class Rps_PayloadGccjit
+
+
 
 Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylGccjit,owner), // is that thread-safe?
@@ -119,11 +131,62 @@ Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
 } // end of Rps_PayloadGccjit::Rps_PayloadGccjit
 
 
+void
+Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit)
+{
+  RPS_ASSERT(ob);
+  RPS_ASSERT(owner());
+  _gji_rpsobj2jit.insert({ob,jit});
+} // end protected Rps_PayloadGccjit::raw_register_object_jit
+
+void
+Rps_PayloadGccjit::locked_register_object_jit(Rps_ObjectRef ob,  gccjit::object jit)
+{
+  RPS_ASSERT(ob);
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  std::lock_guard<std::recursive_mutex> guob(*ob->objmtxptr());
+  raw_register_object_jit(ob, jit);
+} // end Rps_PayloadGccjit::locked_register_object_jit
+
+void
+Rps_PayloadGccjit::raw_unregister_object_jit(Rps_ObjectRef ob)
+{
+  RPS_ASSERT(ob);
+  RPS_ASSERT(owner());
+  _gji_rpsobj2jit.erase(ob);
+} // end protected Rps_PayloadGccjit::raw_unregister_object_jit
+
+
+void
+Rps_PayloadGccjit::locked_unregister_object_jit(Rps_ObjectRef ob)
+{
+  RPS_ASSERT(ob);
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  std::lock_guard<std::recursive_mutex> guob(*ob->objmtxptr());
+  raw_unregister_object_jit(ob);
+} // end Rps_PayloadGccjit::locked_unregister_object_jit
+
+
+gccjit::location
+Rps_PayloadGccjit::make_rpsobj_location(Rps_ObjectRef ob, int line, int col)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  RPS_ASSERT(ob);
+  std::lock_guard<std::recursive_mutex> guob(*ob->objmtxptr());
+  char cbuf[24];
+  memset(cbuf, 0, sizeof(cbuf));
+  ob->oid().to_cbuf24(cbuf);
+  return  _gji_ctxt.gccjit::context::new_location(cbuf, line, col);
+} // end Rps_PayloadGccjit::make_rpsobj_location
+
 /* Should transform a JSON value into data relevant to GCCJIT and
    create if needed the necessary code. */
 void
 Rps_PayloadGccjit::load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq)
 {
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   if (jseq.type() != Json::objectValue)
     {
       RPS_WARNOUT("Rps_PayloadGccjit::load_jit_json bad jseq=" << jseq
