@@ -96,6 +96,16 @@ public:
     return false;
   };
   virtual ~Rps_PayloadGccjit();
+  gccjit::location make_csrc_location(const char*filename, int line, int col)
+  {
+    RPS_ASSERT(filename);
+    return  _gji_ctxt.gccjit::context::new_location(filename, line, col);
+  };
+  gccjit::location make_string_src_location(const std::string&filen, int line, int col)
+  {
+    RPS_ASSERT(!filen.empty());
+    return  _gji_ctxt.gccjit::context::new_location(filen.c_str(), line, col);
+  };
 protected:
   void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
 };        // end classRps_PayloadGccjit
