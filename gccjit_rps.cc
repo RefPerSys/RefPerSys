@@ -300,7 +300,8 @@ void rps_gccjit_finalize(void)
 {
   if (std::atomic_flag_test_and_set(&rps_gccjit_finalized))
     return;
-#warning rps_gccjit_finalize unimplemented
+  rps_gccjit_top_ctxt.gccjit::context::release();
+#warning rps_gccjit_finalize incomplete
 } // end rps_gccjit_finalize
 
 // end of file gccjit_rps.cc
