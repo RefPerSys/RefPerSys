@@ -63,7 +63,10 @@ obtained from mutable objects of superclass `_8kK8HUqCBlj02e7YGQ` =
 `_7VRJKpau2Nn04oeUER` = *`gccjit_instance`*.
 
 Subclasses of *`gccjit_class`* are used to represent GCCJIT types,
-fields, functions, blocks, lvalues, parameters.
+fields, functions, blocks, assignable lvalues, parameters, primitive
+operators (e.g. floating point addition or integer multiplication).
 
 Subclasses of *`gccjit_instance`* are used to represent GCCJIT
-statements, rvalues...
+statements (added to blocks), rvalues so expressions and most
+constants... RefPerSys literal strings, doubles, tagged integers
+represent literal constants...
