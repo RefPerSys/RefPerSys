@@ -66,16 +66,16 @@ MPS](https://github.com/Ravenbrook/mps).
 
 ## environment variables
 
-Your `$EDITOR` should give a valid editor path (e.g. `/usr/bin/emacsclient` or `/usr/bin/gedit` ...)
+Your `$EDITOR` should give a valid editor path (e.g. `/usr/bin/emacsclient` or `/usr/bin/gedit` or `/usr/bin/vim` ...)
 
 Your `$HOME` should be valid.
 
 Your `$PATH` should be valid and give access to your `refpersys` and
-`lto-refpersys` executables. A possibility could be to have (or
-create) your `$HOME/bin/` directory (appearing in your `$PATH`) and
-symbolic links inside it. Your `$PATH` should give access to [GNU
-make](https://www.gnu.org/software/make/) as `make` (a simpler make
-utility, including BSD make, is not ok). the
+(when relevant) `lto-refpersys` executables. A possibility could be to
+have (or create) your `$HOME/bin/` directory (appearing in your
+`$PATH`) and symbolic links inside it. Your `$PATH` should give access
+to [GNU make](https://www.gnu.org/software/make/) as `make` (a simpler
+make utility, including BSD make, is not ok). the
 [`git`](http://git-scm.com/) version control command should be
 accessible and likewise for other [GNU](https://www.gnu.org/software/)
 utilities.
@@ -171,6 +171,10 @@ their *behavior* (not their fields, which are represented as
 attributes) so used for [dynamic message
 dispatching](https://en.wikipedia.org/wiki/Dynamic_dispatch).
 
+
+## Code representation and generation
+
+See separate [CODE-REPR.md](CODE-REPR.md) markup file.
 
 ## Worker threads and agenda of tasklets
 
