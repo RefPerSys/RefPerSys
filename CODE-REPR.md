@@ -49,5 +49,6 @@ preferably to its absolute path or at least use the `./_` prefix.
 
 When the "source" file starts with an underscore, it should be the
 objid of some *existing* RefPerSys object.  Hence `Rps_PayloadGccjit`
-has member functions 
+has member functions `make_csrc_location`, `make_string_src_location`,
+and `make_rpsobj_location`.
 
