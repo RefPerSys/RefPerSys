@@ -24,5 +24,30 @@ debugging data (e.g. usable by
 The generated code is either useful in RefPerSys or could be generated
 for other programs or processes.
 
-For RefPerSys consumed code, we need to follow coding conventions tied
-to persistence and garbage collection.
+For RefPerSys consumed and generated code, we need to follow its
+coding conventions tied to persistence and garbage collection. But the
+generated machine code itself is not expected to be deleted by the
+garbage collector. It would be forgotten (if provably useless) at dump
+time.
+
+Our `gccjit_rps.cc` file defines a `Rps_PayloadGccjit` payload class.
+
+## [gccjit](https://gcc.gnu.org/onlinedocs/jit/) friendly data representations
+
+### "source" locations and conventions.
+
+In [gccjit](https://gcc.gnu.org/onlinedocs/jit/) a source location
+(C++ class
+[`gccjit::location`](https://gcc.gnu.org/onlinedocs/jit/cp/topics/locations.html)
+refers to a "source file position". When the source file exists, it is
+a path, line, column position. Source locations are optional.
+
+By convention a [RefPerSys](https://github.com/RefPerSys/RefPerSys/)
+file path, when referring to some file existing in the file system,
+should not start with an `_` (underscore). If it does, refer
+preferably to its absolute path or at least use the `./_` prefix.
+
+When the "source" file starts with an underscore, it should be the
+objid of some *existing* RefPerSys object.  Hence `Rps_PayloadGccjit`
+has member functions 
+
