@@ -8,7 +8,9 @@ The internal representation should be conceptually close to
 [gccjit](https://gcc.gnu.org/onlinedocs/jit/). But it is represented
 by [RefPerSys](https://github.com/RefPerSys/RefPerSys/) data.
 
-It is generated in file `gccjit_rps.cc`
+Machne code (as
+[ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)
+plugins) is generated in file `gccjit_rps.cc` from RefPerSys data.
 
 The generated code is (on Linux), [position-independent
 code](https://en.wikipedia.org/wiki/Position-independent_code), in
@@ -44,11 +46,24 @@ a path, line, column position. Source locations are optional.
 
 By convention a [RefPerSys](https://github.com/RefPerSys/RefPerSys/)
 file path, when referring to some file existing in the file system,
-should not start with an `_` (underscore). If it does, refer
-preferably to its absolute path or at least use the `./_` prefix.
+should not start with an `_` (underscore). If a file path does start
+with an underscore, refer preferably to its absolute path or at least
+use the `./_` prefix.
 
 When the "source" file starts with an underscore, it should be the
 objid of some *existing* RefPerSys object.  Hence `Rps_PayloadGccjit`
 has member functions `make_csrc_location`, `make_string_src_location`,
 and `make_rpsobj_location`.
 
+### top-level representations.
+
+Outside of "source" locations described above, the generated code is
+obtained from mutable objects of superclass `_8kK8HUqCBlj02e7YGQ` =
+*`gccjit_class`* and immutable instances of superclass
+`_7VRJKpau2Nn04oeUER` = *`gccjit_instance`*.
+
+Subclasses of *`gccjit_class`* are used to represent GCCJIT types,
+fields, functions, blocks, lvalues, parameters.
+
+Subclasses of *`gccjit_instance`* are used to represent GCCJIT
+statements, rvalues...
