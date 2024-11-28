@@ -48,7 +48,12 @@ rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long c
 
 
 /// FIXME: declare  rps_full_evaluate_repl_instance
-#warning should declare  rps_full_evaluate_repl_instance
+#warning should declare rps_full_evaluate_repl_instance
+
+
+//// TODO: define some cmdrepl_rps.cc local conventions for local frames so a future
+//// RPS_REPLEVAL_LOCALFRAME macro which defines and initialize exprv and envob
+#warning we could need some RPS_REPLEVAL_LOCALFRAME macro local to this source file.
 
 /// Evaluate for the REPL machinery in given callframe the expression
 /// `expr` in the environment given by `envob`; should give two values
@@ -86,7 +91,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     _f.mainresv = (V1);                                         \
     _f.extraresv = (V2);                                        \
     RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,                         \
-                     "rps_full_evaluate_repl_expr#"             \
+                     __FUNCTION__ << "#"                        \
                      << eval_number << " of expr:" << _f.exprv  \
                      << " in envob:" << _f.envob                \
                      << " gives main:" << _f.mainresv           \
@@ -99,7 +104,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     _f.mainresv = (V1);                                 \
     _f.extraresv = nullptr;                             \
     RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,                 \
-                     "rps_full_evaluate_repl_expr#"     \
+                     __FUNCTION__ << "#"                \
                      << eval_number << " of expr:"      \
                      << _f.exprv                        \
                      << " in envob:" << _f.envob        \
@@ -112,7 +117,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   ///
 #define RPS_REPLEVAL_FAIL_AT(MSG,LOG,LIN) do {                  \
     RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,                         \
-                     "rps_full_evaluate_repl_expr#"             \
+                     __FUNCTION__ << "#"                        \
                      << eval_number << " FAILS for expr:"       \
                      << _f.exprv                                \
                      << " in envob:" << _f.envob                \
@@ -124,6 +129,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   ///
   ///
 #define  RPS_REPLEVAL_FAIL(MSG,LOG) RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
+  ///
   ///
   RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
                 << eval_number << " *STARTEVAL*"
