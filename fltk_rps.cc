@@ -47,6 +47,20 @@
 #error RefPerSys without FLTK toolkit
 #endif
 
+
+
+#if 0 //// FIXME: dont work yet in commit  b517299683ea8 end of Nov 2024
+/// these are from generated/rpsdata.h
+#if RPS_FLTK_ABI_VERSION < 10400
+#error RefPerSys requires FLTK 1.4 or 1.5 ABI
+#endif
+
+#if RPS_FLTK_API_VERSION < 10400
+#error RefPerSys requires FLTK 1.4 or 1.5 API
+#endif
+#endif // FIXME: dont work yet in commit  b517299683ea8 end of Nov 2024
+
+
 #warning perhaps we should use FOX-toolkit from "https://fox-toolkit.org"
 
 #include <stdarg.h>
