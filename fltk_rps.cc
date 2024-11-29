@@ -47,12 +47,18 @@
 #error RefPerSys without FLTK toolkit
 #endif
 
-#warning fltk_rps.cc should be backported to FLTK 1.3
-
 #warning perhaps we should use FOX-toolkit from "https://fox-toolkit.org"
 
 #include <stdarg.h>
 #include <FL/Fl.H>
+
+// The below include defines FL_ABI_VERSION and FL_API_VERSION
+#include <FL/Enumerations.H>
+
+#if FL_API_VERSION < 10400
+#error FLTK 1.4 is required
+#endif
+
 #include <FL/platform.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Double_Window.H>
@@ -69,9 +75,7 @@
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Input.H>
 /// Fl_Flex.h is only in FLTK 1.4 not FLTK 1.3
-#if FL_API_VERSION >= 10400
 #include <FL/Fl_Flex.H>
-#endif
 
 /// conventional strings
 extern "C" const char rps_fltk_gitid[];
@@ -87,8 +91,11 @@ extern "C" const int rps_fltk_api_version;
 const int rps_fltk_api_version = FL_API_VERSION;
 
 
+// we don't use (after commit 4b2d027185 end of Nov. 2024) the FLTK
+// preference machinery, since we have userpref_rps.cc....
 extern "C" char* rps_fltk_prefpath;
 char* rps_fltk_prefpath;
+
 
 extern "C" Fl_Preferences* rps_fltk_preferences;
 Fl_Preferences* rps_fltk_preferences;
