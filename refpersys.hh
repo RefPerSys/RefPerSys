@@ -134,8 +134,8 @@
 #define RPS_WITH_FLTK 1 /* could be 1 if using fltk.org graphical toolkit */
 
 //// the generated/rpsdata.h contain only preprocessor #define-s and #undef
-//// it may undef RPS_WITH_FLTK
-//// it is simpler to not use it...
+//// it may undef RPS_WITH_FLTK. It has a pragma message
+//// it is simpler to not use it... (but needed in some files)
 #ifdef RPS_WITH_DATA
 #include "generated/rpsdata.h"
 #endif //RPS_WITH_DATA
