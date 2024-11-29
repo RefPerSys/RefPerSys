@@ -957,71 +957,135 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
+  /// run fltk-config --version and require FLTK 1.4 or 1.5
+  {
+    char flversbuf[80];
+    memset (flversbuf, 0, sizeof(flversbuf));
+    memset (cmdbuf, 0, sizeof (cmdbuf));
+    snprintf (cmdbuf, sizeof (cmdbuf), "%s --version", fc);
+    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
+            __LINE__);
+    fflush (NULL);
+    pipf = popen (cmdbuf, "r");
+    if (!pipf)
+      {
+        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    if (!fgets (flversbuf, sizeof (flversbuf), pipf))
+      {
+        fprintf (stderr, "%s: failed to get FLTK version using %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      };
+    int flmajv= -1, flminv= -1, flpatchv= -1, flpos= -1;
+    if (sscanf(flversbuf, "%d.%d.%d%n", &flmajv, &flminv, &flpatchv, &flpos)<3
+	|| flpos<(int)strlen("1.2.3"))
+      {
+        fprintf (stderr, "%s: failed to query FLTK version using %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      };
+    if (flmajv != 1 || (flminv != 4 && flminv != 5)
+	|| flpatchv < 0) {
+        fprintf (stderr, "%s: needs FLTK version 1.4 or 1.5, got fltk %d.%d.%d using %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name,
+		 flmajv, flminv, flpatchv,
+		 cmdbuf, strerror (errno), __FILE__,__LINE__-3);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+    }
+    if (pclose (pipf))
+      {
+        fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    fflush (NULL);
+    pipf = NULL;
+  }
   /// run fltk-config -g --cflags
-  memset (cmdbuf, 0, sizeof (cmdbuf));
-  snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --cflags", fc);
-  printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
-          __LINE__);
-  fflush (NULL);
-  pipf = popen (cmdbuf, "r");
-  if (!pipf)
-    {
-      fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-               __LINE__);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  if (!fgets (fcflags, sizeof (fcflags), pipf))
-    {
-      fprintf (stderr, "%s: failed to get cflags using %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-               __LINE__);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  if (pclose (pipf))
-    {
-      fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-               __LINE__);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  fflush (NULL);
-  pipf = NULL;
+  {
+    memset (cmdbuf, 0, sizeof (cmdbuf));
+    snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --cflags", fc);
+    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
+            __LINE__);
+    fflush (NULL);
+    pipf = popen (cmdbuf, "r");
+    if (!pipf)
+      {
+        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    memset(fcflags, 0, sizeof(fcflags));
+    if (!fgets (fcflags, sizeof (fcflags), pipf))
+      {
+        fprintf (stderr, "%s: failed to get cflags using %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    if (pclose (pipf))
+      {
+        fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    fflush (NULL);
+    pipf = NULL;
+  }
+  ///
   /// run fltk-config -g --ldflags
-  memset (cmdbuf, 0, sizeof (cmdbuf));
-  snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --ldlags", fc);
-  printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
-          __LINE__);
-  pipf = popen (cmdbuf, "r");
-  if (!pipf)
-    {
-      fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-               __LINE__);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  if (!fgets (fldflags, sizeof (fldflags), pipf))
-    {
-      fprintf (stderr, "%s: failed to get ldflags using %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-               __LINE__);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  if (pclose (pipf))
-    {
-      fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-               __LINE__);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  fflush (NULL);
-  pipf = NULL;
+  {
+    memset (cmdbuf, 0, sizeof (cmdbuf));
+    snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --ldlags", fc);
+    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
+            __LINE__);
+    pipf = popen (cmdbuf, "r");
+    if (!pipf)
+      {
+        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    memset(fldflags, 0, sizeof(fldflags));
+    if (!fgets (fldflags, sizeof (fldflags), pipf))
+      {
+        fprintf (stderr, "%s: failed to get ldflags using %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    if (pclose (pipf))
+      {
+        fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
+      }
+    fflush (NULL);
+    pipf = NULL;
+  }
+  ////
   const char *tmp_testfltk_src
     = rpsconf_temporary_textual_file ("tmp_test_fltk", ".cc", __LINE__);
   FILE *fltksrc = fopen (tmp_testfltk_src, "w");
