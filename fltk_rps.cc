@@ -39,6 +39,10 @@
 //@@PKGCONFIG glib-2.0
 #include "glib.h"
 
+
+/// explicitly include the generated/rpsdata.h
+#include "generated/rpsdata.h"
+
 #ifndef RPS_WITH_FLTK
 #error RefPerSys without FLTK
 #endif
