@@ -53,6 +53,8 @@
 
 
 
+///NOTICE: after commit 094f904dd02 of end Nov. 2024 we use our userpref_rps.cc functions
+
 #if 0 //// FIXME: dont work yet in commit  b517299683ea8 end of Nov 2024
 /// these are from generated/rpsdata.h
 #if RPS_FLTK_ABI_VERSION < 10400
@@ -111,12 +113,6 @@ const int rps_fltk_api_version = FL_API_VERSION;
 
 // we don't use (after commit 4b2d027185 end of Nov. 2024) the FLTK
 // preference machinery, since we have userpref_rps.cc....
-extern "C" char* rps_fltk_prefpath;
-char* rps_fltk_prefpath;
-
-
-extern "C" Fl_Preferences* rps_fltk_preferences;
-Fl_Preferences* rps_fltk_preferences;
 ////////////////////////////////////////////////////////////////////////
 ////// ******** DECLARATIONS ********
 
@@ -1109,7 +1105,7 @@ rps_fltk_get_api_version (void)
   return Fl::api_version ();
 } // end rps_fltk_get_api_version
 
-
+/// this function is called once, by rps_parse1opt in utilities_rps.cc
 void
 rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 {
@@ -1153,7 +1149,8 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 #warning missing code in rps_fltk_progoption
   if (arg)
     {
-      rps_fltk_prefpath = arg;
+  //// obsolete code
+  //-*      rps_fltk_prefpath = arg;
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg='"
                   <<  Rps_Cjson_String(arg)
                   << "' side_effect=" << (side_effect?"True":"False")
@@ -1202,32 +1199,37 @@ rps_fltk_initialize (int argc, char**argv)
                 << " pid#" << (int)getpid()
                 << " argc=" << argc
                 << " argv=" << RPS_OUT_PROGARGS(argc, argv)
-                << " rps_fltk_prefpath=" << Rps_Cjson_String(rps_fltk_prefpath)
+  //// obsolete code
+  //-* << " rps_fltk_prefpath=" << Rps_Cjson_String(rps_fltk_prefpath)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize start"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(argc>0 && argv[0] != nullptr);
-  if (rps_fltk_prefpath)
-    {
-      RPS_DEBUG_LOG(REPL, "rps_fltk_initialize rps_fltk_prefpath=" << rps_fltk_prefpath);
-      RPS_POSSIBLE_BREAKPOINT();
-      rps_fltk_preferences = //
-        new Fl_Preferences(rps_fltk_prefpath,
-                           "refpersys.org",
-                           "RefPerSys");
-      RPS_INFORMOUT("using explicit FLTK preferences from "
-                    << rps_fltk_prefpath
-                    << " on " << rps_fltk_preferences->path());
-    }
-  else
-    {
-      rps_fltk_preferences = //
-        new Fl_Preferences(Fl_Preferences::USER,
-                           "refpersys.org",
-                           "refpersys");
-      RPS_INFORMOUT("using user FLTK preferences on "
-                    << rps_fltk_preferences->path());
-    };
+  ////
+  //// obsolete code
+  //-*  if (rps_fltk_prefpath)
+  //-*    {
+  //-*      RPS_DEBUG_LOG(REPL, "rps_fltk_initialize rps_fltk_prefpath="
+  //-*		    << rps_fltk_prefpath);
+  //-*      RPS_POSSIBLE_BREAKPOINT();
+  //-*      rps_fltk_preferences = //
+  //-*        new Fl_Preferences(rps_fltk_prefpath,
+  //-*                           "refpersys.org",
+  //-*                           "RefPerSys");
+  //-*      RPS_INFORMOUT("using explicit FLTK preferences from "
+  //-*                    << rps_fltk_prefpath
+  //-*                    << " on " << rps_fltk_preferences->path());
+  //-*    }
+  //-*  else
+  //-*    {
+  //-*      rps_fltk_preferences = //
+  //-*        new Fl_Preferences(Fl_Preferences::USER,
+  //-*                           "refpersys.org",
+  //-*                           "refpersys");
+  //-*      RPS_INFORMOUT("using user FLTK preferences on "
+  //-*                    << rps_fltk_preferences->path());
+  //-*    };
+  ////
   if (!rps_run_name.empty())
     snprintf(titlebuf, sizeof(titlebuf),
              "RefPerSys/%.20s %.9s v%d.%d pid %d on %s",
@@ -1245,15 +1247,21 @@ rps_fltk_initialize (int argc, char**argv)
              rps_hostname());
 
   fl_open_display();
-  RPS_ASSERT (rps_fltk_preferences != nullptr);
+  //-* RPS_ASSERT (rps_fltk_preferences != nullptr);
   /// FIXME: should use preferences
-#warning rps_fltk_initialize should use preferences
+#warning rps_fltk_initialize should use our user preferences functions in userpref_rps.cc
   int mainwin_w = -1;
   int mainwin_h = -1;
   {
-    Fl_Preferences mainwinpref(rps_fltk_preferences, "MainWindow");
-    bool goth = (bool)mainwinpref.get("height", mainwin_h, 777);
-    bool gotw = (bool)mainwinpref.get("width", mainwin_w, 555);
+    //-* Fl_Preferences mainwinpref(rps_fltk_preferences, "MainWindow");
+    //-* bool goth = (bool)mainwinpref.get("height", mainwin_h, 777);
+    //-* bool gotw = (bool)mainwinpref.get("width", mainwin_w, 555);
+    bool goth = rps_userpref_has_value("fltk","mainwin-height");
+    bool gotw = rps_userpref_has_value("fltk","mainwin-width");
+    if (goth)
+      mainwin_h = (int) rps_userpref_get_long("fltk","mainwin-height", 777);
+    if (gotw)
+      mainwin_w = (int) rps_userpref_get_long("fltk","mainwin-height", 555);
     RPS_DEBUG_LOG(REPL, "for mainwin "
                   << (goth?"got":"default") << " h=" << mainwin_h
                   << " & "
