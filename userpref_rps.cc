@@ -52,6 +52,7 @@ extern "C" const char rps_userpref_shortgitid[];
 const char rps_userpref_shortgitid[]= RPS_SHORTGITID;
 
 static INIReader* rps_userpref_ird;
+static std::atomic_bool rps_userpref_is_parsed;
 
 extern "C" void rps_set_user_preferences(char*);
 
@@ -103,18 +104,26 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   RPS_ASSERT(mts->toksrcmfil_line > mts->toksrcmfil_start
              && mts->toksrcmfil_line <  mts->toksrcmfil_end);
   int curlineno = mts->line();
-#warning unimplemented rps_parse_user_preferences
   rps_userpref_ird = new INIReader(mts->toksrcmfil_line,
                                    mts->toksrcmfil_end - mts->toksrcmfil_line);
+  RPS_ASSERT(rps_userpref_ird != nullptr);
   if (int pe = rps_userpref_ird->ParseError())
     {
       RPS_FATALOUT("failed to parse user preference "
                    << mts->path() << ":" << pe+curlineno);
-    }
-  RPS_FATALOUT("unimplemented rps_parse_user_preferences from "
-               << mts->path());
+    };
+  bool parsedonce = !rps_userpref_is_parsed.exchange(true);
+  if (!parsedonce)
+    RPS_FATALOUT("rps_parse_user_preferences called more than once for "
+                 << mts->path());
   /// see also file etc/user-preferences-refpersys.txt as example
 } // end rps_parse_user_preferences
+
+bool
+rps_has_parsed_user_preferences(void)
+{
+  return rps_userpref_is_parsed.load();
+} // end rps_has_parsed_user_preferences
 
 std::string
 rps_userpref_get_string(const std::string& section, const std::string& name,
