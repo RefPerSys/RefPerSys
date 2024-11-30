@@ -6,3 +6,6 @@
 ### every line up to one with *REFPERSYS_USER_PREFERENCES is skipped.
 
 *REFPERSYS_USER_PREFERENCES
+[fltk]
+mainwin_height:600
+mainwin_width=800

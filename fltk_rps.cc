@@ -683,6 +683,10 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*ti
   _mainwin_stringvect.reserve(estimatenbstring);
   constexpr int estimatenbcstr = 32;
   _mainwin_cstrvect.reserve(estimatenbcstr);
+  RPS_INFORMOUT("Rps_FltkMainWindow x=" << x << ",y=" << y
+                << ",w=" << w << ",h=" << h
+                << ",title=" << Rps_Cjson_String(title)
+                << " @" << (void*)this);
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
                 << ",w=" << w << ",h=" << h
                 << ",title=" << Rps_Cjson_String(title)
@@ -1256,12 +1260,16 @@ rps_fltk_initialize (int argc, char**argv)
     //-* Fl_Preferences mainwinpref(rps_fltk_preferences, "MainWindow");
     //-* bool goth = (bool)mainwinpref.get("height", mainwin_h, 777);
     //-* bool gotw = (bool)mainwinpref.get("width", mainwin_w, 555);
-    bool goth = rps_userpref_has_value("fltk","mainwin-height");
-    bool gotw = rps_userpref_has_value("fltk","mainwin-width");
+    bool goth = rps_userpref_has_value("fltk","mainwin_height");
+    bool gotw = rps_userpref_has_value("fltk","mainwin_width");
     if (goth)
-      mainwin_h = (int) rps_userpref_get_long("fltk","mainwin-height", 777);
+      mainwin_h = (int) rps_userpref_get_long("fltk","mainwin_height", 777);
+    else
+      mainwin_h = 750;
     if (gotw)
-      mainwin_w = (int) rps_userpref_get_long("fltk","mainwin-height", 555);
+      mainwin_w = (int) rps_userpref_get_long("fltk","mainwin_height", 555);
+    else
+      mainwin_w = 500;
     RPS_DEBUG_LOG(REPL, "for mainwin "
                   << (goth?"got":"default") << " h=" << mainwin_h
                   << " & "

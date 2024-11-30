@@ -116,6 +116,7 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   if (!parsedonce)
     RPS_FATALOUT("rps_parse_user_preferences called more than once for "
                  << mts->path());
+  RPS_INFORMOUT("rps_parse_user_preferences path " << mts->path());
   /// see also file etc/user-preferences-refpersys.txt as example
 } // end rps_parse_user_preferences
 
