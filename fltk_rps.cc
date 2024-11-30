@@ -1153,8 +1153,8 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 #warning missing code in rps_fltk_progoption
   if (arg)
     {
-  //// obsolete code
-  //-*      rps_fltk_prefpath = arg;
+      //// obsolete code
+      //-*      rps_fltk_prefpath = arg;
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg='"
                   <<  Rps_Cjson_String(arg)
                   << "' side_effect=" << (side_effect?"True":"False")
@@ -1203,8 +1203,8 @@ rps_fltk_initialize (int argc, char**argv)
                 << " pid#" << (int)getpid()
                 << " argc=" << argc
                 << " argv=" << RPS_OUT_PROGARGS(argc, argv)
-  //// obsolete code
-  //-* << " rps_fltk_prefpath=" << Rps_Cjson_String(rps_fltk_prefpath)
+                //// obsolete code
+                //-* << " rps_fltk_prefpath=" << Rps_Cjson_String(rps_fltk_prefpath)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize start"));
   RPS_POSSIBLE_BREAKPOINT();
@@ -1214,7 +1214,7 @@ rps_fltk_initialize (int argc, char**argv)
   //-*  if (rps_fltk_prefpath)
   //-*    {
   //-*      RPS_DEBUG_LOG(REPL, "rps_fltk_initialize rps_fltk_prefpath="
-  //-*		    << rps_fltk_prefpath);
+  //-*        << rps_fltk_prefpath);
   //-*      RPS_POSSIBLE_BREAKPOINT();
   //-*      rps_fltk_preferences = //
   //-*        new Fl_Preferences(rps_fltk_prefpath,
