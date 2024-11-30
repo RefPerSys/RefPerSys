@@ -1248,6 +1248,12 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_BUILDING_OPERATING_SYSTEM \"" << osbuf << "\"" << std::endl;
   *pouts << "#define RPS_BUILDING_MACHINE \"" << machinebuf << "\"" << std::endl;
   *pouts << "#define RPS_PATH_BYTE_SIZE " << rps_path_byte_size << std::endl;
+  *pouts << "#define RPS_SC_VERSION " << sysconf(_SC_VERSION) << std::endl;
+  *pouts << "#define RPS_XOPEN_VERSION " << sysconf(_SC_XOPEN_VERSION) << std::endl;
+  *pouts << "#define RPS_POSIX_LINE_MAX " << sysconf(_SC_LINE_MAX) << std::endl;
+  *pouts << "#define RPS_POSIX_ARG_MAX " << sysconf(_SC_ARG_MAX) << std::endl;
+  *pouts << "#define RPS_POSIX_PAGE_SIZE " << sysconf(_SC_PAGE_SIZE) << std::endl;
+  *pouts << "#define RPS_POSIX_PATH_MAX /*for $HOME*/ " << pathconf(getenv("HOME"),_PC_PATH_MAX) << std::endl;
   RPS_POSSIBLE_BREAKPOINT();
   if (!strcmp(cwdbuf, rps_topdirectory))
     *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY rps_topdirectory" << std::endl;
@@ -1327,6 +1333,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_CALLFRAME " << alignof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD " << alignof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
+  *pouts << "\n\n//// Generated from " << __FILE__ << ":" << __LINE__ << " shortgit " << rps_shortgitid << std::endl;
   *pouts << std::endl;
   if (sizeof(Rps_Value) == sizeof(void*) && alignof(Rps_Value) == alignof(void*))
     *pouts << "#define RPS_VALUE_IS_VOIDPTR 1" << std::endl;
@@ -1571,6 +1578,7 @@ Rps_Dumper::write_all_generated_files(void)
         }
       write_generated_parser_decl_file(&_, _f.genstoreob);
       write_generated_parser_impl_file(&_, _f.genstoreob);
+      sync();
     }
   catch (std::exception&exc)
     {
