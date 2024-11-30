@@ -45,7 +45,9 @@
 
 
 /// GNU lightning
+extern "C" {
 #include "lightning.h"
+};
 
 extern "C" const char rps_lightgen_gitid[];
 const char rps_lightgen_gitid[]= RPS_GITID;
