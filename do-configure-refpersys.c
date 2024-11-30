@@ -985,7 +985,7 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
       };
     int flmajv= -1, flminv= -1, flpatchv= -1, flpos= -1;
     if (sscanf(flversbuf, "%d.%d.%d%n", &flmajv, &flminv, &flpatchv, &flpos)<3
-	|| flpos<(int)strlen("1.2.3"))
+        || flpos<(int)strlen("1.2.3"))
       {
         fprintf (stderr, "%s: failed to query FLTK version using %s (%s) [%s:%d]\n",
                  rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
@@ -994,14 +994,15 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
         exit (EXIT_FAILURE);
       };
     if (flmajv != 1 || (flminv != 4 && flminv != 5)
-	|| flpatchv < 0) {
+        || flpatchv < 0)
+      {
         fprintf (stderr, "%s: needs FLTK version 1.4 or 1.5, got fltk %d.%d.%d using %s (%s) [%s:%d]\n",
                  rpsconf_prog_name,
-		 flmajv, flminv, flpatchv,
-		 cmdbuf, strerror (errno), __FILE__,__LINE__-3);
+                 flmajv, flminv, flpatchv,
+                 cmdbuf, strerror (errno), __FILE__,__LINE__-3);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
-    }
+      }
     if (pclose (pipf))
       {
         fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
