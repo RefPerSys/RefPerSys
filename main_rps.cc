@@ -277,6 +277,17 @@ struct argp_option rps_progoptions[] =
     "(notice the colon separating them).\n", //
     /*group:*/0 ///
   },
+  /* ====== after loading heap & plugins, show help about preferences
+     ===== */
+  {/*name:*/ "preferences-help", ///
+    /*key:*/ RPSPROGOPT_PREFERENCES_HELP, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "After loading heap and plugins, show help about ...\n"
+    "user preferences (given in the preferences file)\n"
+    , //
+    /*group:*/0 ///
+  },
   /* ====== publish some data to a remote URL and Web service which
      might make some statistics about RefPerSys ===== */
   {/*name:*/ "publish-me", ///
@@ -404,13 +415,20 @@ struct argp_option rps_progoptions[] =
   /* ======= user preferences ======= */
   {/*name:*/ "user-pref", ///
     /*key:*/ RPSPROGOPT_USER_PREFERENCES, ///
-    /*arg:*/ "USER_PREFERENCES", ///
+    /*arg:*/ "USER_PREF", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Set the user preferences to given file USER_PREFERENCES;\n"
+    /*doc:*/ "Set the user preferences to given file USER_PREF;\n"
     "Lines starting with # are comments.\n"
     "Lines before the first *REFPERSYS_USER_PREFERENCES are ignored.\n"
     "\t So they could be some shell script....\n"
-    "Others are <name>=<value>, e.g. color='black' or height=345 ", //
+    "See also --preferences-help option.\n"
+    "\n"
+    "The format is en.wikipedia.org/wiki/INI_file with named values...\n"
+    "The preferences file has sections starting with [secname]\n"
+    "Others are <name>=<value>, e.g. color='black' or height=345 ...\n"
+    "\nDefault preference file is"
+    " $HOME/" REFPERSYS_DEFAULT_PREFERENCE_PATH "\n"
+    , //
     /*group:*/0 ///
   },
   /* ======= version info ======= */
