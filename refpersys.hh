@@ -823,10 +823,13 @@ enum rps_progoption_en
   RPSPROGOPT_RUN_NAME,
   RPSPROGOPT_ECHO,
   RPSPROGOPT_VERSION,
+  RPSPROGOPT_PREFERENCES_HELP,
   RPSPROGOPT_PUBLISH_ME,
 };
 
 extern "C" std::string rps_user_preferences_path(void);
+extern "C" bool rps_want_user_preferences_help(void);
+#define REFPERSYS_DEFAULT_PREFERENCE_PATH ".refpersysrc" /*in $HOME*/
 
 /// if state is RPS_EMPTYSLOT no serious side-effect happens
 extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);

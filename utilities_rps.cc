@@ -71,6 +71,7 @@ extern "C" void rps_set_user_preferences(const char*path);
 
 extern "C" char*rps_chdir_path_after_load;
 
+static bool rps_flag_pref_help;
 
 std::string rps_run_name;
 
@@ -119,6 +120,12 @@ rps_is_main_thread(void)
   return pthread_self() == rps_main_thread_handle;
 } // end rps_is_main_thread
 
+
+bool
+rps_want_user_preferences_help(void)
+{
+  return rps_flag_pref_help;
+} // end rps_want_user_preferences_help
 
 static std::map<std::string,std::string> rps_dict_extra_arg;
 
@@ -448,22 +455,22 @@ rps_print_types_info(void)
         (int)sizeof(Ty), (int)alignof(Ty))
   /////
 #define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n", \
-              #Ty1 "," #Ty2,          \
-              (int)sizeof(Ty1,Ty2),       \
+              #Ty1 "," #Ty2,                                    \
+              (int)sizeof(Ty1,Ty2),                             \
               (int)alignof(Ty1,Ty2))
   /////
 #define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)              \
   printf(TYPEFMT_rps " %5d %5d\n",              \
-   #Ty1 "," #Ty2 ",\n"        \
-   "                     "#Ty3,     \
-   (int)sizeof(Ty1,Ty2,Ty3),      \
+   #Ty1 "," #Ty2 ",\n"                          \
+   "                     "#Ty3,                 \
+   (int)sizeof(Ty1,Ty2,Ty3),                    \
    (int)alignof(Ty1,Ty2,Ty3))
   /////
-#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)    \
-  printf(TYPEFMT_rps " %5d %5d\n",    \
-   #Ty1 "," #Ty2 ",\n                " #Ty3 \
-   "," #Ty4,          \
-   (int)sizeof(Ty1,Ty2,Ty3,Ty4),    \
+#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)          \
+  printf(TYPEFMT_rps " %5d %5d\n",              \
+   #Ty1 "," #Ty2 ",\n                " #Ty3     \
+   "," #Ty4,                                    \
+   (int)sizeof(Ty1,Ty2,Ty3,Ty4),                \
    (int)alignof(Ty1,Ty2,Ty3,Ty4))
   /////
   EXPLAIN_TYPE(int);
@@ -1104,6 +1111,10 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       if (!rps_publisher_url_str.empty())
         RPS_FATAL("cannot give twice the --publish-me <URL> option");
       rps_publisher_url_str = arg;
+    }
+    return 0;
+    case RPSPROGOPT_PREFERENCES_HELP:
+    {
     }
     return 0;
     case RPSPROGOPT_DUMP:
