@@ -1784,7 +1784,12 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
                            << " for obr " <<curobr->oid().to_string());
             std::lock_guard<std::recursive_mutex> gu(*(obsymb->objmtxptr()));
             auto symb = obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
-            if (symb)
+            if (!namestr.empty() && symb)
+              {
+                *pouts << "//" << namestr << "∈" /*U+2208 ELEMENT OF*/
+                       << symb->symbol_name() << std::endl;
+              }
+            else if (symb)
               *pouts << "//∈" /*U+2208 ELEMENT OF*/
                      << symb->symbol_name() << std::endl;
           }
