@@ -37,6 +37,7 @@
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
 //@@PKGCONFIG glib-2.0
+//@@PKGCONFIG cairo
 
 
 #if RPS_WITH_FLTK
