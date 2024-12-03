@@ -1786,7 +1786,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
             auto symb = obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
             if (!namestr.empty() && symb)
               {
-                *pouts << "//" << namestr << "∈" /*U+2208 ELEMENT OF*/
+                *pouts << "//$" << namestr << "∈" /*U+2208 ELEMENT OF*/
                        << symb->symbol_name() << std::endl;
               }
             else if (symb)
