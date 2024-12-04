@@ -118,8 +118,10 @@ protected:
   void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
   void raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit);
   void raw_unregister_object_jit(Rps_ObjectRef ob);
-  gccjit::type raw_get_gccjit_type(enum gcc_jit_types);
-  gccjit::type locked_get_gccjit_type(enum gcc_jit_types);
+  gccjit::type raw_get_gccjit_builtin_type(enum gcc_jit_types);
+  gccjit::type locked_get_gccjit_builtin_type(enum gcc_jit_types);
+  gccjit::type raw_get_gccjit_pointer_type(gccjit::type);
+  gccjit::type locked_get_gccjit_pointer_type(gccjit::type);
 };        // end class Rps_PayloadGccjit
 
 
@@ -133,19 +135,33 @@ Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
 } // end of Rps_PayloadGccjit::Rps_PayloadGccjit
 
 gccjit::type 
-Rps_PayloadGccjit::raw_get_gccjit_type(enum gcc_jit_types gcty)
+Rps_PayloadGccjit::raw_get_gccjit_builtin_type(enum gcc_jit_types gcty)
 {
   RPS_ASSERT(owner());
   return _gji_ctxt.get_type(gcty);
-} // end Rps_PayloadGccjit::raw_get_gccjit_type
+} // end Rps_PayloadGccjit::raw_get_gccjit_builtin_type
 
 gccjit::type 
-Rps_PayloadGccjit::locked_get_gccjit_type(enum gcc_jit_types gcty)
+Rps_PayloadGccjit::locked_get_gccjit_builtin_type(enum gcc_jit_types gcty)
 {
   RPS_ASSERT(owner());
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
-  return raw_get_gccjit_type(gcty);
-} // end Rps_PayloadGccjit::locked_get_gccjit_type
+  return raw_get_gccjit_builtin_type(gcty);
+} // end Rps_PayloadGccjit::locked_get_gccjit_builtin_type
+
+gccjit::type 
+Rps_PayloadGccjit::raw_get_gccjit_pointer_type(gccjit::type srcty)
+{
+  RPS_ASSERT(owner());
+  return srcty.get_pointer();
+} // end Rps_PayloadGccjit::raw_get_gccjit_builtin_type
+
+gccjit::type 
+Rps_PayloadGccjit::locked_get_gccjit_pointer_type(gccjit::type srcty)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_get_gccjit_pointer_type(srcty);
+} // end Rps_PayloadGccjit::locked_get_gccjit_builtin_type
 
 void
 Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit)
