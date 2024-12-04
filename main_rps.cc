@@ -1536,15 +1536,16 @@ main (int argc, char** argv)
   static char cwdbuf[rps_path_byte_size];
   memset (cwdbuf, 0, sizeof(cwdbuf));
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
-  if (cwdbuf[sizeof(cwdbuf)-4] != 0) {
-    /// In practice this won't happen. When it does, increase
-    /// rps_path_byte_size in refpersys.hh, currently it is more than
-    /// three hundred. The POSIX limit of 4Kbytes is unreasonable and
-    /// since we often allocate abolute file paths on the call stack
-    /// we avoid using _POSIX_PATH_MAX
-    RPS_FATALOUT("too long current working directory " << cwdbuf
-		 << " expecting less that " << (sizeof(cwdbuf)-4) << " bytes.");
-  }
+  if (cwdbuf[sizeof(cwdbuf)-4] != 0)
+    {
+      /// In practice this won't happen. When it does, increase
+      /// rps_path_byte_size in refpersys.hh, currently it is more than
+      /// three hundred. The POSIX limit of 4Kbytes is unreasonable and
+      /// since we often allocate abolute file paths on the call stack
+      /// we avoid using _POSIX_PATH_MAX
+      RPS_FATALOUT("too long current working directory " << cwdbuf
+                   << " expecting less that " << (sizeof(cwdbuf)-4) << " bytes.");
+    }
   if (rps_stdout_istty)
     {
       std::cout << std::endl
