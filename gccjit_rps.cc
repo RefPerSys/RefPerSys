@@ -122,6 +122,8 @@ protected:
   gccjit::type locked_get_gccjit_builtin_type(enum gcc_jit_types);
   gccjit::type raw_get_gccjit_pointer_type(gccjit::type);
   gccjit::type locked_get_gccjit_pointer_type(gccjit::type);
+  gccjit::type raw_get_gccjit_const_type(gccjit::type);
+  gccjit::type locked_get_gccjit_const_type(gccjit::type);
 };        // end class Rps_PayloadGccjit
 
 
@@ -134,14 +136,17 @@ Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
 #warning incomplete Rps_PayloadGccjit::Rps_PayloadGccjit
 } // end of Rps_PayloadGccjit::Rps_PayloadGccjit
 
-gccjit::type 
+
+
+///////////// builtin types
+gccjit::type
 Rps_PayloadGccjit::raw_get_gccjit_builtin_type(enum gcc_jit_types gcty)
 {
   RPS_ASSERT(owner());
   return _gji_ctxt.get_type(gcty);
 } // end Rps_PayloadGccjit::raw_get_gccjit_builtin_type
 
-gccjit::type 
+gccjit::type
 Rps_PayloadGccjit::locked_get_gccjit_builtin_type(enum gcc_jit_types gcty)
 {
   RPS_ASSERT(owner());
@@ -149,19 +154,43 @@ Rps_PayloadGccjit::locked_get_gccjit_builtin_type(enum gcc_jit_types gcty)
   return raw_get_gccjit_builtin_type(gcty);
 } // end Rps_PayloadGccjit::locked_get_gccjit_builtin_type
 
-gccjit::type 
+
+
+///////////// pointer types
+gccjit::type
 Rps_PayloadGccjit::raw_get_gccjit_pointer_type(gccjit::type srcty)
 {
   RPS_ASSERT(owner());
   return srcty.get_pointer();
-} // end Rps_PayloadGccjit::raw_get_gccjit_builtin_type
+} // end Rps_PayloadGccjit::raw_get_gccjit_pointer_type
 
-gccjit::type 
+gccjit::type
 Rps_PayloadGccjit::locked_get_gccjit_pointer_type(gccjit::type srcty)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   return raw_get_gccjit_pointer_type(srcty);
-} // end Rps_PayloadGccjit::locked_get_gccjit_builtin_type
+} // end Rps_PayloadGccjit::locked_get_gccjit_pointer_type
+
+
+
+
+///////////// constant types
+gccjit::type
+Rps_PayloadGccjit::raw_get_gccjit_const_type(gccjit::type srcty)
+{
+  RPS_ASSERT(owner());
+  return srcty.get_const();
+} // end Rps_PayloadGccjit::raw_get_gccjit_const_type
+
+gccjit::type
+Rps_PayloadGccjit::locked_get_gccjit_const_type(gccjit::type srcty)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_get_gccjit_const_type(srcty);
+} // end Rps_PayloadGccjit::locked_get_gccjit_const_type
+
+
+
 
 void
 Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit)
