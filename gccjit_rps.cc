@@ -118,12 +118,17 @@ protected:
   void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
   void raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit);
   void raw_unregister_object_jit(Rps_ObjectRef ob);
+  /// making a type; the raw versions don't lock the owner object, the
+  /// locked ones do... Names are inspired by those in
+  /// https://gcc.gnu.org/onlinedocs/jit/topics/types.html
   gccjit::type raw_get_gccjit_builtin_type(enum gcc_jit_types);
   gccjit::type locked_get_gccjit_builtin_type(enum gcc_jit_types);
   gccjit::type raw_get_gccjit_pointer_type(gccjit::type);
   gccjit::type locked_get_gccjit_pointer_type(gccjit::type);
   gccjit::type raw_get_gccjit_const_type(gccjit::type);
   gccjit::type locked_get_gccjit_const_type(gccjit::type);
+  gccjit::type raw_get_gccjit_volatile_type(gccjit::type);
+  gccjit::type locked_get_gccjit_volatile_type(gccjit::type);
 };        // end class Rps_PayloadGccjit
 
 
@@ -188,6 +193,22 @@ Rps_PayloadGccjit::locked_get_gccjit_const_type(gccjit::type srcty)
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   return raw_get_gccjit_const_type(srcty);
 } // end Rps_PayloadGccjit::locked_get_gccjit_const_type
+
+
+///////////// volatile types
+gccjit::type
+Rps_PayloadGccjit::raw_get_gccjit_volatile_type(gccjit::type srcty)
+{
+  RPS_ASSERT(owner());
+  return srcty.get_volatile();
+} // end Rps_PayloadGccjit::raw_get_gccjit_volatile_type
+
+gccjit::type
+Rps_PayloadGccjit::locked_get_gccjit_volatile_type(gccjit::type srcty)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_get_gccjit_volatile_type(srcty);
+} // end Rps_PayloadGccjit::locked_get_gccjit_volatile_type
 
 
 
