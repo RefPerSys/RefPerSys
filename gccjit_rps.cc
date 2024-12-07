@@ -110,6 +110,9 @@ public:
     std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
     return  _gji_ctxt.gccjit::context::new_location(filen.c_str(), line, col);
   };
+  gccjit::location no_src_location() {
+    return gccjit::location();
+  };
   // an arbitrary refpersys object may represent a fictuous "source file"
   gccjit::location make_rpsobj_location(Rps_ObjectRef ob, int line, int col=0);
   void locked_register_object_jit(Rps_ObjectRef ob,  gccjit::object jit);
