@@ -1,32 +1,35 @@
 #!/bin/bash
-## SPDX-License-Identifier: GPL-3.0-or-later
-##
-## License:
-##
-##    This GNU bash script rps-generate-timestamp.sh is free software:
-##    you can redistribute it and/or modify it under the terms of the
-##    GNU General Public License as published by the Free Software
-##    Foundation, either version 3 of the License, or (at your option)
-##    any later version.
-##
-##    This program is distributed in the hope that it will be useful,
-##    but WITHOUT ANY WARRANTY; without even the implied warranty of
-##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##    GNU General Public License for more details.
-##
-##    You should have received a copy of the GNU General Public License
-##    along with this program.  If not, see <http://www.gnu.org/licenses/>
-##
-##      © Copyright 2019 - 2024 The Reflective Persistent System Team
-##      team@refpersys.org
+
+#
+# Copyright 2020 - 2024, Basile Starynkevitch and the forum@refpersys.org
+# mailing list contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file is part of the Reflexive Persistent System (aka RefPerSys);
+# it just emits a string with the full git commit id, appending + if
+# the git status is not clean.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 ##
 ##    This internal script generates some C file containing timestamp
 ##    related constants for Linux related to the RefPerSys inference
 ##    engine free software project on refpersys.org.  It should be
 ##    invoked by GNU make only.
 ##    
-##
-##
+
 if [ -z $GPP ]; then
     GPP=$(which gpp)
     if [ -z $GPP ]; then
