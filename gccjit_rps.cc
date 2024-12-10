@@ -141,6 +141,8 @@ protected:
   gccjit::type locked_get_gccjit_const_type(gccjit::type);
   gccjit::type raw_get_gccjit_volatile_type(gccjit::type);
   gccjit::type locked_get_gccjit_volatile_type(gccjit::type);
+  gccjit::type raw_get_gccjit_aligned_type(gccjit::type,size_t alignment );
+  gccjit::type locked_get_gccjit_aligned_type(gccjit::type, size_t alignment);
 };        // end class Rps_PayloadGccjit
 
 
@@ -221,6 +223,22 @@ Rps_PayloadGccjit::locked_get_gccjit_volatile_type(gccjit::type srcty)
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   return raw_get_gccjit_volatile_type(srcty);
 } // end Rps_PayloadGccjit::locked_get_gccjit_volatile_type
+
+///////////// aligned types, the alignment is a power of two
+gccjit::type
+Rps_PayloadGccjit::raw_get_gccjit_aligned_type(gccjit::type srcty, size_t alignment)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT((alignment-1)&alignment==0);
+  return srcty.get_aligned(alignment);
+} // end Rps_PayloadGccjit::raw_get_gccjit_aligned_type
+
+gccjit::type
+Rps_PayloadGccjit::locked_get_gccjit_aligned_type(gccjit::type srcty, size_t alignment)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_get_gccjit_aligned_type(srcty, alignment);
+} // end Rps_PayloadGccjit::locked_get_gccjit_aligned_type
 
 
 
