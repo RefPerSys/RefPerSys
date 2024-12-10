@@ -126,6 +126,15 @@ protected:
   /// https://gcc.gnu.org/onlinedocs/jit/topics/types.html
   gccjit::type raw_get_gccjit_builtin_type(enum gcc_jit_types);
   gccjit::type locked_get_gccjit_builtin_type(enum gcc_jit_types);
+  template <typename IntType> gccjit::type raw_get_gccjit_int_type() {
+    RPS_ASSERT(owner());
+    return _gji_ctxt.get_int_type<IntType>();
+  };
+  template <typename IntType> gccjit::type locked_get_gccjit_int_type() {
+    RPS_ASSERT(owner());
+    std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+    return _gji_ctxt.get_int_type<IntType>();
+  };
   gccjit::type raw_get_gccjit_pointer_type(gccjit::type);
   gccjit::type locked_get_gccjit_pointer_type(gccjit::type);
   gccjit::type raw_get_gccjit_const_type(gccjit::type);
