@@ -139,6 +139,7 @@ protected:
     std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
     return _gji_ctxt.get_int_type<IntType>();
   };
+  //// pointer, const, volatile, aligned types of a given type
   gccjit::type raw_get_gccjit_pointer_type(gccjit::type);
   gccjit::type locked_get_gccjit_pointer_type(gccjit::type);
   gccjit::type raw_get_gccjit_const_type(gccjit::type);
@@ -147,10 +148,16 @@ protected:
   gccjit::type locked_get_gccjit_volatile_type(gccjit::type);
   gccjit::type raw_get_gccjit_aligned_type(gccjit::type,size_t alignment );
   gccjit::type locked_get_gccjit_aligned_type(gccjit::type, size_t alignment);
+  /// array type of a given type with or without location
   gccjit::type raw_new_gccjit_array_type(gccjit::type elemtype, int nbelem);
   gccjit::type locked_new_gccjit_array_type(gccjit::type elemtype, int nbelem);
   gccjit::type raw_new_gccjit_array_type(gccjit::type elemtype, int nbelem, gccjit::location loc);
   gccjit::type locked_new_gccjit_array_type(gccjit::type elemtype, int nbelem, gccjit::location loc);
+  /// opaque struct of a given name with or without location
+  gccjit::struct_ raw_new_gccjit_opaque_struct_type(const std::string&name);
+  gccjit::struct_ locked_new_gccjit_opaque_struct_type(const std::string&name);
+  gccjit::struct_ raw_new_gccjit_opaque_struct_type(const std::string&name, gccjit::location loc);
+  gccjit::struct_ locked_new_gccjit_opaque_struct_type(const std::string&name, gccjit::location loc);
   ////
 };        // end class Rps_PayloadGccjit
 
@@ -281,7 +288,42 @@ Rps_PayloadGccjit::locked_new_gccjit_array_type(gccjit::type elemtype, int nbele
 } // end Rps_PayloadGccjit::locked_new_gccjit_array_type
 
 
+/// Opaque struct types are global but could have a location
+gccjit::struct_
+Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type(const std::string&strname)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT(!strname.empty());
+  return  _gji_ctxt.new_opaque_struct_type(strname);
+}// end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
 
+gccjit::struct_
+Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type(const std::string&strname)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_opaque_struct_type(strname);
+} // end Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type
+
+gccjit::struct_
+Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type(const std::string&strname, gccjit::location loc)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT(!strname.empty());
+  return  _gji_ctxt.new_opaque_struct_type(strname,loc);
+}// end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
+
+gccjit::struct_
+Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type(const std::string&strname, gccjit::location loc)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_opaque_struct_type(strname,loc);
+} // end Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type
+
+
+
+
+////////////////////////////////////////////////////////////////
+////// managing RefPerSys objects and their gccjit
 void
 Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit)
 {
