@@ -110,7 +110,8 @@ public:
     std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
     return  _gji_ctxt.gccjit::context::new_location(filen.c_str(), line, col);
   };
-  gccjit::location no_src_location() {
+  gccjit::location no_src_location()
+  {
     return gccjit::location();
   };
   // an arbitrary refpersys object may represent a fictuous "source file"
@@ -121,16 +122,19 @@ protected:
   void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
   void raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit);
   void raw_unregister_object_jit(Rps_ObjectRef ob);
-  /// making a type; the raw versions don't lock the owner object, the
-  /// locked ones do... Names are inspired by those in
-  /// https://gcc.gnu.org/onlinedocs/jit/topics/types.html
+  ///
+  /// Member functions for making a type; the raw versions don't lock
+  /// the owner object, the locked ones do... Names are inspired by
+  /// those in https://gcc.gnu.org/onlinedocs/jit/topics/types.html
   gccjit::type raw_get_gccjit_builtin_type(enum gcc_jit_types);
   gccjit::type locked_get_gccjit_builtin_type(enum gcc_jit_types);
-  template <typename IntType> gccjit::type raw_get_gccjit_int_type() {
+  template <typename IntType> gccjit::type raw_get_gccjit_int_type()
+  {
     RPS_ASSERT(owner());
     return _gji_ctxt.get_int_type<IntType>();
   };
-  template <typename IntType> gccjit::type locked_get_gccjit_int_type() {
+  template <typename IntType> gccjit::type locked_get_gccjit_int_type()
+  {
     RPS_ASSERT(owner());
     std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
     return _gji_ctxt.get_int_type<IntType>();
@@ -143,6 +147,11 @@ protected:
   gccjit::type locked_get_gccjit_volatile_type(gccjit::type);
   gccjit::type raw_get_gccjit_aligned_type(gccjit::type,size_t alignment );
   gccjit::type locked_get_gccjit_aligned_type(gccjit::type, size_t alignment);
+  gccjit::type raw_new_gccjit_array_type(gccjit::type elemtype, int nbelem);
+  gccjit::type locked_new_gccjit_array_type(gccjit::type elemtype, int nbelem);
+  gccjit::type raw_new_gccjit_array_type(gccjit::type elemtype, int nbelem, gccjit::location loc);
+  gccjit::type locked_new_gccjit_array_type(gccjit::type elemtype, int nbelem, gccjit::location loc);
+  ////
 };        // end class Rps_PayloadGccjit
 
 
@@ -240,6 +249,36 @@ Rps_PayloadGccjit::locked_get_gccjit_aligned_type(gccjit::type srcty, size_t ali
   return raw_get_gccjit_aligned_type(srcty, alignment);
 } // end Rps_PayloadGccjit::locked_get_gccjit_aligned_type
 
+/// Array types are global but could have a location
+gccjit::type
+Rps_PayloadGccjit::raw_new_gccjit_array_type(gccjit::type elemtype, int nbelem)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT(nbelem>=0);
+  return  _gji_ctxt.new_array_type(elemtype,nbelem);
+}// end Rps_PayloadGccjit::raw_new_gccjit_array_type
+
+gccjit::type
+Rps_PayloadGccjit::locked_new_gccjit_array_type(gccjit::type elemtype, int nbelem)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_array_type(elemtype,nbelem);
+} // end Rps_PayloadGccjit::locked_new_gccjit_array_type
+
+gccjit::type
+Rps_PayloadGccjit::raw_new_gccjit_array_type(gccjit::type elemtype, int nbelem, gccjit::location loc)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT(nbelem>=0);
+  return  _gji_ctxt.new_array_type(elemtype,nbelem,loc);
+}// end Rps_PayloadGccjit::raw_new_gccjit_array_type
+
+gccjit::type
+Rps_PayloadGccjit::locked_new_gccjit_array_type(gccjit::type elemtype, int nbelem, gccjit::location loc)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_array_type(elemtype,nbelem,loc);
+} // end Rps_PayloadGccjit::locked_new_gccjit_array_type
 
 
 
