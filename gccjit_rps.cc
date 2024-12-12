@@ -123,6 +123,7 @@ protected:
   void raw_register_object_jit(Rps_ObjectRef ob,  const gccjit::object jit);
   void raw_unregister_object_jit(Rps_ObjectRef ob);
   ///
+  //////////////// GCCJIT TYPES
   /// Member functions for making a type; the raw versions don't lock
   /// the owner object, the locked ones do... Names are inspired by
   /// those in https://gcc.gnu.org/onlinedocs/jit/topics/types.html
@@ -165,6 +166,14 @@ protected:
   gccjit::struct_ locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob);
   gccjit::struct_ raw_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob, gccjit::location loc);
   gccjit::struct_ locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob, gccjit::location loc);
+  /// create a field
+  gccjit::field raw_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc);
+  gccjit::field raw_new_gccjit_field(gccjit::type type, const std::string&name);
+  gccjit::field locked_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc);
+  gccjit::field locked_new_gccjit_field(gccjit::type type, const std::string&name);
+  /// open struct of a given object with or without location; in
+  /// the locked member functions variants the RefPerSys object is
+  /// registered...
   ////
 };        // end class Rps_PayloadGccjit
 
