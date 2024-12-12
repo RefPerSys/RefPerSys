@@ -261,7 +261,7 @@ gccjit::type
 Rps_PayloadGccjit::raw_get_gccjit_aligned_type(gccjit::type srcty, size_t alignment)
 {
   RPS_ASSERT(owner());
-  RPS_ASSERT((alignment-1)&alignment==0);
+  RPS_ASSERT(((alignment-1)&alignment)==0);
   return srcty.get_aligned(alignment);
 } // end Rps_PayloadGccjit::raw_get_gccjit_aligned_type
 
@@ -357,6 +357,40 @@ Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob)
 } // end Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type
 
 
+gccjit::field
+Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc)
+{
+#warning unimplemented Rps_PayloadGccjit::raw_new_gccjit_field
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::raw_new_gccjit_field owner="
+               << owner());
+} // end Rps_PayloadGccjit::raw_new_gccjit_field
+
+#if 0
+gccjit::field
+Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&name)
+#warning unimplemented Rps_PayloadGccjit::raw_new_gccjit_field
+RPS_FATALOUT("unimplemented Rps_PayloadGccjit::raw_new_gccjit_field owner="
+             << owner());
+{
+} // end Rps_PayloadGccjit::raw_new_gccjit_field
+
+
+gccjit::field
+Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc)
+{
+#warning unimplemented Rps_PayloadGccjit::locked_gccjit_field
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::locked_new_gccjit_field owner="
+               << owner());
+} // end Rps_PayloadGccjit::locked_new_gccjit_field
+
+gccjit::field
+Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const std::string&name)
+{
+#warning unimplemented Rps_PayloadGccjit::locked_new_gccjit_field
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::locked_new_gccjit_field owner="
+               << owner());
+} // end Rps_PayloadGccjit::locked_new_gccjit_field
+#endif /*0*/
 
 ////////////////////////////////////////////////////////////////
 ////// managing RefPerSys objects and their gccjit
