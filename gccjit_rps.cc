@@ -158,6 +158,13 @@ protected:
   gccjit::struct_ locked_new_gccjit_opaque_struct_type(const std::string&name);
   gccjit::struct_ raw_new_gccjit_opaque_struct_type(const std::string&name, gccjit::location loc);
   gccjit::struct_ locked_new_gccjit_opaque_struct_type(const std::string&name, gccjit::location loc);
+  /// opaque struct of a given object with or without location; in
+  /// the locked member functions variants the RefPerSys object is
+  /// registered...
+  gccjit::struct_ raw_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob);
+  gccjit::struct_ locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob);
+  gccjit::struct_ raw_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob, gccjit::location loc);
+  gccjit::struct_ locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob, gccjit::location loc);
   ////
 };        // end class Rps_PayloadGccjit
 
@@ -319,6 +326,26 @@ Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type(const std::string&strnam
   return raw_new_gccjit_opaque_struct_type(strname,loc);
 } // end Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type
 
+
+
+/// Opaque struct types are global; they could be defined by a
+/// RefPerSys object, but could have a location
+gccjit::struct_
+Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT(ob);
+  return  _gji_ctxt.new_opaque_struct_type(ob->oid().to_string());
+}// end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
+
+gccjit::struct_
+Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  gccjit::struct_ newst= raw_new_gccjit_opaque_struct_type(ob);
+  raw_register_object_jit(ob,newst);
+  return newst;
+} // end Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type
 
 
 
