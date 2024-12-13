@@ -30,9 +30,11 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Notice:
- *    See also companion file cppgen_rps.cc for C++ code generation.
- *    See https://lists.gnu.org/archive/html/lightning/2024-09/msg00010.html
+ * Notice: See also companion file cppgen_rps.cc for C++ code
+ *    generation and gccjit_rps.cc for GCC libgccjit based one.
+ *
+ * See
+ *    https://lists.gnu.org/archive/html/lightning/2024-09/msg00010.html
  ************************************************************************/
 
 #include "refpersys.hh"
