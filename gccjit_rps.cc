@@ -344,8 +344,8 @@ Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(ob);
-  return  _gji_ctxt.new_opaque_struct_type(ob->oid().to_string());
-}// end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
+  return  _gji_ctxt.new_opaque_struct_type(std::string{"stru"}+ob->oid().to_string());
+} // end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
 
 gccjit::struct_
 Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob)
@@ -360,18 +360,19 @@ Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob)
 gccjit::field
 Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc)
 {
+  RPS_ASSERT(owner());
+  RPS_ASSERT(!name.empty());
 #warning unimplemented Rps_PayloadGccjit::raw_new_gccjit_field
   RPS_FATALOUT("unimplemented Rps_PayloadGccjit::raw_new_gccjit_field owner="
                << owner());
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
-#if 0
 gccjit::field
 Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&name)
-#warning unimplemented Rps_PayloadGccjit::raw_new_gccjit_field
-RPS_FATALOUT("unimplemented Rps_PayloadGccjit::raw_new_gccjit_field owner="
-             << owner());
 {
+#warning unimplemented Rps_PayloadGccjit::raw_new_gccjit_field
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::raw_new_gccjit_field owner="
+               << owner());
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
 
@@ -390,7 +391,7 @@ Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const std::string&
   RPS_FATALOUT("unimplemented Rps_PayloadGccjit::locked_new_gccjit_field owner="
                << owner());
 } // end Rps_PayloadGccjit::locked_new_gccjit_field
-#endif /*0*/
+
 
 ////////////////////////////////////////////////////////////////
 ////// managing RefPerSys objects and their gccjit
