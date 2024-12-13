@@ -55,7 +55,10 @@ extern "C" gccjit::context rps_gccjit_top_ctxt;
 gccjit::context rps_gccjit_top_ctxt;
 
 extern "C" const std::string rps_gccjit_prefix_struct;
-const std::string rps_gccjit_prefix_struct="rps_stru";
+const std::string rps_gccjit_prefix_struct="_rps_STRUCT";
+
+extern "C" const std::string rps_gccjit_prefix_field;
+const std::string rps_gccjit_prefix_field="_rps_FIELD";
 
 extern "C" void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
@@ -174,6 +177,11 @@ protected:
   gccjit::field raw_new_gccjit_field(gccjit::type type, const std::string&name);
   gccjit::field locked_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc);
   gccjit::field locked_new_gccjit_field(gccjit::type type, const std::string&name);
+  /// create a field
+  gccjit::field raw_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf, gccjit::location loc);
+  gccjit::field raw_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf);
+  gccjit::field locked_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf, gccjit::location loc);
+  gccjit::field locked_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf);
   /// open struct of a given object with or without location; in
   /// the locked member functions variants the RefPerSys object is
   /// registered...
@@ -370,6 +378,15 @@ Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&nam
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
 gccjit::field
+Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf, gccjit::location loc)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT(obf);
+  std::string fstr = rps_gccjit_prefix_field+obf->oid().to_string();
+  return  _gji_ctxt.new_field(type, fstr, loc);
+} // end Rps_PayloadGccjit::raw_new_gccjit_field
+
+gccjit::field
 Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&name)
 {
   RPS_ASSERT(owner());
@@ -377,6 +394,15 @@ Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&nam
   return  _gji_ctxt.new_field(type, name);
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
+
+gccjit::field
+Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf)
+{
+  RPS_ASSERT(owner());
+  RPS_ASSERT(obf);
+  std::string fstr = rps_gccjit_prefix_field+obf->oid().to_string();
+  return  _gji_ctxt.new_field(type, fstr);
+} // end Rps_PayloadGccjit::raw_new_gccjit_field
 
 gccjit::field
 Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc)
@@ -390,6 +416,21 @@ Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const std::string&
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   return raw_new_gccjit_field(type, name);
+} // end Rps_PayloadGccjit::locked_new_gccjit_field
+
+
+gccjit::field
+Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf, gccjit::location loc)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_field(type, obf, loc);
+} // end Rps_PayloadGccjit::locked_new_gccjit_field
+
+gccjit::field
+Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const Rps_ObjectRef obf)
+{
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_field(type, obf);
 } // end Rps_PayloadGccjit::locked_new_gccjit_field
 
 
