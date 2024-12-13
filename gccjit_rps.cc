@@ -362,17 +362,15 @@ Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&nam
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(!name.empty());
-#warning unimplemented Rps_PayloadGccjit::raw_new_gccjit_field
-  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::raw_new_gccjit_field owner="
-               << owner());
+  return  _gji_ctxt.new_field(type, name, loc);
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
 gccjit::field
 Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&name)
 {
-#warning unimplemented Rps_PayloadGccjit::raw_new_gccjit_field
-  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::raw_new_gccjit_field owner="
-               << owner());
+  RPS_ASSERT(owner());
+  RPS_ASSERT(!name.empty());
+  return  _gji_ctxt.new_field(type, name);
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
 
