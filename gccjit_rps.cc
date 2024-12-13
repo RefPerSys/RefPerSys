@@ -54,6 +54,9 @@ const char rps_gccjit_shortgitid[]= RPS_SHORTGITID;
 extern "C" gccjit::context rps_gccjit_top_ctxt;
 gccjit::context rps_gccjit_top_ctxt;
 
+extern "C" const std::string rps_gccjit_prefix_struct;
+const std::string rps_gccjit_prefix_struct="rps_stru";
+
 extern "C" void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
 
@@ -344,7 +347,8 @@ Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type(const Rps_ObjectRef ob)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(ob);
-  return  _gji_ctxt.new_opaque_struct_type(std::string{"stru"}+ob->oid().to_string());
+  /// the prefix is rps_stru defined before class Rps_PayloadGccjit
+  return  _gji_ctxt.new_opaque_struct_type(rps_gccjit_prefix_struct+ob->oid().to_string());
 } // end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
 
 gccjit::struct_
@@ -377,17 +381,15 @@ Rps_PayloadGccjit::raw_new_gccjit_field(gccjit::type type, const std::string&nam
 gccjit::field
 Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const std::string&name, gccjit::location loc)
 {
-#warning unimplemented Rps_PayloadGccjit::locked_gccjit_field
-  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::locked_new_gccjit_field owner="
-               << owner());
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_field(type, name, loc);
 } // end Rps_PayloadGccjit::locked_new_gccjit_field
 
 gccjit::field
 Rps_PayloadGccjit::locked_new_gccjit_field(gccjit::type type, const std::string&name)
 {
-#warning unimplemented Rps_PayloadGccjit::locked_new_gccjit_field
-  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::locked_new_gccjit_field owner="
-               << owner());
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  return raw_new_gccjit_field(type, name);
 } // end Rps_PayloadGccjit::locked_new_gccjit_field
 
 
