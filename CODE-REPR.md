@@ -55,8 +55,8 @@ Our `gccjit_rps.cc` file defines a `Rps_PayloadGccjit` payload class.
 ### "source" locations and conventions.
 
 In [gccjit](https://gcc.gnu.org/onlinedocs/jit/) a source location of
-C++ class
-[`gccjit::location`](https://gcc.gnu.org/onlinedocs/jit/cp/topics/locations.html)
+type
+[`gcc_jit_location`](https://gcc.gnu.org/onlinedocs/jit/topics/locations.html)
 refers to a "source file position". When the source file exists, it is
 a path, line, column position. Source locations are optional.
 
