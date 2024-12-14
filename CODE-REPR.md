@@ -75,14 +75,14 @@ and `make_rpsobj_location`.
 
 Outside of "source" locations described above, the generated code is
 obtained from mutable objects of superclass `_8kK8HUqCBlj02e7YGQ` =
-*`gccjit_class`* and immutable instances of superclass
-`_7VRJKpau2Nn04oeUER` = *`gccjit_instance`*.
+*`code_class`* and immutable instances of superclass
+`_7VRJKpau2Nn04oeUER` = *`code_instance`*.
 
-Subclasses of *`gccjit_class`* are used to represent GCCJIT types,
+Subclasses of *`code_class`* (i.e. `_8kK8HUqCBlj02e7YGQ`...) are used to represent types,
 fields, functions, blocks, assignable lvalues, parameters, primitive
 operators (e.g. floating point addition or integer multiplication).
 
-Subclasses of *`gccjit_instance`* are used to represent GCCJIT
-statements (added to blocks), rvalues so expressions and most
-constants... RefPerSys literal strings, doubles, tagged integers
+Subclasses of *`code_instance`* (i.e. `_7VRJKpau2Nn04oeUER`) are used
+to represent statements (added to blocks), rvalues so expressions and
+most constants... RefPerSys literal strings, doubles, tagged integers
 represent literal constants...
