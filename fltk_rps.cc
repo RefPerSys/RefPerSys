@@ -5,7 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the FLTK 1.3 graphical interface.  See
+ *      It has the code for the FLTK 1.4 graphical interface.  See
  *      also https://fltk.org - download FLTK source code and compile
  *      it with debugging enabled, see our README.md for more.
  *
@@ -55,7 +55,6 @@
 
 ///NOTICE: after commit 094f904dd02 of end Nov. 2024 we use our userpref_rps.cc functions
 
-#if 0 //// FIXME: dont work yet in commit  b517299683ea8 end of Nov 2024
 /// these are from generated/rpsdata.h
 #if RPS_FLTK_ABI_VERSION < 10400
 #error RefPerSys requires FLTK 1.4 or 1.5 ABI
@@ -64,7 +63,6 @@
 #if RPS_FLTK_API_VERSION < 10400
 #error RefPerSys requires FLTK 1.4 or 1.5 API
 #endif
-#endif // FIXME: dont work yet in commit  b517299683ea8 end of Nov 2024
 
 
 #warning perhaps we should use FOX-toolkit from "https://fox-toolkit.org"
