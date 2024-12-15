@@ -8,8 +8,13 @@ format are:
   * it should have a suitable trade-off between readability and space
     performance
 
-Given these considerations, a format has been designed largely inspired by the
-JSON format.
+Given these considerations, the textual format for RefPerSys store is
+an enhanced version of [JSON](https://json.org/). A space file is a
+sequence of JSON objects but can (and usually do) contain comments as
+lines starting with two slashes ie `//`.
+
+
+# OBSOLETE DOCUMENTATION BELOW
 
 ## EBNF Grammar
 
