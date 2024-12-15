@@ -476,11 +476,11 @@ void
 Rps_Loader::initialize_root_objects(void)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-#define RPS_INSTALL_ROOT_OB(Oid) do {   \
-    if (!RPS_ROOT_OB(Oid))      \
-      RPS_ROOT_OB(Oid)        \
-  = find_object_by_oid(Rps_Id(#Oid)); \
-    RPS_ASSERT(RPS_ROOT_OB(Oid));   \
+#define RPS_INSTALL_ROOT_OB(Oid) do {		\
+    if (!RPS_ROOT_OB(Oid))			\
+      RPS_ROOT_OB(Oid)				\
+  = find_object_by_oid(Rps_Id(#Oid));		\
+    RPS_ASSERT(RPS_ROOT_OB(Oid));		\
   } while(0);
 #include "generated/rps-roots.hh"
 } // end Rps_Loader::initialize_root_objects
