@@ -3521,6 +3521,9 @@ public:
 
 //// signature of extern "C" functions for payload loading; their name starts with rpsldpy_
 typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& hjv, Rps_Id spacid, unsigned lineno);
+//// this signature is also used for "loadrout" JSON members....
+//// see Rps_Loader::parse_json_buffer_second_pass near load_rps.cc:750
+//// after commit b384a473798 (mid-december 2024)
 #define RPS_PAYLOADING_PREFIX "rpsldpy_"
 
 
@@ -5290,8 +5293,13 @@ public:
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
 // same as used in rps_manifest.json file
-#define RPS_PREVIOUS_MANIFEST_FORMAT "RefPerSysFormat2019A"
-#define RPS_MANIFEST_FORMAT "RefPerSysFormat2023A"
+#define RPS_PREVIOUS_MANIFEST_FORMAT "RefPerSysFormat2023A"
+
+
+/// the next format should enable computing some data at load time...
+/// using the loadrout JSON member (for loading objects whose content
+/// is operating system or architecture dependent).
+#define RPS_MANIFEST_FORMAT "RefPerSysFormat2024A"
 
 // the user manifest is optional, in the rps_homedir()
 // so using $REFPERSYS_HOME or $HOME
