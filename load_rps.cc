@@ -476,11 +476,11 @@ void
 Rps_Loader::initialize_root_objects(void)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-#define RPS_INSTALL_ROOT_OB(Oid) do {		\
-    if (!RPS_ROOT_OB(Oid))			\
-      RPS_ROOT_OB(Oid)				\
-  = find_object_by_oid(Rps_Id(#Oid));		\
-    RPS_ASSERT(RPS_ROOT_OB(Oid));		\
+#define RPS_INSTALL_ROOT_OB(Oid) do {   \
+    if (!RPS_ROOT_OB(Oid))      \
+      RPS_ROOT_OB(Oid)        \
+  = find_object_by_oid(Rps_Id(#Oid));   \
+    RPS_ASSERT(RPS_ROOT_OB(Oid));   \
   } while(0);
 #include "generated/rps-roots.hh"
 } // end Rps_Loader::initialize_root_objects
@@ -548,7 +548,8 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                    << "... with objbuf:" << std::endl
                    << objbuf
                    << std::endl << "... and objjson:" << objjson);
-    }
+    };
+  //// now load the various JSON members
   Json::Value oidjson = objjson["oid"];
   if (oidjson.asString() != objid.to_string())
     RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
@@ -645,7 +646,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                      << " lineno:" << lineno << ", spacid:" << spacid
                      << ":: " << dlerror());
       obz->loader_put_magicattrgetter(this, reinterpret_cast<rps_magicgetterfun_t*>(funad));
-    }
+    };        // end with "magicattr" JSON member
   if (objjson.isMember("applying"))
     {
       RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass applying objid=" << objid);
@@ -664,7 +665,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                      << " lineno:" << lineno << ", spacid:" << spacid
                      << ":: " << dlerror());
       obz->loader_put_applyingfunction(this, reinterpret_cast<rps_applyingfun_t*>(funad));
-    }
+    };        // end with "applying" JSON member
   if (objjson.isMember("payload"))
     {
       rpsldpysig_t*pldfun = nullptr;
@@ -717,7 +718,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                        << " without loading function"
                        << std::endl);
         }
-    }
+    }; //// end handling of "payload" JSON member
   if (obz->is_instance_of(RPS_ROOT_OB(_3O1QUNKZ4bU02amQus) //∈rps_routine
                          ))
     {
@@ -738,7 +739,30 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                     << ":: " << dlerror());
       else
         obz->loader_put_applyingfunction(this, reinterpret_cast<rps_applyingfun_t*>(funad));
-    }
+    };
+
+  if (objjson.isMember("loadrout"))
+    {
+      auto loadroutstr = objjson["loadrout"].asString();
+      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+      if (loadroutstr.empty())
+        RPS_WARNOUT("invalid loadrout for loading routine function of objid:" <<  objid
+                    << Rps_ObjectRef(obz)
+                    << " lineno:" << lineno << ", spacid:" << spacid
+                    << std::endl << objjson);
+      else
+        {
+          void*ldroutad = dlsym(rps_proghdl, loadroutstr.c_str());
+          if (!ldroutad)
+            RPS_WARNOUT("cannot dlsym " << loadroutstr
+                        << " for loading routine function of objid:" <<  objid
+                        << Rps_ObjectRef(obz)
+                        << " lineno:" << lineno << ", spacid:" << spacid
+                        << ":: " << dlerror());
+          rpsldpysig_t*ldrout = (rpsldpysig_t*)ldroutad;
+          (*ldrout)(obz, this, objjson, spacid, lineno);
+        };
+    };        // end if has "loadrout" member
   RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass end objid=" << objid << " #" << count
                 << std::endl);
 } // end of Rps_Loader::parse_json_buffer_second_pass
