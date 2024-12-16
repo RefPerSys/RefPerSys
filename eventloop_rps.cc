@@ -159,7 +159,7 @@ rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll,
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-  int ln = rps_eventloopdata.eld_prepollvect.size();
+  int ln = (int) rps_eventloopdata.eld_prepollvect.size();
   if (ln > 1000)
     RPS_FATALOUT("too many event loop prepoller " << ln);
   for (int i=0; i<ln; i++)
@@ -180,7 +180,7 @@ rps_unregister_event_loop_prepoller(int rank)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-  if (rank<0 || rank>rps_eventloopdata.eld_prepollvect.size())
+  if (rank<0 || rank>(int) rps_eventloopdata.eld_prepollvect.size())
     {
       RPS_WARNOUT("invalid rank to rps_unregister_event_loop_prepoller " << rank);
       return;
