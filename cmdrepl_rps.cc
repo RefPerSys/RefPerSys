@@ -1125,7 +1125,7 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
   int32_t metark=0;
   _f.inst = arginst;
   bool trans = _f.inst->is_transient();
-  bool metatans = _f.inst->is_metatransient();
+  bool metatrans = _f.inst->is_metatransient();
   _f.obclass = _f.inst->get_class();
   _f.obmeta = _f.inst->metaobject();
   metark = _f.inst->metarank();
@@ -1146,23 +1146,28 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
           << std::endl << "  of class "
           << _f.obclass
           << std::endl << " hash#" << _f.inst->val_hash()  << std::endl;
+      if (metark || _f.obmeta)
+        {
+          (*pout) << (metatrans?"metatransient":"metadata")
+                  << " µrk#" << metark << " µob:"
+                  << _f.obmeta << std::endl;
+        };
+      int rk=0;
+      for (auto catob : * _f.attrset.as_set())
+        {
+          _f.curattrob = catob;
+          (*pout) << "°" << _f.curattrob;
+          _f.curval = _f.inst->at(rk);
+          (*pout) << ":" << _f.curval;
+          (*pout) << std::endl;
+          rk++;
+        };
+
     }
   else   // depth >0
     {
-      (*pout)
-          << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
-      if (trans)
-        (*pout) << "\342\223\243"; // ⓣ U+24E3 CIRCLED LATIN SMALL LETTER T
-      else
-        (*pout) << "\342\223\230"; // ⓘ U+24D8 CIRCLED LATIN SMALL LETTER I
-      (*pout) << _f.obclass;
-      (*pout)
-          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
-      if (depth==1)
-        (*pout)<< ".h#" << _f.inst->val_hash();
+      arginst->val_output(*pout, depth, Rps_Value::max_output_depth);
     };
-#warning rps_show_instance_for_repl unimplemented
-  RPS_FATALOUT("rps_show_instance_for_repl unimplemented inst=" << _f.inst);
 } // end rps_show_instance_for_repl
 
 
