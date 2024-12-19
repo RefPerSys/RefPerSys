@@ -1022,8 +1022,8 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
         rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
                                   "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
         (*pout) << "** mtime: " << mtimbuf
-		<< "   *hash:" << _f.shownob->val_hash()
-		<< std::endl;
+                << "   *hash:" << _f.shownob->val_hash()
+                << std::endl;
       }
       unsigned nbat = _f.shownob->nb_attributes(&_);
       if (nbat == 0)
@@ -1117,10 +1117,19 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
                            callerframe,
                            Rps_InstanceValue inst;
                            Rps_ObjectRef obclass;
+                           Rps_ObjectRef obmeta;
+                           Rps_SetValue attrset;
+                           Rps_ObjectRef curattrob;
+                           Rps_Value curval;
                 );
+  int32_t metark=0;
   _f.inst = arginst;
   bool trans = _f.inst->is_transient();
+  bool metatans = _f.inst->is_metatransient();
   _f.obclass = _f.inst->get_class();
+  _f.obmeta = _f.inst->metaobject();
+  metark = _f.inst->metarank();
+  _f.attrset = Rps_SetValue(_f.inst->set_attributes());
   bool ontty =
     (pout == &std::cout)?isatty(STDOUT_FILENO):false;
   if (rps_without_terminal_escape)
@@ -1136,7 +1145,7 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
           << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
           << std::endl << "  of class "
           << _f.obclass
-	  << std::endl << " hash#" << _f.inst->val_hash()  << std::endl;
+          << std::endl << " hash#" << _f.inst->val_hash()  << std::endl;
     }
   else   // depth >0
     {
@@ -1150,11 +1159,14 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
       (*pout)
           << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
       if (depth==1)
-	(*pout)<< ".h#" << _f.inst->val_hash();
+        (*pout)<< ".h#" << _f.inst->val_hash();
     };
 #warning rps_show_instance_for_repl unimplemented
   RPS_FATALOUT("rps_show_instance_for_repl unimplemented inst=" << _f.inst);
 } // end rps_show_instance_for_repl
+
+
+
 
 ////////////////
 /* C++ function _7WsQyJK6lty02uz5KT for REPL command show*/
