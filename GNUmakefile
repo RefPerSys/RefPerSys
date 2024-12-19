@@ -236,7 +236,7 @@ refpersys: objects |  GNUmakefile
 
 plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	@printf "\n\n making plugins desired basenames=%s\n" "$(REFPERSYS_DESIRED_PLUGIN_BASENAMES)"
-	$(MAKE) $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES))
+	+$(MAKE) $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES))
 
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
