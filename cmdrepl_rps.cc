@@ -1000,84 +1000,105 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
     }
   /// we lock the shown object to avoid other threads modifying it during the show.
   std::lock_guard<std::recursive_mutex> gushownob(*_f.shownob->objmtxptr());
-  (*pout) << "¤¤ showing object " << _f.shownob << " of class "
+  bool ontty =
+    (pout == &std::cout)?isatty(STDOUT_FILENO):false;
+  if (rps_without_terminal_escape)
+    ontty=false;
+  if (depth==0)
+    {
+      (*pout)
+          << std::endl << std::endl << "================================" << std::endl
+          << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
+          << "¤¤ showing object " << _f.shownob
+          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+          << std::endl << "  of class "
           << _f.shownob->get_class()
+          << std::endl
           << " in space " << _f.shownob->get_space() << std::endl;
-  double obmtim = _f.shownob->get_mtime();
-  {
-    char mtimbuf[64];
-    memset (mtimbuf, 0, sizeof(mtimbuf));
-    rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
-                              "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
-    (*pout) << "** mtime: " << mtimbuf << std::endl;
-  }
-  unsigned nbat = _f.shownob->nb_attributes(&_);
-  if (nbat == 0)
-    (*pout) << "** without attributes **" << std::endl;
-  else if (nbat == 1)
-    (*pout) << "** with one attribute:" << std::endl;
-  else
-    {
-      (*pout) << "** with " << nbat << " attributes:" << std::endl;
-      _f.attrsetv = _f.shownob->set_of_attributes(&_);
-      for (int aix = 0; aix < (int) nbat; aix++)
-        {
-          _f.curattrob = _f.attrsetv.as_set()->at(aix);
-          if (!_f.curattrob)
-            continue;
-          _f.subvalv = _f.shownob->get_physical_attr(_f.curattrob);
-          (*pout) << "* " << _f.curattrob << " : ";
-          _f.subvalv.output((*pout), 0);
-          (*pout) << std::endl;
-        }
-    }
-  unsigned nbcomp = _f.shownob->nb_components(&_);
-  if (nbcomp == 0)
-    (*pout) << "** without components **" << std::endl;
-  else
-    {
-      if (nbcomp == 1)
-        (*pout) << "** with one component:" << std::endl;
+      double obmtim = _f.shownob->get_mtime();
+      {
+        char mtimbuf[64];
+        memset (mtimbuf, 0, sizeof(mtimbuf));
+        rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
+                                  "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
+        (*pout) << "** mtime: " << mtimbuf << std::endl;
+      }
+      unsigned nbat = _f.shownob->nb_attributes(&_);
+      if (nbat == 0)
+        (*pout) << "** without attributes **" << std::endl;
+      else if (nbat == 1)
+        (*pout) << "** with one attribute:" << std::endl;
       else
-        (*pout) << "** with " << nbcomp << " components:" << std::endl;
-      for (int cix=0; cix<(int)nbcomp; cix++)
         {
-          _f.subvalv = _f.shownob->component_at(&_, cix);
-          (*pout) << "[" << cix << "] ";
-          _f.subvalv.output((*pout), 0);
-          (*pout) << std::endl;
+          (*pout) << "** with " << nbat << " attributes:" << std::endl;
+          _f.attrsetv = _f.shownob->set_of_attributes(&_);
+          for (int aix = 0; aix < (int) nbat; aix++)
+            {
+              _f.curattrob = _f.attrsetv.as_set()->at(aix);
+              if (!_f.curattrob)
+                continue;
+              _f.subvalv = _f.shownob->get_physical_attr(_f.curattrob);
+              (*pout) << "* " << _f.curattrob << " : ";
+              _f.subvalv.output((*pout), 0);
+              (*pout) << std::endl;
+            }
         }
-    }
-  Rps_Payload*payl = _f.shownob->get_payload();
-  if (!payl)
-    (*pout) << "** without payload **" << std::endl;
-  else
-    {
-      Rps_Type typayl = payl->type();
-      (*pout) << "** with payload of "
-              << _f.shownob->payload_type_name()
-              << " type#" << (int)typayl
-              << " **" << std::endl;
+      unsigned nbcomp = _f.shownob->nb_components(&_);
+      if (nbcomp == 0)
+        (*pout) << "** without components **" << std::endl;
+      else
+        {
+          if (nbcomp == 1)
+            (*pout) << "** with one component:" << std::endl;
+          else
+            (*pout) << "** with " << nbcomp << " components:" << std::endl;
+          for (int cix=0; cix<(int)nbcomp; cix++)
+            {
+              _f.subvalv = _f.shownob->component_at(&_, cix);
+              (*pout) << "[" << cix << "] ";
+              _f.subvalv.output((*pout), 0);
+              (*pout) << std::endl;
+            }
+        }
+      Rps_Payload*payl = _f.shownob->get_payload();
+      if (!payl)
+        (*pout) << "** without payload **" << std::endl;
+      else
+        {
+          Rps_Type typayl = payl->type();
+          (*pout) << "** with payload of "
+                  << _f.shownob->payload_type_name()
+                  << " type#" << (int)typayl
+                  << " **" << std::endl;
 #warning we probably want to display some common payloads here
-    }
-  rps_applyingfun_t* apfun = _f.shownob->get_applying_ptrfun();
-  if (!apfun)
-    (*pout) << "** without applying function **" << std::endl;
+        }
+      rps_applyingfun_t* apfun = _f.shownob->get_applying_ptrfun();
+      if (!apfun)
+        (*pout) << "** without applying function **" << std::endl;
+      else
+        {
+          Dl_info appinfo;
+          memset ((void*)&appinfo, 0, sizeof(appinfo));
+          if (dladdr((void*)apfun,&appinfo))
+            {
+              (*pout)
+                  << "** with applying function " << appinfo.dli_sname
+                  << "@" << (void*)apfun
+                  << " in " << appinfo.dli_fname << std::endl;
+            }
+          else
+            (*pout) << "** with applying function unnamed @" << (void*)apfun << std::endl;
+        };
+      (*pout) << std::endl << std::endl;
+    } // end if depth==0
   else
     {
-      Dl_info appinfo;
-      memset ((void*)&appinfo, 0, sizeof(appinfo));
-      if (dladdr((void*)apfun,&appinfo))
-        {
-          (*pout)
-              << "** with applying function " << appinfo.dli_sname
-              << "@" << (void*)apfun
-              << " in " << appinfo.dli_fname << std::endl;
-        }
-      else
-        (*pout) << "** with applying function unnamed @" << (void*)apfun << std::endl;
-    }
+      (*pout) <<  _f.shownob;
+    };
 } // end rps_show_object_for_repl
+
+
+
 
 extern "C"
 void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
@@ -1093,8 +1114,39 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(showdescoid),
                            callerframe,
                            Rps_InstanceValue inst;
+                           Rps_ObjectRef obclass;
                 );
   _f.inst = arginst;
+  bool trans = _f.inst->is_transient();
+  _f.obclass = _f.inst->get_class();
+  bool ontty =
+    (pout == &std::cout)?isatty(STDOUT_FILENO):false;
+  if (rps_without_terminal_escape)
+    ontty=false;
+  if (depth==0)
+    {
+      (*pout)
+          << std::endl << std::endl << "================================" << std::endl
+          << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
+          << "¤¤ showing "
+          << (trans?"transient":"permanent")
+          << " instance "
+          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+          << std::endl << "  of class "
+          << _f.obclass;
+    }
+  else   // depth >0
+    {
+      (*pout)
+          << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+      if (trans)
+        (*pout) << "\342\223\243"; // ⓣ U+24E3 CIRCLED LATIN SMALL LETTER T
+      else
+        (*pout) << "\342\223\230"; // ⓘ U+24D8 CIRCLED LATIN SMALL LETTER I
+      (*pout) << _f.obclass;
+      (*pout)
+          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+    };
 #warning rps_show_instance_for_repl unimplemented
   RPS_FATALOUT("rps_show_instance_for_repl unimplemented inst=" << _f.inst);
 } // end rps_show_instance_for_repl
