@@ -1021,7 +1021,9 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
         memset (mtimbuf, 0, sizeof(mtimbuf));
         rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
                                   "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
-        (*pout) << "** mtime: " << mtimbuf << std::endl;
+        (*pout) << "** mtime: " << mtimbuf
+		<< "   *hash:" << _f.shownob->val_hash()
+		<< std::endl;
       }
       unsigned nbat = _f.shownob->nb_attributes(&_);
       if (nbat == 0)
@@ -1133,7 +1135,8 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
           << " instance "
           << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
           << std::endl << "  of class "
-          << _f.obclass;
+          << _f.obclass
+	  << std::endl << " hash#" << _f.inst->val_hash()  << std::endl;
     }
   else   // depth >0
     {
@@ -1146,6 +1149,8 @@ void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
       (*pout) << _f.obclass;
       (*pout)
           << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+      if (depth==1)
+	(*pout)<< ".h#" << _f.inst->val_hash();
     };
 #warning rps_show_instance_for_repl unimplemented
   RPS_FATALOUT("rps_show_instance_for_repl unimplemented inst=" << _f.inst);
