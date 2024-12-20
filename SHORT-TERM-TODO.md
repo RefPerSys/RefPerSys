@@ -73,7 +73,16 @@ call. It should cooperate with `Rps_PayloadUnixProcess` and manage
 both processes and file descriptors handled by that event loop. These
 file descriptors may be related to JSONRPC service, etc...
 
+
+
 Use [libgccjit](https://gcc.gnu.org/onlinedocs/jit/)
+
+
+### possible improvements
+
+Define some different plugins for the user interface. So remove
+all dependencies on X11, readline and replace them with other plugins (not
+the ones in plugins_dir) dealing with user interfacve.
 
 ## DONE  List
 
