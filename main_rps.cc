@@ -371,7 +371,7 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Set the name of this run to given RUN_NAME ...\n", //
     /*group:*/0 ///
   },
-  /* ======= naming the run ======= */
+  /* ======= showing some message ======= */
   {/*name:*/ "echo", ///
     /*key:*/ RPSPROGOPT_ECHO, ///
     /*arg:*/ "MESSAGE", ///
