@@ -204,7 +204,7 @@ bool rps_event_loop_get_entry(int ix,
     *pexpl = nullptr;
   if (pdata)
     *pdata = nullptr;
-  if (ix<0 || ix>rps_eventloopdata.eld_lastix)
+  if (ix<0 || ix>(int) rps_eventloopdata.eld_lastix)
     return false;
   if (pfun)
     *pfun = rps_eventloopdata.eld_handlarr[ix];
@@ -278,7 +278,6 @@ rps_event_loop_remove_input_fd_handler(int fd)
   memset (new_explarr, 0, sizeof(new_explarr));
   memset (new_pollarr, 0, sizeof(new_pollarr));
   memset (new_datarr, 0, sizeof(new_datarr));
-  unsigned new_lastfd=0;
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   unsigned lastix = rps_eventloopdata.eld_lastix;
@@ -286,7 +285,7 @@ rps_event_loop_remove_input_fd_handler(int fd)
   for (int ix=0; ix<(int)lastix; ix++)
     {
       Rps_EventHandler_sigt* curphdlr=nullptr;
-      struct pollfd curpfd= {0};
+      struct pollfd curpfd= {};
       const char*curexpl=nullptr;
       void*curdata = nullptr;
       if (rps_event_loop_get_entry(ix, &curphdlr, &curpfd, &curexpl, &curdata))
