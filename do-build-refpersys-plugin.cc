@@ -48,6 +48,7 @@
 extern "C" {
 #include "__timestamp.c"
   const char bp_git_id[]=GIT_ID;
+  char bp_hostname[128];
   const char* bp_progname;
   const char** bp_envprog;
   std::vector<std::string> bp_vect_cpp_sources;
@@ -491,7 +492,7 @@ bp_prog_options(int argc, char**argv)
     }
   while (opt > 0 && ix < argc);
   fflush(nullptr);
-  asm volatile ("nop; nop");
+  asm volatile ("nop; nop; nop; nop");
   while (optind < argc)
     {
       std::string curarg=argv[optind];
@@ -533,6 +534,8 @@ main(int argc, char**argv, const char**env)
   ///TODO to accept secondary source files for the plugin and more
   ///program options and improve GNUmakefile
   bp_progname = argv[0];
+  memset (bp_hostname, 0, sizeof(bp_hostname));
+  gethostname(bp_hostname, sizeof(bp_hostname)-1);
   bp_envprog = env;
   if (argc<2)
     {
@@ -555,6 +558,18 @@ main(int argc, char**argv, const char**env)
       bp_verbose = true;
     };
   bp_prog_options(argc, argv);
+  asm volatile ("nop; nop; nop; nop");
+  if (bp_verbose) {
+    char cwdbuf[256];
+    memset(cwdbuf, 0, sizeof(cwdbuf));
+    const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+    std::cout << "Running on " << bp_hostname;
+    for (int ix=0; ix<argc; ix++) {
+      std::cout << ' ' << argv[ix];
+    };
+    std::cout << " git " << bp_git_id << " in " << (cwd?cwd:"./") << std::endl;
+  };
+  asm volatile ("nop; nop; nop; nop");
   for (std::string cursrc: bp_vect_cpp_sources)
     {
       const char*lastslash = nullptr;
