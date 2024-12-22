@@ -295,11 +295,9 @@ bp_complete_ninja(FILE*f, const std::string& src)
     {
       std::string basob{basename(ob.c_str())};
       fprintf(f, "#basob= %s\n", basob.c_str());
+      assert(basob.size()>=3);
+      fflush(f);
       std::string src;
-      assert(src.size()>=3);
-      src.pop_back();
-      src.pop_back();
-      src.append(".cc");
       fprintf(f, "\n"
               "build %s : R_CXX %s\n", ob.c_str(), src.c_str());
       fprintf(f, "  base_in=%s\n", basename(src.c_str()));
