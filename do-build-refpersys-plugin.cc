@@ -53,7 +53,6 @@ extern "C" {
   const char** bp_envprog;
   std::vector<std::string> bp_vect_cpp_sources;
   const char* bp_plugin_binary;
-  std::string bp_base;
   std::string bp_temp_ninja;  // temporary generated file for ninja-build.org
   std::set<std::string> bp_set_objects;
   bool bp_verbose;
@@ -294,7 +293,9 @@ bp_complete_ninja(FILE*f, const std::string& src)
      generate a better ninja file */
   for (std::string ob: bp_set_objects)
     {
-      std::string src = ob;
+      std::string basob{basename(ob.c_str())};
+      fprintf(f, "#basob= %s\n", basob.c_str());
+      std::string src;
       assert(src.size()>=3);
       src.pop_back();
       src.pop_back();
@@ -530,6 +531,7 @@ bp_prog_options(int argc, char**argv)
 int
 main(int argc, char**argv, const char**env)
 {
+  std::string bp_first_base;
 #warning do-build-refpersys-plugin should be much improved
   ///TODO to accept secondary source files for the plugin and more
   ///program options and improve GNUmakefile
@@ -559,17 +561,26 @@ main(int argc, char**argv, const char**env)
     };
   bp_prog_options(argc, argv);
   asm volatile ("nop; nop; nop; nop");
-  if (bp_verbose) {
-    char cwdbuf[256];
-    memset(cwdbuf, 0, sizeof(cwdbuf));
-    const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
-    std::cout << "Running on " << bp_hostname;
-    for (int ix=0; ix<argc; ix++) {
-      std::cout << ' ' << argv[ix];
+  if (bp_verbose)
+    {
+      char cwdbuf[256];
+      memset(cwdbuf, 0, sizeof(cwdbuf));
+      const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+      std::cout << "Running on " << bp_hostname;
+      for (int ix=0; ix<argc; ix++)
+        {
+          std::cout << ' ' << argv[ix];
+        };
+      std::cout << " git " << bp_git_id << " in " << (cwd?cwd:"./") << std::endl;
     };
-    std::cout << " git " << bp_git_id << " in " << (cwd?cwd:"./") << std::endl;
-  };
   asm volatile ("nop; nop; nop; nop");
+  std::set<std::string> bp_base_src_set;
+  if (bp_vect_cpp_sources.empty())
+    {
+      std::cerr << bp_progname << " : no C++ source files given" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  assert(bp_first_base.empty());
   for (std::string cursrc: bp_vect_cpp_sources)
     {
       const char*lastslash = nullptr;
@@ -582,11 +593,20 @@ main(int argc, char**argv, const char**env)
         }
       else
         sscanf(cursrc.c_str(), "%100[A-Za-z0-9_+-]", buf);
-      bp_base.assign(buf);
-    }
+      std::string bufstr{buf};
+      if (bp_base_src_set.find(bufstr) != bp_base_src_set.end())
+        {
+          std::cerr << bp_progname << " : the base name " << bufstr << " appears more than once, last in C++ file " << cursrc
+                    << " [" << __FILE__ << ":" << __LINE__ <<"]" <<std::endl;
+          exit(EXIT_FAILURE);
+        };
+      if (bp_first_base.empty())
+        bp_first_base = bufstr;
+      bp_base_src_set.insert({bufstr,cursrc});
+    };
   {
     char temp[128];
-    snprintf (temp, sizeof(temp), "/tmp/%s_XXXXXX.ninja", bp_base.c_str());
+    snprintf (temp, sizeof(temp), "/tmp/%s_XXXXXX.ninja", bp_first_base.c_str());
     int fd = mkstemps(temp, strlen(".ninja"));
     bp_temp_ninja.assign(temp);
     errno = 0;
