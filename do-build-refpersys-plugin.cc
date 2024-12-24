@@ -50,7 +50,9 @@ extern "C" {
   const char bp_git_id[]=GIT_ID;
   char bp_hostname[128];
   const char* bp_progname;
-  const char** bp_envprog;
+  int bp_argc_prog;
+  char**bp_argv_prog;
+  const char** bp_env_prog;
   std::vector<std::string> bp_vect_cpp_sources;
   const char* bp_plugin_binary;
   std::string bp_temp_ninja;  // temporary generated file for ninja-build.org
@@ -320,7 +322,17 @@ bp_write_prologue_ninja(const char*njpath)
   fprintf(bp_ninja_file, "# for the refpersys.org project\n");
   fprintf(bp_ninja_file, "# generator <%s:%d> git %s\n",
           __FILE__,  __LINE__-1, bp_git_id);
-  fprintf(bp_ninja_file, "# %d refpersys C++ source plugin files\n",
+  fprintf(bp_ninja_file, "# invocation:");
+  for (int i=0; i<bp_argc_prog; i++)
+    fprintf(bp_ninja_file, " %s",
+            bp_argv_prog[i]);
+  if (bp_verbose)
+    {
+      fprintf(bp_ninja_file, "\n#### environment:\n");
+      for (const char**e = bp_env_prog; e && *e; e++)
+        fprintf(bp_ninja_file, "#. %s\n",e);
+    };
+  fprintf(bp_ninja_file, "\n# %d refpersys C++ source plugin files\n",
           (int) bp_vect_cpp_sources.size());
   fprintf(bp_ninja_file, "# refpersys generated plugin %s\n",
           bp_plugin_binary);
@@ -534,9 +546,11 @@ main(int argc, char**argv, const char**env)
   ///TODO to accept secondary source files for the plugin and more
   ///program options and improve GNUmakefile
   bp_progname = argv[0];
+  bp_argc_prog = argc;
+  bp_argv_prog = argv;
+  bp_env_prog = env;
   memset (bp_hostname, 0, sizeof(bp_hostname));
   gethostname(bp_hostname, sizeof(bp_hostname)-1);
-  bp_envprog = env;
   if (argc<2)
     {
       bp_usage();
