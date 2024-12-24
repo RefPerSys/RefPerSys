@@ -330,7 +330,7 @@ bp_write_prologue_ninja(const char*njpath)
     {
       fprintf(bp_ninja_file, "\n#### environment:\n");
       for (const char**e = bp_env_prog; e && *e; e++)
-        fprintf(bp_ninja_file, "#. %s\n",e);
+        fprintf(bp_ninja_file, "#. %s\n",*e);
     };
   fprintf(bp_ninja_file, "\n# %d refpersys C++ source plugin files\n",
           (int) bp_vect_cpp_sources.size());
