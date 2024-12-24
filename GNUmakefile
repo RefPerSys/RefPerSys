@@ -241,9 +241,10 @@ plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	@printf "RPS_MAKE is %s and MAKE is %s for refpersys plugin at=%s PATH=%s\n" \ "$(RPS_MAKE)" "$(MAKE)" "$@"  "$$PATH"
-	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) /usr/bin/printenv
-	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v $< -o $@
-
+#	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) /usr/bin/printenv
+#	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v $< -o $@
+	/usr/bin/printenv
+	./do-build-refpersys-plugin -v $< -o $@
 
 
 ################################# obsolete stuff
