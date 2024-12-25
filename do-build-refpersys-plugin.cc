@@ -658,9 +658,13 @@ main(int argc, char**argv, const char**env)
                 rps_topdirectory,
                 bp_temp_ninja.c_str(),
                 bp_plugin_binary);
-    printf("%s [%s:%d] running\n  %s\n (plugin binary %s)\n", bp_progname,
-           __FILE__, __LINE__-1,
-           ninjacmd,  bp_plugin_binary);
+    printf("%s [%s:%d] running\n  %s"
+	   "\n (plugin binary %s, %d sources starting with %s)\n",
+	   bp_progname,
+           __FILE__, __LINE__-2,
+           ninjacmd,  bp_plugin_binary,
+	   (int)bp_vect_cpp_sources.size(),
+	   bp_vect_cpp_sources.at(0).c_str());
     fflush (nullptr);
     int ex = system(ninjacmd);
     sync ();
