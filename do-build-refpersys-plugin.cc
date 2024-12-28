@@ -29,12 +29,14 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <map>
 #include <cstring>
 #include <cassert>
 #include <set>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <errno.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -53,10 +55,14 @@ extern "C" {
   int bp_argc_prog;
   char**bp_argv_prog;
   const char** bp_env_prog;
-  std::vector<std::string> bp_vect_cpp_sources;
-  const char* bp_plugin_binary;
+  const char* bp_plugin_binary;	// generated shared object
+  std::string bp_objdir;
+  std::vector<std::string> bp_vect_cpp_sources; // vector of C++ sources
   std::string bp_temp_ninja;  // temporary generated file for ninja-build.org
-  std::set<std::string> bp_set_objects;
+  std::set<std::string> bp_set_objects; // set of object files
+  std::map<std::string,int> bp_map_ixobj; // mapping from objects to
+					  // indexes in
+					  // bp_vect_cpp_sources
   bool bp_verbose;
   FILE* bp_ninja_file;
   std::vector<std::string> bp_vect_ninja;
@@ -79,6 +85,12 @@ extern "C" {
       .has_arg= required_argument,
       .flag= nullptr,
       .val= 'o',
+    },
+    {
+      .name= "dirobj",  // --dirobj=OBJECT_DIR | -d OBJECT_DIR
+      .has_arg= required_argument,
+      .flag= nullptr,
+      .val= 'd',
     },
     {
       .name= "ninja", // --ninja=NINJA | -N NINJA
@@ -131,6 +143,7 @@ bp_usage(void)
   std::cerr << '\t' << bp_progname << " --version | -V #give also defaults" << std::endl;
   std::cerr << '\t' << bp_progname << " --verbose | -v #verbose execution" << std::endl;
   std::cerr << '\t' << bp_progname << " --output=PLUGIN | -o PLUGIN #output generated .so" << std::endl;
+  std::cerr << '\t' << bp_progname << " --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files" << std::endl;
   std::cerr << '\t' << bp_progname << " --shell=CMD | -S CMD #run shell command" << std::endl;
   std::cerr << '\t' << bp_progname << " --help | -h #this help" << std::endl;
   std::cerr << '\t' << bp_progname << " --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script" << std::endl;
@@ -295,11 +308,15 @@ bp_complete_ninja(FILE*f, const std::string& src)
      generate a better ninja file */
   for (std::string ob: bp_set_objects)
     {
+      assert(ob.size() >= 3 && ob.size()<1024);
+      int obln = (int) ob.size();
+      assert(ob[obln-1]=='o' && ob[obln-2]=='.');
+      fprintf(f, "#obln=%d ob= %s\n", obln, ob.c_str());
       std::string basob{basename(ob.c_str())};
       fprintf(f, "#basob= %s\n", basob.c_str());
-      assert(basob.size()>=3);
+      std::string basrc = basob.substr(0, obln-2);
+      fprintf(f, "#basrc= %s\n", basrc.c_str());
       fflush(f);
-      std::string src;
       fprintf(f, "\n"
               "build %s : R_CXX %s\n", ob.c_str(), src.c_str());
       fprintf(f, "  base_in=%s\n", basename(src.c_str()));
@@ -427,7 +444,7 @@ bp_prog_options(int argc, char**argv)
   int ix= 0;
   do
     {
-      opt = getopt_long(argc, argv, "Vhvo:N:S:", bp_options, &ix);
+      opt = getopt_long(argc, argv, "Vhvo:N:S:d:", bp_options, &ix);
       if (ix >= argc)
         break;
       switch (opt)
@@ -443,9 +460,43 @@ bp_prog_options(int argc, char**argv)
         case 'v':     // --verbose
           bp_verbose= true;
           break;
+	case 'd':
+	  {
+	    static char dirbuf[1024];
+	    struct stat dirstat = {};
+	    if (stat(optarg, &dirstat) == 0) {
+	      if (!S_ISDIR(dirstat.st_mode)) {
+		std::cerr << bp_progname
+			  << " : specified object directory " << optarg
+			  << " is not a directory." << std::endl;
+		exit(EXIT_FAILURE);
+	      };
+	    }
+	    else {		// stat failed, try mkdir
+	      if (mkdir(optarg, 0700)) {
+		std::cerr << bp_progname
+			  << " : failed to mkdir object directory "
+			  << optarg
+			  << " - " << strerror(errno)
+			  << std::endl;
+		exit(EXIT_FAILURE);
+	      }
+	    };
+	    char*dirpath = realpath(optarg, dirbuf);
+	    if (!dirpath) {
+		std::cerr << bp_progname
+			  << " : failed to get real path of object directory "
+			  << optarg
+			  << " - " << strerror(errno)
+			  << std::endl;
+		exit(EXIT_FAILURE);
+	    }
+	    bp_objdir = dirpath;
+	  }
+	  break;
         case 'o':   // --output=PLUGIN
         {
-          char bufbak[256];
+          char bufbak[384];
           memset (bufbak, 0, sizeof(bufbak));
           bp_plugin_binary = optarg;
           if (!access(optarg, F_OK) && strlen(optarg)<sizeof(bufbak)-2)
