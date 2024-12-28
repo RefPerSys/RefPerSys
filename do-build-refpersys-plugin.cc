@@ -308,19 +308,22 @@ bp_complete_ninja(FILE*f, const std::string& src)
      generate a better ninja file */
   for (std::string ob: bp_set_objects)
     {
+      fprintf(f, "\n## from %s:%d\n", __FILE__, __LINE__);
       assert(ob.size() >= 3 && ob.size()<1024);
       int obln = (int) ob.size();
       assert(ob[obln-1]=='o' && ob[obln-2]=='.');
       fprintf(f, "#obln=%d ob= %s\n", obln, ob.c_str());
       std::string basob{basename(ob.c_str())};
       fprintf(f, "#basob= %s\n", basob.c_str());
-      std::string basrc = basob.substr(0, obln-2);
+      int basobln = (int)  basob.size();
+      std::string basrc = basob.substr(0, basobln-2);
       fprintf(f, "#basrc= %s\n", basrc.c_str());
+      fprintf(f, "#src= %s\n", src.c_str());
       fflush(f);
       fprintf(f, "\n"
-              "build %s : R_CXX %s\n", ob.c_str(), src.c_str());
-      fprintf(f, "  base_in=%s\n", basename(src.c_str()));
+              "build %s : R_CXX %s.cc\n", ob.c_str(), basrc.c_str());
       fprintf(f, "  base_out=%s\n", basename(ob.c_str()));
+      fprintf(f, "  basrc=%s\n", basrc.c_str());
     }
   fprintf(f, "\n\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
   fprintf(f, "build %s : R_LINKSHARED",
