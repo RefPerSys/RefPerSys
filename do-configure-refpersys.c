@@ -1628,10 +1628,10 @@ main (int argc, char **argv)
   if (!cc)
     {
       if (!access ("/usr/bin/gcc", F_OK))
-        cc = rpsconf_defaulted_readline ("C compiler, preferably gcc:",
-                                         "/usr/bin/gcc");
+        cc = rpsconf_defaulted_readline(
+	  "C compiler [default /usr/bin/cc]: ", "/usr/bin/cc");
       else
-        cc = rpsconf_readline ("C compiler, preferably gcc:");
+        cc = rpsconf_readline ("C compiler [default /usr/bin/cc]: ");
     };
   if (!cc)
     cc = "/usr/bin/gcc";
@@ -1934,8 +1934,9 @@ rpsconf_cc_set (const char *cc)
   assert (cc != NULL);
   if (*cc == '\0')
     {
-      RPSCONF_DIAG ("missing C compiler path");
-      return RPSCONF_FAIL;
+      fprintf(stderr,
+	      "C compiler path not specified, using /usr/bin/cc\n");
+      cc = "/usr/bin/cc";
     };
 
   if (*cc != '/')
