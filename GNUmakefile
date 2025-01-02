@@ -104,7 +104,7 @@ all:
 	fi
 	@/usr/bin/printf 'RPS_HOMETMP is %s\n' "$(RPS_HOMETMP)"
 	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
-	$(MAKE) do-configure-refpersys
+	$(MAKE) tools/do-configure-refpersys
 	@/usr/bin/printf "hand-written C++ code: %s\n" "$(REFPERSYS_HUMAN_CPP_SOURCES)" | $(FMT)
 	@if [ ! -f _config-refpersys.mk ]; then \
 	   echo missing _config-refpersys.mk for GNUmakefile > /dev/stderr; \
@@ -137,11 +137,11 @@ lto-refpersys:
                $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
-config: do-configure-refpersys do-scan-refpersys-pkgconfig GNUmakefile
-	./do-configure-refpersys
+config: tools/do-configure-refpersys do-scan-refpersys-pkgconfig GNUmakefile
+	tools/do-configure-refpersys
 	$(MAKE) _scanned-pkgconfig.mk
 
-do-configure-refpersys: do-configure-refpersys.c |GNUmakefile rps-generate-gitid.sh
+tools/do-configure-refpersys: tools/do-configure-refpersys.c |GNUmakefile rps-generate-gitid.sh
 	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               -DRPSCONF_OPERSYS=\"$(RPS_OPERSYS)\" \
               -DRPSCONF_ARCH=\"$(RPS_ARCH)\" \
@@ -163,7 +163,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
-	$(RM) do-scan-refpersys-pkgconfig do-configure-refpersys do-build-refpersys-plugin 
+	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
 	$(RM) *.gch
@@ -396,7 +396,7 @@ print-plugin-settings:
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
 
 indent:
-	$(ASTYLE) $(ASTYLEFLAGS) do-configure-refpersys.c
+	$(ASTYLE) $(ASTYLEFLAGS) tools/do-configure-refpersys.c
 	$(ASTYLE) $(ASTYLEFLAGS) do-scan-refpersys-pkgconfig.c
 	$(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
 	$(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
