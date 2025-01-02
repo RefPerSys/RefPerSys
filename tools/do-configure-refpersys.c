@@ -4,7 +4,7 @@
 /// Description:
 ///     This file is part of the Reflective Persistent System.
 
-///      © Copyright 2024 The Reflective Persistent System Team
+///      © Copyright 2024, 2025 The Reflective Persistent System Team
 ///      team@refpersys.org & http://refpersys.org/
 ///
 /// Purpose: build-time configuration of the RefPerSys inference
@@ -1629,9 +1629,9 @@ main (int argc, char **argv)
     {
       if (!access ("/usr/bin/gcc", F_OK))
         cc = rpsconf_defaulted_readline(
-	  "C compiler [default /usr/bin/cc]: ", "/usr/bin/cc");
+	  "C compiler [default /usr/bin/gcc]: ", "/usr/bin/gcc");
       else
-        cc = rpsconf_readline ("C compiler [default /usr/bin/cc]: ");
+        cc = rpsconf_readline ("C compiler [default /usr/bin/gcc]: ");
     };
   if (!cc)
     cc = "/usr/bin/gcc";
@@ -1935,8 +1935,8 @@ rpsconf_cc_set (const char *cc)
   if (*cc == '\0')
     {
       fprintf(stderr,
-	      "C compiler path not specified, using /usr/bin/cc\n");
-      cc = "/usr/bin/cc";
+	      "C compiler path not specified, using /usr/bin/gcc\n");
+      cc = "/usr/bin/gcc";
     };
 
   if (*cc != '/')
