@@ -4,7 +4,7 @@
 /// Description:
 ///     This file is part of the Reflective Persistent System.
 
-///      © Copyright 2024 The Reflective Persistent System Team
+///      © Copyright 2024 - 2025 The Reflective Persistent System Team
 ///      team@refpersys.org & http://refpersys.org/
 ///
 /// Purpose: build a plugin for RefPerSys
@@ -712,7 +712,7 @@ main(int argc, char**argv, const char**env)
                 rps_topdirectory,
                 bp_temp_ninja.c_str(),
                 bp_plugin_binary);
-    printf("%s [%s:%d] running\n  %s"
+    printf("%s [%s:%d] running ninja as \n  %s"
 	   "\n (plugin binary %s, %d sources starting with %s)\n",
 	   bp_progname,
            __FILE__, __LINE__-2,
