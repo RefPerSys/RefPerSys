@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright 2020 - 2024, Basile Starynkevitch and the forum@refpersys.org
+# Copyright 2020 - 2025, Basile Starynkevitch and the forum@refpersys.org
 # mailing list contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -38,6 +38,17 @@ if [ -z $GPP ]; then
     fi
     export GPP
 fi
+
+if [ -z $CXX ]; then
+    CXX=$(which g++)
+    if [ -z $CXX ]; then
+	printf "%s missing g++ GNU compiler\n" $0 2>&1
+	exit 1
+    fi
+    export CXX
+fi
+
+
 printf "/// invocation: %s %s in %s\n" $0 "$*" "$(realpath $(pwd))"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
