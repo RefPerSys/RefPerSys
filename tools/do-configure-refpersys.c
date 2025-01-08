@@ -1643,11 +1643,15 @@ main (int argc, char **argv)
   if (!cxx)
     {
       if (!access ("/usr/bin/g++", F_OK))
-        cxx = rpsconf_defaulted_readline ("C++ compiler, preferably g++:",
+        cxx = rpsconf_defaulted_readline ("C++ compiler [default /usr/bin/g++:",
                                           "/usr/bin/g++");
       else
-        cxx = rpsconf_readline ("C++ compiler:");
+        cxx = rpsconf_readline ("C++ compiler [default /usr/bin/g++]: ");
     };
+
+  if (!cxx)
+	  cxx = "/usr/bin/g++";
+
   rpsconf_try_then_set_cxx_compiler (cxx);
   rpsconf_try_cxx_compiler_for_libgccjit (cc);
   rpsconf_test_libgccjit_compilation (cc);
