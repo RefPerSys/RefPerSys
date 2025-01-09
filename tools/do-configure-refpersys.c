@@ -480,12 +480,12 @@ rpsconf_trash_exit(struct rpsconf_trash *ctx)
 	assert(ctx != NULL);
 	if (ctx->state == EXIT_FAILURE) {
 		(void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
-			rpsconf_prog_name, ctx->pathc, __FILE__, line);
+			rpsconf_prog_name, ctx->pathc, __FILE__, __LINE__);
 		return;
 	}
 
 	(void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
-		rpsconf_prog_name, ctx->pathc, __FILE__, line);
+		rpsconf_prog_name, ctx->pathc, __FILE__, __LINE__);
 
 	for (i = 0; i < ctx->pathc; i++)
 		unlink(ctx->pathv[i]);
