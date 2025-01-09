@@ -437,20 +437,20 @@ rpsconf_should_remove_file (const char *path, int lineno)
 struct rpsconf_trash {
 	const char *pathv[4096];
 	int pathc;
+	char state;
 };
 
 static void rpsconf_trash_init(struct rpsconf_trash *);
 static void rpsconf_trash_push_(struct rpsconf_trash *, const char *, int);
-static void rpsconf_trash_flush(struct rpsconf_trash *);
+static void rpsconf_trash_exit(struct rpsconf_trash *);
 #define prsconf_trash_push(ctx, path) rpsconf_trash_push_((ctx), (path), __LINE__)
 
 void
 rpsconf_trash_init(struct rpsconf_trash *ctx)
 {
-	int i;
-
 	assert(ctx != NULL);
 	ctx->pathc = 0;
+	ctx->state = EXIT_SUCCESS;
 	memset(ctx->pathv, NULL, sizeof(ctx->pathv));
 }
 
@@ -463,13 +463,32 @@ rpsconf_trash_push_(struct rpsconf_trash *ctx, const char *path, int line)
 		return;
 
 	if (ctx->pathc > sizeof(ctx->pathv)) {
-		(void)fprintf(stderr, "%s: %s: too many files to remove at %s:%d\n",
+		(void)fprintf(stderr, "%s: %s: too many files to remove [%s:%d]\n",
 			rpsconf_prog_name, path, __FILE__, line);
-		rpsconf_failed = true; /* TODO: Why is this required? */
-		exit(EXIT_FAILURE);
+		ctx->state = EXIT_FAILURE;
+		exit(ctx->state);
 	}
 
 	ctx->pathv[ctx->pathc++] = path;
+}
+
+void
+rpsconf_trash_exit(struct rpsconf_trash *ctx)
+{
+	int i;
+
+	assert(ctx != NULL);
+	if (ctx->state == EXIT_FAILURE) {
+		(void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
+			rpsconf_prog_name, ctx->pathc, __FILE__, line);
+		return;
+	}
+
+	(void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
+		rpsconf_prog_name, ctx->pathc, __FILE__, line);
+
+	for (i = 0; i < ctx->pathc; i++)
+		unlink(ctx->pathv[i]);
 }
 
 /* End rpsconf_trash interface */
