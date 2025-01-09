@@ -444,6 +444,15 @@ static void rpsconf_trash_push_(struct rpsconf_trash *, const char *, int);
 static void rpsconf_trash_flush(struct rpsconf_trash *);
 #define prsconf_trash_push(ctx, path) rpsconf_trash_push_((ctx), (path), __LINE__)
 
+void
+rpsconf_trash_init(struct rpsconf_trash *ctx)
+{
+	int i;
+
+	assert(ctx != NULL);
+	memset(ctx->pathv, NULL, sizeof(ctx->pathv));
+}
+
 /* End rpsconf_trash interface */
 
 void
