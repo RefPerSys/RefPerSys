@@ -431,7 +431,20 @@ rpsconf_should_remove_file (const char *path, int lineno)
   rpsconf_files_to_remove_at_exit[rpsconf_removed_files_count++] = path;
 }       /* end rpsconf_should_remove_file */
 
+/*
+ * Interface for rpsconf_trash
+ */
+struct rpsconf_trash {
+	const char *pathv[4096];
+	int pathc;
+};
 
+static void rpsconf_trash_init(struct rpsconf_trash *);
+static void rpsconf_trash_push_(struct rpsconf_trash *, const char *, int);
+static void rpsconf_trash_flush(struct rpsconf_trash *);
+#define prsconf_trash_push(ctx, path) rpsconf_trash_push_((ctx), (path), __LINE__)
+
+/* End rpsconf_trash interface */
 
 void
 rpsconf_test_cxx_compiler (const char *cxx)
