@@ -450,7 +450,26 @@ rpsconf_trash_init(struct rpsconf_trash *ctx)
 	int i;
 
 	assert(ctx != NULL);
+	ctx->pathc = 0;
 	memset(ctx->pathv, NULL, sizeof(ctx->pathv));
+}
+
+void
+rpsconf_trash_push_(struct rpsconf_trash *ctx, const char *path, int line)
+{
+	assert(ctx != NULL);
+	assert(path != NULL && *path != '\0');
+	if (access(path, F_OK) == -1)
+		return;
+
+	if (ctx->pathc > sizeof(ctx->pathv)) {
+		(void)fprintf(stderr, "%s: %s: too many files to remove at %s:%d\n",
+			rpsconf_prog_name, path, __FILE__, line);
+		rpsconf_failed = true; /* TODO: Why is this required? */
+		exit(EXIT_FAILURE);
+	}
+
+	ctx->pathv[ctx->pathc++] = path;
 }
 
 /* End rpsconf_trash interface */
