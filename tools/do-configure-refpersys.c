@@ -185,58 +185,71 @@ void rpsconf_should_remove_file (const char *path, int lineno);
 /*
  * Interface for rpsconf_trash
  */
-struct {
-	const char *pathv[4096];
-	int pathc;
-	char state;
-} rpsconf_trash_;
+struct rpsconf_trash {
+	const char *pathv_[4096];
+	int pathc_;
+	char state_;
+};
 
-static void rpsconf_trash_init(void);
+static struct rpsconf_trash *rpsconf_trash_get_(void);
 static void rpsconf_trash_push_(const char *, int);
 static void rpsconf_trash_exit(void);
-#define prsconf_trash_push(path) rpsconf_trash_push_((path), __LINE__)
+#define rpsconf_trash_push(path) rpsconf_trash_push_((path), __LINE__)
 
-void
-rpsconf_trash_init(void)
+struct rpsconf_trash *
+rpsconf_trash_get_(void)
 {
-	rpsconf_trash_.pathc = 0;
-	rpsconf_trash_.state = EXIT_SUCCESS;
-	memset(rpsconf_trash_.pathv, NULL, sizeof(rpsconf_trash_.pathv));
+	static struct rpsconf_trash ctx;
+	static bool init = false;
+
+	if (!init) {
+		ctx.pathc_ = 0;
+		ctx.state_ = EXIT_SUCCESS;
+		memset(ctx.pathv_, NULL, sizeof(ctx.pathv_));
+		init = true;
+	}
+
+	return &ctx;
 }
 
 void
 rpsconf_trash_push_(const char *path, int line)
 {
+	struct rpsconf_trash *ctx;
+
 	assert(path != NULL && *path != '\0');
 	if (access(path, F_OK) == -1)
 		return;
 
-	if (rpsconf_trash_.pathc > sizeof(rpsconf_trash_.pathv)) {
+	ctx = rpsconf_trash_get_();
+	if (ctx->pathc_ > sizeof(ctx->pathv_)) {
 		(void)fprintf(stderr, "%s: %s: too many files to remove [%s:%d]\n",
 			rpsconf_prog_name, path, __FILE__, line);
-		rpsconf_trash_.state = EXIT_FAILURE;
-		exit(rpsconf_trash_.state);
+		ctx->state_ = EXIT_FAILURE;
+		exit(ctx->state_);
 	}
 
-	rpsconf_trash_.pathv[rpsconf_trash_.pathc++] = path;
+	ctx->pathv_[ctx->pathc_++] = path;
 }
 
 void
 rpsconf_trash_exit(void)
 {
+	struct rpsconf_trash *ctx;
 	int i;
 
-	if (rpsconf_trash_.state == EXIT_FAILURE) {
+	ctx = rpsconf_trash_get_();
+	if (ctx->state_ == EXIT_FAILURE) {
 		(void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
-			rpsconf_prog_name, rpsconf_trash_.pathc, __FILE__, __LINE__);
+			rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
 		return;
 	}
 
 	(void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
-		rpsconf_prog_name, rpsconf_trash_.pathc, __FILE__, __LINE__);
+		rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
 
-	for (i = 0; i < rpsconf_trash_.pathc; i++)
-		unlink(rpsconf_trash_.pathv[i]);
+	for (i = 0; i < ctx->pathc_; i++)
+		unlink(ctx->pathv_[i]);
 }
 
 /* End rpsconf_trash interface */
@@ -1600,8 +1613,6 @@ main (int argc, char **argv)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
-
-  rpsconf_trash_init();
 
   atexit (rpsconf_remove_files);
   printf ("%s: configurator program for RefPerSys inference engine\n",
