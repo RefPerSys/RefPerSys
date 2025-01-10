@@ -185,10 +185,11 @@ void rpsconf_should_remove_file (const char *path, int lineno);
 /*
  * Interface for rpsconf_trash
  */
-struct rpsconf_trash {
-	const char *pathv_[4096];
-	int pathc_;
-	char state_;
+struct rpsconf_trash
+{
+  const char *pathv_[4096];
+  int pathc_;
+  char state_;
 };
 
 static struct rpsconf_trash *rpsconf_trash_get_(void);
@@ -199,57 +200,60 @@ static void rpsconf_trash_exit(void);
 struct rpsconf_trash *
 rpsconf_trash_get_(void)
 {
-	static struct rpsconf_trash ctx;
-	static bool init = false;
+  static struct rpsconf_trash ctx;
+  static bool init = false;
 
-	if (!init) {
-		ctx.pathc_ = 0;
-		ctx.state_ = EXIT_SUCCESS;
-		memset(ctx.pathv_, NULL, sizeof(ctx.pathv_));
-		init = true;
-	}
+  if (!init)
+    {
+      ctx.pathc_ = 0;
+      ctx.state_ = EXIT_SUCCESS;
+      memset(ctx.pathv_, 0, sizeof(ctx.pathv_));
+      init = true;
+    }
 
-	return &ctx;
+  return &ctx;
 }
 
 void
 rpsconf_trash_push_(const char *path, int line)
 {
-	struct rpsconf_trash *ctx;
+  struct rpsconf_trash *ctx;
 
-	assert(path != NULL && *path != '\0');
-	if (access(path, F_OK) == -1)
-		return;
+  assert(path != NULL && *path != '\0');
+  if (access(path, F_OK) == -1)
+    return;
 
-	ctx = rpsconf_trash_get_();
-	if (ctx->pathc_ > sizeof(ctx->pathv_)) {
-		(void)fprintf(stderr, "%s: %s: too many files to remove [%s:%d]\n",
-			rpsconf_prog_name, path, __FILE__, line);
-		ctx->state_ = EXIT_FAILURE;
-		exit(ctx->state_);
-	}
+  ctx = rpsconf_trash_get_();
+  if (ctx->pathc_ > sizeof(ctx->pathv_))
+    {
+      (void)fprintf(stderr, "%s: %s: too many files to remove [%s:%d]\n",
+                    rpsconf_prog_name, path, __FILE__, line);
+      ctx->state_ = EXIT_FAILURE;
+      exit(ctx->state_);
+    }
 
-	ctx->pathv_[ctx->pathc_++] = path;
+  ctx->pathv_[ctx->pathc_++] = path;
 }
 
 void
 rpsconf_trash_exit(void)
 {
-	struct rpsconf_trash *ctx;
-	int i;
+  struct rpsconf_trash *ctx;
+  int i;
 
-	ctx = rpsconf_trash_get_();
-	if (ctx->state_ == EXIT_FAILURE) {
-		(void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
-			rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
-		return;
-	}
+  ctx = rpsconf_trash_get_();
+  if (ctx->state_ == EXIT_FAILURE)
+    {
+      (void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
+                    rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
+      return;
+    }
 
-	(void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
-		rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
+  (void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
+                rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
 
-	for (i = 0; i < ctx->pathc_; i++)
-		unlink(ctx->pathv_[i]);
+  for (i = 0; i < ctx->pathc_; i++)
+    unlink(ctx->pathv_[i]);
 }
 
 /* End rpsconf_trash interface */
@@ -1700,7 +1704,7 @@ main (int argc, char **argv)
     {
       if (!access ("/usr/bin/gcc", F_OK))
         cc = rpsconf_defaulted_readline(
-	  "C compiler [default /usr/bin/gcc]: ", "/usr/bin/gcc");
+               "C compiler [default /usr/bin/gcc]: ", "/usr/bin/gcc");
       else
         cc = rpsconf_readline ("C compiler [default /usr/bin/gcc]: ");
     };
@@ -1721,7 +1725,7 @@ main (int argc, char **argv)
     };
 
   if (!cxx)
-	  cxx = "/usr/bin/g++";
+    cxx = "/usr/bin/g++";
 
   rpsconf_try_then_set_cxx_compiler (cxx);
   rpsconf_try_cxx_compiler_for_libgccjit (cc);
@@ -2010,7 +2014,7 @@ rpsconf_cc_set (const char *cc)
   if (*cc == '\0')
     {
       fprintf(stderr,
-	      "C compiler path not specified, using /usr/bin/gcc\n");
+              "C compiler path not specified, using /usr/bin/gcc\n");
       cc = "/usr/bin/gcc";
     };
 
