@@ -182,6 +182,64 @@ void rpsconf_should_remove_file (const char *path, int lineno);
 #define RPSCONF_DIAG(msg, ...)         \
   rpsconf_diag__(__FILE__, __LINE__, msg, ##__VA_ARGS__)
 
+/*
+ * Interface for rpsconf_trash
+ */
+struct {
+	const char *pathv[4096];
+	int pathc;
+	char state;
+} rpsconf_trash_;
+
+static void rpsconf_trash_init(void);
+static void rpsconf_trash_push_(const char *, int);
+static void rpsconf_trash_exit(void);
+#define prsconf_trash_push(path) rpsconf_trash_push_((path), __LINE__)
+
+void
+rpsconf_trash_init(void)
+{
+	rpsconf_trash_.pathc = 0;
+	rpsconf_trash_.state = EXIT_SUCCESS;
+	memset(rpsconf_trash_.pathv, NULL, sizeof(rpsconf_trash_.pathv));
+}
+
+void
+rpsconf_trash_push_(const char *path, int line)
+{
+	assert(path != NULL && *path != '\0');
+	if (access(path, F_OK) == -1)
+		return;
+
+	if (rpsconf_trash_.pathc > sizeof(rpsconf_trash_.pathv)) {
+		(void)fprintf(stderr, "%s: %s: too many files to remove [%s:%d]\n",
+			rpsconf_prog_name, path, __FILE__, line);
+		rpsconf_trash_.state = EXIT_FAILURE;
+		exit(rpsconf_trash_.state);
+	}
+
+	rpsconf_trash_.pathv[rpsconf_trash_.pathc++] = path;
+}
+
+void
+rpsconf_trash_exit(void)
+{
+	int i;
+
+	if (rpsconf_trash_.state == EXIT_FAILURE) {
+		(void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
+			rpsconf_prog_name, rpsconf_trash_.pathc, __FILE__, __LINE__);
+		return;
+	}
+
+	(void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
+		rpsconf_prog_name, rpsconf_trash_.pathc, __FILE__, __LINE__);
+
+	for (i = 0; i < rpsconf_trash_.pathc; i++)
+		unlink(rpsconf_trash_.pathv[i]);
+}
+
+/* End rpsconf_trash interface */
 
 
 /// return a malloced path to a temporary textual file
@@ -431,67 +489,6 @@ rpsconf_should_remove_file (const char *path, int lineno)
   rpsconf_files_to_remove_at_exit[rpsconf_removed_files_count++] = path;
 }       /* end rpsconf_should_remove_file */
 
-/*
- * Interface for rpsconf_trash
- */
-struct rpsconf_trash {
-	const char *pathv[4096];
-	int pathc;
-	char state;
-};
-
-static void rpsconf_trash_init(struct rpsconf_trash *);
-static void rpsconf_trash_push_(struct rpsconf_trash *, const char *, int);
-static void rpsconf_trash_exit(struct rpsconf_trash *);
-#define prsconf_trash_push(ctx, path) rpsconf_trash_push_((ctx), (path), __LINE__)
-
-void
-rpsconf_trash_init(struct rpsconf_trash *ctx)
-{
-	assert(ctx != NULL);
-	ctx->pathc = 0;
-	ctx->state = EXIT_SUCCESS;
-	memset(ctx->pathv, NULL, sizeof(ctx->pathv));
-}
-
-void
-rpsconf_trash_push_(struct rpsconf_trash *ctx, const char *path, int line)
-{
-	assert(ctx != NULL);
-	assert(path != NULL && *path != '\0');
-	if (access(path, F_OK) == -1)
-		return;
-
-	if (ctx->pathc > sizeof(ctx->pathv)) {
-		(void)fprintf(stderr, "%s: %s: too many files to remove [%s:%d]\n",
-			rpsconf_prog_name, path, __FILE__, line);
-		ctx->state = EXIT_FAILURE;
-		exit(ctx->state);
-	}
-
-	ctx->pathv[ctx->pathc++] = path;
-}
-
-void
-rpsconf_trash_exit(struct rpsconf_trash *ctx)
-{
-	int i;
-
-	assert(ctx != NULL);
-	if (ctx->state == EXIT_FAILURE) {
-		(void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
-			rpsconf_prog_name, ctx->pathc, __FILE__, __LINE__);
-		return;
-	}
-
-	(void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
-		rpsconf_prog_name, ctx->pathc, __FILE__, __LINE__);
-
-	for (i = 0; i < ctx->pathc; i++)
-		unlink(ctx->pathv[i]);
-}
-
-/* End rpsconf_trash interface */
 
 void
 rpsconf_test_cxx_compiler (const char *cxx)
@@ -1603,6 +1600,9 @@ main (int argc, char **argv)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
+
+  rpsconf_trash_init();
+
   atexit (rpsconf_remove_files);
   printf ("%s: configurator program for RefPerSys inference engine\n",
           rpsconf_prog_name);
