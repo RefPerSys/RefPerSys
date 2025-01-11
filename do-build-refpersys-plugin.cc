@@ -55,14 +55,17 @@ extern "C" {
   int bp_argc_prog;
   char**bp_argv_prog;
   const char** bp_env_prog;
-  const char* bp_plugin_binary;	// generated shared object
-  std::string bp_objdir;
+  const char* bp_plugin_binary; // generated shared object
+  std::string bp_srcdir;  // plugin source directory
+#warning bp_srcdir plugin source directory incompletely handled
+  // if only once C++ source given set bp_srcdir to its dirname
+  std::string bp_objdir; // plugin object directory
   std::vector<std::string> bp_vect_cpp_sources; // vector of C++ sources
   std::string bp_temp_ninja;  // temporary generated file for ninja-build.org
   std::set<std::string> bp_set_objects; // set of object files
   std::map<std::string,int> bp_map_ixobj; // mapping from objects to
-					  // indexes in
-					  // bp_vect_cpp_sources
+  // indexes in
+  // bp_vect_cpp_sources
   bool bp_verbose;
   FILE* bp_ninja_file;
   std::vector<std::string> bp_vect_ninja;
@@ -447,7 +450,7 @@ bp_prog_options(int argc, char**argv)
   int ix= 0;
   do
     {
-      opt = getopt_long(argc, argv, "Vhvo:N:S:d:", bp_options, &ix);
+      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:", bp_options, &ix);
       if (ix >= argc)
         break;
       switch (opt)
@@ -463,40 +466,84 @@ bp_prog_options(int argc, char**argv)
         case 'v':     // --verbose
           bp_verbose= true;
           break;
-	case 'd':
-	  {
-	    static char dirbuf[1024];
-	    struct stat dirstat = {};
-	    if (stat(optarg, &dirstat) == 0) {
-	      if (!S_ISDIR(dirstat.st_mode)) {
-		std::cerr << bp_progname
-			  << " : specified object directory " << optarg
-			  << " is not a directory." << std::endl;
-		exit(EXIT_FAILURE);
-	      };
-	    }
-	    else {		// stat failed, try mkdir
-	      if (mkdir(optarg, 0700)) {
-		std::cerr << bp_progname
-			  << " : failed to mkdir object directory "
-			  << optarg
-			  << " - " << strerror(errno)
-			  << std::endl;
-		exit(EXIT_FAILURE);
-	      }
-	    };
-	    char*dirpath = realpath(optarg, dirbuf);
-	    if (!dirpath) {
-		std::cerr << bp_progname
-			  << " : failed to get real path of object directory "
-			  << optarg
-			  << " - " << strerror(errno)
-			  << std::endl;
-		exit(EXIT_FAILURE);
-	    }
-	    bp_objdir = dirpath;
-	  }
-	  break;
+        case 'd':
+        {
+          static char dirbuf[1024];
+          struct stat dirstat = {};
+          if (stat(optarg, &dirstat) == 0)
+            {
+              if (!S_ISDIR(dirstat.st_mode))
+                {
+                  std::cerr << bp_progname
+                            << " : specified object directory " << optarg
+                            << " is not a directory." << std::endl;
+                  exit(EXIT_FAILURE);
+                };
+            }
+          else      // stat failed, try mkdir
+            {
+              if (mkdir(optarg, 0700))
+                {
+                  std::cerr << bp_progname
+                            << " : failed to mkdir object directory "
+                            << optarg
+                            << " - " << strerror(errno)
+                            << std::endl;
+                  exit(EXIT_FAILURE);
+                }
+            };
+          char*dirpath = realpath(optarg, dirbuf);
+          if (!dirpath)
+            {
+              std::cerr << bp_progname
+                        << " : failed to get real path of object directory "
+                        << optarg
+                        << " - " << strerror(errno)
+                        << std::endl;
+              exit(EXIT_FAILURE);
+            }
+          bp_objdir = dirpath;
+        }
+        break;
+        case 's': // --plugin-src=SRC_DIR
+        {
+          static char dirbuf[1024];
+          struct stat dirstat = {};
+          if (stat(optarg, &dirstat) == 0)
+            {
+              if (!S_ISDIR(dirstat.st_mode))
+                {
+                  std::cerr << bp_progname
+                            << " : specified plugin soursr directory " << optarg
+                            << " is not a directory." << std::endl;
+                  exit(EXIT_FAILURE);
+                };
+            }
+          else      // stat failed, try mkdir
+            {
+              if (mkdir(optarg, 0700))
+                {
+                  std::cerr << bp_progname
+                            << " : failed to mkdir plugin source directory "
+                            << optarg
+                            << " - " << strerror(errno)
+                            << std::endl;
+                  exit(EXIT_FAILURE);
+                }
+            };
+          char*dirpath = realpath(optarg, dirbuf);
+          if (!dirpath)
+            {
+              std::cerr << bp_progname
+                        << " : failed to get real path of plugin source directory "
+                        << optarg
+                        << " - " << strerror(errno)
+                        << std::endl;
+              exit(EXIT_FAILURE);
+            }
+          bp_srcdir = dirpath;
+        }
+        break;
         case 'o':   // --output=PLUGIN
         {
           char bufbak[384];
@@ -713,12 +760,12 @@ main(int argc, char**argv, const char**env)
                 bp_temp_ninja.c_str(),
                 bp_plugin_binary);
     printf("%s [%s:%d] running ninja as \n  %s"
-	   "\n (plugin binary %s, %d sources starting with %s)\n",
-	   bp_progname,
+           "\n (plugin binary %s, %d sources starting with %s)\n",
+           bp_progname,
            __FILE__, __LINE__-2,
            ninjacmd,  bp_plugin_binary,
-	   (int)bp_vect_cpp_sources.size(),
-	   bp_vect_cpp_sources.at(0).c_str());
+           (int)bp_vect_cpp_sources.size(),
+           bp_vect_cpp_sources.at(0).c_str());
     fflush (nullptr);
     int ex = system(ninjacmd);
     sync ();
