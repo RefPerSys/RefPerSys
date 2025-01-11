@@ -313,6 +313,16 @@ tool used here is [GNU make](https://www.gnu.org/software/make/) since
 commit `6d56f50660c7cc41b9` (it was
 [omake](https://github.com/ocaml-omake/omake) before).
 
+
+The GNU [lightning](https://www.gnu.org/software/lightning/) library
+is need for machine code generation. You may want to compile it from
+source code and configure this *lightning* library with
+```
+./configure  --with-gnu-ld  --enable-disassembler   --enable-devel-disassembler \
+  --enable-devel-get-jit-size   --disable-silent-rules CFLAGS='-O2 -g2'
+```
+then the usual build commands.
+
 You should have compiled and installed Ian Taylor's
 [libbacktrace](https://github.com/ianlancetaylor/libbacktrace),
 e.g. under `/usr/local/`. You may need to add `/usr/local/lib/` in
