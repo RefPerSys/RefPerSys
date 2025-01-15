@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -666,6 +666,7 @@ rps_show_version(void)
             << " executable: " << exepath;
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;
+  std::cout << std::endl;
 #if RPS_WITH_FLTK
   std::cout << " FLTK (see fltk.org) ABI version:" << rps_fltk_get_abi_version()
             << std::endl;
