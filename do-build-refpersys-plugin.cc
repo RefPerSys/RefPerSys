@@ -44,6 +44,7 @@
 
 ///
 #define BP_HEAD_LINES_THRESHOLD 512
+#define BP_MAX_OPTIONS 32
 
 #warning perhaps replace pkg-config with "https://github.com/pkgconf/pkgconf"
 
@@ -69,52 +70,61 @@ extern "C" {
   bool bp_verbose;
   FILE* bp_ninja_file;
   std::vector<std::string> bp_vect_ninja;
-  struct option bp_options[] =
+  struct option* bp_options_ptr;
+};        // end extern "C"
+
+struct option bp_options_arr[BP_MAX_OPTIONS] =
+{
   {
-    {
-      .name= "verbose", // --verbose | -v
-      .has_arg= no_argument,
-      .flag= nullptr,
-      .val= 'v',
-    },
-    {
-      .name= "version", // --version | -V
-      .has_arg= no_argument,
-      .flag= nullptr,
-      .val= 'V',
-    },
-    {
-      .name= "output",  // --output=PLUGIN | -o PLUGIN
-      .has_arg= required_argument,
-      .flag= nullptr,
-      .val= 'o',
-    },
-    {
-      .name= "dirobj",  // --dirobj=OBJECT_DIR | -d OBJECT_DIR
-      .has_arg= required_argument,
-      .flag= nullptr,
-      .val= 'd',
-    },
-    {
-      .name= "ninja", // --ninja=NINJA | -N NINJA
-      .has_arg= required_argument,
-      .flag= nullptr,
-      .val = 'N',
-    },
-    {
-      .name= "shell", // --shell="command" | -S cmd
-      .has_arg= required_argument,
-      .flag= nullptr,
-      .val= 'S',
-    },
-    {
-      .name= nullptr,
-      .has_arg= no_argument,
-      .flag= nullptr,
-      .val= 0
-    },
-  };        // end bp_options
-};
+    .name= "verbose", // --verbose | -v
+    .has_arg= no_argument,
+    .flag= nullptr,
+    .val= 'v',
+  },
+  {
+    .name= "version", // --version | -V
+    .has_arg= no_argument,
+    .flag= nullptr,
+    .val= 'V',
+  },
+  {
+    .name= "output",  // --output=PLUGIN | -o PLUGIN
+    .has_arg= required_argument,
+    .flag= nullptr,
+    .val= 'o',
+  },
+  {
+    .name= "dirobj",  // --dirobj=OBJECT_DIR | -d OBJECT_DIR
+    .has_arg= required_argument,
+    .flag= nullptr,
+    .val= 'd',
+  },
+  {
+    .name= "ninja", // --ninja=NINJA | -N NINJA
+    .has_arg= required_argument,
+    .flag= nullptr,
+    .val = 'N',
+  },
+  {
+    .name= "shell", // --shell="command" | -S cmd
+    .has_arg= required_argument,
+    .flag= nullptr,
+    .val= 'S',
+  },
+  {
+    .name= "plugin-source", // --plugin-source="DIR" | -s DIRNAME
+    .has_arg= required_argument,
+    .flag= nullptr,
+    .val= 's',
+  },
+  {
+    .name= nullptr,
+    .has_arg= no_argument,
+    .flag= nullptr,
+    .val= 0
+  },
+};        // end bp_options_arr
+
 
 void
 bp_version (void)
@@ -148,6 +158,7 @@ bp_usage(void)
   std::cerr << '\t' << bp_progname << " --output=PLUGIN | -o PLUGIN #output generated .so" << std::endl;
   std::cerr << '\t' << bp_progname << " --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files" << std::endl;
   std::cerr << '\t' << bp_progname << " --shell=CMD | -S CMD #run shell command" << std::endl;
+  std::cerr << '\t' << bp_progname << " --plugin-src=DIRNAME | -s DIRNAME #plugin source directory" << std::endl;
   std::cerr << '\t' << bp_progname << " --help | -h #this help" << std::endl;
   std::cerr << '\t' << bp_progname << " --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script" << std::endl;
   std::cerr << "\t\t #from " << __FILE__ << ':' << __LINE__ << " git " << bp_git_id << std::endl;
@@ -450,7 +461,7 @@ bp_prog_options(int argc, char**argv)
   int ix= 0;
   do
     {
-      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:", bp_options, &ix);
+      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:", bp_options_ptr, &ix);
       if (ix >= argc)
         break;
       switch (opt)
@@ -642,6 +653,7 @@ bp_prog_options(int argc, char**argv)
 int
 main(int argc, char**argv, const char**env)
 {
+  bp_options_ptr = bp_options_arr;
   std::string bp_first_base;
 #warning do-build-refpersys-plugin should be much improved
   ///TODO to accept secondary source files for the plugin and more
@@ -791,6 +803,7 @@ main(int argc, char**argv, const char**env)
     printf("%s: will remove ninja temporary script %s in ten minutes thru /bin/at\n",
            bp_progname, bp_temp_ninja.c_str());
   fflush(nullptr);
+  bp_options_ptr = nullptr;
   /// synchronize the disk
   sync();
   return 0;
