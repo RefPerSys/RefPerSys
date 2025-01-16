@@ -25,6 +25,7 @@
 ///   (at your option) any later version.
 ///
 
+#define _GNU_SOURCE 1
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -33,6 +34,7 @@
 #include <cstring>
 #include <cassert>
 #include <set>
+#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -40,6 +42,8 @@
 #include <errno.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <string.h>
+#include <libgen.h>
 
 
 ///
@@ -69,6 +73,7 @@ extern "C" {
   // bp_vect_cpp_sources
   bool bp_verbose;
   FILE* bp_ninja_file;
+  char bp_ninja_symlink[PATH_MAX];
   std::vector<std::string> bp_vect_ninja;
   struct option* bp_options_ptr;
 };        // end extern "C"
@@ -320,14 +325,14 @@ bp_complete_ninja(FILE*f, const std::string& src)
 #warning incomplete function bp_complete_ninja
   /* TODO: improve this thng to maintain a set of source files and
      generate a better ninja file */
-  for (std::string ob: bp_set_objects)
+  for (const std::string& ob: bp_set_objects)
     {
       fprintf(f, "\n## from %s:%d\n", __FILE__, __LINE__);
       assert(ob.size() >= 3 && ob.size()<1024);
       int obln = (int) ob.size();
       assert(ob[obln-1]=='o' && ob[obln-2]=='.');
       fprintf(f, "#obln=%d ob= %s\n", obln, ob.c_str());
-      std::string basob{basename(ob.c_str())};
+      std::string basob{basename(const_cast<char*>(ob.c_str()))};
       fprintf(f, "#basob= %s\n", basob.c_str());
       int basobln = (int)  basob.size();
       std::string basrc = basob.substr(0, basobln-2);
@@ -336,7 +341,7 @@ bp_complete_ninja(FILE*f, const std::string& src)
       fflush(f);
       fprintf(f, "\n"
               "build %s : R_CXX %s.cc\n", ob.c_str(), basrc.c_str());
-      fprintf(f, "  base_out=%s\n", basename(ob.c_str()));
+      fprintf(f, "  base_out=%s\n", basob.c_str());
       fprintf(f, "  basrc=%s\n", basrc.c_str());
     }
   fprintf(f, "\n\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
@@ -372,6 +377,7 @@ bp_write_prologue_ninja(const char*njpath)
           bp_plugin_binary);
   fprintf(bp_ninja_file, "ninja_required_version = 1.10\n");
   fflush(bp_ninja_file);
+  fprintf(bp_ninja_file, "refpersys_plugin_srcdir = %s\n", bp_srcdir.c_str());
   fprintf(bp_ninja_file, "refpersys_plugin_sources =");
   for (std::string& src: bp_vect_cpp_sources)
     fprintf(bp_ninja_file, " %s", src.c_str());
@@ -633,9 +639,9 @@ bp_prog_options(int argc, char**argv)
           if (isspace(c) || !isprint(c))
             {
               fprintf(stderr,
-                      "%s bad plugin source#%d %s (%s) [%s:%d]\n",
-                      bp_progname, srcix, curarg.c_str(),
-                      strerror(errno), __FILE__, __LINE__-2);
+                      "%s bad plugin source#%d has forbidden character %0ux (%s) [%s:%d]\n",
+                      bp_progname, srcix, (unsigned)c, curarg.c_str(),
+                      __FILE__, __LINE__-2);
               exit(EXIT_FAILURE);
             };
         }
@@ -647,9 +653,43 @@ bp_prog_options(int argc, char**argv)
         };
       bp_vect_cpp_sources.push_back(curarg);
       optind++;
+    };        // end while(optind<argc)
+  asm volatile ("nop; nop; nop; nop");
+  ////
+  if (bp_vect_cpp_sources.empty())
+    {
+      fprintf(stderr,
+              "%s got no plugin C++ source [%s:%d]\n",
+              bp_progname, __FILE__, __LINE__-2);
+      exit(EXIT_FAILURE);
+    };
+  // default the source directory to the directory of first C++ plugin source if none given
+  if (bp_srcdir.empty())
+    {
+      char*dn = dirname(const_cast<char*>(bp_vect_cpp_sources[0].c_str()));
+      char rpbuf[PATH_MAX];
+      memset(rpbuf, 0, sizeof(rpbuf));
+      char*rp = realpath(dn, rpbuf);
+      if (!rp)
+        {
+          fprintf(stderr,
+                  "%s failed to call realpath of %s (%s) [%s:%d]\n",
+                  bp_progname, dn, strerror(errno),
+                  __FILE__, __LINE__-2);
+          exit(EXIT_FAILURE);
+        };
+      bp_srcdir.assign(rp);
+      if (bp_verbose)
+        {
+          printf("%s defaulted plugin source directory to %s [%s:%d]\n",
+                 bp_progname, bp_srcdir.c_str(), __FILE__, __LINE__-1);
+        }
     };
 } // end bp_prog_options
 
+
+
+////////////////////////////////////////////////////////////////
 int
 main(int argc, char**argv, const char**env)
 {
@@ -664,6 +704,8 @@ main(int argc, char**argv, const char**env)
   bp_env_prog = env;
   memset (bp_hostname, 0, sizeof(bp_hostname));
   gethostname(bp_hostname, sizeof(bp_hostname)-1);
+  char symlkbuf[384];
+  memset(symlkbuf, 0, sizeof(symlkbuf));
   if (argc<2)
     {
       bp_usage();
@@ -730,7 +772,7 @@ main(int argc, char**argv, const char**env)
       bp_base_src_set.insert({bufstr,cursrc});
     };
   {
-    char temp[128];
+    char temp[256];
     snprintf (temp, sizeof(temp), "/tmp/%s_XXXXXX.ninja", bp_first_base.c_str());
     int fd = mkstemps(temp, strlen(".ninja"));
     bp_temp_ninja.assign(temp);
@@ -743,7 +785,21 @@ main(int argc, char**argv, const char**env)
                   << " for plugin  " << bp_plugin_binary
                   << " : " << strerror(errno) << std::endl;
         exit(EXIT_FAILURE);
-      }
+      };
+    {
+      memset(symlkbuf, 0, sizeof(symlkbuf));
+      snprintf(symlkbuf, sizeof(symlkbuf), "%s/tmp/%s.ninja", getenv("HOME"), bp_first_base.c_str());
+      if (symlkbuf[sizeof(symlkbuf)-2] != 0)
+        memset(symlkbuf, 0, sizeof(symlkbuf));
+      if (symlkbuf[0] && !symlink(temp, symlkbuf))
+        {
+          if (bp_verbose)
+            {
+              printf("%s: symlinking %s -> %s\n", bp_progname, symlkbuf, temp);
+              fflush(nullptr);
+            };
+        }
+    }
     bp_write_prologue_ninja(temp);
     if (!bp_vect_ninja.empty())
       bp_include_ninja(bp_ninja_file);
@@ -796,12 +852,19 @@ main(int argc, char**argv, const char**env)
                 bp_progname, bp_temp_ninja.c_str());
         return 0;
       }
-    fprintf (p, "/bin/rm -f '%s'", bp_temp_ninja.c_str());
+    fprintf (p, "/bin/rm -f '%s'\n", bp_temp_ninja.c_str());
+    if (symlkbuf[0])
+      fprintf(p, "/bin/rm -f '%s'\n", symlkbuf);
     pclose(p);
   }
   if (bp_verbose)
-    printf("%s: will remove ninja temporary script %s in ten minutes thru /bin/at\n",
-           bp_progname, bp_temp_ninja.c_str());
+    {
+      printf("%s: will remove ninja temporary script %s in ten minutes thru /bin/at\n",
+             bp_progname, bp_temp_ninja.c_str());
+      if (symlkbuf[0])
+        printf("%s: will remove symlink %s in ten minutes thru /bin/at\n",
+               bp_progname, symlkbuf);
+    }
   fflush(nullptr);
   bp_options_ptr = nullptr;
   /// synchronize the disk
