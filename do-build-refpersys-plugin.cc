@@ -795,7 +795,8 @@ main(int argc, char**argv, const char**env)
         {
           if (bp_verbose)
             {
-              printf("%s: symlinking %s -> %s\n", bp_progname, symlkbuf, temp);
+              printf("%s: symlinking %s -> %s [%s:%d]\n", bp_progname, symlkbuf, temp,
+		     __FILE__, __LINE__-1);
               fflush(nullptr);
             };
         }
