@@ -1106,6 +1106,7 @@ Rps_Dumper::write_generated_names_file(void)
     (*pouts) << "RPS_INSTALL_NAMED_ROOT_OB(" << obr->oid()
              << "," << (cursym->symbol_name()) << ")"
              << " //∈" << obr->get_class()
+             << " h" << obr->obhash()
              << std::endl;
     namecnt++;
   });
@@ -1186,7 +1187,7 @@ Rps_Dumper::write_generated_constants_file(void)
       else if (!klassname.empty())
         *pouts << " //-∈" // U+2208 ELEMENT OF
                << klassname;
-      *pouts << std::endl;
+      *pouts << " h" << constobr->obhash() << std::endl;
       constcnt ++;
     }
   *pouts << std::endl << "#undef RPS_INSTALL_CONSTANT_OB" << std::endl << std::endl;
@@ -1760,7 +1761,6 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
         *pouts << "/CLASS";
       if (curobr->get_space() == RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)) //"initial_space"∈space
         *pouts << "!";
-      *pouts << std::endl;
       RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
                      << " of hi=" <<  (curobr->oid().hi())
                      << " #" << count);
@@ -1787,11 +1787,13 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
             if (!namestr.empty() && symb)
               {
                 *pouts << "//$" << namestr << "∈" /*U+2208 ELEMENT OF*/
-                       << symb->symbol_name() << std::endl;
+                       << symb->symbol_name()
+                       << " h" << curobr->obhash()<<  std::endl;
               }
             else if (symb)
               *pouts << "//∈" /*U+2208 ELEMENT OF*/
-                     << symb->symbol_name() << std::endl;
+                     << symb->symbol_name()
+                     << " h" << curobr->obhash()<<  std::endl;
           }
         else
           RPS_WARNOUT("Rps_Dumper::write_space_file no obsymb for obr "
