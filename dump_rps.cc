@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1062,7 +1062,7 @@ Rps_Dumper::write_generated_roots_file(void)
           (*pouts) << '"' << Rps_Cjson_String(nameval.to_cppstring()) << '"';
         (*pouts) << "∈" << claclapayl->class_name_str();
       };
-    (*pouts) << " h" << obr->obhash() << std::endl;
+    (*pouts) << " h:" << obr->obhash() << std::endl;
   });
   /// output a 100 star comments to ease GNU emacs rectangle facilities
   {
@@ -1106,7 +1106,7 @@ Rps_Dumper::write_generated_names_file(void)
     (*pouts) << "RPS_INSTALL_NAMED_ROOT_OB(" << obr->oid()
              << "," << (cursym->symbol_name()) << ")"
              << " //∈" << obr->get_class()
-             << " h" << obr->obhash()
+             << " h:" << obr->obhash()
              << std::endl;
     namecnt++;
   });
@@ -1187,7 +1187,7 @@ Rps_Dumper::write_generated_constants_file(void)
       else if (!klassname.empty())
         *pouts << " //-∈" // U+2208 ELEMENT OF
                << klassname;
-      *pouts << " h" << constobr->obhash() << std::endl;
+      *pouts << " h:" << constobr->obhash() << std::endl;
       constcnt ++;
     }
   *pouts << std::endl << "#undef RPS_INSTALL_CONSTANT_OB" << std::endl << std::endl;
@@ -1788,12 +1788,12 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
               {
                 *pouts << "//$" << namestr << "∈" /*U+2208 ELEMENT OF*/
                        << symb->symbol_name()
-                       << " h" << curobr->obhash()<<  std::endl;
+                       << " h:" << curobr->obhash() <<  std::endl;
               }
             else if (symb)
               *pouts << "//∈" /*U+2208 ELEMENT OF*/
                      << symb->symbol_name()
-                     << " h" << curobr->obhash()<<  std::endl;
+                     << " h:" << curobr->obhash()<<  std::endl;
           }
         else
           RPS_WARNOUT("Rps_Dumper::write_space_file no obsymb for obr "
