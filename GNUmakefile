@@ -11,7 +11,7 @@
 ##      Nimesh Neema <nimeshneema@gmail.com>
 ##      Abdullah Siddiqui <siddiquiabdullah92@gmail.com>
 ##
-##      © Copyright 2019 - 2024 The Reflective Persistent System Team
+##      © Copyright 2019 - 2025 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
 ## License:
@@ -237,6 +237,16 @@ refpersys: objects |  GNUmakefile
 plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	@printf "\n\n making plugins desired basenames=%s\n" "$(REFPERSYS_DESIRED_PLUGIN_BASENAMES)"
 	+$(MAKE) $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES))
+
+plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $^ -o $@
 
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
