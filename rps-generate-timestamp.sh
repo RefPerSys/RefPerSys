@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #
 # Copyright 2020 - 2025, Basile Starynkevitch and the forum@refpersys.org
 # mailing list contributors
