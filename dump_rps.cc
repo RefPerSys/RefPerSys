@@ -1062,7 +1062,7 @@ Rps_Dumper::write_generated_roots_file(void)
           (*pouts) << '"' << Rps_Cjson_String(nameval.to_cppstring()) << '"';
         (*pouts) << "∈" << claclapayl->class_name_str();
       };
-    (*pouts) << std::endl;
+    (*pouts) << " h" << obr->obhash() << std::endl;
   });
   /// output a 100 star comments to ease GNU emacs rectangle facilities
   {
