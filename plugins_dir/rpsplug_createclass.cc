@@ -112,11 +112,13 @@ rps_do_plugin(const Rps_Plugin* plugin)
     {
       rps_add_root_object(_f.obnewclass);
       RPS_INFORMOUT("rpsplug_createclass added new root class " << _f.obnewclass
+		    << " of hash " << _f.obnewclass->obhash()
                     << " named " << plugarg << " of super class " << _f.obsuperclass << " and symbol " << _f.obsymbol);
     }
   else
     {
       RPS_INFORMOUT("rpsplug_createclass added new class " << _f.obnewclass
+		    << " of hash " << _f.obnewclass->obhash()
                     << " named " << plugarg << " of super class " << _f.obsuperclass << " and symbol " << _f.obsymbol);
     }
 } // end rps_do_plugin
