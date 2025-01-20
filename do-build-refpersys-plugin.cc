@@ -10,10 +10,22 @@
 /// Purpose: build a plugin for RefPerSys
 ///
 /// Caveat: this do-build-refpersys-plugin program should run quickly
-/// and uses ninja from ninja-build.org
+/// and uses ninja from ninja-build.org. It could leak memory.
 ///
 /// invocation: do-build-refpersys-plugin <plugin-c++-source> -o <plugin-shared-object>
 /// e.g. do-build-refpersys-plugin plugins_dir/foo.cc -o /tmp/foo.so
+/// other program options are:
+/// 	./do-build-refpersys-plugin --version | -V #give also defaults
+///     ./do-build-refpersys-plugin --verbose | -v #verbose execution
+///     ./do-build-refpersys-plugin --output=PLUGIN | -o PLUGIN #output generated .so
+///     ./do-build-refpersys-plugin --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files
+///     ./do-build-refpersys-plugin --shell=CMD | -S CMD #run shell command
+///     ./do-build-refpersys-plugin --plugin-src=DIRNAME | -s DIRNAME #plugin source directory
+///     ./do-build-refpersys-plugin --help | -h #this help
+///     ./do-build-refpersys-plugin --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script
+///
+///// The C++ plugin sources may contain comments driving the compilation
+
 ///
 /// Author(s):
 ///      Basile Starynkevitch <basile@starynkevitch.net>
@@ -166,10 +178,14 @@ bp_usage(void)
   std::cerr << '\t' << bp_progname << " --plugin-src=DIRNAME | -s DIRNAME #plugin source directory" << std::endl;
   std::cerr << '\t' << bp_progname << " --help | -h #this help" << std::endl;
   std::cerr << '\t' << bp_progname << " --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script" << std::endl;
-  std::cerr << "\t\t #from " << __FILE__ << ':' << __LINE__ << " git " << bp_git_id << std::endl;
-  std::cerr << "\t\t see refpersys.org and github.com/RefPerSys/RefPerSys" << std::endl;
-  std::cerr << "\t\t uses $RPSPLUGIN_CXXFLAGS and $RPSPLUGIN_LDFLAGS if provided"
+  std::cerr << "\t #from " << __FILE__ << ':' << __LINE__ << " git " << bp_git_id << std::endl;
+  std::cerr << "\t #see refpersys.org and github.com/RefPerSys/RefPerSys" << std::endl;
+  std::cerr << "\t #uses $RPSPLUGIN_CXXFLAGS and $RPSPLUGIN_LDFLAGS if provided"
             << std::endl;
+  std::cerr << "\t #the C++ plugin sources may contain comments to drive the compilation" << std::endl;
+  std::cerr << "\t\t\t //@PKGCONFIG <package-name>   #e.g.  ////@PKGCONFIG sfml-graphics" <<std::endl;
+  std::cerr << "\t\t\t //@NINJA.<tag> up to //@ENDNINJA.<tag> #e.g. //@NINJA.foo ... //@ENDNINJA.foo copy lines to ninja file" <<std::endl;
+  std::cerr << "\t\t\t //@OBJECT <object-file>       #eg //@OBJECT /usr/local/lib/libnwcc.o to add a new object file" <<std::endl;
 } // end bp_usage
 
 
