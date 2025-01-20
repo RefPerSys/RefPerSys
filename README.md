@@ -362,7 +362,9 @@ mid-september 2023.  It uses GNU libunistring and is shared (in file
 
 ### Related files
 
-See also some files from [misc-basile](https://github.com/bstarynk/misc-basile)
+See also some files from
+[misc-basile](https://github.com/bstarynk/misc-basile) in particular
+`build-with-guile.c`
 
 ### Build instructions
 
