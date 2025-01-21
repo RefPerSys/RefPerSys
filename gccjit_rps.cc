@@ -439,8 +439,11 @@ Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
 {
   if (!loc)
     return Json::nullValue;
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   Json::Value job(Json::objectValue);
   // https://gcc.gnu.org/pipermail/gcc-help/2025-January/143958.html
+  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=118587
   RPS_FATALOUT("unimplemented ps_PayloadGccjit::src_location_to_json owner=" << owner());
 } // end of Rps_PayloadGccjit::src_location_to_json
 
