@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2023 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -123,6 +123,8 @@ public:
   {
     return nullptr;
   };
+  struct gcc_jit_location* json_to_src_location(const Json::Value &jv);
+  Json::Value src_location_to_json(struct gcc_jit_location*loc) const;
   // an arbitrary refpersys object may represent a fictuous "source file"
   struct gcc_jit_location* make_rpsobj_location(Rps_ObjectRef ob, int line, int col=0);
   void locked_register_object_jit(Rps_ObjectRef ob,  struct gcc_jit_object* jit);
@@ -404,6 +406,46 @@ Rps_PayloadGccjit::make_rpsobj_location(Rps_ObjectRef ob, int line, int col)
   return  gcc_jit_context_new_location(_gji_ctxt, cbuf, line, col);
 } // end Rps_PayloadGccjit::make_rpsobj_location
 
+
+
+struct gcc_jit_location*
+Rps_PayloadGccjit::json_to_src_location(const Json::Value &jv)
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
+  if (jv.type() != Json::objectValue)
+    return nullptr;
+  if (!jv.isMember("srcloc_file") && !jv.isMember("srcloc_line"))
+    return nullptr;
+  const Json::Value& jfile = jv["srcloc_file"];
+  const Json::Value& jline = jv["srcloc_line"];
+  if (jfile.type() != Json::stringValue)
+    return nullptr;
+  if (jline.type() != Json::intValue)
+    return nullptr;
+  const std::string& srcfil = jfile.asString();
+  long lin = jline.asInt();
+  long col = 0;
+  if (jv.isMember("srcloc_col"))
+    {
+      if (jv["srcloc_col"].type() == Json::intValue)
+        col = jv["srcloc_col"].asInt();
+    };
+  return  gcc_jit_context_new_location(_gji_ctxt, srcfil.c_str(), lin, col);
+} // end Rps_PayloadGccjit::json_to_src_location
+
+Json::Value
+Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
+{
+  if (!loc)
+    return Json::nullValue;
+  Json::Value job(Json::objectValue);
+  // https://gcc.gnu.org/pipermail/gcc-help/2025-January/143958.html
+  RPS_FATALOUT("unimplemented ps_PayloadGccjit::src_location_to_json owner=" << owner());
+} // end of Rps_PayloadGccjit::src_location_to_json
+
+
+
 /* Should transform a JSON value into data relevant to GCCJIT and
    create if needed the necessary code. */
 void
@@ -494,7 +536,7 @@ void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
       for (unsigned ix=0; ix<seqsiz; ix++)
         {
           Json::Value jvcurelem = jseq[ix];
-          paylgccj->load_jit_json(ld,spacid, lineno, jvcurelem);
+          paylgccj->load_jit_json(ld, spacid, lineno, jvcurelem);
         }
     }
   else
