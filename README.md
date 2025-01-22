@@ -80,6 +80,10 @@ make utility, including BSD make, is not ok). the
 accessible and likewise for other [GNU](https://www.gnu.org/software/)
 utilities.
 
+The GNU `make` software should have version at least 4 and be
+configured to use [GNU
+guile](https://www.gnu.org/software/guile/). See [GNU make bug
+#66658](https://savannah.gnu.org/bugs/index.php?66658).
 
 Conventionally any *RefPerSys* specific environment variable (outside
 of the usual environment variables mentioned above) is starting with
