@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2023 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -631,6 +631,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
         {
           _f.obcomp = _f.vcomp.as_object();
           std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+
         }
       else
         {
@@ -712,6 +713,8 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_Value vxtrares;
                  Rps_Value vtype;
                  Rps_Value vcomp;
+                 Rps_Value vmain;
+                 Rps_Value vxtra;
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
@@ -733,6 +736,25 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
   auto cppgenpayl = _f.obgenerator->put_new_plain_payload<Rps_PayloadCplusplusGen>();
+  try
+    {
+#if 0 && temporary_code
+      Rps_TwoValues two = _f.obgenerator.send1(&_,
+                          /*selector prepare_cplusplus_generation*/,
+                          _f.obmodule);
+      _f.vmain = two.main();
+      _f.vxtra = two.xtra();
+#endif
+    }
+  catch  (std::exception&exc)
+    {
+      RPS_WARNOUT("rps_generate_cplusplus_code failed to prepare "
+                  << _f.obgenerator << " for module " << _f.obmodule
+                  << " got exception " << exc.what()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,"rps_generate_cplusplus_code"));
+      return false;
+    };
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->clear_indentation();
   cppgenpayl->output([&](std::ostringstream&out)
@@ -764,6 +786,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
         << " {<" __FILE__ ":" << __LINE__ << ">}" << std::endl;
     out << std::flush;
   });
+  sync();
   RPS_WARNOUT("incomplete rps_generate_cplusplus_code obmodule="
               << _f.obmodule << " generator=" << _f.obgenerator
               << std::endl
