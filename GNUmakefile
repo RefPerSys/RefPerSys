@@ -95,7 +95,7 @@ REFPERSYS_NEEDED_LIBRARIES= -llightning -lunistring -lbacktrace -lgmp
 
 ### desired plugins (their basename under plugins_dir/)
 ### Basile removed _rpsplug_gramrepl in sept. 2024
-REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp 
+REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_createclass rpsplug_createnamedattribute rpsplug_createnamedselector rpsplug_simpinterp 
 
 all:
 	@if [ -z "$(REFPERSYS_TOPDIR)" ]; then \
@@ -239,6 +239,36 @@ plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	+$(MAKE) $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES))
 
 plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $^ -o $@
+
+plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $^ -o $@
+
+plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $^ -o $@
+
+plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
