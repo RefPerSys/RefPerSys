@@ -1,7 +1,7 @@
 // see http://refpersys.org/
 // passed to commits after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
-// © Copyright 2023 - 2024 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys symbol
 /*****
  * Once compiled, use it for example as:
@@ -113,6 +113,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./do-build-refpersys-plugin  plugins_dir/rpsplug_createsymbol.cc -o /tmp/rpsplug_createsymbol.so" ;;
+ ** compile-command: "cd ..; make plugins_dir/rpsplug_createsymbol.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_createsymbol.so /tmp/" ;;
  ** End: ;;
  ****************/
