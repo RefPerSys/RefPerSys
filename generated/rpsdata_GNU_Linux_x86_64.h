@@ -150,7 +150,7 @@
 #endif //RPS_DATA_INCLUDED
 
 
-//// generated at 2025-Jan-25 11:39:39 CET on rimski.lesours
+//// generated at 2025-Jan-25 12:08:38 CET on rimski.lesours
 
 
 //// end of generated generated/rpsdata_GNU_Linux_x86_64.h by write_generated_data_file for shortgitid:515cc9cbc85f+
