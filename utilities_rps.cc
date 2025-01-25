@@ -2000,16 +2000,17 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
   RPS_ASSERT(_f.oldsetv.is_set());
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
                 << _f.obconst << " oldset=" << _f.oldsetv);
-  if (_f.oldsetv.as_set()->contains(_f.obconst)) {
-    // if the constant is already known, we issue a warning
-    RPS_WARNOUT("adding already known constant " << _f.obconst
-		<< " of class " << _f.obconst->get_class()
-		<< " in  thread " << rps_current_pthread_name()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/known")
-		);
-    return;
-  };
+  if (_f.oldsetv.as_set()->contains(_f.obconst))
+    {
+      // if the constant is already known, we issue a warning
+      RPS_WARNOUT("adding already known constant " << _f.obconst
+                  << " of class " << _f.obconst->get_class()
+                  << " in  thread " << rps_current_pthread_name()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/known")
+                 );
+      return;
+    };
   RPS_POSSIBLE_BREAKPOINT();
   _f.newsetv = Rps_SetValue({_f.oldsetv, Rps_Value(_f.obconst)});
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
@@ -2017,6 +2018,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                 << " newset=" << _f.newsetv);
   RPS_ASSERT(_f.newsetv.is_set() && _f.newsetv.as_set()->cardinal() > 0);
   RPS_ASSERT(_f.newsetv.as_set()->cardinal() > _f.oldsetv.as_set()->cardinal());
+  RPS_POSSIBLE_BREAKPOINT();
   /// update the set of contants
   _f.obsystem->put_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp), // //"constant"∈named_attribute
                         _f.newsetv);
@@ -2025,6 +2027,12 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                 << std::endl
                 << "... oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv << " in " << _f.obsystem
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending"));
+
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(_f.obsystem->get_physical_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp))
+             == _f.newsetv);
+  RPS_DEBUG_LOG(REPL, "rps_add_constant_object final obsystem=" << _f.obsystem);
+  RPS_POSSIBLE_BREAKPOINT();
 #pragma message "perhaps rps_add_constant_object should remove obconst from the set of roots?"
 } // end rps_add_constant_object
 
