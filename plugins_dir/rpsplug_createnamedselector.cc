@@ -70,9 +70,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
         isconstant = true;
       else if (!strcmp(constant, "false"))
         isconstant = false;
-      else if (constant[0]=='Y' || constant[0]=='y')
+      else if (constant[0]=='Y' || constant[0]=='y' || constant[0]=='1')
         isconstant = true;
-      else if (constant[0]=='N' || constant[0]=='n')
+      else if (constant[0]=='N' || constant[0]=='n' || constant[0]=='0')
         isconstant = false;
       else if (isdigit(constant[0]))
         isconstant = atoi(constant)>0;

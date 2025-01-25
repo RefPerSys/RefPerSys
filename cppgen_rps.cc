@@ -8,9 +8,9 @@
  *      It has the code for C++ code generation.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch <basile@starynkevitch.net> (France)
+ *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
+ *      Nimesh Neema <nimeshneema@gmail.com> (India)
  *
  *      © Copyright 2023 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
