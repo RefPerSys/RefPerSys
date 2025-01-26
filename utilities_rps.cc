@@ -2016,7 +2016,8 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
   _f.newsetv = Rps_SetValue({_f.oldsetv, Rps_Value(_f.obconst)});
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
                 << _f.obconst << " oldset=" << _f.oldsetv
-                << " newset=" << _f.newsetv);
+                << " newset=" << _f.newsetv
+                << " obsystem=" << _f.obsystem);
   RPS_ASSERT(_f.newsetv.is_set() && _f.newsetv.as_set()->cardinal() > 0);
   RPS_ASSERT(_f.newsetv.as_set()->cardinal() > _f.oldsetv.as_set()->cardinal());
   RPS_POSSIBLE_BREAKPOINT();
@@ -2033,8 +2034,9 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst=" << _f.obconst
                 << " of class " << _f.obconst->get_class() << " space " << _f.obconst->get_space()
                 << std::endl
-                << "... oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv
-                << " xtrav=" << _f.xtrav << " " << ((_f.xtrav  == _f.newsetv)?"same":"different")
+                << "... oldfsetv=" << _f.oldsetv
+                << std::endl << "... newsetv=" << _f.newsetv
+                << std::endl << "... xtrav=" << _f.xtrav << " " << ((_f.xtrav  == _f.newsetv)?"same":"different")
                 << " in " << _f.obsystem
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending2"));
   RPS_ASSERT(_f.xtrav  == _f.newsetv);
