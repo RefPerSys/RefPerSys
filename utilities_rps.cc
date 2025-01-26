@@ -1945,6 +1945,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                            Rps_ObjectRef oboldroot;
                            Rps_Value oldsetv;
                            Rps_Value newsetv;
+                           Rps_Value xtrav;
                 );
   _f.obconst = argob;
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object start adding " << _f.obconst
@@ -1995,8 +1996,8 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
 
   _f.obsystem = RPS_ROOT_OB(_1Io89yIORqn02SXx4p); //RefPerSys_system∈the_system_class
   std::lock_guard<std::recursive_mutex> gu(*_f.obsystem->objmtxptr());
-  _f.oldsetv = _f.obsystem->get_physical_attr
-               (RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
+  _f.oldsetv
+    = _f.obsystem->get_physical_attr (RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
   RPS_ASSERT(_f.oldsetv.is_set());
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
                 << _f.obconst << " oldset=" << _f.oldsetv);
@@ -2027,10 +2028,16 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                 << std::endl
                 << "... oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv << " in " << _f.obsystem
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending"));
-
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_ASSERT(_f.obsystem->get_physical_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp))
-             == _f.newsetv);
+  _f.xtrav = _f.obsystem->get_physical_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp));
+  RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst=" << _f.obconst
+                << " of class " << _f.obconst->get_class() << " space " << _f.obconst->get_space()
+                << std::endl
+                << "... oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv
+                << " xtrav=" << _f.xtrav << " " << ((_f.xtrav  == _f.newsetv)?"same":"different")
+                << " in " << _f.obsystem
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending2"));
+  RPS_ASSERT(_f.xtrav  == _f.newsetv);
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object final obsystem=" << _f.obsystem);
   RPS_POSSIBLE_BREAKPOINT();
 #pragma message "perhaps rps_add_constant_object should remove obconst from the set of roots?"
