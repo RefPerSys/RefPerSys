@@ -27,21 +27,25 @@ if [ ! -f "refpersys.hh" ]; then
     exit 1
 fi
 make -j3 refpersys || exit 1
+rps_persistore="$(/usr/bin/realpath persistore)"
 if /bin/grep -rl prepare_cplusplus_generation persistore/ ; then
     printf "%s: already known prepare_cplusplus_generation in %s\n" \
-	   $rps_scriptname $(realpath persistore);
+	   $rps_scriptname $rps_persistore ;
     exit 0
 fi
 make plugins_dir/rpsplug_createnamedselector.so
 ./refpersys --plugin-after-load=plugins_dir/rpsplug_createnamedselector.so \
             --plugin-arg=rpsplug_createnamedselector:prepare_cplusplus_generation \
             --extra=comment='prepare in a C++ generation the module' \
-            --extra=rooted=0 \
-            --extra=constant=1 \
-            --batch --dump=.
+            --extra=rooted=0 --extra=constant=1 \
+            -AREPL --batch --dump=.
 
-if [ ! /bin/grep -rl prepare_cplusplus_generation persistore/ > /dev/null ]; then
+if  ! /bin/grep -rl prepare_cplusplus_generation persistore/ > /dev/null ; then
     printf "%s: no prepare_cplusplus_generation in %s\n" \
-	   $rps_scriptname $(realpath persistore);
+	   $rps_scriptname $rps_persistore ;
     exit 1
 fi
+
+printf "%s: the store in %s contains prepare_cplusplus_generation\n" \
+       $rps_scriptname $rps_persistore
+exit 0
