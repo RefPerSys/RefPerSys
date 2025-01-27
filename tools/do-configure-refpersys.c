@@ -4,7 +4,7 @@
 /// Description:
 ///     This file is part of the Reflective Persistent System.
 
-///      © Copyright 2024, 2025 The Reflective Persistent System Team
+///      © Copyright 2024 - 2025 The Reflective Persistent System Team
 ///      team@refpersys.org & http://refpersys.org/
 ///
 /// Purpose: build-time configuration of the RefPerSys inference
@@ -134,8 +134,8 @@ const char *rpsconf_fltk_config;
 
 
 
-/* absolute path to Miller&Auroux Generic preprocessor */
-const char *rpsconf_gpp;
+// /* absolute path to Miller&Auroux Generic preprocessor */
+// const char *rpsconf_gpp;
 
 /* absolute path to ninja builder (see ninja-build.org) */
 const char *rpsconf_ninja_builder;
@@ -1626,8 +1626,10 @@ main (int argc, char **argv)
    rpsconf_prog_name);
   printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
   printf ("\t   REFlexive PERsistent SYStem\n");
-  printf
-  ("\t Contact: Basile STARYNKEVITCH, 8 rue de la Faïencerie, 92340 Bourg-la-Reine\n");
+  printf ("\t Contact: Basile STARYNKEVITCH,\n"
+	  "\t 8 rue de la Faïencerie,\n"
+	  "\t 92340 Bourg-la-Reine\n"
+	  "\t (France)\n");
   fflush (NULL);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
           "... if your input starts with an exclamation point\n",
@@ -1771,23 +1773,23 @@ main (int argc, char **argv)
         }
     }
   errno = 0;
-  rpsconf_gpp = getenv ("GPP");
-  if (!rpsconf_gpp)
-    {
-      puts
-      ("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
-      rpsconf_gpp = rpsconf_readline ("Generic Preprocessor full path:");
-      if (access (rpsconf_gpp, X_OK))
-        {
-          fprintf (stderr,
-                   "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
-                   rpsconf_prog_name, rpsconf_gpp ? rpsconf_gpp : "???",
-                   strerror (errno), __FILE__, __LINE__ - 3);
-          rpsconf_failed = true;
-          exit (EXIT_FAILURE);
-        }
-    };
-  assert (rpsconf_gpp != NULL);
+//!- rpsconf_gpp = getenv ("GPP");
+//!- if (!rpsconf_gpp)
+//!-   {
+//!-     puts
+//!-     ("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
+//!-     rpsconf_gpp = rpsconf_readline ("Generic Preprocessor full path:");
+//!-     if (access (rpsconf_gpp, X_OK))
+//!-       {
+//!-         fprintf (stderr,
+//!-                  "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
+//!-                  rpsconf_prog_name, rpsconf_gpp ? rpsconf_gpp : "???",
+//!-                  strerror (errno), __FILE__, __LINE__ - 3);
+//!-         rpsconf_failed = true;
+//!-         exit (EXIT_FAILURE);
+//!-       }
+//!-   };
+//!- assert (rpsconf_gpp != NULL);
 
   rpsconf_ninja_builder = getenv ("NINJA");
   if (!rpsconf_ninja_builder)
