@@ -1366,15 +1366,20 @@ rpsconf_emit_configure_refpersys_mk (void)
     }
 
 
-  /* We don't seem to require either GPP or ninja build, so disabling for now */
+  /* We don't seem to require GPP */
 #if 0
   //// emit the generic preprocessor
   fprintf (f,
            "\n\n"
            "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
   fprintf (f, "REFPERSYS_GPP=%s\n", realpath (rpsconf_gpp, NULL));
-  /// emit the ninja builder
 #endif /* 0 */
+  ///
+  /// We probably want in 2025 to get rid of ninja-build.org and stick
+  /// to GNU make enhanced with GNU guile.    This requires approval
+  /// by other RefPerSys contributors. [Basile S.]
+  ///
+  /// emit the ninja builder
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (rpsconf_ninja_builder, NULL));
   fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
@@ -1627,9 +1632,9 @@ main (int argc, char **argv)
   printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
   printf ("\t   REFlexive PERsistent SYStem\n");
   printf ("\t Contact: Basile STARYNKEVITCH,\n"
-	  "\t 8 rue de la Faïencerie,\n"
-	  "\t 92340 Bourg-la-Reine\n"
-	  "\t (France)\n");
+          "\t 8 rue de la Faïencerie,\n"
+          "\t 92340 Bourg-la-Reine\n"
+          "\t (France)\n");
   fflush (NULL);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
           "... if your input starts with an exclamation point\n",
