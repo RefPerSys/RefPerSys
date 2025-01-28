@@ -192,13 +192,12 @@ struct rpsconf_trash
   char state_;
 };
 
-static struct rpsconf_trash *rpsconf_trash_get_(void);
-static void rpsconf_trash_push_(const char *, int);
-static void rpsconf_trash_exit(void);
+static struct rpsconf_trash *rpsconf_trash_get_ (void);
+static void rpsconf_trash_push_ (const char *, int);
+static void rpsconf_trash_exit (void);
 #define rpsconf_trash_push(path) rpsconf_trash_push_((path), __LINE__)
 
-struct rpsconf_trash *
-rpsconf_trash_get_(void)
+struct rpsconf_trash *rpsconf_trash_get_ (void)
 {
   static struct rpsconf_trash ctx;
   static bool init = false;
@@ -207,7 +206,7 @@ rpsconf_trash_get_(void)
     {
       ctx.pathc_ = 0;
       ctx.state_ = EXIT_SUCCESS;
-      memset(ctx.pathv_, 0, sizeof(ctx.pathv_));
+      memset (ctx.pathv_, 0, sizeof (ctx.pathv_));
       init = true;
     }
 
@@ -215,53 +214,55 @@ rpsconf_trash_get_(void)
 }
 
 void
-rpsconf_trash_push_(const char *path, int line)
+rpsconf_trash_push_ (const char *path, int line)
 {
   struct rpsconf_trash *ctx;
 
-  assert(path != NULL && *path != '\0');
-  if (access(path, F_OK) == -1)
+  assert (path != NULL && *path != '\0');
+  if (access (path, F_OK) == -1)
     return;
 
-  ctx = rpsconf_trash_get_();
-  if (ctx->pathc_ > sizeof(ctx->pathv_))
+  ctx = rpsconf_trash_get_ ();
+  if (ctx->pathc_ > (int) sizeof (ctx->pathv_))
     {
-      (void)fprintf(stderr, "%s: %s: too many files to remove [%s:%d]\n",
-                    rpsconf_prog_name, path, __FILE__, line);
+      fprintf (stderr, "%s: %s: too many files to remove [%s:%d]\n",
+	       rpsconf_prog_name, path, __FILE__, line);
       ctx->state_ = EXIT_FAILURE;
-      exit(ctx->state_);
+      exit (ctx->state_);
     }
 
   ctx->pathv_[ctx->pathc_++] = path;
 }
 
 void
-rpsconf_trash_exit(void)
+rpsconf_trash_exit (void)
 {
   struct rpsconf_trash *ctx;
   int i;
 
-  ctx = rpsconf_trash_get_();
+  ctx = rpsconf_trash_get_ ();
   if (ctx->state_ == EXIT_FAILURE)
     {
-      (void)fprintf(stderr, "%s: exit failure: not removing %d files [%s:%d]\n",
-                    rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
+      fprintf (stderr,
+	       "%s: exit failure: not removing %d files [%s:%d]\n",
+	       rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__-2);
       return;
     }
 
-  (void)fprintf(stderr, "%s: removing %d files at exit [%s:%d]\n",
-                rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__);
+  fprintf (stderr, "%s: removing %d files at exit [%s:%d]\n",
+	   rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__-2);
 
   for (i = 0; i < ctx->pathc_; i++)
-    unlink(ctx->pathv_[i]);
+    unlink (ctx->pathv_[i]);
 }
 
 /* End rpsconf_trash interface */
 
 
 /// return a malloced path to a temporary textual file
-char *rpsconf_temporary_textual_file (const char *prefix,
-                                      const char *suffix, int lineno)
+char *
+rpsconf_temporary_textual_file (const char *prefix,
+                                const char *suffix, int lineno)
 {
   char buf[256];
   memset (buf, 0, sizeof (buf));
@@ -289,7 +290,8 @@ char *rpsconf_temporary_textual_file (const char *prefix,
   if (!res)
     {
       fprintf (stderr,
-               "%s failed to strdup temporay file path %s from %s:%d (%m)\n",
+               "%s failed to strdup temporary file path %s" //
+	       " from %s:%d (%s)\n",
                rpsconf_prog_name, buf, __FILE__, lineno);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
@@ -1034,46 +1036,51 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
   /// run fltk-config --version and require FLTK 1.4 or 1.5
   {
     char flversbuf[80];
-    memset (flversbuf, 0, sizeof(flversbuf));
+    memset (flversbuf, 0, sizeof (flversbuf));
     memset (cmdbuf, 0, sizeof (cmdbuf));
     snprintf (cmdbuf, sizeof (cmdbuf), "%s --version", fc);
-    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
-            __LINE__);
+    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
+	    __FILE__, __LINE__-1);
     fflush (NULL);
     pipf = popen (cmdbuf, "r");
     if (!pipf)
       {
-        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
+        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n", //
+                 rpsconf_prog_name, cmdbuf, strerror (errno), //
+		 __FILE__, __LINE__-2);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       }
     if (!fgets (flversbuf, sizeof (flversbuf), pipf))
       {
-        fprintf (stderr, "%s: failed to get FLTK version using %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
+        fprintf (stderr,
+                 "%s: failed to get FLTK version using %s (%s)" //
+		 " [%s:%d]\n", //
+                 rpsconf_prog_name, cmdbuf, strerror (errno), //
+		 __FILE__, __LINE__-3);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       };
-    int flmajv= -1, flminv= -1, flpatchv= -1, flpos= -1;
-    if (sscanf(flversbuf, "%d.%d.%d%n", &flmajv, &flminv, &flpatchv, &flpos)<3
-        || flpos<(int)strlen("1.2.3"))
+    int flmajv = -1, flminv = -1, flpatchv = -1, flpos = -1;
+    if (sscanf (flversbuf, "%d.%d.%d%n", //
+		&flmajv, &flminv, &flpatchv, &flpos) < 3
+	|| flpos < (int) strlen ("1.2.3"))
       {
-        fprintf (stderr, "%s: failed to query FLTK version using %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
+        fprintf (stderr,
+                 "%s: failed to query FLTK version with  %s (%s)" //
+		 " [%s:%d]\n", //
+                 rpsconf_prog_name, cmdbuf, strerror (errno), //
+		 __FILE__, __LINE__-2);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       };
-    if (flmajv != 1 || (flminv != 4 && flminv != 5)
-        || flpatchv < 0)
+    if (flmajv != 1 || (flminv != 4 && flminv != 5) || flpatchv < 0)
       {
-        fprintf (stderr, "%s: needs FLTK version 1.4 or 1.5, got fltk %d.%d.%d using %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name,
-                 flmajv, flminv, flpatchv,
-                 cmdbuf, strerror (errno), __FILE__,__LINE__-3);
+        fprintf (stderr,
+                 "%s: needs FLTK version 1.4 or 1.5, " //
+		 "got fltk %d.%d.%d using %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, flmajv, flminv, flpatchv, cmdbuf,
+                 strerror (errno), __FILE__, __LINE__ - 3);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       }
@@ -1104,7 +1111,7 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       }
-    memset(fcflags, 0, sizeof(fcflags));
+    memset (fcflags, 0, sizeof (fcflags));
     if (!fgets (fcflags, sizeof (fcflags), pipf))
       {
         fprintf (stderr, "%s: failed to get cflags using %s (%s) [%s:%d]\n",
@@ -1140,7 +1147,7 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       }
-    memset(fldflags, 0, sizeof(fldflags));
+    memset (fldflags, 0, sizeof (fldflags));
     if (!fgets (fldflags, sizeof (fldflags), pipf))
       {
         fprintf (stderr, "%s: failed to get ldflags using %s (%s) [%s:%d]\n",
@@ -1626,15 +1633,15 @@ main (int argc, char **argv)
   atexit (rpsconf_remove_files);
   printf ("%s: configurator program for RefPerSys inference engine\n",
           rpsconf_prog_name);
-  printf
-  ("%s: [FRENCH] programme de configuration du moteur d'inférences RefPerSys\n",
+  printf ("%s: [FRENCH] programme de configuration du\n"//
+	  "\t moteur d'inférences RefPerSys\n",
    rpsconf_prog_name);
   printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
   printf ("\t   REFlexive PERsistent SYStem\n");
-  printf ("\t Contact: Basile STARYNKEVITCH,\n"
-          "\t 8 rue de la Faïencerie,\n"
-          "\t 92340 Bourg-la-Reine\n"
-          "\t (France)\n");
+  printf ("\t Contact: Basile STARYNKEVITCH,\n" //
+          "\t 8 rue de la Faïencerie,\n" //
+          "\t 92340 Bourg-la-Reine\n" //
+	  "\t (France)\n");
   fflush (NULL);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
           "... if your input starts with an exclamation point\n",
@@ -1710,8 +1717,9 @@ main (int argc, char **argv)
   if (!cc)
     {
       if (!access ("/usr/bin/gcc", F_OK))
-        cc = rpsconf_defaulted_readline(
-               "C compiler [default /usr/bin/gcc]: ", "/usr/bin/gcc");
+        cc =
+          rpsconf_defaulted_readline ("C compiler [default /usr/bin/gcc]: ",
+                                      "/usr/bin/gcc");
       else
         cc = rpsconf_readline ("C compiler [default /usr/bin/gcc]: ");
     };
@@ -1725,8 +1733,9 @@ main (int argc, char **argv)
   if (!cxx)
     {
       if (!access ("/usr/bin/g++", F_OK))
-        cxx = rpsconf_defaulted_readline ("C++ compiler [default /usr/bin/g++:",
-                                          "/usr/bin/g++");
+        cxx =
+          rpsconf_defaulted_readline ("C++ compiler [default /usr/bin/g++:",
+                                      "/usr/bin/g++");
       else
         cxx = rpsconf_readline ("C++ compiler [default /usr/bin/g++]: ");
     };
@@ -2020,8 +2029,7 @@ rpsconf_cc_set (const char *cc)
   assert (cc != NULL);
   if (*cc == '\0')
     {
-      fprintf(stderr,
-              "C compiler path not specified, using /usr/bin/gcc\n");
+      fprintf (stderr, "C compiler path not specified, using /usr/bin/gcc\n");
       cc = "/usr/bin/gcc";
     };
 
