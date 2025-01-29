@@ -1504,13 +1504,45 @@ public:
 
 
 
-
 static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
               "Rps_ObjectRef should have the size of a word");
 static_assert(alignof(Rps_ObjectRef) == alignof(void*),
               "Rps_ObjectRef should have the alignment of a word");
 
 
+class Rps_Object_Display
+{
+  Rps_ObjectRef _dispobref;
+  const char* _dispfile;
+  int _displine;
+  int _dispdepth;
+public:
+  static constexpr int defaultdepth=1;
+  static constexpr int maxdepth=8;
+  Rps_Object_Display() : _dispobref(nullptr), _dispfile(nullptr), _displine(0), _dispdepth(0) {};
+  Rps_Object_Display(const Rps_ObjectRef obr, int depth, const char*file, int line)
+    : _dispobref(obr), _dispfile(file), _displine(line), _dispdepth(depth) {};
+  Rps_Object_Display(const Rps_ObjectRef obr, const char*file, int line)
+    : _dispobref(obr), _dispfile(file), _displine(line), _dispdepth(defaultdepth) {};
+  ~Rps_Object_Display()
+  {
+    _dispobref=nullptr;
+    _dispfile=nullptr;
+    _dispdepth=0;
+    _displine=0;
+  };
+  Rps_Object_Display(const Rps_Object_Display&) = default;
+  Rps_Object_Display(Rps_Object_Display&&) = default;
+  void output_display(std::ostream&out) const;
+};        // end class Rps_Object_Display
+#define RPS_OBJECT_DISPLAY(Ob) Rps_Object_Display((Ob),__FILE__,__LINE__)
+#define RPS_OBJECT_DISPLAY_DEPTH(Ob,Depth) Rps_Object_Display((Ob),(Depth),__FILE__,__LINE__)
+
+inline std::ostream&operator <<(std::ostream&out, const Rps_Object_Display& obdisp)
+{
+  obdisp.output_display(out);
+  return out;
+};
 
 // we could code Rps_ObjectFromOidRef(&_,"_41OFI3r0S1t03qdB2E") instead of rpskob_41OFI3r0S1t03qdB2E
 class Rps_ObjectFromOidRef : public Rps_ObjectRef

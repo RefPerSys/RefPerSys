@@ -961,8 +961,13 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
 
 
 
-
-
+void
+Rps_Object_Display::output_display(std::ostream&out) const
+{
+#warning unimplemented Rps_Object_Display::output_display
+  RPS_FATALOUT("unimplemented Rps_Object_Display::output_display _dispobref=" << _dispobref
+               << " from " << _dispfile << ":" << _displine << " depth#" << _dispdepth);
+} // end Rps_Object_Display::output_display
 
 
 
@@ -1006,6 +1011,7 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
     ontty=false;
   if (depth==0)
     {
+#warning move this code then use Rps_Object_Display::output_display near line 968 above
       (*pout)
           << std::endl << std::endl << "================================" << std::endl
           << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
