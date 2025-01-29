@@ -1338,13 +1338,25 @@ rpsconf_emit_configure_refpersys_mk (void)
       /// see https://stackoverflow.com/q/2224334/841108
 #ifdef __GNUC__
       fprintf (f, "## see stackoverflow.com/q/2224334/841108\n");
+      fprintf (f, "\n## optimization and code generation flags\n");
+      fprintf (f, "ifndef REFPERSYS_CODEGEN_FLAGS\n");
+      fprintf (f, "REFPERSYS_CODEGEN_FLAGS= -O1 -fPIC\n");
+      fprintf (f, "endif #REFPERSYS_CODEGEN_FLAGS\n");
+      fprintf (f, "ifndef REFPERSYS_DEBUG_FLAGS\n");
+      fprintf (f, "REFPERSYS_DEBUG_FLAGS= -g2\n");
+      fprintf (f, "endif #REFPERSYS_DEBUG_FLAGS\n");
+      fprintf (f, "ifndef REFPERSYS_WARNING_FLAGS\n");
+      fprintf (f, "REFPERSYS_WARNING_FLAGS= -Wall -Wextra\n");
+      fprintf (f, "endif #REFPERSYS_WARNING_FLAGS\n");	       
       fprintf (f, "#GNU compiler from %s:%d\n"
-               "REFPERSYS_COMPILER_FLAGS= -O1 -g -fPIC -Wall -Wextra $(REFPERSYS_LTO)\n",
-               __FILE__, __LINE__ - 2);
+               "REFPERSYS_COMPILER_FLAGS= $(REFPERSYS_CODEGEN_FLAGS)"
+	       " $(REFPERSYS_DEBUG_FLAGS) $(REFPERSYS_WARNING_FLAGS) $(REFPERSYS_LTO)\n",
+               __FILE__, __LINE__ - 3);
 #else
       fprintf (f, "#nonGNU compiler from %s:%d\n"
                "## see stackoverflow.com/questions/2224334/\n"
-               "REFPERSYS_COMPILER_FLAGS= -O0 -g -fPIC -Wall $(REFPERSYS_LTO) ",
+               "REFPERSYS_COMPILER_FLAGS= $(REFPERSYS_CODEGEN_FLAGS)"
+	       " $(REFPERSYS_DEBUG_FLAGS) $(REFPERSYS_WARNING_FLAGS)  $(REFPERSYS_LTO) ",
                __FILE__, __LINE__ - 3);
 #endif
     }
@@ -2055,7 +2067,7 @@ rpsconf_cc_set (const char *cc)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "make do-configure-refpersys" ;;
+ ** compile-command: "make -C .. do-configure-refpersys" ;;
  ** End: ;;
  ****************/
 
