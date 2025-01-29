@@ -226,7 +226,7 @@ rpsconf_trash_push_ (const char *path, int line)
   if (ctx->pathc_ > (int) sizeof (ctx->pathv_))
     {
       fprintf (stderr, "%s: %s: too many files to remove [%s:%d]\n",
-	       rpsconf_prog_name, path, __FILE__, line);
+               rpsconf_prog_name, path, __FILE__, line);
       ctx->state_ = EXIT_FAILURE;
       exit (ctx->state_);
     }
@@ -244,13 +244,13 @@ rpsconf_trash_exit (void)
   if (ctx->state_ == EXIT_FAILURE)
     {
       fprintf (stderr,
-	       "%s: exit failure: not removing %d files [%s:%d]\n",
-	       rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__-2);
+               "%s: exit failure: not removing %d files [%s:%d]\n",
+               rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__-2);
       return;
     }
 
   fprintf (stderr, "%s: removing %d files at exit [%s:%d]\n",
-	   rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__-2);
+           rpsconf_prog_name, ctx->pathc_, __FILE__, __LINE__-2);
 
   for (i = 0; i < ctx->pathc_; i++)
     unlink (ctx->pathv_[i]);
@@ -291,7 +291,7 @@ rpsconf_temporary_textual_file (const char *prefix,
     {
       fprintf (stderr,
                "%s failed to strdup temporary file path %s" //
-	       " from %s:%d (%s)\n",
+               " from %s:%d (%s)\n",
                rpsconf_prog_name, buf, __FILE__, lineno);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
@@ -1040,14 +1040,14 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
     memset (cmdbuf, 0, sizeof (cmdbuf));
     snprintf (cmdbuf, sizeof (cmdbuf), "%s --version", fc);
     printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
-	    __FILE__, __LINE__-1);
+            __FILE__, __LINE__-1);
     fflush (NULL);
     pipf = popen (cmdbuf, "r");
     if (!pipf)
       {
         fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n", //
                  rpsconf_prog_name, cmdbuf, strerror (errno), //
-		 __FILE__, __LINE__-2);
+                 __FILE__, __LINE__-2);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       }
@@ -1055,22 +1055,22 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
       {
         fprintf (stderr,
                  "%s: failed to get FLTK version using %s (%s)" //
-		 " [%s:%d]\n", //
+                 " [%s:%d]\n", //
                  rpsconf_prog_name, cmdbuf, strerror (errno), //
-		 __FILE__, __LINE__-3);
+                 __FILE__, __LINE__-3);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       };
     int flmajv = -1, flminv = -1, flpatchv = -1, flpos = -1;
     if (sscanf (flversbuf, "%d.%d.%d%n", //
-		&flmajv, &flminv, &flpatchv, &flpos) < 3
-	|| flpos < (int) strlen ("1.2.3"))
+                &flmajv, &flminv, &flpatchv, &flpos) < 3
+        || flpos < (int) strlen ("1.2.3"))
       {
         fprintf (stderr,
                  "%s: failed to query FLTK version with  %s (%s)" //
-		 " [%s:%d]\n", //
+                 " [%s:%d]\n", //
                  rpsconf_prog_name, cmdbuf, strerror (errno), //
-		 __FILE__, __LINE__-2);
+                 __FILE__, __LINE__-2);
         rpsconf_failed = true;
         exit (EXIT_FAILURE);
       };
@@ -1078,7 +1078,7 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
       {
         fprintf (stderr,
                  "%s: needs FLTK version 1.4 or 1.5, " //
-		 "got fltk %d.%d.%d using %s (%s) [%s:%d]\n",
+                 "got fltk %d.%d.%d using %s (%s) [%s:%d]\n",
                  rpsconf_prog_name, flmajv, flminv, flpatchv, cmdbuf,
                  strerror (errno), __FILE__, __LINE__ - 3);
         rpsconf_failed = true;
@@ -1347,16 +1347,16 @@ rpsconf_emit_configure_refpersys_mk (void)
       fprintf (f, "endif #REFPERSYS_DEBUG_FLAGS\n");
       fprintf (f, "ifndef REFPERSYS_WARNING_FLAGS\n");
       fprintf (f, "REFPERSYS_WARNING_FLAGS= -Wall -Wextra\n");
-      fprintf (f, "endif #REFPERSYS_WARNING_FLAGS\n");	       
+      fprintf (f, "endif #REFPERSYS_WARNING_FLAGS\n");
       fprintf (f, "#GNU compiler from %s:%d\n"
                "REFPERSYS_COMPILER_FLAGS= $(REFPERSYS_CODEGEN_FLAGS)"
-	       " $(REFPERSYS_DEBUG_FLAGS) $(REFPERSYS_WARNING_FLAGS) $(REFPERSYS_LTO)\n",
+               " $(REFPERSYS_DEBUG_FLAGS) $(REFPERSYS_WARNING_FLAGS) $(REFPERSYS_LTO)\n",
                __FILE__, __LINE__ - 3);
 #else
       fprintf (f, "#nonGNU compiler from %s:%d\n"
                "## see stackoverflow.com/questions/2224334/\n"
                "REFPERSYS_COMPILER_FLAGS= $(REFPERSYS_CODEGEN_FLAGS)"
-	       " $(REFPERSYS_DEBUG_FLAGS) $(REFPERSYS_WARNING_FLAGS)  $(REFPERSYS_LTO) ",
+               " $(REFPERSYS_DEBUG_FLAGS) $(REFPERSYS_WARNING_FLAGS)  $(REFPERSYS_LTO) ",
                __FILE__, __LINE__ - 3);
 #endif
     }
@@ -1646,14 +1646,14 @@ main (int argc, char **argv)
   printf ("%s: configurator program for RefPerSys inference engine\n",
           rpsconf_prog_name);
   printf ("%s: [FRENCH] programme de configuration du\n"//
-	  "\t moteur d'inférences RefPerSys\n",
-   rpsconf_prog_name);
+          "\t moteur d'inférences RefPerSys\n",
+          rpsconf_prog_name);
   printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
   printf ("\t   REFlexive PERsistent SYStem\n");
   printf ("\t Contact: Basile STARYNKEVITCH,\n" //
           "\t 8 rue de la Faïencerie,\n" //
           "\t 92340 Bourg-la-Reine\n" //
-	  "\t (France)\n");
+          "\t (France)\n");
   fflush (NULL);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
           "... if your input starts with an exclamation point\n",
