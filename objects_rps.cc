@@ -281,6 +281,7 @@ Rps_ObjectZone::~Rps_ObjectZone()
 {
   //  RPS_INFORMOUT("destroying object " << oid());
   Rps_Id curid = oid();
+  RPS_POSSIBLE_BREAKPOINT();
   clear_payload();
   ob_attrs.clear();
   ob_comps.clear();
@@ -291,6 +292,8 @@ Rps_ObjectZone::~Rps_ObjectZone()
   ob_idmap_.erase(curid);
   ob_idbucketmap_[curid.bucket_num()].erase(curid);
 } // end Rps_ObjectZone::~Rps_ObjectZone()
+
+
 
 Rps_ObjectZone::Rps_ObjectZone() :
   Rps_ObjectZone::Rps_ObjectZone(fresh_random_oid(this),
@@ -432,7 +435,7 @@ Rps_ObjectZone::remove_attr(const Rps_ObjectRef obattr)
 
 
 Rps_Value
-Rps_ObjectZone::set_of_attributes([[maybe_unused]] Rps_CallFrame*stkf) const
+Rps_ObjectZone::set_of_physical_attributes(void) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
@@ -442,15 +445,32 @@ Rps_ObjectZone::set_of_attributes([[maybe_unused]] Rps_CallFrame*stkf) const
   for (auto it : ob_attrs)
     vecat.push_back(it.first);
   return Rps_SetValue(vecat);
+} // end of Rps_ObjectZone::set_of_physical_attributes
+
+
+
+Rps_Value
+Rps_ObjectZone::set_of_attributes([[maybe_unused]] Rps_CallFrame*stkf) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  RPS_ASSERT(!stkf || stkf->is_good_call_frame());
+  return set_of_physical_attributes();
 } // end of Rps_ObjectZone::set_of_attributes
 
+unsigned
+Rps_ObjectZone::nb_physical_attributes(void) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  return ob_attrs.size();
+} // end Rps_ObjectZone::nb_physical_attributes
 
 unsigned
 Rps_ObjectZone::nb_attributes([[maybe_unused]] Rps_CallFrame*stkf) const
 {
+  RPS_ASSERT(!stkf || stkf->is_good_call_frame());
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-  unsigned nbat = ob_attrs.size();
-  return nbat;
+  return ob_attrs.size();
 } // end Rps_ObjectZone::nb_attributes
 
 Rps_Value
