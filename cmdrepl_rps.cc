@@ -961,16 +961,18 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
 
 
 
+//// called in practice by RPS_OBJECT_DISPLAY macro
 void
 Rps_Object_Display::output_display(std::ostream&out) const
 {
 #warning unimplemented Rps_Object_Display::output_display
   if (!_dispfile)
     return;
-  if (!_dispobref) {
-    out << "__ (*" << _dispfile << ":" << _displine << "*)" << std::endl;
-    return;
-  };
+  if (!_dispobref)
+    {
+      out << "__ (*" << _dispfile << ":" << _displine << "*)" << std::endl;
+      return;
+    };
   bool ontty =
     (&out == &std::cout)?isatty(STDOUT_FILENO)
     :(&out == &std::cerr)?isatty(STDERR_FILENO)
