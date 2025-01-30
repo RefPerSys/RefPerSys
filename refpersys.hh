@@ -1510,7 +1510,7 @@ static_assert(alignof(Rps_ObjectRef) == alignof(void*),
               "Rps_ObjectRef should have the alignment of a word");
 
 
-class Rps_Object_Display
+class Rps_Object_Display /// use it only with RPS_OBJECT_DISPLAY.... macros
 {
   Rps_ObjectRef _dispobref;
   const char* _dispfile;
@@ -3363,6 +3363,8 @@ public:
   void put_space(Rps_ObjectRef obspace);
   //////////////// attributes
   Rps_Value set_of_attributes(Rps_CallFrame*stkf) const;
+  Rps_Value set_of_physical_attributes() const;
+  unsigned nb_physical_attributes() const;
   unsigned nb_attributes(Rps_CallFrame*stkf) const;
   Rps_Value get_physical_attr(const Rps_ObjectRef obattr0) const;
   Rps_Value get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const;
