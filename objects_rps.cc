@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -68,6 +68,10 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
 void
 Rps_ObjectRef::output(std::ostream&outs, unsigned depth, unsigned maxdepth) const
 {
+  //// See also class Rps_Object_Display in cmdrepl_rps.cc which uses
+  //// this and the RPS_OBJECT_DISPLAY and RPS_OBJECT_DISPLAY_DEPTH
+  //// macros of refpersys.hh.
+  ////
   if (is_empty())
     outs << "__";
   else if (depth>maxdepth)

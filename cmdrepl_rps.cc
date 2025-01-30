@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2021 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2021 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -965,8 +965,23 @@ void
 Rps_Object_Display::output_display(std::ostream&out) const
 {
 #warning unimplemented Rps_Object_Display::output_display
+  if (!_dispfile)
+    return;
+  if (!_dispobref) {
+    out << "__ (*" << _dispfile << ":" << _displine << "*)" << std::endl;
+    return;
+  };
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty=false;
+  /// we lock the displayed object to avoid other threads modifying it during the display.
+  std::lock_guard<std::recursive_mutex> gudispob(*_dispobref->objmtxptr());
   RPS_FATALOUT("unimplemented Rps_Object_Display::output_display _dispobref=" << _dispobref
                << " from " << _dispfile << ":" << _displine << " depth#" << _dispdepth);
+#warning TODO should move C++ code from rps_show_object_for_repl here
 } // end Rps_Object_Display::output_display
 
 
