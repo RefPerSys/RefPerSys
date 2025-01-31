@@ -978,9 +978,35 @@ Rps_Object_Display::output_display(std::ostream&out) const
     :(&out == &std::cerr)?isatty(STDERR_FILENO)
     :false;
   if (rps_without_terminal_escape)
-    ontty=false;
-  /// we lock the displayed object to avoid other threads modifying it during the display.
+    ontty = false;
+  /// We lock the displayed object to avoid other threads modifying it
+  /// during the display.
   std::lock_guard<std::recursive_mutex> gudispob(*_dispobref->objmtxptr());
+  out  << std::endl
+       << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
+       << "¤¤ showing object " << _dispobref
+       << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+       << std::endl << "  of class "
+       << _dispobref->get_class()
+       << std::endl
+       << " in space " << _dispobref->get_space() << std::endl;
+  double obmtim = _dispobref->get_mtime();
+  {
+    char mtimbuf[64];
+    memset (mtimbuf, 0, sizeof(mtimbuf));
+    rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
+                              "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
+    out << "** mtime: " << mtimbuf
+        << "   *hash:" << _dispobref->val_hash()
+        << std::endl;
+  };
+  Rps_Value setphysattr = _dispobref->set_of_physical_attributes();
+  if (setphysattr.is_empty())
+    out << "** no physical attributes **" << std::endl;
+  else
+    {
+#warning incomplete code in  Rps_Object_Display::output_display to display physical attributes
+    };
   RPS_FATALOUT("unimplemented Rps_Object_Display::output_display _dispobref=" << _dispobref
                << " from " << _dispfile << ":" << _displine << " depth#" << _dispdepth);
 #warning TODO should move C++ code from rps_show_object_for_repl here
