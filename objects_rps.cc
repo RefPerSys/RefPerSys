@@ -50,7 +50,7 @@ std::recursive_mutex Rps_ObjectZone::ob_idmtx_;
 
 
 
-// build an object from its existing string oid, or else fail with C++ exception
+// Build an object from its existing string oid, or else fail with C++ exception
 Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_ObjIdStrTag)
 {
   if (!oidstr)
@@ -65,6 +65,51 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
   *this = find_object_or_fail_by_oid(callerframe, oid);
 } // end Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*, constexpr const char*oidstr, Rps_ObjIdStrTag)
 
+
+/// Static member function to compare two object references for display to humans
+/// so if both have names, use them....
+int
+Rps_ObjectRef::compare_for_display(const Rps_ObjectRef leftob,
+                                   const Rps_ObjectRef rightob)
+{
+  if (leftob->optr() == rightob->optr())
+    return 0;
+  if (leftob->is_empty())
+    {
+      if (rightob->is_empty())
+        return 0;
+      return -1;
+    };
+  if (rightob->is_empty())
+    {
+      if (leftob->is_empty())
+        return 0;
+      return 1;
+    };
+  Rps_Id leftid = leftob->oid();
+  Rps_Id rightid = rightob->oid();
+  RPS_ASSERT (leftid != rightid);
+  /// these strings will hold a (non-empty) name if one is found.
+  std::string sleftname;
+  std::string srightname;
+  {
+    std::lock_guard<std::recursive_mutex> guleft(*leftob->objmtxptr);
+    Rps_Value leftvalname =
+      leftob->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
+    /* TODO: if leftvalname is a string set the sleftname, otherwise
+       if leftob has a class payload get its name from it... */
+  }
+  {
+    std::lock_guard<std::recursive_mutex> guright(*rightob->objmtxptr);
+    Rps_Value rightvalname =
+      rightob->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
+  }
+#warning incomplete Rps_ObjectRef::compare_for_display
+  RPS_FATALOUT("incomplete Rps_ObjectRef::compare_for_display leftob=" << leftob
+               << " rightob=" << rightob);
+} // end of Rps_ObjectRef::compare_for_display
+
+/// Output a reference for human display
 void
 Rps_ObjectRef::output(std::ostream&outs, unsigned depth, unsigned maxdepth) const
 {

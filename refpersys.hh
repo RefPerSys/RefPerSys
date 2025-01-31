@@ -1327,6 +1327,10 @@ public:
   {
     return const_cast<const Rps_ObjectZone*>(_optr);
   };
+  /// Compare two object references for display to humans
+  /// so if both have names, use them....
+  static int compare_for_display(const Rps_ObjectRef leftob,
+                                 const Rps_ObjectRef rightob);
   bool is_empty() const
   {
     return _optr == nullptr || _optr == (Rps_ObjectZone*)RPS_EMPTYSLOT;
