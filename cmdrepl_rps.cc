@@ -965,7 +965,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
 void
 Rps_Object_Display::output_display(std::ostream&out) const
 {
-#warning unimplemented Rps_Object_Display::output_display
+#warning incomplete Rps_Object_Display::output_display should be moved to objects_rps.cc
   if (!_dispfile)
     return;
   if (!_dispobref)
@@ -1005,6 +1005,21 @@ Rps_Object_Display::output_display(std::ostream&out) const
     out << "** no physical attributes **" << std::endl;
   else
     {
+      RPS_ASSERT(setphysattr.is_set());
+      const Rps_SetOb*physattrset = setphysattr.as_set();
+      unsigned nbphysattr = physattrset->cardinal();
+      if (nbphysattr == 1) {
+	const Rps_ObjectRef thesingleattr = physattrset->at(0);
+	RPS_ASSERT(thesingleattr);
+	const Rps_Value thesingleval = _dispobref->get_physical_attr(thesingleattr);
+	out << "** one physical attribute **" << std::endl;
+	out << thesingleattr << ": "
+	    << Rps_OutputValue(thesingleval, _dispdepth, disp_max_depth);
+      }
+      else {
+	/// we need to sort physattrset in displayable order
+	/// (alphabetically by name, else by objid)
+      };
 #warning incomplete code in  Rps_Object_Display::output_display to display physical attributes
     };
   RPS_FATALOUT("unimplemented Rps_Object_Display::output_display _dispobref=" << _dispobref
