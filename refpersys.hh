@@ -3406,6 +3406,8 @@ public:
   void append_components(const std::initializer_list<Rps_Value>&compil);
   void append_components(const std::vector<Rps_Value>&compvec);
   unsigned nb_components(Rps_CallFrame*stkf) const;
+  unsigned nb_physical_components (void) const;
+  const std::vector<Rps_Value> vector_physical_components(void) const;
   Rps_Value component_at (Rps_CallFrame*stkf, int rk, bool dontfail=false) const;
   Rps_Value replace_component_at ([[maybe_unused]] Rps_CallFrame*stkf, int rk,  Rps_Value comp0, bool dontfail=false);
   Rps_Value instance_from_components(Rps_CallFrame*stkf, Rps_ObjectRef obinstclass) const;

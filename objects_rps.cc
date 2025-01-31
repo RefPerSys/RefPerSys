@@ -969,6 +969,20 @@ Rps_ObjectZone::exchange_attr4(const Rps_ObjectRef obattr0, const Rps_Value vala
 
 //////////////// components
 unsigned
+Rps_ObjectZone::nb_physical_components(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  return ob_comps.size();
+} // end Rps_ObjectZone::nb_physical_components
+
+const std::vector<Rps_Value>
+Rps_ObjectZone::vector_physical_components(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  return ob_comps;
+} // end Rps_ObjectZone::vector_physical_components
+
+unsigned
 Rps_ObjectZone::nb_components([[maybe_unused]] Rps_CallFrame*stkf) const
 {
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
