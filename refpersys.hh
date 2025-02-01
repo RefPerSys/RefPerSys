@@ -1540,7 +1540,9 @@ public:
   Rps_Object_Display(const Rps_Object_Display&) = default;
   Rps_Object_Display(Rps_Object_Display&&) = default;
   void output_display(std::ostream&out) const;
+  void output_routine_addr(std::ostream&out, void*funaddr) const;
 };        // end class Rps_Object_Display
+
 #define RPS_OBJECT_DISPLAY(Ob) Rps_Object_Display((Ob),__FILE__,__LINE__)
 #define RPS_OBJECT_DISPLAY_DEPTH(Ob,Depth) Rps_Object_Display((Ob),(Depth),__FILE__,__LINE__)
 
@@ -3251,6 +3253,7 @@ typedef Rps_TwoValues rps_applyingfun_t (Rps_CallFrame*callerframe,
 class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
+  friend class Rps_Object_Display;
   ///
 public:
   enum registermode_en
@@ -3345,6 +3348,14 @@ public:
   std::recursive_mutex* objmtxptr(void) const
   {
     return &ob_mtx;
+  };
+  rps_magicgetterfun_t*magic_getter_function(void) const
+  {
+    return ob_magicgetterfun.load();
+  };
+  rps_applyingfun_t*applying_function(void) const
+  {
+    return ob_applyingfun.load();
   };
   void put_applying_function(rps_applyingfun_t*afun);
   void touch_now(void)
