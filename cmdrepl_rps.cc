@@ -960,6 +960,46 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
 
 
 
+void
+Rps_Object_Display::output_routine_addr(std::ostream&out, void*funaddr) const
+{
+  if (funaddr == nullptr)
+    out << "⏚"; //U+23DA EARTH GROUND
+  else if (funaddr == RPS_EMPTYSLOT) // should not happen....
+    out << "⦱"; //U+29B1 EMPTY SET WITH OVERBAR
+  else
+    {
+      Dl_info adinf;
+      memset ((void*)&adinf, 0, sizeof(adinf));
+      if (dladdr(funaddr, &adinf))
+        {
+          if (funaddr==adinf.dli_saddr)
+            {
+              out << "&" << adinf.dli_sname;
+              const char*demangled = nullptr;
+              if (adinf.dli_sname[0]=='_' && adinf.dli_sname[1])   // mangled C++ name
+                {
+                  int status = -1;
+                  demangled  = abi::__cxa_demangle(adinf.dli_sname, nullptr, 0, &status);
+                  if (demangled && status == 0 && demangled[0])
+                    out << "≡" // U+2261 IDENTICAL TO
+                        << demangled;
+                  free((void*)demangled);
+                }
+              out << "=" << funaddr;
+            }
+          else
+            {
+              size_t delta=(const char*)funaddr - (const char*)adinf.dli_saddr;
+              out << "&" << adinf.dli_sname << "+" << delta << "=" << funaddr;
+            }
+        }
+      else
+        out << "?" << funaddr;
+      if (adinf.dli_fname) /// shared object name
+        out << " in " << adinf.dli_fname;
+    };
+} // end Rps_Object_Display::output_routine_addr
 
 //// called in practice by RPS_OBJECT_DISPLAY macro
 void
@@ -996,10 +1036,25 @@ Rps_Object_Display::output_display(std::ostream&out) const
     memset (mtimbuf, 0, sizeof(mtimbuf));
     rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
                               "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
-    out << "** mtime: " << mtimbuf
-        << "   *hash:" << _dispobref->val_hash()
-        << std::endl;
+    out   << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")<< "** mtime: " << mtimbuf
+          << "   *hash:" << _dispobref->val_hash()
+          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+          << std::endl;
   };
+  rps_magicgetterfun_t* getfun = _dispobref->magic_getter_function();
+  if (getfun)
+    {
+      out << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "⊚ magic attribute getter function "
+          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+      output_routine_addr(out, reinterpret_cast<void*>(getfun));
+    }
+  rps_applyingfun_t*applfun = _dispobref->applying_function();
+  if (applfun)
+    {
+      out << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "⊚ applying function "
+          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+      output_routine_addr(out, reinterpret_cast<void*>(applfun));
+    }
   Rps_Value setphysattr = _dispobref->set_of_physical_attributes();
   if (setphysattr.is_empty())
     out << "** no physical attributes **" << std::endl;
@@ -1013,8 +1068,10 @@ Rps_Object_Display::output_display(std::ostream&out) const
           const Rps_ObjectRef thesingleattr = physattrset->at(0);
           RPS_ASSERT(thesingleattr);
           const Rps_Value thesingleval = _dispobref->get_physical_attr(thesingleattr);
-          out << "** one physical attribute **" << std::endl;
-          out << thesingleattr << ": "
+          out<< (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "** one physical attribute **"
+             << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << std::endl;
+          out << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< "*"
+              << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< thesingleattr << ": "
               << Rps_OutputValue(thesingleval, _dispdepth, disp_max_depth);
         }
       else
@@ -1022,8 +1079,27 @@ Rps_Object_Display::output_display(std::ostream&out) const
           /// TODO: we need to sort physattrset in displayable order
           /// (alphabetically by name, else by objid), using
           /// Rps_ObjectRef::compare_for_display
+          out<< (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "** "
+             << nbphysattr << " physical attributes **"
+             << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << std::endl;
+          std::vector<Rps_ObjectRef> attrvect(nbphysattr);
+          for (int ix=0; ix<(int)nbphysattr; ix++)
+            attrvect[ix] = physattrset->at(ix);
+          std::sort(attrvect.begin(), attrvect.end(),
+                    [](Rps_ObjectRef leftob, Rps_ObjectRef rightob)
+          {
+            return Rps_ObjectRef::compare_for_display
+                   (leftob,rightob)<0;
+          });
+          for (int ix=0; ix<(int)nbphysattr; ix++)
+            {
+              const Rps_ObjectRef curattr = attrvect[ix];
+              const Rps_Value curval =  _dispobref->get_physical_attr(curattr);
+              out << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< "*"
+                  << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< curattr << ": "
+                  << Rps_OutputValue(curval, _dispdepth, disp_max_depth);
+            }
         };
-#warning incomplete code in  Rps_Object_Display::output_display to display physical attributes
     };
   RPS_FATALOUT("unimplemented Rps_Object_Display::output_display _dispobref=" << _dispobref
                << " from " << _dispfile << ":" << _displine << " depth#" << _dispdepth);
