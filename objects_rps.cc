@@ -72,17 +72,17 @@ int
 Rps_ObjectRef::compare_for_display(const Rps_ObjectRef leftob,
                                    const Rps_ObjectRef rightob)
 {
-  if (leftob->optr() == rightob->optr())
+  if (leftob.optr() == rightob.optr())
     return 0;
-  if (leftob->is_empty())
+  if (leftob.is_empty())
     {
-      if (rightob->is_empty())
+      if (rightob.is_empty())
         return 0;
       return -1;
     };
-  if (rightob->is_empty())
+  if (rightob.is_empty())
     {
-      if (leftob->is_empty())
+      if (leftob.is_empty())
         return 0;
       return 1;
     };
@@ -93,21 +93,47 @@ Rps_ObjectRef::compare_for_display(const Rps_ObjectRef leftob,
   std::string sleftname;
   std::string srightname;
   {
-    std::lock_guard<std::recursive_mutex> guleft(*leftob->objmtxptr);
+    std::lock_guard<std::recursive_mutex> guleft(*leftob->objmtxptr());
     Rps_Value leftvalname =
       leftob->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
-    /* TODO: if leftvalname is a string set the sleftname, otherwise
-       if leftob has a class payload get its name from it... */
+    if (leftvalname.is_string())
+      sleftname = leftvalname.as_string()->cppstring();
   }
   {
-    std::lock_guard<std::recursive_mutex> guright(*rightob->objmtxptr);
+    std::lock_guard<std::recursive_mutex> guright(*rightob->objmtxptr());
     Rps_Value rightvalname =
       rightob->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
+    if (rightvalname.is_string())
+      srightname = rightvalname.as_string()->cppstring();
   }
-#warning incomplete Rps_ObjectRef::compare_for_display
-  RPS_FATALOUT("incomplete Rps_ObjectRef::compare_for_display leftob=" << leftob
-               << " rightob=" << rightob);
+  if (!sleftname.empty() && !srightname.empty())
+    {
+      if (sleftname==srightname)
+        {
+          if (leftid < rightid)
+            return -1;
+          else
+            return +1;
+        }
+      else
+        {
+          if (sleftname < srightname)
+            return -1;
+          else
+            return +1;
+        }
+    };
+  if (!sleftname.empty())
+    return -1;
+  else if (!srightname.empty())
+    return +1;
+  if (leftid < rightid)
+    return -1;
+  else
+    return +1;
 } // end of Rps_ObjectRef::compare_for_display
+
+
 
 /// Output a reference for human display
 void
