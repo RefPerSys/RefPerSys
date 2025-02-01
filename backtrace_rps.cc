@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright  2020 - 2024 The Reflective Persistent System Team
+ *      © Copyright  2020 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -43,12 +43,12 @@ const char rps_backtrace_date[]= __DATE__;
 extern "C" const char rps_backtrace_shortgitid[];
 const char rps_backtrace_shortgitid[]= RPS_SHORTGITID;
 
-#define RPS_FASTABORT(Msg) do {         \
-  std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'  \
-      << __LINE__  << std::endl         \
-      << "..@" << __PRETTY_FUNCTION__       \
-      << " §¤: " << Msg << std::endl << std::flush;   \
-  abort();              \
+#define RPS_FASTABORT(Msg) do {                                 \
+  std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'      \
+      << __LINE__  << std::endl                                 \
+      << "..@" << __PRETTY_FUNCTION__                           \
+      << " §¤: " << Msg << std::endl << std::flush;             \
+  abort();                                                      \
 } while(0)
 
 /// actually, in file main_rps.cc we have something like  asm volatile ("rps_end_of_main: nop");
