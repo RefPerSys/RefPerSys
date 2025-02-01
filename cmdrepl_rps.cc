@@ -1001,6 +1001,9 @@ Rps_Object_Display::output_routine_addr(std::ostream&out, void*funaddr) const
     };
 } // end Rps_Object_Display::output_routine_addr
 
+
+
+
 //// called in practice by RPS_OBJECT_DISPLAY macro
 void
 Rps_Object_Display::output_display(std::ostream&out) const
@@ -1019,13 +1022,15 @@ Rps_Object_Display::output_display(std::ostream&out) const
     :false;
   if (rps_without_terminal_escape)
     ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   /// We lock the displayed object to avoid other threads modifying it
   /// during the display.
   std::lock_guard<std::recursive_mutex> gudispob(*_dispobref->objmtxptr());
   out  << std::endl
-       << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
+       << BOLD_esc
        << "¤¤ showing object " << _dispobref
-       << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+       << NORM_esc
        << std::endl << "  of class "
        << _dispobref->get_class()
        << std::endl
@@ -1036,28 +1041,32 @@ Rps_Object_Display::output_display(std::ostream&out) const
     memset (mtimbuf, 0, sizeof(mtimbuf));
     rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
                               "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
-    out   << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")<< "** mtime: " << mtimbuf
+    out   << BOLD_esc << "** mtime: " << mtimbuf
           << "   *hash:" << _dispobref->val_hash()
-          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+          << NORM_esc
           << std::endl;
   };
+  //// °°°°°°°°°°° display function pointers .....
   rps_magicgetterfun_t* getfun = _dispobref->magic_getter_function();
   if (getfun)
     {
-      out << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "⊚ magic attribute getter function "
-          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+      out << BOLD_esc << "⊚ magic attribute getter function "
+          << NORM_esc;
       output_routine_addr(out, reinterpret_cast<void*>(getfun));
     }
   rps_applyingfun_t*applfun = _dispobref->applying_function();
   if (applfun)
     {
-      out << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "⊚ applying function "
-          << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+      out << BOLD_esc << "⊚ applying function "
+          << NORM_esc;
       output_routine_addr(out, reinterpret_cast<void*>(applfun));
     }
+    //// °°°°°°°°°°° display physical attributes
   Rps_Value setphysattr = _dispobref->set_of_physical_attributes();
   if (setphysattr.is_empty())
-    out << "** no physical attributes **" << std::endl;
+    out << BOLD_esc
+	<< "** no physical attributes **"
+	<< NORM_esc << std::endl;
   else
     {
       RPS_ASSERT(setphysattr.is_set());
@@ -1068,20 +1077,21 @@ Rps_Object_Display::output_display(std::ostream&out) const
           const Rps_ObjectRef thesingleattr = physattrset->at(0);
           RPS_ASSERT(thesingleattr);
           const Rps_Value thesingleval = _dispobref->get_physical_attr(thesingleattr);
-          out<< (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "** one physical attribute **"
-             << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << std::endl;
-          out << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< "*"
-              << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< thesingleattr << ": "
-              << Rps_OutputValue(thesingleval, _dispdepth, disp_max_depth);
+          out<< BOLD_esc << "** one physical attribute **"
+             << NORM_esc << std::endl;
+          out << BOLD_esc << "*"
+              << NORM_esc << thesingleattr << ": "
+              << Rps_OutputValue(thesingleval, _dispdepth, disp_max_depth)
+	      << std::endl;
         }
       else
         {
           /// TODO: we need to sort physattrset in displayable order
           /// (alphabetically by name, else by objid), using
           /// Rps_ObjectRef::compare_for_display
-          out<< (ontty?RPS_TERMINAL_BOLD_ESCAPE:"") << "** "
+          out<< BOLD_esc << "** "
              << nbphysattr << " physical attributes **"
-             << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << std::endl;
+             << NORM_esc << std::endl;
           std::vector<Rps_ObjectRef> attrvect(nbphysattr);
           for (int ix=0; ix<(int)nbphysattr; ix++)
             attrvect[ix] = physattrset->at(ix);
@@ -1095,15 +1105,40 @@ Rps_Object_Display::output_display(std::ostream&out) const
             {
               const Rps_ObjectRef curattr = attrvect[ix];
               const Rps_Value curval =  _dispobref->get_physical_attr(curattr);
-              out << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< "*"
-                  << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")<< curattr << ": "
-                  << Rps_OutputValue(curval, _dispdepth, disp_max_depth);
+              out << BOLD_esc << "*"
+                  << NORM_esc << curattr << ": "
+                  << Rps_OutputValue(curval, _dispdepth, disp_max_depth)
+		  << std::endl;
             }
         };
     };
-  RPS_FATALOUT("unimplemented Rps_Object_Display::output_display _dispobref=" << _dispobref
-               << " from " << _dispfile << ":" << _displine << " depth#" << _dispdepth);
-#warning TODO should move C++ code from rps_show_object_for_repl here
+  //// °°°°°°°°°°° display physical components
+  unsigned nbphyscomp = _dispobref->nb_physical_components();
+  if (nbphyscomp == 0) {
+    out << BOLD_esc << "* no physical components *" << NORM_esc << std::endl;
+  }
+  else if (nbphyscomp == 1) {
+    out << BOLD_esc << "* one physical component *" << NORM_esc << std::endl;
+  }
+  else {
+    out << BOLD_esc << "* " << nbphyscomp << " physical components *"
+	<< NORM_esc << std::endl;
+  }
+  const std::vector<Rps_Value> vectcomp =
+    _dispobref->vector_physical_components();
+  for (unsigned ix=0; ix<nbphyscomp; ix++) {
+    out << BOLD_esc << "[" << ix << "]" << NORM_esc << " " 
+	<< Rps_OutputValue(vectcomp[ix], _dispdepth, disp_max_depth)
+	<< std::endl;
+  };
+  Rps_Payload*payl = _dispobref->get_payload();
+  if (!payl) {
+    out << BOLD_esc << "* no payload *" << NORM_esc << std::endl;
+    return;
+  }
+  out << BOLD_esc << "* " << payl->payload_type_name() << " payload *"
+      << NORM_esc << std::endl;
+  payl->output_payload(out, _dispdepth, disp_max_depth);
 } // end Rps_Object_Display::output_display
 
 
