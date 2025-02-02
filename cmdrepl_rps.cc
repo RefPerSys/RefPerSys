@@ -1002,6 +1002,16 @@ Rps_Object_Display::output_routine_addr(std::ostream&out, void*funaddr) const
 } // end Rps_Object_Display::output_routine_addr
 
 
+void
+rps_sort_object_vector_for_display(std::vector<Rps_ObjectRef>&vectobr)
+{
+  std::sort(vectobr.begin(), vectobr.end(),
+            [](Rps_ObjectRef leftob, Rps_ObjectRef rightob)
+  {
+    return Rps_ObjectRef::compare_for_display
+           (leftob,rightob)<0;
+  });
+} // end rps_sort_object_vector_for_display
 
 
 //// called in practice by RPS_OBJECT_DISPLAY macro
@@ -1061,12 +1071,12 @@ Rps_Object_Display::output_display(std::ostream&out) const
           << NORM_esc;
       output_routine_addr(out, reinterpret_cast<void*>(applfun));
     }
-    //// °°°°°°°°°°° display physical attributes
+  //// °°°°°°°°°°° display physical attributes
   Rps_Value setphysattr = _dispobref->set_of_physical_attributes();
   if (setphysattr.is_empty())
     out << BOLD_esc
-	<< "** no physical attributes **"
-	<< NORM_esc << std::endl;
+        << "** no physical attributes **"
+        << NORM_esc << std::endl;
   else
     {
       RPS_ASSERT(setphysattr.is_set());
@@ -1082,7 +1092,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
           out << BOLD_esc << "*"
               << NORM_esc << thesingleattr << ": "
               << Rps_OutputValue(thesingleval, _dispdepth, disp_max_depth)
-	      << std::endl;
+              << std::endl;
         }
       else
         {
@@ -1095,12 +1105,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
           std::vector<Rps_ObjectRef> attrvect(nbphysattr);
           for (int ix=0; ix<(int)nbphysattr; ix++)
             attrvect[ix] = physattrset->at(ix);
-          std::sort(attrvect.begin(), attrvect.end(),
-                    [](Rps_ObjectRef leftob, Rps_ObjectRef rightob)
-          {
-            return Rps_ObjectRef::compare_for_display
-                   (leftob,rightob)<0;
-          });
+          rps_sort_object_vector_for_display(attrvect);
           for (int ix=0; ix<(int)nbphysattr; ix++)
             {
               const Rps_ObjectRef curattr = attrvect[ix];
@@ -1108,34 +1113,39 @@ Rps_Object_Display::output_display(std::ostream&out) const
               out << BOLD_esc << "*"
                   << NORM_esc << curattr << ": "
                   << Rps_OutputValue(curval, _dispdepth, disp_max_depth)
-		  << std::endl;
+                  << std::endl;
             }
         };
     };
   //// °°°°°°°°°°° display physical components
   unsigned nbphyscomp = _dispobref->nb_physical_components();
-  if (nbphyscomp == 0) {
-    out << BOLD_esc << "* no physical components *" << NORM_esc << std::endl;
-  }
-  else if (nbphyscomp == 1) {
-    out << BOLD_esc << "* one physical component *" << NORM_esc << std::endl;
-  }
-  else {
-    out << BOLD_esc << "* " << nbphyscomp << " physical components *"
-	<< NORM_esc << std::endl;
-  }
+  if (nbphyscomp == 0)
+    {
+      out << BOLD_esc << "* no physical components *" << NORM_esc << std::endl;
+    }
+  else if (nbphyscomp == 1)
+    {
+      out << BOLD_esc << "* one physical component *" << NORM_esc << std::endl;
+    }
+  else
+    {
+      out << BOLD_esc << "* " << nbphyscomp << " physical components *"
+          << NORM_esc << std::endl;
+    }
   const std::vector<Rps_Value> vectcomp =
     _dispobref->vector_physical_components();
-  for (unsigned ix=0; ix<nbphyscomp; ix++) {
-    out << BOLD_esc << "[" << ix << "]" << NORM_esc << " " 
-	<< Rps_OutputValue(vectcomp[ix], _dispdepth, disp_max_depth)
-	<< std::endl;
-  };
+  for (unsigned ix=0; ix<nbphyscomp; ix++)
+    {
+      out << BOLD_esc << "[" << ix << "]" << NORM_esc << " "
+          << Rps_OutputValue(vectcomp[ix], _dispdepth, disp_max_depth)
+          << std::endl;
+    };
   Rps_Payload*payl = _dispobref->get_payload();
-  if (!payl) {
-    out << BOLD_esc << "* no payload *" << NORM_esc << std::endl;
-    return;
-  }
+  if (!payl)
+    {
+      out << BOLD_esc << "* no payload *" << NORM_esc << std::endl;
+      return;
+    }
   out << BOLD_esc << "* " << payl->payload_type_name() << " payload *"
       << NORM_esc << std::endl;
   payl->output_payload(out, _dispdepth, disp_max_depth);

@@ -1546,6 +1546,8 @@ public:
 #define RPS_OBJECT_DISPLAY(Ob) Rps_Object_Display((Ob),__FILE__,__LINE__)
 #define RPS_OBJECT_DISPLAY_DEPTH(Ob,Depth) Rps_Object_Display((Ob),(Depth),__FILE__,__LINE__)
 
+extern "C" void rps_sort_object_vector_for_display(std::vector<Rps_ObjectRef>&);
+
 inline std::ostream&operator <<(std::ostream&out, const Rps_Object_Display& obdisp)
 {
   obdisp.output_display(out);
