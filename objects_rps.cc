@@ -1864,7 +1864,36 @@ Rps_PayloadSetOb::output_payload(std::ostream&out, unsigned depth, unsigned maxd
   const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
-#warning incomplete Rps_PayloadSetOb::output_payload
+  unsigned setcard = cardinal();
+  if (setcard==0)
+    {
+      out << BOLD_esc << "¤¤ empty set object payload ¤¤" << NORM_esc
+          << std::endl;
+      return;
+    }
+  std::vector<Rps_ObjectRef> vectelem(setcard);
+  for (auto setit: psetob)
+    {
+      Rps_ObjectRef curob = *setit;
+      RPS_ASSERT(curob);
+      vectelem.push_back(curob);
+    };
+  if (setcard==1)
+    out << BOLD_esc << "¤¤ singleton set object payload ¤¤" << NORM_esc
+        << std::endl;
+  else
+    {
+      rps_sort_object_vector_for_display(vectelem);
+      out << BOLD_esc << "¤¤ set object payload of "
+          << setcard << " elements" << NORM_esc << std::endl;
+    };
+  for (int ix=0; ix<(int)setcard; ix++)
+    {
+      Rps_ObjectRef obelem = vectelem[ix];
+      RPS_ASSERT(obelem);
+      out << BOLD_esc << "[." << ix << ".]" << NORM_esc
+          << " " << obelem << std::endl;
+    };
 } // end of Rps_PayloadSetOb::output_payload
 
 
