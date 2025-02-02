@@ -1693,51 +1693,88 @@ Rps_PayloadClassInfo::output_payload(std::ostream&out, unsigned depth, unsigned 
       << NORM_esc << std::endl;
   out << "*super-class:" << pclass_super << std::endl;
   out << "*symbol name:" << pclass_symbname << std::endl;
+  /// show the method dictionary
   size_t nbmethod = pclass_methdict.size();
   if (nbmethod==0)
     out << BOLD_esc << "*no own method*" << NORM_esc << std::endl;
-  else {
-    std::vector<Rps_ObjectRef> selvect(nbmethod);
-    for (auto it: pclass_methdict) {
-      RPS_ASSERT(it.first);
-      selvect.push_back(it.first);
-    };
-    if (nbmethod==1) {
-      out << BOLD_esc << "*one own method*" << NORM_esc << std::endl;
-      Rps_ObjectRef thesel = selvect[0];
-      auto theit = pclass_methdict.find(thesel);
-      RPS_ASSERT(theit != pclass_methdict.end());
-      const Rps_ClosureValue theclos = theit->second;
-      RPS_ASSERT(theclos.is_closure());
-      out << BOLD_esc << "°" << NORM_esc << thesel
-	  << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
-	  << NORM_esc << " ";
-      out << Rps_OutputValue(theclos, depth, maxdepth) << std::endl;
-    }
-    else {
-      out << BOLD_esc << "*" << nbmethod << " own methods*"
-	  << NORM_esc << std::endl;
-      std::sort(selvect.begin(), selvect.end(),
-		[](Rps_ObjectRef leftob, Rps_ObjectRef rightob)
-		{
-		  return Rps_ObjectRef::compare_for_display
-		    (leftob,rightob)<0;
-		});
-      for (int ix=0; ix<(int)nbmethod; ix++) {
-	Rps_ObjectRef cursel = selvect[ix];
-	auto curit = pclass_methdict.find(cursel);
-	RPS_ASSERT(curit != pclass_methdict.end());
-	const Rps_ClosureValue curclos = curit->second;
-	RPS_ASSERT(curclos.is_closure());
-	out << BOLD_esc << "°" << NORM_esc << cursel
-	    << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
-	    << NORM_esc << " ";
-	out << Rps_OutputValue(curclos, depth, maxdepth) << std::endl;
+  else
+    {
+      std::vector<Rps_ObjectRef> selvect(nbmethod);
+      for (auto it: pclass_methdict)
+        {
+          RPS_ASSERT(it.first);
+          selvect.push_back(it.first);
+        };
+      if (nbmethod==1)
+        {
+          out << BOLD_esc << "*one own method*" << NORM_esc << std::endl;
+          Rps_ObjectRef thesel = selvect[0];
+          auto theit = pclass_methdict.find(thesel);
+          RPS_ASSERT(theit != pclass_methdict.end());
+          const Rps_ClosureValue theclos = theit->second;
+          RPS_ASSERT(theclos.is_closure());
+          out << BOLD_esc << "°" << NORM_esc << thesel
+              << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
+              << NORM_esc << " ";
+          out << Rps_OutputValue(theclos, depth, maxdepth) << std::endl;
+        }
+      else
+        {
+          out << BOLD_esc << "*" << nbmethod << " own methods*"
+              << NORM_esc << std::endl;
+          rps_sort_object_vector_for_display(selvect);
+          for (int ix=0; ix<(int)nbmethod; ix++)
+            {
+              Rps_ObjectRef cursel = selvect[ix];
+              auto curit = pclass_methdict.find(cursel);
+              RPS_ASSERT(curit != pclass_methdict.end());
+              const Rps_ClosureValue curclos = curit->second;
+              RPS_ASSERT(curclos.is_closure());
+              out << BOLD_esc << "°" << NORM_esc << cursel
+                  << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
+                  << NORM_esc << " ";
+              out << Rps_OutputValue(curclos, depth, maxdepth) << std::endl;
+            }
+        }
+    } // end if nbmethod not 0
+  /// show the attribute set (for classes of instances)
+  {
+    const Rps_SetOb* setattr = pclass_attrset.load();
+    if (setattr != nullptr)
+      {
+        size_t nbattrset = setattr->cardinal();
+        if (nbattrset>0)
+          {
+	    if (nbattrset==1)
+	      out << BOLD_esc << "* one attribute set *" << NORM_esc
+		  << std::endl;
+	    else
+	      out << BOLD_esc << "* " << nbattrset << " attributes set *"
+		  << NORM_esc << std::endl;
+            std::vector<Rps_ObjectRef> attrvect(nbattrset);
+            for (auto atit : *setattr)
+              {
+                attrvect.push_back(*atit);
+              };
+            rps_sort_object_vector_for_display(attrvect);
+	    for (int ix=0; ix<(int)nbattrset; ix++) {
+	      Rps_ObjectRef obattr = attrvect[ix];
+	      RPS_ASSERT(obattr);
+	      out << BOLD_esc << "[!" << ix << "!]" << NORM_esc
+		  << " " << obattr << std::endl;
+	    }
+          }
+        else
+          out << BOLD_esc << "* no attribute set *" << NORM_esc
+	      << std::endl;
       }
-    }
   }
-#warning Rps_PayloadClassInfo::output_payload needs to show pclass_attrset
 } // end Rps_PayloadClassInfo::output_payload
+
+
+
+
+
 
 /***************** mutable set of objects payload **********/
 
