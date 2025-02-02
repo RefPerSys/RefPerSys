@@ -1948,6 +1948,36 @@ Rps_PayloadVectOb::output_payload(std::ostream&out, unsigned depth, unsigned max
   const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+  unsigned vectsiz = size();
+  if (vectsiz == 0)
+    {
+      out << BOLD_esc << "* empty object vector payload *" << NORM_esc << std::endl;
+      return;
+    }
+  std::vector<Rps_ObjectRef> vectcomp(vectsiz);
+  for (auto vectit: pvectob)
+    {
+      Rps_ObjectRef curob = *vectit;
+      RPS_ASSERT(curob);
+      vectcomp.push_back(curob);
+    };
+  if (vectsiz == 1)
+    {
+      out << BOLD_esc << "* singleton object vector payload *"
+          << NORM_esc << std::endl;
+    }
+  else
+    {
+      out << BOLD_esc << "* vector of " << vectsiz << " objects payload *"
+          << NORM_esc << std::endl;
+    };
+  for (unsigned ix=0; ix<vectsiz; ix++)
+    {
+      Rps_ObjectRef obcomp = vectcomp[ix];
+      RPS_ASSERT(obcomp);
+      out << BOLD_esc << "[" << ix << "]" << NORM_esc
+          << " " << obcomp << std::endl;
+    }
 #warning incomplete Rps_PayloadVectOb::output_payload
 } // end of Rps_PayloadVectOb::output_payload
 
