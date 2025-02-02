@@ -4676,6 +4676,7 @@ public:
     if (obsel)
       pclass_methdict.erase(obsel);
   };
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadClassInfo
 
 

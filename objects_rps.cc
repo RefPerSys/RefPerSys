@@ -1676,7 +1676,68 @@ Rps_PayloadClassInfo::compute_set_of_own_method_selectors(Rps_CallFrame*callerfr
 } // end Rps_PayloadClassInfo::compute_set_of_own_method_selectors
 
 
-
+void
+Rps_PayloadClassInfo::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+  out << std::endl
+      << BOLD_esc << "¤¤ class information payload ¤¤"
+      << NORM_esc << std::endl;
+  out << "*super-class:" << pclass_super << std::endl;
+  out << "*symbol name:" << pclass_symbname << std::endl;
+  size_t nbmethod = pclass_methdict.size();
+  if (nbmethod==0)
+    out << BOLD_esc << "*no own method*" << NORM_esc << std::endl;
+  else {
+    std::vector<Rps_ObjectRef> selvect(nbmethod);
+    for (auto it: pclass_methdict) {
+      RPS_ASSERT(it.first);
+      selvect.push_back(it.first);
+    };
+    if (nbmethod==1) {
+      out << BOLD_esc << "*one own method*" << NORM_esc << std::endl;
+      Rps_ObjectRef thesel = selvect[0];
+      auto theit = pclass_methdict.find(thesel);
+      RPS_ASSERT(theit != pclass_methdict.end());
+      const Rps_ClosureValue theclos = theit->second;
+      RPS_ASSERT(theclos.is_closure());
+      out << BOLD_esc << "°" << NORM_esc << thesel
+	  << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
+	  << NORM_esc << " ";
+      out << Rps_OutputValue(theclos, depth, maxdepth) << std::endl;
+    }
+    else {
+      out << BOLD_esc << "*" << nbmethod << " own methods*"
+	  << NORM_esc << std::endl;
+      std::sort(selvect.begin(), selvect.end(),
+		[](Rps_ObjectRef leftob, Rps_ObjectRef rightob)
+		{
+		  return Rps_ObjectRef::compare_for_display
+		    (leftob,rightob)<0;
+		});
+      for (int ix=0; ix<(int)nbmethod; ix++) {
+	Rps_ObjectRef cursel = selvect[ix];
+	auto curit = pclass_methdict.find(cursel);
+	RPS_ASSERT(curit != pclass_methdict.end());
+	const Rps_ClosureValue curclos = curit->second;
+	RPS_ASSERT(curclos.is_closure());
+	out << BOLD_esc << "°" << NORM_esc << cursel
+	    << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
+	    << NORM_esc << " ";
+	out << Rps_OutputValue(curclos, depth, maxdepth) << std::endl;
+      }
+    }
+  }
+#warning Rps_PayloadClassInfo::output_payload needs to show pclass_attrset
+} // end Rps_PayloadClassInfo::output_payload
 
 /***************** mutable set of objects payload **********/
 
