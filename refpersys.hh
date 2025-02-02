@@ -3618,7 +3618,8 @@ public:
   {
     return payl_owner;
   };
-  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const {
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  {
   };
 };                              // end Rps_Payload
 
@@ -4765,6 +4766,7 @@ public:
       };
     return Rps_TupleValue(vecob);
   };
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadSetOb
 
 
@@ -4834,6 +4836,7 @@ public:
   {
     return Rps_TupleValue(pvectob);
   };
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadVectOb
 
 
@@ -4909,6 +4912,7 @@ public:
   /* make a new instance of a given class and the values inside the
      vector payload: */
   const Rps_InstanceZone* make_instance_zone_from_vector(Rps_ObjectRef classob);
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadVectVal
 
 

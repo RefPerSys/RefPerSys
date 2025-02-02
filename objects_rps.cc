@@ -1745,28 +1745,29 @@ Rps_PayloadClassInfo::output_payload(std::ostream&out, unsigned depth, unsigned 
         size_t nbattrset = setattr->cardinal();
         if (nbattrset>0)
           {
-	    if (nbattrset==1)
-	      out << BOLD_esc << "* one attribute set *" << NORM_esc
-		  << std::endl;
-	    else
-	      out << BOLD_esc << "* " << nbattrset << " attributes set *"
-		  << NORM_esc << std::endl;
+            if (nbattrset==1)
+              out << BOLD_esc << "* one attribute set *" << NORM_esc
+                  << std::endl;
+            else
+              out << BOLD_esc << "* " << nbattrset << " attributes set *"
+                  << NORM_esc << std::endl;
             std::vector<Rps_ObjectRef> attrvect(nbattrset);
             for (auto atit : *setattr)
               {
                 attrvect.push_back(*atit);
               };
             rps_sort_object_vector_for_display(attrvect);
-	    for (int ix=0; ix<(int)nbattrset; ix++) {
-	      Rps_ObjectRef obattr = attrvect[ix];
-	      RPS_ASSERT(obattr);
-	      out << BOLD_esc << "[!" << ix << "!]" << NORM_esc
-		  << " " << obattr << std::endl;
-	    }
+            for (int ix=0; ix<(int)nbattrset; ix++)
+              {
+                Rps_ObjectRef obattr = attrvect[ix];
+                RPS_ASSERT(obattr);
+                out << BOLD_esc << "[!" << ix << "!]" << NORM_esc
+                    << " " << obattr << std::endl;
+              }
           }
         else
           out << BOLD_esc << "* no attribute set *" << NORM_esc
-	      << std::endl;
+              << std::endl;
       }
   }
 } // end Rps_PayloadClassInfo::output_payload
@@ -1851,6 +1852,28 @@ Rps_PayloadSetOb::make_mutable_set_object(Rps_CallFrame*callerframe,
 } // end Rps_PayloadSetOb::make_mutable_set_object
 
 
+void
+Rps_PayloadSetOb::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+#warning incomplete Rps_PayloadSetOb::output_payload
+} // end of Rps_PayloadSetOb::output_payload
+
+
+
+
+
+
+
+
 /***************** mutable vector of objects payload **********/
 
 void
@@ -1883,6 +1906,22 @@ Rps_PayloadVectOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
       jarr.append(Json::Value(Json::nullValue));
   jv["vectob"] = jarr;
 } // end Rps_PayloadVectOb::dump_json_content
+
+void
+Rps_PayloadVectOb::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+#warning incomplete Rps_PayloadVectOb::output_payload
+} // end of Rps_PayloadVectOb::output_payload
+
 
 /***************** mutable vector of values payload **********/
 
@@ -1941,6 +1980,23 @@ Rps_PayloadVectVal::make_instance_zone_from_vector(Rps_ObjectRef classob)
     return nullptr;
   return Rps_InstanceZone::make_from_components(classob, pvectval);
 } // end Rps_PayloadVectVal::make_instance_zone_from_vector
+
+void
+Rps_PayloadVectVal::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+#warning incomplete Rps_PayloadVectVal::output_payload
+} // end of Rps_PayloadVectVal::output_payload
+
+
 
 /***************** space payload **********/
 
