@@ -4998,6 +4998,7 @@ public:
   void clear_buffer(void);
   void append_string(const std::string&str);
   void prepend_string(const std::string&str);
+  //  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end of class Rps_PayloadStrBuf
 
 
@@ -5041,6 +5042,7 @@ public:
   void iterate_with_data(void*data, const std::function <bool(void*,const std::string&,const Rps_Value)>& stopfun);
   /// iterate by applying a closure to the owner, a fresh string value and associated value till the closure returns nil
   void iterate_apply(Rps_CallFrame*callframe, Rps_Value closv);
+  //  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 private:
   std::map<std::string, Rps_Value> dict_map;
   bool dict_is_transient;
@@ -5082,6 +5084,7 @@ public:
     return "space";
   };
   inline Rps_PayloadSpace(Rps_ObjectZone*obz, Rps_Loader*ld);
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadSpace
 
 
@@ -5190,6 +5193,7 @@ public:
   // returns true. Return the number of matches, or else 0
   static int autocomplete_name(const char*prefix,
                                const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadSymbol
 
 
@@ -5263,6 +5267,7 @@ public:
           break;
       }
   };
+  //virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadObjMap
 
 
