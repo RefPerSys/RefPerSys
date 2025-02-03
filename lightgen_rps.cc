@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2023 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -251,8 +251,11 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   ///TODO: perhaps a better attribute is needed
   _f.obgenerator->put_attr(RPS_ROOT_OB(_5VC4IuJ0dyr01b8lA0), //generate_code∈named_selector
                            _f.genparamv);
-  RPS_DEBUG_LOG (CODEGEN, "GNU lightning generator " << _f.obgenerator
-                 << " for module " << _f.obmodule
+  RPS_DEBUG_LOG (CODEGEN, "GNU lightning generator "
+		 << RPS_OBJECT_DISPLAY(_f.obgenerator)
+		 << std::endl
+                 << " for module " << RPS_OBJECT_DISPLAY(_f.obmodule)
+		 << std::endl
                  << " generation params " << _f.genparamv << std::endl
                  << " thread=" << rps_current_pthread_name());
   /// iterate on every component of the module
