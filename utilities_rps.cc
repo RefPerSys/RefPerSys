@@ -2107,7 +2107,7 @@ rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argobcon
       return;
     };
 #pragma message "rps_remove_constant_object unimplemented"
-  RPS_FATALOUT("rps_remove_constant_object unimplemented obconst=" << _f.obconst);
+  RPS_FATALOUT("rps_remove_constant_object unimplemented obconst=" << RPS_OBJECT_DISPLAY(_f.obconst));
 } // end rps_remove_constant_object
 
 void
