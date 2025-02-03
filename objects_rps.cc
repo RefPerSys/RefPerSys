@@ -2074,6 +2074,23 @@ Rps_PayloadSpace::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   RPS_ASSERT(jv.type() == Json::objectValue);
 } // end Rps_PayloadSpace::dump_json_content
 
+void
+Rps_PayloadSpace::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  RPS_ASSERT(depth <= maxdepth);
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  if (owner() == Rps_ObjectRef::root_space())
+    out << BOLD_esc << "** root space payload **" << NORM_esc << std::endl;
+  else
+    out << BOLD_esc << "** space payload **" << NORM_esc << std::endl;
+} // end Rps_PayloadSpace::output_payload
 
 /***************** symbol payload **********/
 
@@ -2314,7 +2331,26 @@ Rps_PayloadSymbol::set_of_all_symbols(void)
 } // end Rps_PayloadSymbol::set_of_all_symbols
 
 
+void
+Rps_PayloadSymbol::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  RPS_ASSERT(depth <= maxdepth);
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  out << "*" << BOLD_esc << (is_weak()?"weak":"strong")
+      << " symbol named " << symbol_name() << NORM_esc
+      << " of value " << symbol_value() << " *" << std::endl;
+} // end Rps_PayloadSymbol::output_payload
 
+
+
+////////////////////////////////////////////////////////////////
 Rps_ObjectRef
 Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str, Rps_ObjectRef::Find_Behavior_en behav)
 {
