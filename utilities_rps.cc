@@ -5,7 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has some utilities functions.
+ *      It has some utility functions.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -2041,6 +2041,11 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                 << std::endl << "... xtrav=" << _f.xtrav << " " << ((_f.xtrav  == _f.newsetv)?"same":"different")
                 << " in " << _f.obsystem
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending2"));
+  RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
+                << RPS_OBJECT_DISPLAY(_f.obconst) << std::endl
+                << " obsystem=" << RPS_OBJECT_DISPLAY(_f.obsystem)
+                << std::endl << "xtrav=" << _f.xtrav
+                << " newsetv=" << _f.newsetv);
   RPS_ASSERT(_f.xtrav  == _f.newsetv);
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object final obsystem=" << _f.obsystem);
   RPS_POSSIBLE_BREAKPOINT();
