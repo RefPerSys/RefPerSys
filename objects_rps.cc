@@ -1718,7 +1718,7 @@ Rps_PayloadClassInfo::output_payload(std::ostream&out, unsigned depth, unsigned 
           out << BOLD_esc << "°" << NORM_esc << thesel
               << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
               << NORM_esc << " ";
-          out << Rps_OutputValue(theclos, depth, maxdepth) << std::endl;
+          out << Rps_OutputValue(theclos, depth+1, maxdepth) << std::endl;
         }
       else
         {
@@ -1735,7 +1735,7 @@ Rps_PayloadClassInfo::output_payload(std::ostream&out, unsigned depth, unsigned 
               out << BOLD_esc << "°" << NORM_esc << cursel
                   << BOLD_esc << "→" // U+2192 RIGHTWARDS ARROW
                   << NORM_esc << " ";
-              out << Rps_OutputValue(curclos, depth, maxdepth) << std::endl;
+              out << Rps_OutputValue(curclos, depth+1, maxdepth) << std::endl;
             }
         }
     } // end if nbmethod not 0
@@ -1978,9 +1978,10 @@ Rps_PayloadVectOb::output_payload(std::ostream&out, unsigned depth, unsigned max
       Rps_ObjectRef obcomp = vectcomp[ix];
       RPS_ASSERT(obcomp);
       out << BOLD_esc << "[" << ix << "]" << NORM_esc
-          << " " << obcomp << std::endl;
+          << " ";
+      obcomp.output(out, depth+1, maxdepth);
+      out << std::endl;
     }
-#warning incomplete Rps_PayloadVectOb::output_payload
 } // end of Rps_PayloadVectOb::output_payload
 
 
