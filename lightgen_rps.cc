@@ -165,6 +165,7 @@ public:
       }
     return num;
   };
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };        // end class Rps_PayloadLightningCodeGen
 
 Rps_PayloadLightningCodeGen::Rps_PayloadLightningCodeGen(Rps_ObjectZone*owner)
@@ -211,6 +212,21 @@ Rps_PayloadLightningCodeGen::dump_json_content(Rps_Dumper*du, Json::Value&jv) co
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_PayloadLightningCodeGen::dump_json_content
 
+void
+Rps_PayloadLightningCodeGen::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const {
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+  out << BOLD_esc << "* GNU lighning code generator for "
+      << lightg_num2nod_map.size() << " nodes*"
+      << NORM_esc << std::endl;
+} // end Rps_PayloadLightningCodeGen::output_payload
 
 ////////////////////////////////////////////////////////////////
 //// Returns true on successful code generation
