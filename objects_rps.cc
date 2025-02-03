@@ -636,7 +636,9 @@ Rps_ObjectZone::put_attr(const Rps_ObjectRef obattr, const Rps_Value valattr)
 #warning debug stuff in ObjectZone::put_attr is temporary in end of jan 2025
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "Rps_ObjectZone::put_attr *this=" <<  Rps_ObjectRef(this)
-                << " obattr=" << obattr << " valattr=" << valattr);
+                << " obattr=" << obattr << " valattr=" << valattr
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::put_attr"));
   RPS_POSSIBLE_BREAKPOINT();
   if (valattr.is_empty())
     ob_attrs.erase(obattr);
