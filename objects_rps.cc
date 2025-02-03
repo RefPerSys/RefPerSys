@@ -2345,7 +2345,9 @@ Rps_PayloadSymbol::output_payload(std::ostream&out, unsigned depth, unsigned max
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   out << "*" << BOLD_esc << (is_weak()?"weak":"strong")
       << " symbol named " << symbol_name() << NORM_esc
-      << " of value " << symbol_value() << " *" << std::endl;
+      << " of value ";
+  symbol_value().output(out, depth, maxdepth);
+  out << " " << BOLD_esc << "*" << NORM_esc << std::endl;
 } // end Rps_PayloadSymbol::output_payload
 
 
