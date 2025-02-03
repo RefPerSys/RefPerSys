@@ -5042,7 +5042,7 @@ public:
   void iterate_with_data(void*data, const std::function <bool(void*,const std::string&,const Rps_Value)>& stopfun);
   /// iterate by applying a closure to the owner, a fresh string value and associated value till the closure returns nil
   void iterate_apply(Rps_CallFrame*callframe, Rps_Value closv);
-  //  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 private:
   std::map<std::string, Rps_Value> dict_map;
   bool dict_is_transient;

@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -430,5 +430,22 @@ Rps_PayloadStringDict::make_string_dictionary_object(Rps_CallFrame*callframe, Rp
   RPS_ASSERT(payldict);
   return _f.obstrdict;
 } // end of Rps_PayloadStringDict::make_string_dictionary_object
+
+
+
+void
+Rps_PayloadStringDict::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  RPS_ASSERT(depth <= maxdepth);
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+#warning missing code in Rps_PayloadStringDict::output_payload
+} // end Rps_PayloadStringDict::output_payload
 
 //// end of file strbufdict_rps.cc
