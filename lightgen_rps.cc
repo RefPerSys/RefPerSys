@@ -213,7 +213,8 @@ Rps_PayloadLightningCodeGen::dump_json_content(Rps_Dumper*du, Json::Value&jv) co
 } // end Rps_PayloadLightningCodeGen::dump_json_content
 
 void
-Rps_PayloadLightningCodeGen::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const {
+Rps_PayloadLightningCodeGen::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
   bool ontty =
     (&out == &std::cout)?isatty(STDOUT_FILENO)
     :(&out == &std::cerr)?isatty(STDERR_FILENO)
@@ -268,10 +269,10 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   _f.obgenerator->put_attr(RPS_ROOT_OB(_5VC4IuJ0dyr01b8lA0), //generate_code∈named_selector
                            _f.genparamv);
   RPS_DEBUG_LOG (CODEGEN, "GNU lightning generator "
-		 << RPS_OBJECT_DISPLAY(_f.obgenerator)
-		 << std::endl
+                 << RPS_OBJECT_DISPLAY(_f.obgenerator)
+                 << std::endl
                  << " for module " << RPS_OBJECT_DISPLAY(_f.obmodule)
-		 << std::endl
+                 << std::endl
                  << " generation params " << _f.genparamv << std::endl
                  << " thread=" << rps_current_pthread_name());
   /// iterate on every component of the module
