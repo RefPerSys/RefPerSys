@@ -635,16 +635,20 @@ Rps_ObjectZone::put_attr(const Rps_ObjectRef obattr, const Rps_Value valattr)
   std::lock_guard gu(ob_mtx);
 #warning debug stuff in ObjectZone::put_attr is temporary in end of jan 2025
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_DEBUG_LOG(REPL, "Rps_ObjectZone::put_attr *this=" <<  Rps_ObjectRef(this)
+  RPS_DEBUG_LOG(REPL, "Rps_ObjectZone::put_attr/start *this="
+                <<  Rps_ObjectRef(this) << std::endl
                 << " obattr=" << obattr << " valattr=" << valattr
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::put_attr"));
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::put_attr")
+                << RPS_OBJECT_DISPLAY(this));
   RPS_POSSIBLE_BREAKPOINT();
   if (valattr.is_empty())
     ob_attrs.erase(obattr);
   else
-    ob_attrs.insert({obattr, valattr});
+    ob_attrs.insert_or_assign(obattr, valattr);
   ob_mtime.store(rps_wallclock_real_time());
+  RPS_DEBUG_LOG(REPL, "Rps_ObjectZone::put_attr/end"
+                << RPS_OBJECT_DISPLAY(this));
 } // end Rps_ObjectZone::put_attr
 
 
@@ -673,11 +677,11 @@ Rps_ObjectZone::put_attr2(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
   if (valattr0.is_empty())
     ob_attrs.erase(obattr0);
   else
-    ob_attrs.insert({obattr0, valattr0});
+    ob_attrs.insert_or_assign(obattr0, valattr0);
   if (valattr1.is_empty())
     ob_attrs.erase(obattr1);
   else
-    ob_attrs.insert({obattr1, valattr1});
+    ob_attrs.insert_or_assign(obattr1, valattr1);
   ob_mtime.store(rps_wallclock_real_time());
 } // end Rps_ObjectZone::put_attr2
 
@@ -715,15 +719,15 @@ Rps_ObjectZone::put_attr3(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
   if (valattr0.is_empty())
     ob_attrs.erase(obattr0);
   else
-    ob_attrs.insert({obattr0, valattr0});
+    ob_attrs.insert_or_assign(obattr0, valattr0);
   if (valattr1.is_empty())
     ob_attrs.erase(obattr1);
   else
-    ob_attrs.insert({obattr1, valattr1});
+    ob_attrs.insert_or_assign(obattr1, valattr1);
   if (valattr2.is_empty())
     ob_attrs.erase(obattr2);
   else
-    ob_attrs.insert({obattr2, valattr2});
+    ob_attrs.insert_or_assign(obattr2, valattr2);
   ob_mtime.store(rps_wallclock_real_time());
 } // end Rps_ObjectZone::put_attr3
 
@@ -771,19 +775,19 @@ Rps_ObjectZone::put_attr4(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
   if (valattr0.is_empty())
     ob_attrs.erase(obattr0);
   else
-    ob_attrs.insert({obattr0, valattr0});
+    ob_attrs.insert_or_assign(obattr0, valattr0);
   if (valattr1.is_empty())
     ob_attrs.erase(obattr1);
   else
-    ob_attrs.insert({obattr1, valattr1});
+    ob_attrs.insert_or_assign(obattr1, valattr1);
   if (valattr2.is_empty())
     ob_attrs.erase(obattr2);
   else
-    ob_attrs.insert({obattr2, valattr2});
+    ob_attrs.insert_or_assign(obattr2, valattr2);
   if (valattr3.is_empty())
     ob_attrs.erase(obattr3);
   else
-    ob_attrs.insert({obattr3, valattr3});
+    ob_attrs.insert_or_assign(obattr3, valattr3);
   ob_mtime.store(rps_wallclock_real_time());
 } // end Rps_ObjectZone::put_attr4
 
@@ -811,7 +815,7 @@ Rps_ObjectZone::exchange_attr(const Rps_ObjectRef obattr, const Rps_Value valatt
   if (valattr.is_empty())
     ob_attrs.erase(obattr);
   else
-    ob_attrs.insert({obattr, valattr});
+    ob_attrs.insert_or_assign(obattr, valattr);
   if (poldval)
     *poldval = oldval;
   ob_mtime.store(rps_wallclock_real_time());
@@ -857,11 +861,11 @@ Rps_ObjectZone::exchange_attr2(const Rps_ObjectRef obattr0, const Rps_Value vala
   if (valattr0.is_empty())
     ob_attrs.erase(obattr0);
   else
-    ob_attrs.insert({obattr0, valattr0});
+    ob_attrs.insert_or_assign(obattr0, valattr0);
   if (valattr1.is_empty())
     ob_attrs.erase(obattr1);
   else
-    ob_attrs.insert({obattr1, valattr1});
+    ob_attrs.insert_or_assign(obattr1, valattr1);
   if (poldval0)
     *poldval0 = oldval0;
   if (poldval1)
@@ -924,15 +928,15 @@ Rps_ObjectZone::exchange_attr3(const Rps_ObjectRef obattr0, const Rps_Value vala
   if (valattr0.is_empty())
     ob_attrs.erase(obattr0);
   else
-    ob_attrs.insert({obattr0, valattr0});
+    ob_attrs.insert_or_assign(obattr0, valattr0);
   if (valattr1.is_empty())
     ob_attrs.erase(obattr1);
   else
-    ob_attrs.insert({obattr1, valattr1});
+    ob_attrs.insert_or_assign(obattr1, valattr1);
   if (valattr2.is_empty())
     ob_attrs.erase(obattr2);
   else
-    ob_attrs.insert({obattr2, valattr2});
+    ob_attrs.insert_or_assign(obattr2, valattr2);
   if (poldval0)
     *poldval0 = oldval0;
   if (poldval1)
@@ -1014,19 +1018,19 @@ Rps_ObjectZone::exchange_attr4(const Rps_ObjectRef obattr0, const Rps_Value vala
   if (valattr0.is_empty())
     ob_attrs.erase(obattr0);
   else
-    ob_attrs.insert({obattr0, valattr0});
+    ob_attrs.insert_or_assign(obattr0, valattr0);
   if (valattr1.is_empty())
     ob_attrs.erase(obattr1);
   else
-    ob_attrs.insert({obattr1, valattr1});
+    ob_attrs.insert_or_assign(obattr1, valattr1);
   if (valattr2.is_empty())
     ob_attrs.erase(obattr2);
   else
-    ob_attrs.insert({obattr2, valattr2});
+    ob_attrs.insert_or_assign(obattr2, valattr2);
   if (valattr3.is_empty())
     ob_attrs.erase(obattr3);
   else
-    ob_attrs.insert({obattr3, valattr3});
+    ob_attrs.insert_or_assign(obattr3, valattr3);
   if (poldval0)
     *poldval0 = oldval0;
   if (poldval1)
