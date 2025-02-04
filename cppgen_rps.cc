@@ -738,13 +738,13 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   auto cppgenpayl = _f.obgenerator->put_new_plain_payload<Rps_PayloadCplusplusGen>();
   try
     {
-#if 0 && temporary_code
-      Rps_TwoValues two = _f.obgenerator.send1(&_,
-                          /*selector prepare_cplusplus_generation*/,
-                          _f.obmodule);
+      Rps_TwoValues two
+        = Rps_ObjectValue(_f.obgenerator).send1(&_,
+            rpskob_29rlRCUyHHs04aWezh,
+            //prepare_cplusplus_generation∈named_selector
+            _f.obmodule);
       _f.vmain = two.main();
       _f.vxtra = two.xtra();
-#endif
     }
   catch  (std::exception&exc)
     {
