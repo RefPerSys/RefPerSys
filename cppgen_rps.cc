@@ -99,7 +99,15 @@ public:
   };
   const struct cppgen_data_st&checked_nth_const_data(int n) const;
   struct cppgen_data_st& checked_nth_data(int n);
-  const struct cppgen_data_st*nth_const_data(int n) const
+  const struct cppgen_data_st*checked_nth_const_ptr(int n) const
+  {
+    return &checked_nth_const_data(n);
+  };
+  struct cppgen_data_st*checked_nth_ptr(int n)
+  {
+    return &checked_nth_data(n);
+  };
+  const struct cppgen_data_st*nth_const_ptr(int n) const
   {
     if (n<0)
       n += (int)cppgen_datavect.size();
@@ -107,7 +115,7 @@ public:
       return nullptr;
     return &cppgen_datavect.at(n);
   };
-  struct cppgen_data_st*nth_data(int n)
+  struct cppgen_data_st*nth_ptr(int n)
   {
     if (n<0)
       n += (int)cppgen_datavect.size();
