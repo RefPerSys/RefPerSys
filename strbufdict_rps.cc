@@ -5,7 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the string buffer code, and code for dictionnaries
+ *      It has the string buffer code, and code for dictionaries
  *      associating strings to values.
  *
  * Author(s):
@@ -447,16 +447,17 @@ Rps_PayloadStringDict::output_payload(std::ostream&out, unsigned depth, unsigned
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
   out << std::endl << BOLD_esc << "**" << (dict_is_transient?" transient":"")
-      << " string dictionnary payload of " << dict_map.size() << " entries **" << NORM_esc;
-  for (auto it: dict_map) {
-    const std::string &nam = it.first;
-    Rps_Value v = it.second;
-    RPS_ASSERT(!nam.empty());
-    RPS_ASSERT(v);
-    out << "*:" << Rps_QuotedC_String(nam) << ":";
-    v.output(out, depth+1, maxdepth);
-    out << std::endl;
-  }
+      << " string dictionary payload of " << dict_map.size() << " entries **" << NORM_esc;
+  for (auto it: dict_map)
+    {
+      const std::string &nam = it.first;
+      Rps_Value v = it.second;
+      RPS_ASSERT(!nam.empty());
+      RPS_ASSERT(v);
+      out << "*:" << Rps_QuotedC_String(nam) << ":";
+      v.output(out, depth+1, maxdepth);
+      out << std::endl;
+    }
 } // end Rps_PayloadStringDict::output_payload
 
 //// end of file strbufdict_rps.cc
