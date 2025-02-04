@@ -54,7 +54,7 @@ class Rps_PayloadCplusplusGen : public Rps_Payload
 {
 public:
   struct cppgen_data_st   /// internal data for C++ code generation
-  {
+  {			  // used in cppgen_datavect below
     Rps_ObjectRef cppg_object;
     Rps_Value cppg_data;
     intptr_t cppg_num;
@@ -91,7 +91,24 @@ protected:
 public:
   static constexpr size_t maximal_size = 512*1024;
   void check_size(int lineno=0);
-
+  std::string cplusplus_file_path(void) const { return cppgen_path; };
+  const struct cppgen_data_st*nth_const_data(int n) const {
+    if (n<0)
+      n += (int)cppgen_datavect.size();
+    if (n<0 || n>=(int)cppgen_datavect.size())
+      return nullptr;
+    return &cppgen_datavect.at(n);
+  };
+  struct cppgen_data_st*nth_data(int n) {
+    if (n<0)
+      n += (int)cppgen_datavect.size();
+    if (n<0 || n>=(int)cppgen_datavect.size())
+      return nullptr;
+    return &cppgen_datavect.at(n);
+  };
+#warning todo add push_new_data method to Rps_PayloadCplusplusGen
+  unsigned data_size(void) const
+  { return (unsigned)cppgen_datavect.size(); };
   std::string eol_indent(void)
   {
     std::string s="\n";
@@ -134,6 +151,7 @@ public:
   {
     output (fun, /*raw:*/true);
   };
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };        // end class  Rps_PayloadCplusplusGen
 
 
@@ -178,6 +196,28 @@ Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc, struct cpp
   if (d->cppg_data)
     d->cppg_data.gc_mark(gc, depth);
 } // end Rps_PayloadCplusplusGen::mark_gc_cppgen_data
+
+void
+Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  RPS_ASSERT(depth <= maxdepth);
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+  out << std::endl << BOLD_esc << "*C++ generator payload with"
+      << NORM_esc << " " << data_size() << " data"
+      << BOLD_esc << "*" << NORM_esc
+      << std::endl;
+#warning Rps_PayloadCplusplusGen::output_payload incomplete
+  // TODO: when depth is 0 show the generated C++ code buffer
+  // when depth is not too big show the internal data
+} // end of Rps_PayloadCplusplusGen::output_payload
 
 void
 Rps_PayloadCplusplusGen::check_size(int lineno)
@@ -762,8 +802,17 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                   << RPS_FULL_BACKTRACE_HERE(1,"rps_generate_cplusplus_code"));
       return false;
     };
+  /// detailed debug display after preparation
+  RPS_DEBUG_LOG(CODEGEN,
+                "rps_generate_cplusplus_code after preparation genparam="
+		<< _f.vgenparam << std::endl
+		<< " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
+		<< " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,"rps_generate_cplusplus_code/after preparation"));
+  /// emit the C++ comment with copyright notice
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->clear_indentation();
+  /// emit C++ #include-s
   cppgenpayl->output([&](std::ostringstream&out)
   {
     out << std::endl << std::endl;
@@ -771,6 +820,11 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   });
   cppgenpayl->emit_cplusplus_includes(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
+  RPS_DEBUG_LOG(CODEGEN,
+                "rps_generate_cplusplus_code emitted C++ includes obmodule=" << _f.obmodule
+                << " obgenerator=" << _f.obgenerator
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code/emitted-includes"));
+  /// emit C++ declarations
   cppgenpayl->output([&](std::ostringstream&out)
   {
     out << std::endl << std::endl;
@@ -778,6 +832,12 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   });
   cppgenpayl->emit_cplusplus_declarations(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
+  RPS_DEBUG_LOG(CODEGEN,
+                "rps_generate_cplusplus_code emitted C++ declarations obmodule=" << _f.obmodule
+                << " obgenerator=" << _f.obgenerator
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code/emitted-C++-declarations") << std::endl
+		<< RPS_OBJECT_DISPLAY(_f.obgenerator));
+  /// emit C++ definitions
   cppgenpayl->output([&](std::ostringstream&out)
   {
     out << std::endl << std::endl;
