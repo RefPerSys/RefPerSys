@@ -746,7 +746,10 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
   _f.obmodule = argmodule;
   // TODO: we probably need a selector to send some message related to C++ declaration emission
   //
-  // it could happen that the components number of the module is changing during the loop
+  // it could happen that the components number of the module is
+  // changing during the loop, or that the components are dynamically
+  // inserted (e.g. in the generator object)...
+  // TODO: document more.
   for (int cix=0; cix<(int)_f.obmodule->nb_components(&_); cix++)
     {
       _f.obcomp = nullptr;
@@ -791,7 +794,8 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
   _f.obmodule = argmodule;
   // TODO: we probably need a selector to send some message related to C++ definition emission
   //
-  // It could happen that the components number of the module is changing during the loop
+  // It could happen that the number of components in the module is
+  // changing during the loop
   for (int cix=0; cix<(int)_f.obmodule->nb_components(&_); cix++)
     {
       _f.obcomp = nullptr;
