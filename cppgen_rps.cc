@@ -733,16 +733,23 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     Rps_ObjectRef::make_object(&_,
                                RPS_ROOT_OB(_2yzD3HZ6VQc038ekBU)//midend_cplusplus_code_generator∈class
                               );
+  std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
   auto cppgenpayl = _f.obgenerator->put_new_plain_payload<Rps_PayloadCplusplusGen>();
+  RPS_DEBUG_LOG(CODEGEN,
+                "rps_generate_cplusplus_code starting obmodule=" << _f.obmodule
+                << " obgenerator=" << _f.obgenerator
+                << " vgenparam=" << _f.vgenparam
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code/start"));
   try
     {
       Rps_TwoValues two
-        = Rps_ObjectValue(_f.obgenerator).send1(&_,
+        = Rps_ObjectValue(_f.obgenerator).send2(&_,
             rpskob_29rlRCUyHHs04aWezh,
             //prepare_cplusplus_generation∈named_selector
-            _f.obmodule);
+						_f.obmodule,
+						_f.vgenparam);
       _f.vmain = two.main();
       _f.vxtra = two.xtra();
     }
