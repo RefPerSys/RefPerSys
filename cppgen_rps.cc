@@ -54,7 +54,8 @@ class Rps_PayloadCplusplusGen : public Rps_Payload
 {
 public:
   struct cppgen_data_st   /// internal data for C++ code generation
-  {			  // used in cppgen_datavect below
+  {
+    // used in cppgen_datavect below
     Rps_ObjectRef cppg_object;
     Rps_Value cppg_data;
     intptr_t cppg_num;
@@ -74,6 +75,7 @@ protected:
   std::set<Rps_ObjectRef> cppgen_includeset;
   std::map<Rps_ObjectRef,long> cppgen_includepriomap;
   std::vector<struct cppgen_data_st> cppgen_datavect;
+  static constexpr int cppgen_maxdatalen = 1<<18;
   virtual ~Rps_PayloadCplusplusGen()
   {
     cppgen_outcod.clear();
@@ -89,26 +91,47 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
-  static constexpr size_t maximal_size = 512*1024;
+  static constexpr size_t maximal_cpp_code_size = 512*1024; // in bytes of generated code
   void check_size(int lineno=0);
-  std::string cplusplus_file_path(void) const { return cppgen_path; };
-  const struct cppgen_data_st*nth_const_data(int n) const {
+  std::string cplusplus_file_path(void) const
+  {
+    return cppgen_path;
+  };
+  const struct cppgen_data_st&checked_nth_const_data(int n) const;
+  struct cppgen_data_st& checked_nth_data(int n);
+  const struct cppgen_data_st*nth_const_data(int n) const
+  {
     if (n<0)
       n += (int)cppgen_datavect.size();
     if (n<0 || n>=(int)cppgen_datavect.size())
       return nullptr;
     return &cppgen_datavect.at(n);
   };
-  struct cppgen_data_st*nth_data(int n) {
+  struct cppgen_data_st*nth_data(int n)
+  {
     if (n<0)
       n += (int)cppgen_datavect.size();
     if (n<0 || n>=(int)cppgen_datavect.size())
       return nullptr;
     return &cppgen_datavect.at(n);
   };
-#warning todo add push_new_data method to Rps_PayloadCplusplusGen
+  int push_new_data(const struct cppgen_data_st&d);
+  int push_new_data(Rps_ObjectRef obj=nullptr,
+                    Rps_Value val=nullptr,
+                    intptr_t num=0)
+  {
+    struct cppgen_data_st d
+    {
+      .cppg_object= obj,
+      .cppg_data= val,
+      .cppg_num=num
+    };
+    push_new_data(d);
+  };
   unsigned data_size(void) const
-  { return (unsigned)cppgen_datavect.size(); };
+  {
+    return (unsigned)cppgen_datavect.size();
+  };
   std::string eol_indent(void)
   {
     std::string s="\n";
@@ -161,6 +184,62 @@ Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen(Rps_ObjectZone*ob)
 {
 } // end Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen
 
+
+int
+Rps_PayloadCplusplusGen::push_new_data(const struct cppgen_data_st&d)
+{
+  if (RPS_UNLIKELY(data_size() > cppgen_maxdatalen))
+    {
+      RPS_WARNOUT("too big data size "<< data_size()
+                  << " in C++ generator " << owner()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,
+                                             "Rps_PayloadCplusplusGen::push_new_data"));
+      throw RPS_RUNTIME_ERROR_OUT("too big data size "<< data_size()
+                                  << " in C++ generator " << owner());
+    };
+  int ix= (int)data_size();
+  cppgen_datavect.push_back(d);
+  return ix;
+} // end Rps_PayloadCplusplusGen::push_new_data
+
+const struct Rps_PayloadCplusplusGen::cppgen_data_st&
+Rps_PayloadCplusplusGen::checked_nth_const_data(int n) const
+{
+  int orign = n;
+  if (n<0)
+    n += (int)cppgen_datavect.size();
+  if (RPS_UNLIKELY(n<0 || n>=(int)cppgen_datavect.size()))
+    {
+      RPS_WARNOUT("out of index  access #" << orign << " of data size "<< data_size()
+                  << " in C++ generator " << owner()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,
+                                             "Rps_PayloadCplusplusGen::checked_nth_const_data"));
+      throw RPS_RUNTIME_ERROR_OUT("out of index data access #" << orign << " of size "<< data_size()
+                                  << " in C++ generator " << owner());;
+    };
+  return cppgen_datavect.at(n);
+} // end Rps_PayloadCplusplusGen::checked_nth_const_data
+
+struct Rps_PayloadCplusplusGen::cppgen_data_st&
+Rps_PayloadCplusplusGen::checked_nth_data(int n)
+{
+  int orign = n;
+  if (n<0)
+    n += (int)cppgen_datavect.size();
+  if (RPS_UNLIKELY(n<0 || n>=(int)cppgen_datavect.size()))
+    {
+      RPS_WARNOUT("out of index  access #" << orign << " of data size "<< data_size()
+                  << " in C++ generator " << owner()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,
+                                             "Rps_PayloadCplusplusGen::checked_nth_data"));
+      throw RPS_RUNTIME_ERROR_OUT("out of data access #" << orign << " of size "<< data_size()
+                                  << " in C++ generator " << owner());
+    }
+  return cppgen_datavect.at(n);
+} // end Rps_PayloadCplusplusGen::checked_nth_data
 
 void
 Rps_PayloadCplusplusGen::output(std::function<void(std::ostringstream&out)> fun,
@@ -226,7 +305,7 @@ Rps_PayloadCplusplusGen::check_size(int lineno)
   memset(linbuf, 0, sizeof(linbuf));
   if (lineno > 0)
     snprintf(linbuf, sizeof(linbuf), ":%d", lineno);
-  if ((size_t)cppgen_outcod.tellp() > (size_t)maximal_size)
+  if ((size_t)cppgen_outcod.tellp() > (size_t)maximal_cpp_code_size)
     {
       RPS_WARNOUT("in C++ generator " << owner()
                   << (cppgen_path.empty()?"":" for path ")
@@ -788,8 +867,8 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
         = Rps_ObjectValue(_f.obgenerator).send2(&_,
             rpskob_29rlRCUyHHs04aWezh,
             //prepare_cplusplus_generation∈named_selector
-						_f.obmodule,
-						_f.vgenparam);
+            _f.obmodule,
+            _f.vgenparam);
       _f.vmain = two.main();
       _f.vxtra = two.xtra();
     }
@@ -805,10 +884,10 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   /// detailed debug display after preparation
   RPS_DEBUG_LOG(CODEGEN,
                 "rps_generate_cplusplus_code after preparation genparam="
-		<< _f.vgenparam << std::endl
-		<< " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
-		<< " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,"rps_generate_cplusplus_code/after preparation"));
+                << _f.vgenparam << std::endl
+                << " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
+                << " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"rps_generate_cplusplus_code/after preparation"));
   /// emit the C++ comment with copyright notice
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->clear_indentation();
@@ -836,7 +915,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                 "rps_generate_cplusplus_code emitted C++ declarations obmodule=" << _f.obmodule
                 << " obgenerator=" << _f.obgenerator
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code/emitted-C++-declarations") << std::endl
-		<< RPS_OBJECT_DISPLAY(_f.obgenerator));
+                << RPS_OBJECT_DISPLAY(_f.obgenerator));
   /// emit C++ definitions
   cppgenpayl->output([&](std::ostringstream&out)
   {
