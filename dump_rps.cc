@@ -38,6 +38,18 @@
 #include "refpersys.hh"
 
 
+/// GNU lightning implementation header.
+/// See https://www.gnu.org/software/lightning/
+
+/// a GNU lightning library after 2.2.2 (or GNU lightning commit
+/// 3b0fff9206a458d7e11db of August 21, 2023) is required.
+
+
+/// GNU lightning
+extern "C" {
+#include "lightning.h"
+};
+
 
 extern "C" const char rps_dump_gitid[];
 const char rps_dump_gitid[]= RPS_GITID;
@@ -1377,6 +1389,15 @@ Rps_Dumper::write_generated_data_file(void)
     {
       *pouts << "#undef RPS_WITH_FLTK" << std::endl;
     }
+  /// emit a few GNU lightning constants (it is a runtime code generation
+  /// library www.gnu.org/software/lightning/ ...)
+  {
+      *pouts << "/// GNU lightning code generation constants" << std::endl
+	     << "/// see www.gnu.org/software/lightning" << std::endl
+	     << "#define RPS_LIGHTNING_JIT_R_NUM " << JIT_R_NUM << std::endl
+	     << "#define RPS_LIGHTNING_JIT_V_NUM " << JIT_V_NUM << std::endl
+	     << "#define RPS_LIGHTNING_JIT_F_NUM " << JIT_F_NUM << std::endl;
+  }
   {
     /// unless compiled with RPS_SILENT_COMPILE emit a pragma message
     *pouts << "#ifndef RPS_SILENT_COMPILE" << std::endl;
