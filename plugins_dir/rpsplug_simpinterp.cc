@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // see http://refpersys.org/
 // GPLv3+ licensed
-// © Copyright 2024 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2024 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
 
 /***
-    This plugin contains a simple interpreter.
+    This plugin contains a simple interpreter. The interpreter's
+    syntax -probably inspired by C- has to be defined/approved by
+    others. Its role is to provide some way for RefPerSys developers
+    to modify the RefPerSys heap and test various modules including
+    code generation ones.
 
     Once compiled use it as
 
@@ -23,8 +27,11 @@ extern "C" char *rpsint_end;
 extern "C" int rpsint_lineno;
 
 
-/// on whatsapp March 14 2024 Abhishek approved a C like syntax
+/// on whatsapp March 14 2024 Abhishek approved a C like syntax; we
+/// hope for him to be allowed to informally specify it in Feb 2025
+// See https://github.com/RefPerSys/RefPerSys/issues/21
 
+#warning TODO: rpsint_parse_script has to return values which would be interpreted by future rpsint_eval_script
 extern "C" void rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef ob);
 extern "C" void rpsint_skip_spaces(void);
 extern "C" bool rpsint_has_keyword(const char*kw);
@@ -191,7 +198,7 @@ int rpsint_lineno;
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins_dir/rpsplug_simpinterp.cc -o /tmp/rpsplug_simpinterp.so" ;;
+ ** compile-command: "cd ..; make plugins_dir/rpsplug_simpinterp.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_simpinterp.so /tmp/" ;;
  ** End: ;;
  ****************/
 
