@@ -274,7 +274,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                  << " for module " << RPS_OBJECT_DISPLAY(_f.obmodule)
                  << std::endl
                  << " generation params " << _f.genparamv << std::endl
-                 << " thread=" << rps_current_pthread_name());
+                 << " thread=" << rps_current_pthread_name()
+		 << " jit_r_num=" << JIT_R_NUM << " jit_v_num=" << JIT_V_NUM);
   /// iterate on every component of the module
   int mix = -1;
   for (mix = 0; (unsigned)mix < _f.obmodule->nb_components(&_); mix++)
