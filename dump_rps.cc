@@ -1509,7 +1509,7 @@ Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   auto rootpathstr = std::string{"generated/rps-parser-decl.hh"};
-  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start");
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start genob="<<genob);
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr,
                                   /*prefix:*/ "//:", /*suffix:*/"",
@@ -1528,7 +1528,7 @@ Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   auto rootpathstr = std::string{"generated/rps-parser-impl.cc"};
-  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start");
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start genob="<<genob);
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr,
                                   /*prefix:*/ "//:", /*suffix:*/"",
@@ -1574,6 +1574,8 @@ Rps_Dumper::write_all_generated_files(void)
       /* We create a temporary object to hold some "arbitrary"
       information about this particular generation */
       _f.genstoreob = Rps_ObjectRef::make_object(&_, Rps_ObjectRef::the_object_class());
+      std::unique_lock<std::recursive_mutex> gugenstorsob(*(_f.genstoreob->objmtxptr()));
+      /* TODO: some closure should be extracted from a root or constant object and applied to the generator object */
       RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files before sending "<< _f.gencodselob << " to "
                     << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv << " genstoreob=" << _f.genstoreob
                     << std::endl
