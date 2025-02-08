@@ -199,9 +199,9 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
   char* curword = wx.we_wordv[0];
   toksrc_input_stream.open(curword);
   set_name(std::string(curword));
-  RPS_DEBUG_LOG(REPL, "constr StreamTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(LOWREP, "constr StreamTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(CMD, "constr StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "constr °StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "constr °StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "constr °StreamTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StreamTokenSource::Rps_StreamTokenSource
 
 void
@@ -215,10 +215,10 @@ Rps_StreamTokenSource::display(std::ostream&out) const
 Rps_StreamTokenSource::~Rps_StreamTokenSource()
 {
   toksrc_input_stream.close();
-  RPS_DEBUG_LOG(REPL, "destr StreamTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(LOWREP, "destr StreamTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(CMD, "destr StreamTokenSource@ " <<(void*)this << " " << *this);
-} // end ps_StreamTokenSource::~Rps_StreamTokenSource
+  RPS_DEBUG_LOG(REPL, "destr °StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "destr °StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr °StreamTokenSource@ " <<(void*)this << " " << *this);
+} // end Rps_StreamTokenSource::~Rps_StreamTokenSource
 
 bool
 Rps_StreamTokenSource::get_line(void)
