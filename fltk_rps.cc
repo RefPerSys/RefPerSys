@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2024 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2024 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1329,10 +1329,10 @@ extern "C" bool rps_fltk_program_is_quitting(void);
 bool
 rps_fltk_program_is_quitting(void)
 {
-#if FLTK_API_VERSION >= 10400
+#if FL_API_VERSION >= 10400
   ///FLTK 1.4
   RPS_DEBUG_LOG(REPL, "rps_fltk_program_is_quitting program_should_quit="
-                << (Fl::program_should_quit())?"True":"false"
+                << ((Fl::program_should_quit())?"True":"false")
                 << std::endl
                 << " thread:" << rps_current_pthread_name()
                 << std::endl
@@ -1366,13 +1366,14 @@ rps_fltk_stop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop"));
   Fl::lock();
-#if FLTK_API_VERSION >= 10400 // FLTK 1.4
+#if FL_API_VERSION >= 10400 // FLTK 1.4
   /// in FLTK1.4 only Fl::program_should_quit(1);
   Fl::program_should_quit(1);
 #else // FLTKI 1.3
   RPS_WARNOUT("rps_fltk_stop called from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop")
-              << std::endl << " should quit FLTK event loop");
+              << std::endl << " should quit FLTK event loop"
+              << " FL_API_VERSION=" << FL_API_VERSION);
 #endif
   Fl::unlock();
   RPS_DEBUG_LOG(REPL, "rps_fltk_stop done from thread:" << rps_current_pthread_name());
