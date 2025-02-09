@@ -1392,11 +1392,11 @@ Rps_Dumper::write_generated_data_file(void)
   /// emit a few GNU lightning constants (it is a runtime code generation
   /// library www.gnu.org/software/lightning/ ...)
   {
-      *pouts << "/// GNU lightning code generation constants" << std::endl
-	     << "/// see www.gnu.org/software/lightning" << std::endl
-	     << "#define RPS_LIGHTNING_JIT_R_NUM " << JIT_R_NUM << std::endl
-	     << "#define RPS_LIGHTNING_JIT_V_NUM " << JIT_V_NUM << std::endl
-	     << "#define RPS_LIGHTNING_JIT_F_NUM " << JIT_F_NUM << std::endl;
+    *pouts << "/// GNU lightning code generation constants" << std::endl
+           << "/// see www.gnu.org/software/lightning" << std::endl
+           << "#define RPS_LIGHTNING_JIT_R_NUM " << JIT_R_NUM << std::endl
+           << "#define RPS_LIGHTNING_JIT_V_NUM " << JIT_V_NUM << std::endl
+           << "#define RPS_LIGHTNING_JIT_F_NUM " << JIT_F_NUM << std::endl;
   }
   {
     /// unless compiled with RPS_SILENT_COMPILE emit a pragma message
