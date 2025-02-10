@@ -47,6 +47,14 @@ if [ -z $CXX ]; then
     export CXX
 fi
 
+if [ -z $CARBURETTA ]; then
+    CARBURETTA=$(which carburetta)
+    if [ -z $CARBURETTA ]; then
+	printf "%s missing carburetta parser generator, see https://carburetta.com/ and github.com/kingletbv/carburetta\n" $0 2>&1
+	exit 1
+    fi
+    export CARBURETTA
+fi
 
 printf "/// invocation: %s %s in %s\n" $0 "$*" "$(realpath $(pwd))"
 export LANG=en_US.UTF-8
@@ -107,6 +115,10 @@ printf "const char rps_gnu_make_version[]=\"%s\";\n" "$(gmake --version | /bin/h
 printf "const char rps_gnu_bison[]=\"%s\";\n" $(/bin/which bison)
 
 printf "const char rps_gnu_bison_version[]=\"%s\";\n" "$(bison --version | /bin/head -1)"
+
+printf "const char rps_carburetta[]=\"%s\"; //Carburetta parser generator, see github.com/kingletbv/carburetta\n" $(/bin/which $CARBURETTA)
+
+printf "const char rps_gnu_carburetta_version[]=\"%s\";\n" "$($CARBURETTA --version | /bin/head -1)"
 
 printf "const char rps_gui_script_executable[]=\"%s\";\n" $(realpath gui-script-refpersys.sh)
 

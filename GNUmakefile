@@ -42,7 +42,8 @@ RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
 RPS_ATSHARP := $(shell printf '@#')
 RPS_HOMETMP := $(shell echo '$$HOME/tmp')
-
+# Carburetta is a parser generator on github.com/kingletbv/carburetta
+RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
 
 ## REFPERSYS_LTO is by convention for link-time optimization flags
 
