@@ -371,18 +371,33 @@ extern "C" const char rps_lastgittag[];
 extern "C" const char rps_lastgitcommit[];
 extern "C" const char rps_md5sum[];
 extern "C" const char*const rps_files[];
+/// the GNU make utility see www.gnu.org/software/make/
 extern "C" const char rps_gnumakefile[];
 extern "C" const char rps_gnu_make[];
 extern "C" const char rps_gnu_make_version[];
+/// the GNU bison parser generator see www.gnu.org/software/bison/
 extern "C" const char rps_gnu_bison[];
 extern "C" const char rps_gnu_bison_version[];
 
+/// the Carburetta parser generator see carburetta.com & github.com/kingletbv/carburetta
+extern "C" const char rps_carburetta[];
+extern "C" const char rps_carburetta_version[];
+
+
+/// subdirectoris
 extern "C" const char*const rps_subdirectories[];
+
+/// realpath and version of the GNU C++ compiler see gcc.gnu.org
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
+
+/// the GPP generic preprocessor from logological.org/gpp
+/// we may in 2025 not need to use it
 extern "C" const char rps_gpp_preprocessor_command[];
 extern "C" const char rps_gpp_preprocessor_realpath[];
 extern "C" const char rps_gpp_preprocessor_version[];
+
+/// the ninja builder command, perhaps useless in 2025, from ninja-build.org
 extern "C" const char rps_ninja_builder[];
 extern "C" const char rps_ninja_version[];
 
