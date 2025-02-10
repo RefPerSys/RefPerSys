@@ -118,7 +118,7 @@ printf "const char rps_gnu_bison_version[]=\"%s\";\n" "$(bison --version | /bin/
 
 printf "const char rps_carburetta[]=\"%s\"; //Carburetta parser generator, see github.com/kingletbv/carburetta\n" $(/bin/which $CARBURETTA)
 
-printf "const char rps_gnu_carburetta_version[]=\"%s\";\n" "$($CARBURETTA --version | /bin/head -1)"
+printf "const char rps_carburetta_version[]=\"%s\";\n" "$($CARBURETTA --version | /bin/head -1)"
 
 printf "const char rps_gui_script_executable[]=\"%s\";\n" $(realpath gui-script-refpersys.sh)
 
