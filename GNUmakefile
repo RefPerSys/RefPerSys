@@ -469,6 +469,7 @@ indent:
 	    $(ASTYLE) $(ASTYLEFLAGS) $$f ; done
 	for p in $(patsubst %, plugins_dir/%.cc, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) ; do \
 	    $(ASTYLE) $(ASTYLEFLAGS) $$p ; done
+	$(ASTYLE) $(ASTYLEFLAGS) tools/do-configure-refpersys.c
 
 ## redump target
 redump: refpersys
