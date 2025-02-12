@@ -148,17 +148,24 @@ config: tools/do-configure-refpersys do-scan-refpersys-pkgconfig GNUmakefile
 	tools/do-configure-refpersys
 	$(MAKE) _scanned-pkgconfig.mk
 
+
+#### the configurator tool
 tools/do-configure-refpersys: tools/do-configure-refpersys.c |GNUmakefile rps-generate-gitid.sh
-	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
+	$(REFPERSYS_CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               -DRPSCONF_OPERSYS=\"$(RPS_OPERSYS)\" \
               -DRPSCONF_ARCH=\"$(RPS_ARCH)\" \
               -DRPSCONF_HOST=\"$(RPS_HOST)\" \
-              $(CFLAGS) $^ -o $@ -lreadline -lncurses -ldl
-## if GNU readline library is unavailable add
-## -DRPSCONF_WITHOUT_READLINE above and remove the -lreadline above
-## if GNU ncurses library is unavailable add
-## -DRPSCONF_WITHOUT_NCURSES above and remove the -lncurses above
+              $(CFLAGS) $^ -o $@ -lgccjit -lreadline -lncurses -ldl
+## If GNU readline library is unavailable add
+## -DRPSCONF_WITHOUT_READLINE above and remove the -lreadline above.
+##
+## If GNU ncurses library is unavailable add -DRPSCONF_WITHOUT_NCURSES
+## above and remove the -lncurses above.
+##
+## If libgccjit (see https://gcc.gnu.org/onlinedocs/jit/ ...) is
+## unavailable add -DRPSCONF_WITHOUT_GCCJIT
 
+######
 do-scan-refpersys-pkgconfig: do-scan-refpersys-pkgconfig.c |GNUmakefile rps-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@
