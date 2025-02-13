@@ -3633,8 +3633,9 @@ public:
   {
     return payl_owner;
   };
-  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  virtual void output_payload([[maybe_unused]] std::ostream&out, [[maybe_unused]] unsigned depth, [[maybe_unused]] unsigned maxdepth) const
   {
+    RPS_ASSERT(depth <= maxdepth);
   };
 };                              // end Rps_Payload
 
