@@ -347,12 +347,12 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
 } // end rps_generate_lightning_code
 
 
-#if 0
+
 Rps_ObjectRef
 Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, Rps_ObjectRef obclassarg, Rps_ObjectRef obspacearg)
 {
   RPS_ASSERT(!callframe || callframe->is_good_call_frame());
-  RPS_LOCALFRAME(rpskob_4pI1uwdcVBJ01qlUth //$lightning_code_object∈class,
+  RPS_LOCALFRAME(rpskob_4pI1uwdcVBJ01qlUth, //$lightning_code_object∈class,
                  callframe,
                  Rps_ObjectRef oblightgen;
                  Rps_ObjectRef obclass;
@@ -366,7 +366,7 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
            rpskob_4pI1uwdcVBJ01qlUth //$lightning_code_object∈class
                                                 ))
     {
-      RPS_WARNOUT("make_lightgen_code_object with bad class " << RPS_OBJECTREF(_f.obclass)
+      RPS_WARNOUT("make_lightgen_code_object with bad class " << RPS_OBJECT_DISPLAY(_f.obclass)
                   << " from " << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
       throw std::runtime_error("invalid class for make_lightgen_code_object");
     };
@@ -376,6 +376,6 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
 #warning probably incomplete Rps_PayloadLightningCodeGen::make_lightgen_code_object
   return _f.oblightgen;
 } // end Rps_PayloadLightningCodeGen::make_lightgen_code_object
-#endif
+
 
 #warning incomplete lightgen_rps.cc file
