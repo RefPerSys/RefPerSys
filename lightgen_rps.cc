@@ -66,10 +66,12 @@ const char rps_lightgen_shortgitid[]= RPS_SHORTGITID;
 /// According to www.gnu.org/software/lightning/manual/lightning.html
 /// every GNU lightning macro uses the _jit identifier... The type of
 /// that identifier is a pointer to the abstract jit_state_t ...
+extern "C" void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
 /// temporary payload for GNU lightning code generation:
 class Rps_PayloadLightningCodeGen : public Rps_Payload
 {
+  friend void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 public:
   typedef long lightnodenum_t;
   friend Rps_PayloadLightningCodeGen*
@@ -211,7 +213,25 @@ Rps_PayloadLightningCodeGen::dump_json_content(Rps_Dumper*du, Json::Value&jv) co
 {
   RPS_ASSERT(du);
   RPS_POSSIBLE_BREAKPOINT();
+#warning incomplete Rps_PayloadLightningCodeGen::dump_json_content
+  RPS_WARNOUT("incomplete Rps_PayloadLightningCodeGen::dump_json_content owner=" << RPS_OBJECT_DISPLAY(owner()));
 } // end Rps_PayloadLightningCodeGen::dump_json_content
+
+void
+rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(obz->get_payload() == nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  auto payl = obz->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
+  RPS_ASSERT(payl);
+#warning unimplemented rpsldpy_lightning_code_generator
+  RPS_WARNOUT("unimplemented rpsldpy_lightning_code_generator jv=" << jv << std::endl
+              << " spacid=" << spacid
+              << " lineno=" << lineno << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_lightning_code_generator"));
+} // end rpsldpy_lightning_code_generator
 
 void
 Rps_PayloadLightningCodeGen::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
