@@ -165,6 +165,7 @@ public:
       }
     return num;
   };
+  Rps_ObjectRef make_lightgen_code_object(Rps_CallFrame*callframe, Rps_ObjectRef classarg, Rps_ObjectRef spacearg);
   virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };        // end class Rps_PayloadLightningCodeGen
 
@@ -344,5 +345,37 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
 #warning unimplemented rps_generate_lightning_code
   return false;
 } // end rps_generate_lightning_code
+
+
+#if 0
+Rps_ObjectRef
+Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, Rps_ObjectRef obclassarg, Rps_ObjectRef obspacearg)
+{
+  RPS_ASSERT(!callframe || callframe->is_good_call_frame());
+  RPS_LOCALFRAME(rpskob_4pI1uwdcVBJ01qlUth //$lightning_code_object∈class,
+                 callframe,
+                 Rps_ObjectRef oblightgen;
+                 Rps_ObjectRef obclass;
+                 Rps_ObjectRef obspace;
+                );
+  _f.obclass = obclassarg;
+  _f.obspace = obspacearg;
+  if (!_f.obclass)
+    _f.obclass = rpskob_4pI1uwdcVBJ01qlUth; //$lightning_code_object∈class
+  else if (!Rps_Value(_f.obclass).is_subclass_of(&_,
+           rpskob_4pI1uwdcVBJ01qlUth //$lightning_code_object∈class
+                                                ))
+    {
+      RPS_WARNOUT("make_lightgen_code_object with bad class " << RPS_OBJECTREF(_f.obclass)
+                  << " from " << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
+      throw std::runtime_error("invalid class for make_lightgen_code_object");
+    };
+  _f.oblightgen =  Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
+  auto paylgen =  _f.oblightgen->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
+  RPS_ASSERT(paylgen);
+#warning probably incomplete Rps_PayloadLightningCodeGen::make_lightgen_code_object
+  return _f.oblightgen;
+} // end Rps_PayloadLightningCodeGen::make_lightgen_code_object
+#endif
 
 #warning incomplete lightgen_rps.cc file
