@@ -335,12 +335,14 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
         };
     };
   RPS_WARNOUT("unimplemented rps_generate_lightning_code obmodule="
-              << _f.obmodule << " obgenerator=" << _f.obgenerator
+              << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
+              << " obgenerator=" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
               << " genparamv=" << _f.genparamv << std::endl
               << " thread=" << rps_current_pthread_name()
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_lightning_code/end-incomplete"));
 #warning unimplemented rps_generate_lightning_code
+  return false;
 } // end rps_generate_lightning_code
 
 #warning incomplete lightgen_rps.cc file
