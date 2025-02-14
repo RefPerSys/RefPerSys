@@ -66,6 +66,9 @@ const char rps_lightgen_shortgitid[]= RPS_SHORTGITID;
 /// According to www.gnu.org/software/lightning/manual/lightning.html
 /// every GNU lightning macro uses the _jit identifier... The type of
 /// that identifier is a pointer to the abstract jit_state_t ...
+////////////////////////////////////////////////////////////////
+
+
 extern "C" void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
 /// temporary payload for GNU lightning code generation:
@@ -118,6 +121,11 @@ public:
   {
     RPSJITLIGHTPAYLOAD_LOCKGUARD();
     jit_realize();
+  };
+  bool rpsjit_is_frozen() const
+  {
+    RPSJITLIGHTPAYLOAD_LOCKGUARD();
+    return lightg_jist == nullptr;
   };
   lightnodenum_t rpsjit_register_node(jit_node_t  *jn)
   {
@@ -393,6 +401,9 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
   _f.oblightgen =  Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
   auto paylgen =  _f.oblightgen->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
   RPS_ASSERT(paylgen);
+  RPS_DEBUG_LOG (CODEGEN, "make_lightgen_code_object made " << RPS_OBJECT_DISPLAY(_f.oblightgen)
+		 << std::endl
+		 <<  " from " << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
 #warning probably incomplete Rps_PayloadLightningCodeGen::make_lightgen_code_object
   return _f.oblightgen;
 } // end Rps_PayloadLightningCodeGen::make_lightgen_code_object
