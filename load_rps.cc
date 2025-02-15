@@ -1591,6 +1591,7 @@ void rps_load_from (const std::string& dirpath)
         RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath << " after load_install_roots");
         rps_initialize_roots_after_loading(&loader);
         rps_initialize_symbols_after_loading(&loader);
+	rps_set_native_data_in_loader(&loader);
         nbloaded = loader.nb_loaded_objects();
         RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath << " nbloaded=" << nbloaded);
       }
@@ -1638,7 +1639,8 @@ void rps_load_from (const std::string& dirpath)
 
 /// loading of class information payload; see
 /// Rps_PayloadClassInfo::dump_json_content in objects_rps.cc
-void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+void
+rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -1723,7 +1725,8 @@ void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
 
 
 /// loading of vector of objects payload
-void rpsldpy_vectob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+void
+rpsldpy_vectob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -1750,7 +1753,8 @@ void rpsldpy_vectob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
 
 
 /// loading of vector of values payload
-void rpsldpy_vectval(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+void
+rpsldpy_vectval(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -1776,7 +1780,8 @@ void rpsldpy_vectval(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, R
 } // end of rpsldpy_vectob
 
 /// loading of set of objects payload
-void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+void
+rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -1803,7 +1808,8 @@ void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
 
 
 /// loading of space payload
-void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+void
+rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -1816,7 +1822,8 @@ void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
 
 
 /// loading of symbol payload
-void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+void
+rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -1840,5 +1847,11 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
 } // end rpsldpy_symbol
 
 
-
+void
+rps_set_native_data_in_loader(Rps_Loader*ld)
+{
+  RPS_ASSERT(ld != nullptr);
+#warning incomplete rps_set_native_data_in_loader
+} // end rps_set_native_data_in_loader
+  
 //// end of file load_rps.cc
