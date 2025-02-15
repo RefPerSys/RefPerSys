@@ -1,8 +1,9 @@
 // see http://refpersys.org/
 // SPDX-License-Identifier: GPL-3.0-or-later
 // GPLv3+ licensed file plugins_dir/rpsplug_create_cplusplus_primitive_type.cc
-// © Copyright 2024 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2024 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys C++ primitive type for C++ generation
+// and could be used by machine (GNU lightning) or libgccjit code generation
 /*****
       Once compiled, use it for example as:
       ./refpersys --plugin-after-load=/tmp/rpsplug_create_cplusplus_primitive_type.so \
@@ -143,6 +144,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins_dir/rpsplug_create_cplusplus_code_class.cc -o /tmp/rpsplug_create_cplusplus_code_class.so" ;;
+ ** compile-command: "cd ..; make plugins_dir/rpsplug_create_cplusplus_primitive_type.so &&  /bin/ln -sv $(/bin/pwd)/plugins_dir/rpsplug_create_cplusplus_primitive_type.so /tmp/"" ;;
  ** End: ;;
  ****************/
