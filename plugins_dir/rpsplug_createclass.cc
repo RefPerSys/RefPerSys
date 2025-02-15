@@ -2,7 +2,7 @@
 // passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
 // with improvement after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
-// © Copyright 2023 - 2024 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys class
 /*****
   Once compiled, use it for example as:
@@ -11,6 +11,7 @@
               --extra=super=superclass \
               --extra=comment='some comment' \
               --extra=rooted=0 \
+	      --extra=constant=1 \
               --batch --dump=.
 
  ****/
@@ -35,7 +36,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   const char*supername = rps_get_extra_arg("super");
   const char*comment = rps_get_extra_arg("comment");
   const char*rooted = rps_get_extra_arg("rooted");
+  const char*constant = rps_get_extra_arg("constant");
   bool isrooted = false;
+  bool isconstant = false;
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument; should be some non-empty name");
