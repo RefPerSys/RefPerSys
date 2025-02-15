@@ -86,3 +86,12 @@ Subclasses of *`code_instance`* (i.e. `_7VRJKpau2Nn04oeUER`) are used
 to represent statements (added to blocks), rvalues so expressions and
 most constants... RefPerSys literal strings, doubles, tagged integers
 represent literal constants...
+
+#### code type representations
+
+They are either predefined types (for `int` etc....) or user defined types.
+
+##### predefined type representations
+
+They all are created (once and for all each) with our
+plugins_dir/rpsplug_create_cplusplus_predefined_type.cc
