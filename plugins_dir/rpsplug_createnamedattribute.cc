@@ -112,7 +112,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            _f.obsymbol);
   if (comment)
     {
-<      _f.commentstr = Rps_StringValue(comment);
+      _f.commentstr = Rps_StringValue(comment);
       _f.obnamedattr->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol,
                                _f.commentstr);
     }
