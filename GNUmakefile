@@ -314,6 +314,16 @@ plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  refpersys
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
 	    $^ -o $@
 
+plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $^ -o $@
+
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	@printf "RPS_MAKE is %s and MAKE is %s for refpersys plugin at=%s PATH=%s\n" \ "$(RPS_MAKE)" "$(MAKE)" "$@"  "$$PATH"
