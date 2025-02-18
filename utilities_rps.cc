@@ -1451,6 +1451,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           int pluglenam= curplugname.length();
           if (pluglenam > 4 && curplugname.substr(pluglenam-3) == ".so")
             curplugname.erase(pluglenam-3);
+	  RPS_POSSIBLE_BREAKPOINT();
           RPS_DEBUG_LOG (REPL, "plugin#" << plugcnt << " is named " << Rps_QuotedC_String(curplugname));
           if (curplugname == plugname)
             {
@@ -1458,7 +1459,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
               break;
             };
           plugcnt++;
-        }
+        };
+      RPS_POSSIBLE_BREAKPOINT();
       if (pluginix<0)
         RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
                      << " without such loaded plugin (loaded " << plugcnt << " plugins)");
