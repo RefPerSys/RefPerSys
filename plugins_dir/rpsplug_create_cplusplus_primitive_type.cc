@@ -38,10 +38,18 @@ rps_do_plugin(const Rps_Plugin* plugin)
   const char*comment = rps_get_extra_arg("comment");
   const char*instanced = rps_get_extra_arg("instance");
   bool isinstanced = false;
+  RPS_INFORMOUT("loaded plugin " <<  plugin->plugin_name
+		<< " file " << __FILE__
+		<< " super:" << Rps_QuotedC_String(supername)
+		<< " comment:" << Rps_QuotedC_String(comment)
+		<< " instance:" << Rps_QuotedC_String(instanced)
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_plugin/createC++primtyp"));
   _f.obcppcodeclass = RPS_ROOT_OB(_14J2l2ZPGtp00WLhIu); //cplusplus_code∈class
   if (!plugarg || plugarg[0]==(char)0)
-    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
+    RPS_FATALOUT("failure: plugin/createC++primtyp " << plugin->plugin_name
                  << " without argument; should be some non-empty name");
+  RPS_POSSIBLE_BREAKPOINT();
   ///
   /* Check that plugarg is a good class name */
   {
@@ -61,6 +69,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
       RPS_FATALOUT("failure: plugin " << plugin->plugin_name << " argument " << plugarg
                    << " is naming an existing object " << nob);
     };
+  RPS_POSSIBLE_BREAKPOINT();
   /* Check that supername is given and is naming an existing class. */
   if (!supername)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
@@ -74,6 +83,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                    << " with bad superclass name " << Rps_QuotedC_String(supername));
   }
   _f.obsuperclass =  Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(supername));
+  RPS_POSSIBLE_BREAKPOINT();
   if (!_f.obsuperclass)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with unknown superclass name " << Rps_QuotedC_String(supername));
