@@ -11,7 +11,7 @@
               --extra=super=superclass \
               --extra=comment='some comment' \
               --extra=rooted=0 \
-	      --extra=constant=1 \
+        --extra=constant=1 \
               --batch --dump=.
 
  ****/

@@ -7,11 +7,12 @@
 /*****
       Once compiled, use it for example as:
       ./refpersys --plugin-after-load=/tmp/rpsplug_create_cplusplus_primitive_type.so \
-      --plugin-arg=rpsplug_create_cplusplus_create_primitive_type_name:new_object_name \
-      --extra=super=superclass \
-      --extra=comment='some comment' \
+      --plugin-arg=rpsplug_create_cplusplus_create_primitive_type:native_int_type \
+      --extra=comment='the native int type' \
       --batch --dump=.
 
+then update appropriately the rps_set_native_data_in_loader to force
+native alignement and size
 ****/
 
 
@@ -144,6 +145,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; make plugins_dir/rpsplug_create_cplusplus_primitive_type.so &&  /bin/ln -sv $(/bin/pwd)/plugins_dir/rpsplug_create_cplusplus_primitive_type.so /tmp/"" ;;
+ ** compile-command: "cd ..; make plugins_dir/rpsplug_create_cplusplus_primitive_type.so &&  /bin/ln -sfv $(/bin/pwd)/plugins_dir/rpsplug_create_cplusplus_primitive_type.so /tmp/"" ;;
  ** End: ;;
  ****************/
