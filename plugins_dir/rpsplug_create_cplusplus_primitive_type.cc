@@ -43,6 +43,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
 		<< " super:" << Rps_QuotedC_String(supername)
 		<< " comment:" << Rps_QuotedC_String(comment)
 		<< " instance:" << Rps_QuotedC_String(instanced)
+		<< " plugarg:" << Rps_QuotedC_String(plugarg)
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_plugin/createC++primtyp"));
   _f.obcppcodeclass = RPS_ROOT_OB(_14J2l2ZPGtp00WLhIu); //cplusplus_code∈class
@@ -90,8 +91,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!_f.obsuperclass->is_class())
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with super name " << Rps_QuotedC_String(supername)
-                 << " not naming a class but the object " << _f.obsuperclass << " of RefPerSys class "
-                 << _f.obsuperclass->get_class());
+                 << " not naming a class but the object " << std::endl
+		 << RPS_OBJECT_DISPLAY(_f.obsuperclass));
   /* Create the new obnewclass. */
   _f.obnewclass =
     Rps_ObjectRef::make_named_class(&_, _f.obsuperclass, std::string{plugarg});
