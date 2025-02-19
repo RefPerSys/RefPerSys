@@ -40,6 +40,7 @@ make plugins_dir/rpsplug_create_cplusplus_primitive_type.so   || exit 1
 
 ./refpersys --plugin-after-load=plugins_dir/rpsplug_create_cplusplus_primitive_type.so \
 	    --plugin-arg=rpsplug_create_cplusplus_primitive_type:code_intptr_t \
+	    --extra=super='cplusplus_primitive_type' \
 	    --extra=comment='the native intptr_t type' \
 	    --batch --dump=.
 
@@ -51,4 +52,6 @@ fi
 
 printf "%s: the store in %s contains code_intptr_t\n" \
        $rps_scriptname $rps_persistore
+printf "%s: dont forget to edit rps_set_native_data_in_loader in load_rps.cc\n" \
+       $rps_scriptname
 exit 0
