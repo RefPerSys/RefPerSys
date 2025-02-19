@@ -39,7 +39,7 @@ fi
 make plugins_dir/rpsplug_create_cplusplus_primitive_type.so   || exit 1
 
 ./refpersys --plugin-after-load=plugins_dir/rpsplug_create_cplusplus_primitive_type.so \
-	    --plugin-arg=rpsplug_create_cplusplus_create_primitive_type:code_intptr_t \
+	    --plugin-arg=rpsplug_create_cplusplus_primitive_type:code_intptr_t \
 	    --extra=comment='the native intptr_t type' \
 	    --batch --dump=.
 
