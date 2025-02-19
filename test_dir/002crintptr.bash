@@ -1,6 +1,6 @@
 #!/bin/bash -x
 # SPDX-License-Identifier: GPL-3.0-or-later
-# aé shell script to create the intptr object reifying the intptr type
+# A shell script to create the code_intptr_t object reifying the intptr_t type
 #      © Copyright 2025 Basile STARYNKEVITCH 
 #      see team@refpersys.org & http://refpersys.org/
 #
@@ -29,3 +29,26 @@ if [ ! -f "refpersys.hh" ]; then
 fi
 make -j3 refpersys || exit 1
 rps_persistore="$(/usr/bin/realpath persistore)"
+
+if /bin/grep -rl code_intptr_t persistore/ ; then
+    printf "%s: already known code_intptr_t in %s\n" \
+	   $rps_scriptname $rps_persistore ;
+    exit 0
+fi
+
+make plugins_dir/rpsplug_create_cplusplus_primitive_type.so   || exit 1
+
+./refpersys --plugin-after-load=plugins_dir/rpsplug_create_cplusplus_primitive_type.so \
+	    --plugin-arg=rpsplug_create_cplusplus_create_primitive_type:code_intptr_t \
+	    --extra=comment='the native intptr_t type' \
+	    --batch --dump=.
+
+if  ! /bin/grep -rl code_intptr_t persistore/ > /dev/null ; then
+    printf "%s: no code_intptr_t in %s\n" \
+	   $rps_scriptname $rps_persistore ;
+    exit 1
+fi
+
+printf "%s: the store in %s contains code_intptr_t\n" \
+       $rps_scriptname $rps_persistore
+exit 0
