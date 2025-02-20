@@ -27,7 +27,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
                  Rps_ObjectRef obmutsetclass;
                  Rps_ObjectRef obsuperclass;
-                 Rps_ObjectRef obcppcodeclass;
+                 Rps_ObjectRef obcppprimtypclass;
                  Rps_ObjectRef obcpptype;
                  Rps_ObjectRef obsymbol;
                  Rps_Value namestr; // a string
@@ -41,7 +41,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                 << " plugarg:" << Rps_QuotedC_String(plugarg)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_plugin/createC++primtyp"));
-  _f.obcppcodeclass = RPS_ROOT_OB(_14J2l2ZPGtp00WLhIu); //cplusplus_code∈class
+  _f.obcppprimtypclass = RPS_ROOT_OB(_1XswYkom3Jm02YR3Vi); //cplusplus_primitive_type∈class
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin/createC++primtyp " << plugin->plugin_name
                  << " without argument; should be some non-empty name");
@@ -61,7 +61,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
     };
   RPS_POSSIBLE_BREAKPOINT();
   _f.obcpptype = Rps_ObjectRef::make_object(&_,
-                                            /*class:*/_f.obcppcodeclass,
+                                            /*class:*/_f.obcppprimtypclass,
                                             /*space:*/Rps_ObjectRef::root_space()
                                             );
   if (comment)
@@ -86,8 +86,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
                          _f.obsymbol);
   rps_add_constant_object(&_, _f.obcpptype);
   RPS_INFORMOUT("rpsplug_create_cplusplus_code_class added new object " << _f.obcpptype
-                << " named " << plugarg << " of super class "
-                << _f.obcppcodeclass << " and symbol " << _f.obsymbol
+                << " named " << plugarg << " of class "
+                << _f.obcppprimtypclass << " and symbol " << _f.obsymbol
                 << " in space " << _f.obcpptype->get_space());
 } // end rps_do_plugin
 
