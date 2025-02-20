@@ -1875,9 +1875,9 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
      sizeof() C++ macros */
   /* TODO: use ld->set_primitive_type_size_and_align here */
   ld->set_primitive_type_size_and_align(rpskob_4V1oeUOvmxo041XLTm, //code_intptr_t
-					sizeof(intptr_t),
-					alignof(intptr_t)
-					);
+                                        sizeof(intptr_t),
+                                        alignof(intptr_t)
+                                       );
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
 

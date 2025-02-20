@@ -5525,7 +5525,7 @@ extern "C" void rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec);
 /// this routine set some native data in loaded heap, like the size of
 /// predefined types...
 extern "C" void rps_set_native_data_in_loader(Rps_Loader*);
-  
+
 extern "C" void rps_run_loaded_application(int &argc, char **argv);
 
 ///// UTF8 encoded string output (in file scalar_rps.cc)
