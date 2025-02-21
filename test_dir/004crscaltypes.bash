@@ -46,3 +46,10 @@ function rps_add_scal_type() {
 	    --batch --dump=.
     fi
 }
+
+
+
+## once a line has been successfully run, please comment it after your git push
+rps_add_scal_type code_char "reification of C++ type char"
+
+
