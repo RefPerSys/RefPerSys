@@ -134,7 +134,7 @@ public:
       .cppg_data= val,
       .cppg_num=num
     };
-    push_new_data(d);
+    return push_new_data(d);
   };
   unsigned data_size(void) const
   {
