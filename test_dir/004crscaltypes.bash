@@ -51,7 +51,7 @@ function rps_add_scal_type() {
 
 ## once a line has been successfully run, please comment it after your git push
 #rps_add_scal_type code_char "reification of C++ type char"
-
+rps_add_scal_type code_long "reification of C++ type long"
 ## TODO: add more similar lines below
 
 
