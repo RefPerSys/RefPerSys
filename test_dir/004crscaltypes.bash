@@ -36,14 +36,24 @@ rps_persistore="$(/usr/bin/realpath persistore)"
 function rps_add_scal_type() {
     local ty_name=$1
     local ty_comment=$2
+    local ty_cplusplus=$3
     if fgrep -w $ty_name $rps_persistore/*.json ; then
 	echo $ty_name already exists in $rps_persistore
     else
+	if [ -n "$ty_cplusplus" ]; then
 	./refpersys --plugin-after-load=plugins_dir/rpsplug_create_cplusplus_primitive_type.so \
 		    --plugin-arg=rpsplug_create_cplusplus_primitive_type:$ty_name \
 	    --extra=super='cplusplus_primitive_type' \
-	    --extra=comment="$2" \
+	    --extra=comment="$ty_comment" \
+	    --extra=cplusplus="$ty_cplusplus" \
 	    --batch --dump=.
+	else
+	./refpersys --plugin-after-load=plugins_dir/rpsplug_create_cplusplus_primitive_type.so \
+		    --plugin-arg=rpsplug_create_cplusplus_primitive_type:$ty_name \
+	    --extra=super='cplusplus_primitive_type' \
+	    --extra=comment="$ty_comment" \
+	    --batch --dump=.
+	fi
     fi
 }
 
