@@ -1855,6 +1855,7 @@ Rps_Loader::set_primitive_type_size_and_align(Rps_ObjectRef primtypob,
     unsigned sizeby, unsigned alignby)
 {
   RPS_ASSERT(primtypob);
+  RPS_ASSERT(primtypob->is_instance_of(RPS_ROOT_OB(_1XswYkom3Jm02YR3Vi))); //cplusplus_primitive_type∈class 
   primtypob->loader_put_attr(this, rpskob_6EsfxShTuwH02waeLE, //!byte_alignment∈named_attribute
                              Rps_Value((intptr_t)sizeby));
   primtypob->loader_put_attr(this, rpskob_8IRzlYX53kN00tC3fG, //!byte_size∈named_attribute
@@ -1874,13 +1875,18 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
      to integers particular to this machine using alignof() and
      sizeof() C++ macros */
   /* TODO: use ld->set_primitive_type_size_and_align here */
+  /* all the constants below have class cplusplus_primitive_type*/
   ld->set_primitive_type_size_and_align(rpskob_4V1oeUOvmxo041XLTm, //code_intptr_t
                                         sizeof(intptr_t),
                                         alignof(intptr_t)
                                        );
-  ld->set_primitive_type_size_and_align(rpskob_4nZ0jIKUbGr01OixPV, //code_int∊cplusplus_code
+  ld->set_primitive_type_size_and_align(rpskob_4nZ0jIKUbGr01OixPV, //code_int
                                         sizeof(int),
                                         alignof(int)
+                                       );
+  ld->set_primitive_type_size_and_align(rpskob_3NYlqvmSuTm024LDuD, //code_long
+                                        sizeof(long),
+                                        alignof(long)
                                        );
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
