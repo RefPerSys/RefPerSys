@@ -199,7 +199,7 @@ Rps_PayloadCplusplusGen::push_new_data(const struct cppgen_data_st&d)
   if (RPS_UNLIKELY(data_size() > cppgen_maxdatalen))
     {
       RPS_WARNOUT("too big data size "<< data_size()
-                  << " in C++ generator " << owner()
+                  << " in C++ generator " << RPS_OBJECT_DISPLAY(owner())
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1,
                                              "Rps_PayloadCplusplusGen::push_new_data"));
