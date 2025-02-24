@@ -6,7 +6,7 @@
 ##      It is its GNUmakefile, for the GNU make automation builder.
 ##
 ## Author(s):
-##      Basile Starynkevitch <basile@starynkevitch.net>
+##      Basile STARYNKEVITCH, France, <basile@starynkevitch.net>
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
 ##      Abdullah Siddiqui <siddiquiabdullah92@gmail.com>
