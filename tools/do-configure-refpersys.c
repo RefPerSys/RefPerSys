@@ -1343,7 +1343,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   ///
   /// We probably want in 2025 to get rid of ninja-build.org and stick
   /// to GNU make enhanced with GNU guile.    This requires approval
-  /// by other RefPerSys contributors. [Basile S.]
+  /// by other RefPerSys contributors. [Basile STARYNKEVITCH]
   ///
   /// emit the ninja builder
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
