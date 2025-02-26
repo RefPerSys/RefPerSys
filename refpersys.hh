@@ -375,6 +375,7 @@ extern "C" const char*const rps_files[];
 extern "C" const char rps_gnumakefile[];
 extern "C" const char rps_gnu_make[];
 extern "C" const char rps_gnu_make_version[];
+extern "C" const char rps_gnu_make_features[];
 /// the GNU bison parser generator see www.gnu.org/software/bison/
 extern "C" const char rps_gnu_bison[];
 extern "C" const char rps_gnu_bison_version[];
