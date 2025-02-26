@@ -112,6 +112,8 @@ printf "const char rps_gnu_make[]=\"%s\";\n" $(/bin/which gmake)
 
 printf "const char rps_gnu_make_version[]=\"%s\";\n" "$(gmake --version | /bin/head -1)"
 
+printf "const char rps_gnu_make_features[]=\"%s\";\n" "$(gmake -s  --no-print-directory print-gmake-features)"
+
 printf "const char rps_gnu_bison[]=\"%s\";\n" $(/bin/which bison)
 
 printf "const char rps_gnu_bison_version[]=\"%s\";\n" "$(bison --version | /bin/head -1)"
