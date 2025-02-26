@@ -676,7 +676,6 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
       _f.obcurinclude = thecurinclob;
       RPS_ASSERT(_f.obcurinclude);
       std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
-      int inclix = (int) cppgen_datavect.size();
       long inclprio = 0;
       auto it = cppgen_includepriomap.find(_f.obcurinclude);
       if (it != cppgen_includepriomap.end())
