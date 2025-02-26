@@ -51,6 +51,7 @@ RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
+        print-gmake-features \
         lto-refpersys \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
@@ -470,6 +471,9 @@ print-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" "$(REFPERSYS_CXX)"
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) $(shell pkg-config --cflags $(PKGLIST_refpersys))"
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
+
+print-gmake-features:
+	@echo $(.FEATURES)
 
 indent:
 	$(ASTYLE) $(ASTYLEFLAGS) tools/do-configure-refpersys.c
