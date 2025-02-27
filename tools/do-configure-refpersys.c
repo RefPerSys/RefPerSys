@@ -87,7 +87,7 @@ WINDOW *rpsconf_ncurses_window;
 #endif
 
 #ifndef RPSCONF_HOST
-// possible HOST might be "refpersys.com" given by /bin/hostname -f
+// fictional HOST might be "refpersys.com" given by /bin/hostname -f
 #error HOST should be defined thru compilation command "hostname"
 #endif
 
@@ -142,12 +142,6 @@ const char *rpsconf_fltk_config;
 
 
 
-
-// /* absolute path to Miller&Auroux Generic preprocessor */
-// const char *rpsconf_gpp;
-
-/* absolute path to ninja builder (see ninja-build.org) */
-const char *rpsconf_ninja_builder;
 
 #ifndef MAX_REMOVED_FILES
 #define MAX_REMOVED_FILES 4096
@@ -811,13 +805,17 @@ rpsconf_test_libgccjit_compilation (const char *cc)
 {
   /* See the do-test-libgccjit.c file, which is doing some libgccjit
      things. We first compile that file as a plugin. */
-  char cmdbuf[256];
+  char cmdbuf[384];
   memset (cmdbuf, 0, sizeof (cmdbuf));
   char *test_so =
     rpsconf_temporary_binary_file ("./tmp_test-libgccjit", ".so", __LINE__);
+  if (access(rpsconf_libgccjit_include_dir, F_OK)) {
+  };
   snprintf (cmdbuf, sizeof (cmdbuf),
             "%s -fPIC -g -O -shared -DRPSJIT_GITID='\"%s\"' -I%s do-test-libgccjit.c -o %s -lgccjit",
-            cc, rpsconf_gitid, rpsconf_libgccjit_include_dir, test_so);
+            cc, rpsconf_gitid,
+	    (rpsconf_libgccjit_include_dir?rpsconf_libgccjit_include_dir:"."),
+	    test_so);
   printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
           __FILE__, __LINE__ - 1);
   fflush (NULL);
@@ -1331,26 +1329,6 @@ rpsconf_emit_configure_refpersys_mk (void)
        " $(REFPERSYS_LTO)\n", f);
     }
 
-
-  /* We don't seem to require GPP */
-#if 0
-  //// emit the generic preprocessor
-  fprintf (f,
-           "\n\n"
-           "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
-  fprintf (f, "REFPERSYS_GPP=%s\n", realpath (rpsconf_gpp, NULL));
-#endif /* 0 */
-  ///
-  /// We probably want in 2025 to get rid of ninja-build.org and stick
-  /// to GNU make enhanced with GNU guile.    This requires approval
-  /// by other RefPerSys contributors. [Basile STARYNKEVITCH]
-  ///
-  /// emit the ninja builder
-  fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
-  fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (rpsconf_ninja_builder, NULL));
-  fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
-           rpsconf_gitid);
-
   fflush (f);
   if (rpsconf_builder_person)
     {
@@ -1509,8 +1487,6 @@ rpsconf_usage (void)
   puts ("\t                         # e.g. CC=/usr/bin/gcc");
   puts ("\t CXX=<C++ compiler>      # set the C++ compiler,");
   puts ("\t                         # e.g. CXX=/usr/bin/g++");
-  puts ("\t NINJA=<ninja-builder>   # set builder from ninja-build.org");
-  puts ("\t                         # e.g. NINJA=/usr/bin/ninja");
   puts ("\t FLTKCONF=<fltk-config>  # set path of fltk-config, see fltk.org");
   puts ("\t BUILDER_PERSON=<name>   # set the name of the person building");
   puts ("\t                         # e.g. BUILDER_PERSON='Alan TURING");
@@ -1745,42 +1721,13 @@ main (int argc, char **argv)
         }
     }
   errno = 0;
-//!- rpsconf_gpp = getenv ("GPP");
-//!- if (!rpsconf_gpp)
-//!-   {
-//!-     puts
-//!-     ("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
-//!-     rpsconf_gpp = rpsconf_readline ("Generic Preprocessor full path:");
-//!-     if (access (rpsconf_gpp, X_OK))
-//!-       {
-//!-         fprintf (stderr,
-//!-                  "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
-//!-                  rpsconf_prog_name, rpsconf_gpp ? rpsconf_gpp : "???",
-//!-                  strerror (errno), __FILE__, __LINE__ - 3);
-//!-         rpsconf_failed = true;
-//!-         exit (EXIT_FAILURE);
-//!-       }
-//!-   };
-//!- assert (rpsconf_gpp != NULL);
 
-  rpsconf_ninja_builder = getenv ("NINJA");
-  if (!rpsconf_ninja_builder)
-    {
-      rpsconf_ninja_builder = rpsconf_readline ("ninja builder:");
-      if (access (rpsconf_ninja_builder, X_OK))
-        {
-          fprintf (stderr,
-                   "%s bad ninja builder %s (%s) [%s:%d]\n",
-                   rpsconf_prog_name,
-                   rpsconf_ninja_builder ? rpsconf_ninja_builder : "???",
-                   strerror (errno), __FILE__, __LINE__ - 3);
-          rpsconf_failed = true;
-          exit (EXIT_FAILURE);
-        }
-    };
   rpsconf_fltk_config = getenv ("FLTKCONFIG");
   if (!rpsconf_fltk_config)
     {
+      printf("\nFLTK is a graphical toolkit from www.fltk.org\n"
+	     "\t providing a configurator script\n");
+      fflush(stdout);
       rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
       if (access (rpsconf_fltk_config, X_OK))
         {

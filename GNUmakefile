@@ -153,7 +153,7 @@ config: tools/do-configure-refpersys do-scan-refpersys-pkgconfig GNUmakefile
 
 #### the configurator tool
 tools/do-configure-refpersys: tools/do-configure-refpersys.c |GNUmakefile rps-generate-gitid.sh
-	$(REFPERSYS_CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
+	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               -DRPSCONF_OPERSYS=\"$(RPS_OPERSYS)\" \
               -DRPSCONF_ARCH=\"$(RPS_ARCH)\" \
               -DRPSCONF_HOST=\"$(RPS_HOST)\" \
