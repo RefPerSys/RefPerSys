@@ -1855,7 +1855,7 @@ Rps_Loader::set_primitive_type_size_and_align(Rps_ObjectRef primtypob,
     unsigned sizeby, unsigned alignby)
 {
   RPS_ASSERT(primtypob);
-  RPS_ASSERT(primtypob->is_instance_of(RPS_ROOT_OB(_1XswYkom3Jm02YR3Vi))); //cplusplus_primitive_type∈class 
+  RPS_ASSERT(primtypob->is_instance_of(RPS_ROOT_OB(_1XswYkom3Jm02YR3Vi))); //cplusplus_primitive_type∈class
   primtypob->loader_put_attr(this, rpskob_6EsfxShTuwH02waeLE, //!byte_alignment∈named_attribute
                              Rps_Value((intptr_t)sizeby));
   primtypob->loader_put_attr(this, rpskob_8IRzlYX53kN00tC3fG, //!byte_size∈named_attribute
