@@ -809,14 +809,14 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   memset (cmdbuf, 0, sizeof (cmdbuf));
   char *test_so =
     rpsconf_temporary_binary_file ("./tmp_test-libgccjit", ".so", __LINE__);
-  if (access(rpsconf_libgccjit_include_dir, F_OK))
+  if (access (rpsconf_libgccjit_include_dir, F_OK))
     {
     };
   snprintf (cmdbuf, sizeof (cmdbuf),
             "%s -fPIC -g -O -shared -DRPSJIT_GITID='\"%s\"' -I%s do-test-libgccjit.c -o %s -lgccjit",
             cc, rpsconf_gitid,
-            (rpsconf_libgccjit_include_dir?rpsconf_libgccjit_include_dir:"."),
-            test_so);
+            (rpsconf_libgccjit_include_dir ? rpsconf_libgccjit_include_dir :
+             "."), test_so);
   printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
           __FILE__, __LINE__ - 1);
   fflush (NULL);
@@ -1512,7 +1512,7 @@ rpsconf_usage (void)
 
 
 void
-rpsconf_prelude(int argc, char**argv)
+rpsconf_prelude (int argc, char **argv)
 {
 #ifndef RPSCONF_WITHOUT_READLINE
   rl_readline_name = argv[0];
@@ -1523,7 +1523,7 @@ rpsconf_prelude(int argc, char**argv)
   if (argc == 2 && !strcmp (argv[1], "--help"))
     {
       rpsconf_usage ();
-      exit(EXIT_SUCCESS);
+      exit (EXIT_SUCCESS);
     };
   if (argc == 2 && !strcmp (argv[1], "--version"))
     {
@@ -1536,7 +1536,7 @@ rpsconf_prelude(int argc, char**argv)
               (rl_readline_version) >> 8, (rl_readline_version) & 0xff);
 #endif
       fflush (NULL);
-      exit(EXIT_SUCCESS);
+      exit (EXIT_SUCCESS);
     };
   memset (rpsconf_cwd_buf, 0, sizeof (rpsconf_cwd_buf));
   if (!getcwd (rpsconf_cwd_buf, sizeof (rpsconf_cwd_buf)))
@@ -1616,7 +1616,7 @@ rpsconf_prelude(int argc, char**argv)
       if (*pc == '=')
         putenv (curarg);
     };
-} /* end rpsconf_prelude */
+}       /* end rpsconf_prelude */
 
 
 
@@ -1625,7 +1625,7 @@ int
 main (int argc, char **argv)
 {
   rpsconf_prog_name = argv[0];
-  rpsconf_prelude(argc, argv);
+  rpsconf_prelude (argc, argv);
   atexit (rpsconf_remove_files);
   printf ("%s: configurator program for RefPerSys inference engine\n",
           rpsconf_prog_name);
@@ -1656,9 +1656,10 @@ main (int argc, char **argv)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
-  printf("\nThe C and C++ compilers (maybe $CC and $CXX) should be preferably\n"
-         "from gcc.gnu.org (or at least compatible)\n");
-  fflush(NULL);
+  printf
+  ("\nThe C and C++ compilers (maybe $CC and $CXX) should be preferably\n"
+   "from gcc.gnu.org (or at least compatible)\n");
+  fflush (NULL);
   char *cc = getenv ("CC");
   if (!cc)
     {
@@ -1737,9 +1738,9 @@ main (int argc, char **argv)
   rpsconf_fltk_config = getenv ("FLTKCONFIG");
   if (!rpsconf_fltk_config)
     {
-      printf("\nFLTK is a graphical toolkit from www.fltk.org\n"
-             "\t providing a configurator script\n");
-      fflush(stdout);
+      printf ("\nFLTK is a graphical toolkit from www.fltk.org\n"
+              "\t providing a configurator script\n");
+      fflush (stdout);
       rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
       if (access (rpsconf_fltk_config, X_OK))
         {
@@ -1753,36 +1754,35 @@ main (int argc, char **argv)
         }
     }
 
-  if (access("generated/rpsdata.h", R_OK))
+  if (access ("generated/rpsdata.h", R_OK))
     {
       char datapath[RPSCONF_PATH_MAXLEN];
-      memset(datapath, 0, sizeof(datapath));
-      snprintf(datapath, sizeof(datapath)-1,
-               "generated/rpsdata_%s_%s.h",
-               rpsconf_opersys, rpsconf_arch);
-      if (symlink(datapath, "generated/rpsdata.h"))
+      memset (datapath, 0, sizeof (datapath));
+      snprintf (datapath, sizeof (datapath) - 1,
+                "rpsdata_%s_%s.h", rpsconf_opersys, rpsconf_arch);
+      if (symlink (datapath, "generated/rpsdata.h"))
         {
           fprintf (stderr,
                    "%s failed symlink %s to %s : %s [%s:%d]\n",
-                   rpsconf_prog_name,"generated/rpsdata.h",datapath,
+                   rpsconf_prog_name, "generated/rpsdata.h", datapath,
                    strerror (errno), __FILE__, __LINE__ - 3);
           rpsconf_failed = true;
           exit (EXIT_FAILURE);
         };
       if (rpsconf_verbose)
         {
-          printf("%s symlinked %s to %s [%s:%d]\n",
-                 rpsconf_prog_name, "generated/rpsdata.h", datapath,
-                 __FILE__, __LINE__ -2);
+          printf ("%s symlinked %s to %s [%s:%d]\n",
+                  rpsconf_prog_name, "generated/rpsdata.h", datapath,
+                  __FILE__, __LINE__ - 2);
+          fflush (NULL);
         }
     }
   else
     {
       if (rpsconf_verbose)
         {
-          printf("%s accessed generated/rpsdata.h [%s:%d]\n",
-                 rpsconf_prog_name,
-                 __FILE__, __LINE__ -2);
+          printf ("%s accessed generated/rpsdata.h [%s:%d]\n",
+                  rpsconf_prog_name, __FILE__, __LINE__ - 2);
         }
     };
   ///emit file config-refpersys.mk to be included by GNU make
@@ -1790,7 +1790,7 @@ main (int argc, char **argv)
   fprintf (stderr,
            "[%s:%d] perhaps missing code to emit some refpersys-config.h....\n"
            "git %s opersys %s arch %s host %s in %s on %s\n",
-           __FILE__, __LINE__-2,
+           __FILE__, __LINE__ - 2,
            rpsconf_gitid, rpsconf_opersys, rpsconf_arch, rpsconf_host,
            rpsconf_cwd_buf, rpsconf_host_name);
   return 0;
