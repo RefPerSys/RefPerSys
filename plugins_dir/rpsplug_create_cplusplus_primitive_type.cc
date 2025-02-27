@@ -25,15 +25,15 @@ void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-                 Rps_ObjectRef obmutsetclass;
-                 Rps_ObjectRef obsuperclass;
-                 Rps_ObjectRef obcppprimtypclass;
-                 Rps_ObjectRef obcpptype;
-                 Rps_ObjectRef obsymbol;
-                 Rps_Value namestr; // a string
-                 Rps_Value commentstr; // a string
-                 Rps_Value cplusplusstr; // a string
-                 );
+                           Rps_ObjectRef obmutsetclass;
+                           Rps_ObjectRef obsuperclass;
+                           Rps_ObjectRef obcppprimtypclass;
+                           Rps_ObjectRef obcpptype;
+                           Rps_ObjectRef obsymbol;
+                           Rps_Value namestr; // a string
+                           Rps_Value commentstr; // a string
+                           Rps_Value cplusplusstr; // a string
+                );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*comment = rps_get_extra_arg("comment");
   const char*cplusplusname = rps_get_extra_arg("cplusplus");
@@ -63,27 +63,28 @@ rps_do_plugin(const Rps_Plugin* plugin)
     };
   RPS_POSSIBLE_BREAKPOINT();
   _f.obcpptype = Rps_ObjectRef::make_object(&_,
-                                            /*class:*/_f.obcppprimtypclass,
-                                            /*space:*/Rps_ObjectRef::root_space()
-                                            );
+                 /*class:*/_f.obcppprimtypclass,
+                 /*space:*/Rps_ObjectRef::root_space()
+                                           );
   if (comment)
     {
       _f.commentstr = Rps_StringValue(comment);
       _f.obcpptype->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
                              _f.commentstr);
     }
-  if (cplusplusname && isalpha(cplusplusname[0])) {
-    _f.cplusplusstr =  Rps_Value{std::string(cplusplusname)};
-    _f.obcpptype
+  if (cplusplusname && isalpha(cplusplusname[0]))
+    {
+      _f.cplusplusstr =  Rps_Value{std::string(cplusplusname)};
+      _f.obcpptype
       ->put_attr(rpskob_0fx0GtCX90Z03VI9mo, //!cplusplus_name∈named_attribute
-		 _f.cplusplusstr);
-  };
+                 _f.cplusplusstr);
+    };
   _f.namestr = Rps_Value{std::string(plugarg)};
   /// Avoid using below RPS_ROOT_OB(4FBkYDlynyC02QtkfG):"name"∈named_attribute
   /// it was was a mistake.
   _f.obcpptype
-    ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-               _f.namestr);
+  ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+             _f.namestr);
   /* Create a symbol for the new class name. */
   _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gusymbol(*(_f.obsymbol->objmtxptr()));
@@ -94,7 +95,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                          _f.obsymbol);
   rps_add_constant_object(&_, _f.obcpptype);
   RPS_INFORMOUT("rpsplug_create_cplusplus_code_class added new object " << std::endl
-		<< RPS_OBJECT_DISPLAY(_f.obcpptype) << std::endl
+                << RPS_OBJECT_DISPLAY(_f.obcpptype) << std::endl
                 << " named " << plugarg << " of class "
                 << _f.obcppprimtypclass << " and symbol " << _f.obsymbol
                 << " in space " << _f.obcpptype->get_space());
