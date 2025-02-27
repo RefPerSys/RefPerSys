@@ -1753,7 +1753,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (!access("generated/rpsdata.h", R_OK))
+  if (access("generated/rpsdata.h", R_OK))
     {
       char datapath[RPSCONF_PATH_MAXLEN];
       memset(datapath, 0, sizeof(datapath));
@@ -1773,6 +1773,15 @@ main (int argc, char **argv)
         {
           printf("%s symlinked %s to %s [%s:%d]\n",
                  rpsconf_prog_name, "generated/rpsdata.h", datapath,
+                 __FILE__, __LINE__ -2);
+        }
+    }
+  else
+    {
+      if (rpsconf_verbose)
+        {
+          printf("%s accessed generated/rpsdata.h [%s:%d]\n",
+                 rpsconf_prog_name,
                  __FILE__, __LINE__ -2);
         }
     };
