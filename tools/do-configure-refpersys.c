@@ -809,13 +809,14 @@ rpsconf_test_libgccjit_compilation (const char *cc)
   memset (cmdbuf, 0, sizeof (cmdbuf));
   char *test_so =
     rpsconf_temporary_binary_file ("./tmp_test-libgccjit", ".so", __LINE__);
-  if (access(rpsconf_libgccjit_include_dir, F_OK)) {
-  };
+  if (access(rpsconf_libgccjit_include_dir, F_OK))
+    {
+    };
   snprintf (cmdbuf, sizeof (cmdbuf),
             "%s -fPIC -g -O -shared -DRPSJIT_GITID='\"%s\"' -I%s do-test-libgccjit.c -o %s -lgccjit",
             cc, rpsconf_gitid,
-	    (rpsconf_libgccjit_include_dir?rpsconf_libgccjit_include_dir:"."),
-	    test_so);
+            (rpsconf_libgccjit_include_dir?rpsconf_libgccjit_include_dir:"."),
+            test_so);
   printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
           __FILE__, __LINE__ - 1);
   fflush (NULL);
@@ -1510,11 +1511,9 @@ rpsconf_usage (void)
 }       /* end rpsconf_usage */
 
 
-
-int
-main (int argc, char **argv)
+void
+rpsconf_prelude(int argc, char**argv)
 {
-  rpsconf_prog_name = argv[0];
 #ifndef RPSCONF_WITHOUT_READLINE
   rl_readline_name = argv[0];
   rl_initialize ();
@@ -1524,7 +1523,7 @@ main (int argc, char **argv)
   if (argc == 2 && !strcmp (argv[1], "--help"))
     {
       rpsconf_usage ();
-      return 0;
+      exit(EXIT_SUCCESS);
     };
   if (argc == 2 && !strcmp (argv[1], "--version"))
     {
@@ -1537,6 +1536,7 @@ main (int argc, char **argv)
               (rl_readline_version) >> 8, (rl_readline_version) & 0xff);
 #endif
       fflush (NULL);
+      exit(EXIT_SUCCESS);
     };
   memset (rpsconf_cwd_buf, 0, sizeof (rpsconf_cwd_buf));
   if (!getcwd (rpsconf_cwd_buf, sizeof (rpsconf_cwd_buf)))
@@ -1561,37 +1561,6 @@ main (int argc, char **argv)
       fprintf (stderr,
                "%s failed too long current working directory %s [%s:%d]\n",
                rpsconf_prog_name, rpsconf_cwd_buf, __FILE__, __LINE__ - 1);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    };
-
-  atexit (rpsconf_remove_files);
-  printf ("%s: configurator program for RefPerSys inference engine\n",
-          rpsconf_prog_name);
-  printf ("%s: [FRENCH] programme de configuration du\n"  //
-          "\t moteur d'inférences RefPerSys\n", rpsconf_prog_name);
-  printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
-  printf ("\t   REFlexive PERsistent SYStem\n");
-  printf ("\t Contact: Basile STARYNKEVITCH,\n" //
-          "\t 8 rue de la Faïencerie,\n" //
-          "\t 92340 Bourg-la-Reine\n" //
-          "\t (France)\n");
-  fflush (NULL);
-  printf ("%s: when asked for a file path, you can run a shell command ...\n"
-          "... if your input starts with an exclamation point\n",
-          rpsconf_prog_name);
-  printf
-  ("\t When asked for file paths, you are expected to enter an absolute one,\n"
-   "\t for example /etc/passwd\n"
-   "\t if you enter something starting with ! it is a shell command\n"
-   "\t which is run and the question is repeated.\n");
-  fflush (NULL);
-  if (argc > RPSCONF_MAX_PROG_ARGS)
-    {
-      fprintf (stderr,
-               "%s (from C file %s) limits RPSCONF_MAX_PROG_ARGS to %d\n"
-               "... but %d are given! Edit it and recompile!\n",
-               argv[0], __FILE__, RPSCONF_MAX_PROG_ARGS, argc);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1647,6 +1616,49 @@ main (int argc, char **argv)
       if (*pc == '=')
         putenv (curarg);
     };
+} /* end rpsconf_prelude */
+
+
+
+
+int
+main (int argc, char **argv)
+{
+  rpsconf_prog_name = argv[0];
+  rpsconf_prelude(argc, argv);
+  atexit (rpsconf_remove_files);
+  printf ("%s: configurator program for RefPerSys inference engine\n",
+          rpsconf_prog_name);
+  printf ("%s: [FRENCH]\n\t programme de configuration du\n"  //
+          "\t moteur d'inférences RefPerSys\n", rpsconf_prog_name);
+  printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
+  printf ("\t   REFlexive PERsistent SYStem\n");
+  printf ("\t Contact: Basile STARYNKEVITCH,\n" //
+          "\t 8 rue de la Faïencerie,\n" //
+          "\t 92340 Bourg-la-Reine\n" //
+          "\t (France)\n");
+  fflush (NULL);
+  printf ("%s: when asked for a file path, you can run a shell command ...\n"
+          "... if your input starts with an exclamation point\n",
+          rpsconf_prog_name);
+  printf
+  ("\t When asked for file paths, you are expected to enter an absolute one,\n"
+   "\t for example /etc/passwd\n"
+   "\t if you enter something starting with ! it is a shell command\n"
+   "\t which is run and the question is repeated.\n");
+  fflush (NULL);
+  if (argc > RPSCONF_MAX_PROG_ARGS)
+    {
+      fprintf (stderr,
+               "%s (from C file %s) limits RPSCONF_MAX_PROG_ARGS to %d\n"
+               "... but %d are given! Edit it and recompile!\n",
+               argv[0], __FILE__, RPSCONF_MAX_PROG_ARGS, argc);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  printf("\nThe C and C++ compilers (maybe $CC and $CXX) should be preferably\n"
+         "from gcc.gnu.org (or at least compatible)\n");
+  fflush(NULL);
   char *cc = getenv ("CC");
   if (!cc)
     {
@@ -1726,7 +1738,7 @@ main (int argc, char **argv)
   if (!rpsconf_fltk_config)
     {
       printf("\nFLTK is a graphical toolkit from www.fltk.org\n"
-	     "\t providing a configurator script\n");
+             "\t providing a configurator script\n");
       fflush(stdout);
       rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
       if (access (rpsconf_fltk_config, X_OK))
@@ -1740,16 +1752,50 @@ main (int argc, char **argv)
           exit (EXIT_FAILURE);
         }
     }
+
+  if (!access("generated/rpsdata.h", R_OK))
+    {
+      char datapath[RPSCONF_PATH_MAXLEN];
+      memset(datapath, 0, sizeof(datapath));
+      snprintf(datapath, sizeof(datapath)-1,
+               "generated/rpsdata_%s_%s.h",
+               rpsconf_opersys, rpsconf_arch);
+      if (symlink(datapath, "generated/rpsdata.h"))
+        {
+          fprintf (stderr,
+                   "%s failed symlink %s to %s : %s [%s:%d]\n",
+                   rpsconf_prog_name,"generated/rpsdata.h",datapath,
+                   strerror (errno), __FILE__, __LINE__ - 3);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
+      if (rpsconf_verbose)
+        {
+          printf("%s symlinked %s to %s [%s:%d]\n",
+                 rpsconf_prog_name, "generated/rpsdata.h", datapath,
+                 __FILE__, __LINE__ -2);
+        }
+    };
   ///emit file config-refpersys.mk to be included by GNU make
   rpsconf_emit_configure_refpersys_mk ();
   fprintf (stderr,
-           "[%s:%d] perhaps missing code to emit some refpersys-config.h....\n",
-           __FILE__, __LINE__);
+           "[%s:%d] perhaps missing code to emit some refpersys-config.h....\n"
+           "git %s opersys %s arch %s host %s in %s on %s\n",
+           __FILE__, __LINE__-2,
+           rpsconf_gitid, rpsconf_opersys, rpsconf_arch, rpsconf_host,
+           rpsconf_cwd_buf, rpsconf_host_name);
   return 0;
 #warning TODO perhaps we should emit also a refpersys-config.h file
   /// that hypothetical refpersys-config.h would be included by refpersys.hh
 }       /* end main */
 
+
+
+
+
+
+
+////////////////////////////////
 /*
  * Helper Functions
  */
