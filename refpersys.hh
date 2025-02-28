@@ -398,9 +398,6 @@ extern "C" const char rps_gpp_preprocessor_command[];
 extern "C" const char rps_gpp_preprocessor_realpath[];
 extern "C" const char rps_gpp_preprocessor_version[];
 
-/// the ninja builder command, perhaps useless in 2025, from ninja-build.org
-extern "C" const char rps_ninja_builder[];
-extern "C" const char rps_ninja_version[];
 
 extern "C" const char rps_plugin_builder[];
 
