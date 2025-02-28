@@ -1,3 +1,4 @@
+
 #!/usr/bin/gmake
 ## SPDX-License-Identifier: GPL-3.0-or-later
 ## Description:
@@ -52,6 +53,7 @@ RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
         print-gmake-features \
+        one-plugin \
         lto-refpersys \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
@@ -253,6 +255,9 @@ refpersys: objects |  GNUmakefile
 plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	@printf "\n\n making plugins desired basenames=%s\n" "$(REFPERSYS_DESIRED_PLUGIN_BASENAMES)"
 	+$(MAKE) $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES))
+
+one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
+	$(warning one-plugin incomplete)
 
 plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
