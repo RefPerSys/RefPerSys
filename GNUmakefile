@@ -1,4 +1,3 @@
-
 #!/usr/bin/gmake
 ## SPDX-License-Identifier: GPL-3.0-or-later
 ## Description:
@@ -256,8 +255,30 @@ plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	@printf "\n\n making plugins desired basenames=%s\n" "$(REFPERSYS_DESIRED_PLUGIN_BASENAMES)"
 	+$(MAKE) $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES))
 
+define RPS_GUILE_SCRIPT
+;; Scheme function for GUILE
+(define (rpsguilemk-compile-plugin cppsrc plugobj)
+;; temporary guile code
+;; cppsrc is the C++ source file of the plugin
+;; plugobj is the generated shared object
+(display cppsrc)
+(newline)
+(display plugob)
+(newline)
+)
+
+endef
+$(guile $(RPS_GUILE_SCRIPT))
+
 one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	$(warning one-plugin incomplete)
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $(REFPERSYS_PLUGIN_SOURCE) -o $(REFPERSYS_PLUGIN_SHARED_OBJECT)
 
 plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
@@ -319,6 +340,10 @@ plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  refpersys
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
 	    $^ -o $@
+
+plugins_dir/rpsplug_simpinterp1.so:  plugins_dir/rpsplug_simpinterp.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
+	@printf "\n\nRefPerSys-gnumake dobuilding special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	./do-build-refpersys-plugin -v "$<" -o "$@"
 
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
