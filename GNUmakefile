@@ -257,21 +257,23 @@ plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 
 define RPS_GUILE_SCRIPT
 ;; Scheme function for GUILE
+;; www.gnu.org/software/guile/manual/html_node/
+(use-modules (ice-9 textual-ports))
+(use-modules (ice-9 format))
+(define rpsg-stdout (current-output-port))
 (define (rpsguilemk-compile-plugin cppsrc plugobj)
 ;; temporary guile code
 ;; cppsrc is the C++ source file of the plugin
 ;; plugobj is the generated shared object
-(display cppsrc)
-(newline)
-(display plugob)
-(newline)
+(format #t "rpsguilemk-compile-plugin cppsrc=~S plugob=~S\n"
+               cppsrc plugobj)
 )
 
 endef
 $(guile $(RPS_GUILE_SCRIPT))
 
 one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
-	$(warning one-plugin incomplete)
+	$(guile rpsguilemk-compile-plugin $(REFPERSYS_PLUGIN_SOURCE) $(REFPERSYS_PLUGIN_SHARED_OBJECT))
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
