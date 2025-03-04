@@ -22,11 +22,13 @@ rpscplusplustype(Rps_CallFrame*callframe, const char*obid, const char*cppname)
 		 );
   _f.obty = Rps_ObjectRef::find_object_or_fail_by_string(&_, obid);
   _f.str = Rps_Value(std::string(cppname));
-  RPS_ASSERT(_f.obty->is_instance_of( _f.obty,		
-				      RPS_ROOT_OB(_1XswYkom3Jm02YR3Vi))); /*cplusplus_primitive_type∈class*/;
-  _f.obty							
-    ->put_attr(rpskob_0fx0GtCX90Z03VI9mo, /*!cplusplus_name∈named_attribute*/	
-	       _f.str);						
+  RPS_ASSERT(_f.obty->is_instance_of(RPS_ROOT_OB(_1XswYkom3Jm02YR3Vi))); /*cplusplus_primitive_type∈class*/;
+  if (_f.obty->get_physical_attr(rpskob_0fx0GtCX90Z03VI9mo /*!cplusplus_name∈named_attribute*/	))
+    RPS_WARNOUT("already filled obty: " << RPS_OBJECT_DISPLAY(_f.obty));
+  else 
+    _f.obty							
+      ->put_attr(rpskob_0fx0GtCX90Z03VI9mo, /*!cplusplus_name∈named_attribute*/	
+		 _f.str);						
   RPS_INFORMOUT("updated" << std::endl << RPS_OBJECT_DISPLAY(_f.obty) 
 		<< std::endl);
 } // end rpscplusplustype
@@ -57,6 +59,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; make one-plugin REFPERSYS_PLUGIN_SOURCE=plugins_dir/rpsplug_cplusplustypes.cc REFPERSYS_PLUGIN_SHARED_OBJECT=plugins_dir/rpsplug_cplusplustypes.so"
+ ** compile-command: "cd ..; gmake one-plugin REFPERSYS_PLUGIN_SOURCE=plugins_dir/rpsplug_cplusplustypes.cc REFPERSYS_PLUGIN_SHARED_OBJECT=plugins_dir/rpsplug_cplusplustypes.so; /bin/ln -svf plugins_dir/rpsplug_cplusplustypes.so /tmp" ;;
  ** End: ;;
  *****************/

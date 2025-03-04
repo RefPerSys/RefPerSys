@@ -292,6 +292,16 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
 	    $^ -o $@
 
+plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  refpersys.hh  |GNUmakefile refpersys
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $^ -o $@
+
 plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
