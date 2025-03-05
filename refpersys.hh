@@ -5882,13 +5882,15 @@ public:
   /// return a string, a number, a Json which gets written on the
   /// pipe.
   const Rps_ClosureValue get_input_closure(void) const;
-  // set the input closure, should be called before forking.
+  // set the input closure, should be called before forking ie before
+  // start_process
   void put_input_closure(Rps_ClosureValue);
   /// the output closure is called when the process give some output on
   /// its stdout, which is then some pipe(2). The closure is given the
   /// owner of the Rps_PayloadUnixProcess as argument
   const Rps_ClosureValue get_output_closure(void) const;
-  // set the input closure, should be called before forking.
+  // set the output closure, should be called before forking ie before
+  // start_process.
   void put_output_closure(Rps_ClosureValue);
 #warning missing member functions related to output pipe...
   /// fork the process
