@@ -710,6 +710,26 @@ Rps_PayloadObjMap::put_obmap(Rps_ObjectRef obkey, Rps_Value val)
 } // end Rps_PayloadObjMap::put_obmap
 
 void
+Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  int nbobjmap = (int) obm_map.size();
+  std::vector<Rps_ObjectRef> attrvect(nbobjmap);
+  for (auto it : obm_map)
+    attrvect.push_back(it.first);
+  rps_sort_object_vector_for_display(attrvect);
+#warning Rps_PayloadObjMap::output_payload incomplete
+} // end Rps_PayloadObjMap::output_payload
+
+void
 rpsldpy_objmap(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
