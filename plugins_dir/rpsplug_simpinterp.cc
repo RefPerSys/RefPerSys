@@ -53,13 +53,14 @@ rps_do_plugin(const Rps_Plugin*plugin)
       RPS_FATALOUT("failure: plugin "  << plugin->plugin_name
                    << " cannot stat script argument " << plugarg
                    << ":" << strerror(errno));
-    if ((plugstat.st_mode & S_IFMT) != S_IFREG) {
-      RPS_WARNOUT("failure: plugin " <<  plugin->plugin_name
-                   << " script argument " << plugarg
-		  << " not a regular file" << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "simple interpreter"));
-      return;
-    };
+    if ((plugstat.st_mode & S_IFMT) != S_IFREG)
+      {
+        RPS_WARNOUT("failure: plugin " <<  plugin->plugin_name
+                    << " script argument " << plugarg
+                    << " not a regular file" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "simple interpreter"));
+        return;
+      };
   }
   Rps_MemoryFileTokenSource toksrc(plugarg);
   RPS_WARNOUT("missing code:  plugin " <<  plugin->plugin_name
