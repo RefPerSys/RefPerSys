@@ -253,7 +253,7 @@ Rps_PayloadLightningCodeGen::output_payload(std::ostream&out, unsigned depth, un
   const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
-  out << BOLD_esc << "* GNU lighning code generator for "
+  out << BOLD_esc << "* GNU lightning code generator for "
       << lightg_num2nod_map.size() << " nodes*"
       << NORM_esc << std::endl;
 } // end Rps_PayloadLightningCodeGen::output_payload
