@@ -197,6 +197,14 @@ clean-plugins:
 	$(RM) -v plugins_dir/*.so
 	$(RM) -v plugins_dir/_*
 	$(RM) -v _rpsplug* */_rpsplug*
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.gv
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.hh
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.cc
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.html
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.output
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.xml
+
+	$(RM) -v plugins_dir/location.hh
 
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
@@ -343,7 +351,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
 	    $^ -o $@
 
-plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  refpersys.hh  |GNUmakefile refpersys
+plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  plugins_dir/rpsplug_synsimpinterp.cc refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
@@ -351,11 +359,8 @@ plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  refpersys
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
-	    $^ -o $@
+	    plugins_dir/rpsplug_simpinterp.cc  plugins_dir/rpsplug_synsimpinterp.cc -o $@
 
-plugins_dir/rpsplug_simpinterp1.so:  plugins_dir/rpsplug_simpinterp.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
-	@printf "\n\nRefPerSys-gnumake dobuilding special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	./do-build-refpersys-plugin -v "$<" -o "$@"
 
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
@@ -365,7 +370,9 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUma
 	/usr/bin/printenv
 	./do-build-refpersys-plugin -v $< -o $@
 
-
+ plugins_dir/rpsplug_synsimpinterp.cc:  plugins_dir/rpsplug_synsimpinterp.yy |GNUmakefile
+	$(RPS_BISON)  --language=c++ -Dapi.prefix=rpsyn   --locations --debug \
+                      --header --graph   --html  --verbose $< -o $@
 ################################# obsolete stuff
 #plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 #	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
