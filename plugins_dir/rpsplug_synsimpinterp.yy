@@ -9,32 +9,15 @@
  *      team@refpersys.org & http://refpersys.org/
  * 
  **/
-%require "3.7"
-%language "c++"
-
-%define api.value.type {Rps_Value}
-%define api.symbol.prefix {RPS_SYNPARSYMB_}
-%define api.token.prefix {RPS_SYNPARSTOKEN_}
-%{
-//// prologue from plugins_dir/rpsplug_synsimpinterp.yy
-#define _GNU_SOURCE
-#pragma GCC message "prologue of rpsplug_synsimpinterp.yy"
-#include "refpersys.hh"
-%}
-
-
-%code requires // header file
-{
-/* generated header from plugins_dir/rpsplug_synsimpinterp.yy */
-#pragma GCC message "header of rpsplug_synsimpinterp.yy"
-}
-
-
-%code  // code file
-{
-/* generated code from plugins_dir/rpsplug_synsimpinterp.yy */
-#pragma GCC message "code of rpsplug_synsimpinterp.yy"
-}
+%filenames _rpsplug_synsimpterp
+%baseclass-preinclude "refpersys.hh"
+%debug
+%default-actions warn
+%class-name RpsSyn_Parser
+%error-verbose
+%print-tokens
+%required-tokens 2
+%thread-safe
 
 
 

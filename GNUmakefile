@@ -204,8 +204,8 @@ clean-plugins:
 	$(RM) -v plugins_dir/rpsplug_synsimpinterp.html
 	$(RM) -v plugins_dir/rpsplug_synsimpinterp.output
 	$(RM) -v plugins_dir/rpsplug_synsimpinterp.xml
-
 	$(RM) -v plugins_dir/location.hh
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.yy.output
 
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
