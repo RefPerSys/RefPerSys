@@ -375,7 +375,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUma
 	$(RPS_BISONCPP)  --verbose  --show-filenames \
                  --thread-safe \
                  --skeleton-directory=plugins_dir/bisonc++-skeletons/ \
-              $< -o $@
+              $<
 ################################# obsolete stuff
 #plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 #	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
