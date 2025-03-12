@@ -1,0 +1,8 @@
+#pragma message "RefPerSys bisonc++ lex.in"
+inline int \@::lex()
+{
+@printtokens
+    print();
+@end
+    return \@tokenfunction;
+}

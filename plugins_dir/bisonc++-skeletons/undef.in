@@ -1,0 +1,8 @@
+#undef \@
+#pragma message "RefPerSys bisonc++ undef.in"
+    // CAVEAT: between the baseclass-include directive and the 
+    // #undef directive in the previous line references to \@ 
+    // are read as \@Base.
+    // If you need to include additional headers in this file 
+    // you should do so after these comment-lines.
+

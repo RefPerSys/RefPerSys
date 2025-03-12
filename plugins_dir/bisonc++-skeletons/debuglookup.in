@@ -1,0 +1,15 @@
+#pragma message "RefPerSys bisonc++ debuglookup.in"
+if (d_debug_)
+{
+    s_out_ <<  "encountered " << symbol_(token_()) << " in state " <<
+                state_() << ": ";
+
+    if (action < 0)             // a reduction was found
+        s_out_ << ": reducing by rule " << -action;
+    else if (action == 0)
+        s_out_ <<  "ACCEPT";
+    else
+        s_out_ <<  "next state: " << action;
+
+    s_out_ << '\n' << dflush_;
+}

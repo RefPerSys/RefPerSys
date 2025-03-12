@@ -1,0 +1,15 @@
+#pragma message "RefPerSys bisonc++ ltype.in"
+@ltype
+\@ltype
+@else
+struct LTYPE_
+{
+    int timestamp;
+    int first_line;
+    int first_column;
+    int last_line;
+    int last_column;
+    char *text;
+};
+@end
+

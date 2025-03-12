@@ -1,0 +1,7 @@
+#pragma message "RefPerSys bisonc++ debugdecl.in"
+static std::ostringstream s_out_;
+
+std::string symbol_(int value) const;
+std::string stype_(char const *pre, STYPE_ const &semVal,
+                    char const *post = "") const;
+static std::ostream &dflush_(std::ostream &out);

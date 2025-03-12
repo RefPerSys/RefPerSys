@@ -1,0 +1,35 @@
+    // Include this file in the sources of the class \@.
+#pragma message  "RefPerSys bisonc++ bisonc++.ih"
+$insert class.h
+
+$insert namespace-open
+
+inline void \@::error()
+{
+    std::cerr << "Syntax error\n";
+}
+
+$insert lex
+
+inline void \@::print()         
+{
+}
+
+inline void \@::exceptionHandler(std::exception const &exc)         
+{
+    throw;              // re-implement to handle exceptions thrown by actions
+}
+
+$insert namespace-close
+
+    // Add here includes that are only required for the compilation 
+    // of \@'s sources.
+
+
+$insert namespace-use
+
+    // UN-comment the next using-declaration if you want to use
+    // int \@'s sources symbols from the namespace std without
+    // specifying std::
+
+//using namespace std;
