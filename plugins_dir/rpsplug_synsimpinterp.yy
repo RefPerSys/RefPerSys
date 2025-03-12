@@ -3,7 +3,7 @@
  *
  * File plugins_dir/rpsplug_synsimpinterp.yy for RefPerSys (C++) ; see refpersys.org;
  *
- * To be processed by GNU bison.
+ * To be processed by bisonc++ from https://fbb-git.gitlab.io/bisoncpp/ by Frank B.Brokken
  *
  *      © Copyright 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -62,6 +62,6 @@ simple: INTEGER {
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; make plugins_dir/rpsplug_simpinterp.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_createnamedselector.so /tmp/" ;;
+ ** compile-command: "cd ..; make plugins_dir/rpsplug_simpinterp.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_simpinterp.so /tmp/" ;;
  ** End: ;;
  ****************/
