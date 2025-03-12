@@ -37,6 +37,7 @@ RPS_GIT_ID:= $(shell ./rps-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./rps-generate-gitid.sh -s)
 RPS_MAKE:= $(MAKE)
 RPS_BISON := /usr/bin/bison
+RPS_BISONCPP := /usr/bin/bisonc++
 RPS_HOST := $(shell /bin/hostname -f)
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
@@ -371,8 +372,10 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUma
 	./do-build-refpersys-plugin -v $< -o $@
 
  plugins_dir/rpsplug_synsimpinterp.cc:  plugins_dir/rpsplug_synsimpinterp.yy |GNUmakefile
-	$(RPS_BISON)  --language=c++ -Dapi.prefix=rpsyn   --locations --debug \
-                      --header --graph   --html  --verbose $< -o $@
+	$(RPS_BISONCPP)  --verbose  --show-filenames \
+                 --thread-safe \
+                 --skeleton-directory=plugins_dir/bisonc++-skeletons/ \
+              $< -o $@
 ################################# obsolete stuff
 #plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 #	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
