@@ -18,7 +18,7 @@
 %print-tokens
 %required-tokens 2
 %thread-safe
-
+%parsefun-source _rpsplug_synsimpterp_parser_.cc
 
 
 %token END_OF_INPUT;
