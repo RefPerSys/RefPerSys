@@ -352,7 +352,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
 	    $^ -o $@
 
-plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_.cc refpersys.hh  |GNUmakefile refpersys
+plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
@@ -360,7 +360,7 @@ plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  _rpsplug_
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
-	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_.cc -o $@
+	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc -o $@
 
 
 plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
@@ -371,7 +371,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUma
 	/usr/bin/printenv
 	./do-build-refpersys-plugin -v $< -o $@
 
- _rpsplug_synsimpinterp_.cc:  plugins_dir/rpsplug_synsimpinterp.yy |GNUmakefile
+ _rpsplug_synsimpinterp_parser_.cc:  plugins_dir/rpsplug_synsimpinterp.yy |GNUmakefile
 	$(RPS_BISONCPP)  --verbose  --show-filenames \
                  --thread-safe \
                  --skeleton-directory=plugins_dir/bisonc++-skeletons/ \
