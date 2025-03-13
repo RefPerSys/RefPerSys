@@ -9,7 +9,7 @@
  *      team@refpersys.org & http://refpersys.org/
  * 
  **/
-%filenames _rpsplug_synsimpterp
+%filenames _rpsplug_synsimpterp_
 %baseclass-preinclude "refpersys.hh"
 %debug
 %default-actions warn
@@ -21,7 +21,7 @@
 
 
 
-%token END_OF_INPUT 0;
+%token END_OF_INPUT;
 
 %token LEFT_BRACE RIGHT_BRACE
 
@@ -39,7 +39,7 @@
 simple: INTEGER {
 };
 
-%%
+
 
 /* epilogue from  plugins_dir/rpsplug_synsimpinterp.yy */
 /****************
