@@ -1,4 +1,4 @@
-#pragma message "RefPerSys bisonc++ print.in"
+#pragma message "RefPerSys bisonc++ print.in matchedtextfunction= \@matchedtextfunction"
 std::cout << "Token: " << symbol_(token_()) << ", text: `";
 if (token_() == Reserved_::UNDETERMINED_)
     std::cout << "'\n";
