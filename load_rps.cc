@@ -865,9 +865,14 @@ Rps_Loader::load_all_state_files(void)
   initialize_root_objects();
   for (Rps_Id spacid: ld_spaceset)
     {
-      if (spacid != initialspaceid)
+      if (spacid != initialspaceid) {
+	char spacbuf[32];
+	memset (spacbuf, 0, sizeof(spacbuf));
+	spacid.to_cbuf24(spacbuf);
         first_pass_space(spacid);
-      spacecnt1++;
+	spacecnt1++;
+	RPS_INFORM("%s loaded extra space#%d %s", thisprog, spacecnt1, spacbuf);
+      }
     }
   RPS_INFORM("%s loaded %d space files in first pass", thisprog, spacecnt1);
   initialize_constant_objects();
@@ -880,6 +885,7 @@ Rps_Loader::load_all_state_files(void)
       run_some_todo_functions();
       second_pass_space(spacid);
       spacecnt2++;
+      usleep(30);
     }
   while (run_some_todo_functions()>0)
     {
