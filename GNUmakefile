@@ -264,6 +264,8 @@ refpersys: objects |  GNUmakefile
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	@/bin/rm -vf __timestamp.o
 
+
+
 %.ii: %.cc | refpersys.hh GNUmakefile
 
 plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
@@ -377,12 +379,17 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUma
 	/usr/bin/printenv
 	./do-build-refpersys-plugin -v $< -o $@
 
- _rpsplug_synsimpinterp_parser_.cc:  plugins_dir/rpsplug_synsimpinterp.yy |GNUmakefile
-	$(RPS_BISONCPP)  --verbose  --show-filenames \
-                 --thread-safe \
-                 --skeleton-directory=plugins_dir/bisonc++-skeletons/ \
-              $<
+
 ################################# obsolete stuff
+# _rpsplug_synsimpinterp_parser_.cc:  plugins_dir/rpsplug_synsimpinterp.yy |GNUmakefile
+#	$(RPS_BISONCPP)  --verbose  --show-filenames \
+#                 --thread-safe \
+#                 --skeleton-directory=plugins_dir/bisonc++-skeletons/ \
+#              $<
+
+
+
+
 #plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 #	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 #	$(REFPERSYS_GPP) -x -I generated/ -I . \
@@ -449,6 +456,14 @@ load_rps.o: load_rps.cc refpersys.hh \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -c -o $@ $<
 	$(SYNC)
+
+_gramrepl_rps.cc : gramrepl_rps.yy
+	$(RPS_BISON) --verbose --debug --language=c++ --file-prefix=_ \
+                     --report=all --report-file=_gramrepl_rps.txt \
+                     --html=_gramrepl_rps.html \
+                     --header=_gramrepl_rps.hh \
+                     --output=$@ $^
+
 
 %_rps.o: %_rps.cc refpersys.hh
 	echo dollar-less-F is $(<F)
