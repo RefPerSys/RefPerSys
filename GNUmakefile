@@ -187,6 +187,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
+	$(RM) -v _gramrepl_rps.*
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
@@ -457,12 +458,12 @@ load_rps.o: load_rps.cc refpersys.hh \
 	       -c -o $@ $<
 	$(SYNC)
 
-_gramrepl_rps.cc : gramrepl_rps.yy
+_gramrepl_rps.cc : gramrepl_rps.yy |GNUmakefile
 	$(RPS_BISON) --verbose --debug --language=c++ --file-prefix=_ \
                      --report=all --report-file=_gramrepl_rps.txt \
                      --html=_gramrepl_rps.html \
                      --header=_gramrepl_rps.hh \
-                     --output=$@ $^
+                     --output=$@ $^ --no-lines
 
 
 %_rps.o: %_rps.cc refpersys.hh
