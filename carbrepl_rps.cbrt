@@ -1,0 +1,46 @@
+/****************************************************************
+ * file carbrepl_rps.cbrt
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Description:
+ *      This file is part of the Reflective Persistent System.
+ *      It is almost its Carburetta grammar
+ *      see https://carburetta.com/
+ *
+ * Author(s):
+ *      Basile Starynkevitch, France   <basile@starynkevitch.net>
+ *
+ *      © Copyright 2025 The Reflective Persistent System Team
+ *      team@refpersys.org & http://refpersys.org/
+ *
+ * License: GPLv3+ (file COPYING-GPLv3)
+ *    This software is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version. NO WARRANTY
+ ****************************************************************/
+
+%header%
+#pragma message "header part of carbrepl_rps.cbrt"
+#include "refpersys.hh"
+%%
+
+%prefix rpscarbrepl_
+%token INT 
+//%type DOUBLE: double
+//%type STRING: std::string
+//%type OID: Rps_Id
+
+%grammar%
+%nt repl_atom
+%type repl_atom: RpsValue
+%type INT: intptr_t
+%params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
+%destructor /* destructing common */ $$ = nullptr;
+repl_atom: INT {
+_Pragma(message, "repl_atom as INT in carbrepl_rps.cbrt");
+  $$ = Rps_Value::make_tagged_int($1);
+}
+%%
+
+#pragma message "trailer of carbrepl_rps.cbrt"

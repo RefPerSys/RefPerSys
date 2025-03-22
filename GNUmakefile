@@ -188,6 +188,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
 #	$(RM) -v _gramrepl_rps.*
+	$(RM) -v _carbrepl_rps.*
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
@@ -199,6 +200,14 @@ clean: clean-plugins
 	$(RM) core*
 	$(RM) Make-dependencies/__*
 
+_bispprepl_rps.cc _bispprepl_rps.hh: bispprepl_rps.yyp |GNUmakefile
+	$(RPS_BISONCPP) --verbose --thread-safe --show-filenames \
+              --baseclass-preinclude=refpersys.hh \
+               $^
+
+
+_carbrepl_rps.cc _carbrepl_rps.hh: carbrepl_rps.cbrt
+	$(RPS_CARBURETTA) --c _carbrepl_rps.cc $^
 
 clean-plugins:
 	$(RM) -v plugins_dir/*.o
