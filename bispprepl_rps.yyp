@@ -1,0 +1,37 @@
+// file RefPerSys/bispprepl_rps.yyp input to bisonc++
+// SPDX-License-Identifier: GPL-3.0-or-later
+// see https://fbb-git.gitlab.io/bisoncpp/ and refpersys.org
+%default-actions warn
+%baseclass-preinclude "refpersys.hh"
+%error-verbose
+%no-lines
+%print-tokens
+// parser class
+%class-name RpsBisPpRepl_Parser
+%filenames _bispprepl_rps
+%debug
+%start repl_atom
+
+%token<intptr_t>  TOK_INT                  // integral numbers
+%token<double> TOK_DOUBLE
+%token<Rps_Oid>  TOK_OID
+%token<std::string>  TOK_STRING
+
+%%
+/// grammar rules below
+repl_atom: TOK_INT {
+#pragma message "repl_atom is TOK_INT"
+  $$ = Rps_Value::make_tagged_int($1);
+}
+
+         | TOK_DOUBLE {
+#pragma message "repl_atom is TOK_DOUBLE"
+  $$ = Rps_DoubleValue($1);
+};
+
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** compile-command: "make bispprepl_rps.o" ;;
+ ** End: ;;
+ ****************/
