@@ -15,11 +15,15 @@
 %debug
 %start repl_atom
 
-%token<intptr_t>  TOK_INT                  // integral numbers
-%token<double> TOK_DOUBLE
-%token<Rps_Oid>  TOK_OID
-%token<std::string>  TOK_STRING
+%token  TOK_INT                  // integral numbers
+%token  TOK_DOUBLE
+%token  TOK_OID
+%token  TOK_STRING
 
+%polymorphic TOK_INT: intptr_t;
+             TOK_DOUBLE: double;
+	     TOK_OID: Rps_Id;
+	     TOK_STRING: std::string;
 %%
 /// grammar rules below
 repl_atom: TOK_INT {
@@ -30,11 +34,23 @@ repl_atom: TOK_INT {
          | TOK_DOUBLE {
 #pragma message "repl_atom is TOK_DOUBLE"
   $$ = Rps_DoubleValue($1);
-};
+}
+
+         | TOK_STRING {
+#pragma message "repl_atom is TOK_STRING"
+  $$ = Rps_StringValue($1);
+}
+
+         | TOK_OID {
+#pragma message "repl_atom is TOK_OID"
+  $$ = Rps_ObjectValue(Rps_ObjectRef::really_find_object_by_oid($1));
+}
+
+         ;
 
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "make bispprepl_rps.o" ;;
+ ** compile-command: "make _bispprepl_rps.o" ;;
  ** End: ;;
  ****************/
