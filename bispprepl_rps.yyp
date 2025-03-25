@@ -1,6 +1,9 @@
 // file RefPerSys/bispprepl_rps.yyp input to bisonc++
 // SPDX-License-Identifier: GPL-3.0-or-later
 // see https://fbb-git.gitlab.io/bisoncpp/ and refpersys.org
+//      © Copyright 2025 The Reflective Persistent System Team
+//      team@refpersys.org
+//
 %default-actions warn
 %baseclass-preinclude "refpersys.hh"
 %error-verbose

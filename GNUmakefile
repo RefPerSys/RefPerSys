@@ -203,6 +203,7 @@ clean: clean-plugins
 _bispprepl_rps.cc _bispprepl_rps.hh: bispprepl_rps.yyp |GNUmakefile
 	$(RPS_BISONCPP) --verbose --thread-safe --show-filenames \
               --baseclass-preinclude=refpersys.hh \
+              --parsefun-source=_bispprepl_rps.cc \
                $^
 
 
