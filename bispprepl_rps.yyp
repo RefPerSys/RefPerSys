@@ -19,11 +19,13 @@
 %token  TOK_DOUBLE
 %token  TOK_OID
 %token  TOK_STRING
+%token  TOK_NAME
 
 %polymorphic TOK_INT: intptr_t;
              TOK_DOUBLE: double;
 	     TOK_OID: Rps_Id;
 	     TOK_STRING: std::string;
+	     TOK_NAME: std::string;
 %%
 /// grammar rules below
 repl_atom: TOK_INT {
@@ -46,6 +48,10 @@ repl_atom: TOK_INT {
   $$ = Rps_ObjectValue(Rps_ObjectRef::really_find_object_by_oid($1));
 }
 
+         | TOK_NAME {
+#pragma message "repl_atom is TOK_NAME"
+#warning Rps_ObjectRef::find_object_by_string needs a callframe for repl_atom as TOK_NAME
+	 }
          ;
 
 /****************
