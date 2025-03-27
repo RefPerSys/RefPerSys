@@ -189,6 +189,7 @@ clean: clean-plugins
 	$(RM) tmp* *~ *.o
 #	$(RM) -v _gramrepl_rps.*
 	$(RM) -v _carbrepl_rps.*
+	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
