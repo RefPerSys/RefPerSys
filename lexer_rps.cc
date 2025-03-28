@@ -523,7 +523,6 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " at " << position_str() << " startpos:" << startpos);
       long long l = strtoll(startnum, &endint, 0);
       double d = strtod(startnum, &endfloat);
-
       RPS_ASSERT(endint != nullptr && endfloat != nullptr);
       if (endfloat > endint)
         {

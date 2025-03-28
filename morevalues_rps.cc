@@ -741,9 +741,9 @@ Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned max
       const Rps_ObjectRef curattr = attrvect[ix];
       const Rps_Value curval = (obm_map.at(curattr));
       out << BOLD_esc << "*"
-	  << NORM_esc << curattr << ": "
-	  << Rps_OutputValue(curval, depth, maxdepth)
-	  << std::endl;
+          << NORM_esc << curattr << ": "
+          << Rps_OutputValue(curval, depth, maxdepth)
+          << std::endl;
     };
 #warning Rps_PayloadObjMap::output_payload incomplete
 } // end Rps_PayloadObjMap::output_payload
