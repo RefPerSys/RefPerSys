@@ -23,6 +23,19 @@
 #include "refpersys.hh"
 #pragma message "prologue part of carbrepl_rps.cbrt"
 
+#ifndef RPS_GITID
+#error RPS_GITID is not defined by compilation command
+#endif
+
+extern "C" const char rps_carbrepl_gitid[];
+const char rps_carbrepl_gitid[]= RPS_GITID;
+
+extern "C" const char rps_carbrepl_date[];
+const char rps_carbrepl_date[]= __DATE__;
+
+extern "C" const char rps_carbrepl_shortgitid[];
+const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
+
 %header%
 #pragma message "header part of carbrepl_rps.cbrt"
 %%
@@ -34,7 +47,6 @@
 %token NAME
 %token OID
 //
-//%type OID: Rps_Id
 
 %grammar%
 %nt repl_atom repl_object
