@@ -30,14 +30,21 @@
 %prefix rpscarbrepl_
 %token INT
 %token DOUBLE
-//%type STRING: std::string
+%token STRING
+%token NAME
+%token OID
+//
 //%type OID: Rps_Id
 
 %grammar%
-%nt repl_atom
+%nt repl_atom repl_object
+%type repl_object: Rps_ObjectRef
 %type repl_atom: Rps_Value
 %type INT: intptr_t
 %type DOUBLE: double
+%type STRING: std::string
+%type NAME: std::string
+%type OID: Rps_Id
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
 %destructor /* destructing common */ $$ = nullptr;
 
@@ -49,6 +56,26 @@ _Pragma("message repl_atom as INT in carbrepl_rps.cbrt");
 repl_atom: DOUBLE {
 _Pragma("message repl_atom as DOUBLE in carbrepl_rps.cbrt");
   $$ = Rps_DoubleValue($0);
+}
+
+repl_atom: STRING {
+_Pragma("message repl_atom as STRING in carbrepl_rps.cbrt");
+  $$ = Rps_StringValue($0);
+}
+
+repl_atom: repl_object {
+  _Pragma("message repl_atom as repl_object in carbrepl_rps.cbrt");
+  $$ = $0;
+}
+
+repl_object: NAME {
+  _Pragma("message repl_object as NAME in carbrepl_rps.cbrt");
+  $$ = Rps_PayloadSymbol::find_named_object($0);
+}
+
+repl_object: OID {
+  _Pragma("message repl_object as OID in carbrepl_rps.cbrt");
+  $$ = Rps_ObjectRef::really_find_object_by_oid($0);
 }
 %%
 
