@@ -49,16 +49,25 @@ const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 //
 
 %grammar%
+%nt repl_start
 %nt repl_atom repl_object
 %type repl_object: Rps_ObjectRef
 %type repl_atom: Rps_Value
+%type repl_start: Rps_Value
 %type INT: intptr_t
 %type DOUBLE: double
 %type STRING: std::string
 %type NAME: std::string
 %type OID: Rps_Id
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
+%constructor /* constructor */ $$ = nullptr;
 %destructor /* destructing common */ $$ = nullptr;
+
+/* the start symbol is the first non-terminal */
+repl_start: repl_atom {
+_Pragma("message repl_start as repl_atom in carbrepl_rps.cbrt");
+}
+
 
 repl_atom: INT {
 _Pragma("message repl_atom as INT in carbrepl_rps.cbrt");
