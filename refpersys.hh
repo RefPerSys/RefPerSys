@@ -1539,7 +1539,7 @@ public:
   Rps_Object_Display() : _dispobref(nullptr), _dispfile(nullptr), _displine(0), _dispdepth(0) {};
   Rps_Object_Display(const Rps_ObjectRef obr, int depth, const char*file, int line)
     : _dispobref(obr), _dispfile(file), _displine(line),
-      _dispdepth(disp_default_depth) {};
+      _dispdepth(depth) {};
   Rps_Object_Display(const Rps_ObjectRef obr, const char*file, int line)
     : _dispobref(obr), _dispfile(file), _displine(line),
       _dispdepth(disp_default_depth) {};
