@@ -561,6 +561,14 @@ extern "C" void rps_show_version_handwritten_source_files(void);
 void
 rps_show_version_handwritten_source_files(void)
 {
+  RPS_POSSIBLE_BREAKPOINT();
+  int nbsourcefiles=0;
+  for (const char*const*curfileptr = rps_files;
+       curfileptr && *curfileptr; curfileptr++)
+    nbsourcefiles++;
+  RPS_INFORMOUT("showing versions of " << nbsourcefiles
+                << " handwritten source files (git " << rps_utilities_shortgitid
+                << ")");
   //// show gitid and date of individual handwritten *cc files, using dlsym
   //// since every file like utilities_rps.cc has rps_utilities_gitid and rps_utilities_date
   for (const char*const*curfileptr = rps_files;
@@ -585,7 +593,7 @@ rps_show_version_handwritten_source_files(void)
         continue;
       RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(PROGARG, "curfile=" << Rps_Cjson_String(curfile)
-		    << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
+                    << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
       if (!strcmp(cursuffix, "so") || !strcmp(cursuffix, "o") || !strcmp(cursuffix, "a")
           || !strcmp(cursuffix, "la") || !strcmp(cursuffix, "status"))
         {
