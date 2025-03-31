@@ -27,17 +27,14 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
-extern "C" const char rps_carbrepl_gitid[];
-const char rps_carbrepl_gitid[]= RPS_GITID;
-
-extern "C" const char rps_carbrepl_date[];
-const char rps_carbrepl_date[]= __DATE__;
-
-extern "C" const char rps_carbrepl_shortgitid[];
-const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 
 %header%
 #pragma message "header part of carbrepl_rps.cbrt"
+extern "C" const char rps_carbrepl_gitid[];
+extern "C" const char rps_carbrepl_date[];
+extern "C" const char rps_carbrepl_shortgitid[];
+
+
 %%
 
 %prefix rpscarbrepl_
@@ -101,6 +98,16 @@ repl_object: OID {
 %%
 
 #pragma message "trailer of carbrepl_rps.cbrt"
+
+
+extern "C" const char rps_carbrepl_gitid[];
+const char rps_carbrepl_gitid[]= RPS_GITID;
+
+extern "C" const char rps_carbrepl_date[];
+const char rps_carbrepl_date[]= __DATE__;
+
+extern "C" const char rps_carbrepl_shortgitid[];
+const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 
 /****************
  **                           for Emacs...
