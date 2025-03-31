@@ -603,7 +603,7 @@ rps_show_version_handwritten_source_files(void)
       RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
                     << " curbase=" <<  Rps_Cjson_String(curbase));
       int lencurbase=strlen(curbase);
-      if (curbase[0]=='_' || lencurbase<5)
+      if (curbase[0]=='_' || lencurbase<6)
         {
           /// by convention basenames starting with an underscore are generated
           RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno<< " =" << Rps_Cjson_String(curfile)
@@ -611,6 +611,8 @@ rps_show_version_handwritten_source_files(void)
           continue;
         }
       RPS_POSSIBLE_BREAKPOINT();
+      if (!strcmp(curbase+lencurbase-4, "_rps"))
+	curbase[lencurbase-4]=(char)0;
       RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
                     << " curbase=" << Rps_Cjson_String(curbase)
                     << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
