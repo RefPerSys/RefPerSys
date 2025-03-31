@@ -654,8 +654,12 @@ rps_show_version_handwritten_source_files(void)
             RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit << " failed "
                           << dlerror());
           }
+        RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit
+                      << " gives symgit=" << Rps_Cjson_String(symgit));
         if (!symgit || !isalnum(symgit[0]))
-          continue;
+          {
+            continue;
+          }
         symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
         if (!symshortgit || !isalnum(symshortgit[0]))
           continue;
