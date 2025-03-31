@@ -556,6 +556,11 @@ rps_print_types_info(void)
             << " !!! " << std::endl;
 } // end rps_print_types_info
 
+
+
+
+
+////////////////////////////////////////////////////////////////
 extern "C" void rps_show_version_handwritten_source_files(void);
 
 void
@@ -618,6 +623,8 @@ rps_show_version_handwritten_source_files(void)
           continue;
         };
       RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(PROGARG, "before µdlsyming curfile=" << Rps_Cjson_String(curfile)
+		    << " curbase=" << Rps_Cjson_String(curbase));
       const char* symgit = nullptr;
       const char* symdat = nullptr;
       const char* symshortgit = nullptr;
@@ -635,7 +642,7 @@ rps_show_version_handwritten_source_files(void)
         if (!symgit || !isalnum(symgit[0]))
           continue;
         symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
-        if (!symshortgit || !isalnum(symgit[0]))
+        if (!symshortgit || !isalnum(symshortgit[0]))
           continue;
         symdat = (const char*)dlsym(rps_proghdl, cursymdat);
         if (!symdat || !isalnum(symdat[0]))
@@ -660,6 +667,9 @@ rps_show_version_handwritten_source_files(void)
         }
     }
 } // end rps_show_version_handwritten_source_files
+
+
+
 
 void
 rps_show_version(void)
