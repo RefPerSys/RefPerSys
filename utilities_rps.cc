@@ -580,9 +580,12 @@ rps_show_version_handwritten_source_files(void)
         continue;
       if (strchr(curfile, '/'))
         continue;
-      if ((sscanf(curfile, "%60[a-zA-Z]_rps.%.10[a-z]%n", curbase, cursuffix, &endpos))<1
+      if ((sscanf(curfile, "%60[a-zA-Z]_rps.%10[a-z]%n", curbase, cursuffix, &endpos))<1
           || endpos<2 || curfile[endpos]!=(char)0)
         continue;
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(PROGARG, "curfile=" << Rps_Cjson_String(curfile)
+		    << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
       if (!strcmp(cursuffix, "so") || !strcmp(cursuffix, "o") || !strcmp(cursuffix, "a")
           || !strcmp(cursuffix, "la") || !strcmp(cursuffix, "status"))
         {
