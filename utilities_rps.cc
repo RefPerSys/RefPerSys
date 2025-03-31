@@ -556,9 +556,10 @@ rps_print_types_info(void)
             << " !!! " << std::endl;
 } // end rps_print_types_info
 
+extern "C" void rps_show_version_handwritten_source_files(void);
 
-static void
-rps_show_version_handwritten_cplusplus_files(void)
+void
+rps_show_version_handwritten_source_files(void)
 {
   //// show gitid and date of individual handwritten *cc files, using dlsym
   //// since every file like utilities_rps.cc has rps_utilities_gitid and rps_utilities_date
@@ -571,6 +572,8 @@ rps_show_version_handwritten_cplusplus_files(void)
       const char*curfile = *curfileptr;
       if (!curfile)
         break;
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(PROGARG, "curfile=" << Rps_Cjson_String(curfile));
       if (!isalpha(curfile[0]))
         continue;
       if (strchr(curfile, '/'))
@@ -619,14 +622,14 @@ rps_show_version_handwritten_cplusplus_files(void)
             std::cout << "#" << msgbuf << std::endl;
         }
     }
-} // end rps_show_version_handwritten_cplusplus_files
+} // end rps_show_version_handwritten_source_files
 
 void
 rps_show_version(void)
 {
   int nbfiles=0;
   int nbsubdirs=0;
-  for (auto pfiles=rps_files; *pfiles; pfiles++)
+  for (const char*const*pfiles=rps_files; *pfiles; pfiles++)
     nbfiles++;
   for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
     nbsubdirs++;
@@ -705,7 +708,7 @@ rps_show_version(void)
             << "See refpersys.org and code on github.com/RefPerSys/RefPerSys"
             << std::endl;
   /////
-  rps_show_version_handwritten_cplusplus_files();
+  rps_show_version_handwritten_source_files();
   /////
   {
     char cwdbuf[rps_path_byte_size+4];
