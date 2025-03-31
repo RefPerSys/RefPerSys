@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1464,10 +1464,11 @@ rps_locale(void)
 int
 main (int argc, char** argv)
 {
-  char*mylocale = nullptr;
   rps_progname = argv[0];
+  char*mylocale = nullptr;
   bool helpwanted = false;
   bool versionwanted = false;
+  _Pragma("message start of main");
   if (argc>1 && !strcmp(argv[1], "--help"))
     helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
