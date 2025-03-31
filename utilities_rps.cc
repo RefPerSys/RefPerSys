@@ -603,6 +603,7 @@ rps_show_version_handwritten_source_files(void)
       RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
                     << " curbase=" <<  Rps_Cjson_String(curbase));
       int lencurbase=strlen(curbase);
+      /// Human written source files (not scripts) are *_rps.* and dont start with underscores.
       if (curbase[0]=='_' || lencurbase<6)
         {
           /// by convention basenames starting with an underscore are generated
@@ -611,8 +612,14 @@ rps_show_version_handwritten_source_files(void)
           continue;
         }
       RPS_POSSIBLE_BREAKPOINT();
+      // Human written source files are *_rps.* (except for refperys.hh)
       if (!strcmp(curbase+lencurbase-4, "_rps"))
-	curbase[lencurbase-4]=(char)0;
+        {
+          curbase[lencurbase-4]=(char)0;
+          RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
+                        << " shrinked curbase=" << Rps_Cjson_String(curbase));
+          RPS_POSSIBLE_BREAKPOINT();
+        }
       RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
                     << " curbase=" << Rps_Cjson_String(curbase)
                     << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
@@ -626,7 +633,7 @@ rps_show_version_handwritten_source_files(void)
         };
       RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(PROGARG, "before µdlsyming curfile=" << Rps_Cjson_String(curfile)
-		    << " curbase=" << Rps_Cjson_String(curbase));
+                    << " curbase=" << Rps_Cjson_String(curbase));
       const char* symgit = nullptr;
       const char* symdat = nullptr;
       const char* symshortgit = nullptr;
@@ -640,7 +647,13 @@ rps_show_version_handwritten_source_files(void)
         snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
         snprintf (cursymshortgit, sizeof(cursymgit), "rps_%s_shortgitid", curbase);
         snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
+        RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
         symgit = (const char*)dlsym(rps_proghdl, cursymgit);
+        if (!symgit)
+          {
+            RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit << " failed "
+                          << dlerror());
+          }
         if (!symgit || !isalnum(symgit[0]))
           continue;
         symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
