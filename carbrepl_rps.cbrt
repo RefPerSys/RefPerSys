@@ -60,8 +60,8 @@ const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 %type NAME: std::string
 %type OID: Rps_Id
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
-%constructor /* constructor */ $$ = nullptr;
-%destructor /* destructing common */ $$ = nullptr;
+%constructor /* constructor */ $$ = nullptr; _Pragma("message carbrepl_rps constructor");
+%destructor /* destructing common */ $$ = nullptr; _Pragma("message carbrepl_rps destructor");
 
 /* the start symbol is the first non-terminal */
 repl_start: repl_atom {
