@@ -43,14 +43,18 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token STRING
 %token NAME
 %token OID
+%end_token EOF
+%token KEYW_SHOW
+
 //
 
 %grammar%
-%nt repl_start
+%nt repl_input repl_command
 %nt repl_atom repl_object
 %type repl_object: Rps_ObjectRef
 %type repl_atom: Rps_Value
-%type repl_start: Rps_Value
+%type repl_input: int
+%type repl_command: int
 %type INT: intptr_t
 %type DOUBLE: double
 %type STRING: std::string
@@ -61,10 +65,24 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %destructor /* destructing common */ $$ = nullptr; _Pragma("message carbrepl_rps destructor");
 
 /* the start symbol is the first non-terminal */
-repl_start: repl_atom {
-_Pragma("message repl_start as repl_atom in carbrepl_rps.cbrt");
+repl_input: EOF {
+  _Pragma("message repl_input as EOF in carbrepl_rps.cbrt");
+  $$ = 0;
 }
 
+repl_input: repl_command repl_input {
+   _Pragma("message repl_input as repl_command repl_input  in carbrepl_rps.cbrt");
+   $$ = $1 + 1;
+}
+
+repl_command: KEYW_SHOW repl_atom {
+   _Pragma("message repl_command as KEYW_SHOW repl_atom in carbrepl_rps.cbrt");
+   $$ = 1;
+}
+
+repl_command: error {
+  RPS_WARNOUT("invalid syntax for command");
+}
 
 repl_atom: INT {
 _Pragma("message repl_atom as INT in carbrepl_rps.cbrt");
