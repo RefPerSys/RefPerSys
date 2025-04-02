@@ -338,7 +338,7 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "RUNDELAY", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run RefPerSys agenda and event loop for a limited real time,\n"
-    " e.g. --run-delay=50s or --run-delay=2m or --run-delay=5h\n", ///
+    " e.g. --run-delay=50s or --run-delay=2m or --run-delay=5h\n\n", ///
     /*group:*/0 ///
   },
   /* ======= run a shell command with system(3) after load ======= */
