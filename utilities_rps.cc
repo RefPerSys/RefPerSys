@@ -8,7 +8,7 @@
  *      It has some utility functions.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Basile Starynkevitch (France) <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
@@ -57,7 +57,7 @@
 #endif // RPS_WITH_FLTK
 
 #include "glib.h"
-#include "libgccjit++.h"
+#include "libgccjit.h"
 
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
@@ -449,7 +449,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
 void
 rps_print_types_info(void)
 {
-#define TYPEFMT_rps "%-58s:"
+#define TYPEFMT_rps "%-62s:"
   printf(TYPEFMT_rps "   size  align   (bytes)\n", "**TYPE**");
   /////
 #define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty,  \
@@ -473,6 +473,8 @@ rps_print_types_info(void)
    "," #Ty4,                                    \
    (int)sizeof(Ty1,Ty2,Ty3,Ty4),                \
    (int)alignof(Ty1,Ty2,Ty3,Ty4))
+#define EXPLAIN_TYPE_ABSTRACT(Ty,Siz,Ali) printf(TYPEFMT_rps " %5d %5d\n", #Ty, \
+                                                 (int)(Siz), (int)(Ali))
   /////
   EXPLAIN_TYPE(int);
   EXPLAIN_TYPE(double);
@@ -498,7 +500,7 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(std::set<std::string>);
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
   EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
-  printf("#### %s:%d\n", __FILE__, __LINE__);
+  printf("########################## %s:%d\n", __FILE__, __LINE__);
   EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
   EXPLAIN_TYPE3(std::variant<unsigned, std::function<Rps_Value(void*)>,
                 std::function<int(void*,Rps_ObjectRef)>>);
@@ -527,6 +529,7 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_Type);
   EXPLAIN_TYPE(Rps_Value);
   EXPLAIN_TYPE(Rps_ZoneValue);
+  EXPLAIN_TYPE_ABSTRACT(rpscarbrepl_stack,rpscarbrepl_stack_size,rpscarbrepl_stack_align);
   ////
 #if RPS_WITH_FLTK
   printf("\n\n===== FLTK widgets from %s:%d ====\n", __FILE__, __LINE__);
