@@ -127,6 +127,11 @@ const char rps_carbrepl_date[]= __DATE__;
 extern "C" const char rps_carbrepl_shortgitid[];
 const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const size_t rpscarbrepl_stack_size;
+extern "C" const size_t rpscarbrepl_stack_align;
+
+const size_t rpscarbrepl_stack_size = sizeof(struct rpscarbrepl_stack);
+const size_t rpscarbrepl_stack_align = alignof(struct rpscarbrepl_stack);
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
