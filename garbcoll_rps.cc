@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -121,6 +121,19 @@ Rps_CallFrame::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 } // end of Rps_CallFrame::output i.e. Rps_ProtoCallFrame::output
 
 
+static std::atomic<bool> rps_gc_forbidden;
+
+void
+rps_forbid_garbage_collection(void)
+{
+  rps_gc_forbidden.store(true);
+} // end rps_forbid_garbage_collection
+
+void
+rps_allow_garbage_collection(void)
+{
+  rps_gc_forbidden.store(false);
+} // end rps_allow_garbage_collection
 
 /* The top level function to call the garbage collector; the optional
    argument C++ std::function is marking more local data, e.g. calling
@@ -129,6 +142,12 @@ Rps_CallFrame::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 void
 rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
 {
+  if (rps_gc_forbidden.load()) {
+    RPS_WARNOUT("garbage collection is forbidden from "
+                <<  rps_current_pthread_name() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_garbage_collect"));
+    return;
+  };                            
 #warning TODO: we might want to wait half a second in rps_garbage_collect
   // e.g. in generated or hand-written plugins) since in some C++ code
   // (e.g. called by graphical toolkits or numerical routines),

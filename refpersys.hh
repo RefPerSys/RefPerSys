@@ -2361,6 +2361,10 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb)
   Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),(std::ostream*)nullptr)
 
 ////////////////////////////////////////////////////// garbage collector
+
+extern "C" void rps_forbid_garbage_collection(void);
+extern "C" void rps_allow_garbage_collection(void);
+
 /* Our top level function to call the garbage collector; the optional
    argument C++ std::function is marking more local data, e.g. calling
    Rps_ObjectRef::gc_mark or Rps_Value::gc_mark or some
