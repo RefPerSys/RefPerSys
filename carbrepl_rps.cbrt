@@ -113,7 +113,7 @@ _Pragma("message repl_atom as STRING in carbrepl_rps.cbrt");
 
 repl_atom: repl_object {
   _Pragma("message repl_atom as repl_object in carbrepl_rps.cbrt");
-  $$ = $0;
+  $$ = Rps_ObjectValue($0);
 }
 
 repl_object: NAME {
