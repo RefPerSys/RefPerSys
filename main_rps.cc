@@ -401,7 +401,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_TYPEINFO, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Show type information (and test tagged integers).\n", //
+    /*doc:*/ "Show type information (and test tagged integers).\n" //
+    " (using rps_print_types_info from utilities_rps.cc)\n",
     /*group:*/0 ///
   },
   /* ======= pid-file ======= */
