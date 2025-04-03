@@ -133,7 +133,7 @@ all:
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
 
-objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)  __timestamp.o
+objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
 
 .SECONDARY:  __timestamp.c 
 	$(SYNC)
