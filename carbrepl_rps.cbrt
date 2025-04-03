@@ -27,13 +27,18 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
+static void rps_carbrepl_constructor_repl_object(void*ptr, int lin);
+static void rps_carbrepl_destructor_repl_object(void*ptr, int lin);
+
+
+static void rps_carbrepl_constructor_repl_atom(void*ptr, int lin);
+static void rps_carbrepl_destructor_repl_atom(void*ptr, int lin);
 
 %header%
 #pragma message "header part of carbrepl_rps.cbrt"
 extern "C" const char rps_carbrepl_gitid[];
 extern "C" const char rps_carbrepl_date[];
 extern "C" const char rps_carbrepl_shortgitid[];
-
 
 %%
 
@@ -49,10 +54,20 @@ extern "C" const char rps_carbrepl_shortgitid[];
 //
 
 %grammar%
+%params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
 %nt repl_input repl_command
 %nt repl_atom repl_object
+
+
 %type repl_object: Rps_ObjectRef
+%constructor /* constructor repl_object */ rps_carbrepl_constructor_repl_object(&$$,__LINE__);
+%destructor /* destructor repl_object */ rps_carbrepl_destructor_repl_object(&$$,__LINE__);
+
 %type repl_atom: Rps_Value
+%constructor /* constructor repl_atom */ rps_carbrepl_constructor_repl_atom(&$$,__LINE__);
+%destructor /* destructor repl_atom */ rps_carbrepl_destructor_repl_atom(&$$,__LINE__);
+
+
 %type repl_input: int
 %type repl_command: int
 %type INT: intptr_t
@@ -60,9 +75,6 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %type STRING: std::string
 %type NAME: std::string
 %type OID: Rps_Id
-%params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
-%constructor /* constructor */ $$ = nullptr; _Pragma("message carbrepl_rps constructor");
-%destructor /* destructing common */ $$ = nullptr; _Pragma("message carbrepl_rps destructor");
 
 /* the start symbol is the first non-terminal */
 repl_input: EOF {
@@ -117,6 +129,30 @@ repl_object: OID {
 
 #pragma message "trailer of carbrepl_rps.cbrt"
 
+
+void
+rps_carbrepl_constructor_repl_object(void*ptr, int lin)
+{
+  _Pragma("message rps_carbrepl_constructor_repl_object");
+} // end rps_carbrepl_constructor_repl_object
+
+void
+rps_carbrepl_destructor_repl_object(void*ptr, int lin)
+{
+  _Pragma("message rps_carbrepl_repl_object_destructor");
+} // end rps_carbrepl_repl_object_destructor
+
+void
+rps_carbrepl_constructor_repl_atom(void*ptr, int lin)
+{
+  _Pragma("message rps_carbrepl_constructor_repl_atom");
+} // end rps_carbrepl_constructor_repl_atom
+
+void
+rps_carbrepl_destructor_repl_atom(void*ptr, int lin)
+{
+  _Pragma("message rps_carbrepl_destructor_repl_atom");
+} // end rps_carbrepl_repl_object_destructor_repl_atom
 
 extern "C" const char rps_carbrepl_gitid[];
 const char rps_carbrepl_gitid[]= RPS_GITID;
