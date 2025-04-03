@@ -27,12 +27,12 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
-static void rps_carbrepl_constructor_repl_object(void*ptr, int lin);
-static void rps_carbrepl_destructor_repl_object(void*ptr, int lin);
+static void rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin);
+static void rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr, int lin);
 
 
-static void rps_carbrepl_constructor_repl_atom(void*ptr, int lin);
-static void rps_carbrepl_destructor_repl_atom(void*ptr, int lin);
+static void rps_carbrepl_constructor_repl_atom(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_repl_atom(Rps_Value&val, int lin);
 
 %header%
 #pragma message "header part of carbrepl_rps.cbrt"
@@ -60,12 +60,12 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 
 %type repl_object: Rps_ObjectRef
-%constructor /* constructor repl_object */ rps_carbrepl_constructor_repl_object(&$$,__LINE__);
-%destructor /* destructor repl_object */ rps_carbrepl_destructor_repl_object(&$$,__LINE__);
+%constructor rps_carbrepl_constructor_repl_object($$,__LINE__);
+%destructor  rps_carbrepl_destructor_repl_object($$,__LINE__);
 
 %type repl_atom: Rps_Value
-%constructor /* constructor repl_atom */ rps_carbrepl_constructor_repl_atom(&$$,__LINE__);
-%destructor /* destructor repl_atom */ rps_carbrepl_destructor_repl_atom(&$$,__LINE__);
+%constructor rps_carbrepl_constructor_repl_atom($$,__LINE__);
+%destructor rps_carbrepl_destructor_repl_atom($$,__LINE__);
 
 
 %type repl_input: int
@@ -131,26 +131,37 @@ repl_object: OID {
 
 
 void
-rps_carbrepl_constructor_repl_object(void*ptr, int lin)
+rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin)
 {
+  RPS_ASSERT(lin>0);
   _Pragma("message rps_carbrepl_constructor_repl_object");
+  obr = nullptr;
 } // end rps_carbrepl_constructor_repl_object
 
 void
-rps_carbrepl_destructor_repl_object(void*ptr, int lin)
+rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr,  int lin)
 {
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
   _Pragma("message rps_carbrepl_repl_object_destructor");
+  obr = nullptr;
 } // end rps_carbrepl_repl_object_destructor
 
 void
-rps_carbrepl_constructor_repl_atom(void*ptr, int lin)
+rps_carbrepl_constructor_repl_atom(Rps_Value&val, int lin)
 {
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
   _Pragma("message rps_carbrepl_constructor_repl_atom");
 } // end rps_carbrepl_constructor_repl_atom
 
 void
-rps_carbrepl_destructor_repl_atom(void*ptr, int lin)
+rps_carbrepl_destructor_repl_atom(Rps_Value&val, int lin)
 {
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
   _Pragma("message rps_carbrepl_destructor_repl_atom");
 } // end rps_carbrepl_repl_object_destructor_repl_atom
 
