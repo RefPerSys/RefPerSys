@@ -34,6 +34,9 @@ static void rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr, int lin);
 static void rps_carbrepl_constructor_repl_atom(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_repl_atom(Rps_Value&val, int lin);
 
+static void rps_carbrepl_constructor_repl_expr(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin);
+
 %header%
 #pragma message "header part of carbrepl_rps.cbrt"
 extern "C" const char rps_carbrepl_gitid[];
@@ -50,13 +53,14 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token OID
 %end_token EOF
 %token KEYW_SHOW
+%token KEYW_OBJECT
 
 //
 
 %grammar%
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
 %nt repl_input repl_command
-%nt repl_atom repl_object
+%nt repl_atom repl_object repl_expr
 
 
 %type repl_object: Rps_ObjectRef
@@ -66,6 +70,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %type repl_atom: Rps_Value
 %constructor rps_carbrepl_constructor_repl_atom($$,__LINE__);
 %destructor rps_carbrepl_destructor_repl_atom($$,__LINE__);
+
+
+%type repl_expr: Rps_Value
+%constructor rps_carbrepl_constructor_repl_expr($$,__LINE__);
+%destructor rps_carbrepl_destructor_repl_expr($$,__LINE__);
 
 
 %type repl_input: int
@@ -87,8 +96,8 @@ repl_input: repl_command repl_input {
    $$ = $1 + 1;
 }
 
-repl_command: KEYW_SHOW repl_atom {
-   _Pragma("message repl_command as KEYW_SHOW repl_atom in carbrepl_rps.cbrt");
+repl_command: KEYW_SHOW repl_expr {
+   _Pragma("message repl_command as KEYW_SHOW repl_expr in carbrepl_rps.cbrt");
    $$ = 1;
 }
 
@@ -125,11 +134,22 @@ repl_object: OID {
   _Pragma("message repl_object as OID in carbrepl_rps.cbrt");
   $$ = Rps_ObjectRef::really_find_object_by_oid($0);
 }
+
+repl_expr: repl_atom {
+  _Pragma("message repl_expr as repl_atom in carbrepl_rps.cbrt");
+  $$ = $0;
+}
+
+repl_expr: KEYW_OBJECT repl_object {
+  _Pragma("message repl_expr as KEYW_OBJECT repl_object in carbrepl_rps.cbrt");
+  $$ = Rps_ObjectValue($1);
+}
+
 %%
 
 #pragma message "trailer of carbrepl_rps.cbrt"
 
-
+//// for objects in REPL
 void
 rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin)
 {
@@ -147,6 +167,9 @@ rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr,  int lin)
   obr = nullptr;
 } // end rps_carbrepl_repl_object_destructor
 
+
+
+//// for atoms in REPL
 void
 rps_carbrepl_constructor_repl_atom(Rps_Value&val, int lin)
 {
@@ -164,6 +187,27 @@ rps_carbrepl_destructor_repl_atom(Rps_Value&val, int lin)
   val = nullptr;
   _Pragma("message rps_carbrepl_destructor_repl_atom");
 } // end rps_carbrepl_repl_object_destructor_repl_atom
+
+
+
+//// for expressions in REPL
+void
+rps_carbrepl_constructor_repl_expr(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message rps_carbrepl_constructor_repl_expr");
+} // end rps_carbrepl_constructor_repl_expr
+
+void
+rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message rps_carbrepl_destructor_repl_expr");
+} // end rps_carbrepl_repl_object_destructor_repl_expr
 
 extern "C" const char rps_carbrepl_gitid[];
 const char rps_carbrepl_gitid[]= RPS_GITID;
