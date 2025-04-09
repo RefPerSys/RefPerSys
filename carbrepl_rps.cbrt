@@ -41,7 +41,7 @@ extern "C" struct rpscarbrepl_stack;
 
 /// The following is related to the the visitor facility in carburetta 0.8.25 or newer (april 2025)
 /// See https://github.com/kingletbv/carburetta/issues/4
-extern "C" void rps_carbrepl_garbage_collect_stack(struct rpscarbrepl_stack*,Rps_GarbageCollector*,void*);
+extern "C" void rps_carbrepl_garbage_collect_visit_stack(struct rpscarbrepl_stack*,Rps_GarbageCollector*,void*);
 %visit_params Rps_GarbageCollector*visitgc,void*visitdata
 
 
@@ -73,18 +73,18 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %type repl_object: Rps_ObjectRef
 %constructor rps_carbrepl_constructor_repl_object($$,__LINE__);
 %destructor rps_carbrepl_destructor_repl_object($$,__LINE__);
-%visit {_Pragma("message visit code for repl_object");}
+%visit {_Pragma("message visit code for repl_object");RPS_ASSERT(visitgc);$$->gc_mark(*visitgc);}
 
 %type repl_atom: Rps_Value
 %constructor rps_carbrepl_constructor_repl_atom($$,__LINE__);
 %destructor rps_carbrepl_destructor_repl_atom($$,__LINE__);
-%visit {_Pragma("message visit code for repl_atom");}
+%visit {_Pragma("message visit code for repl_atom");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
 
 
 %type repl_expr: Rps_Value
 %constructor rps_carbrepl_constructor_repl_expr($$,__LINE__);
 %destructor rps_carbrepl_destructor_repl_expr($$,__LINE__);
-%visit {_Pragma("message visit code for repl_expr");}
+%visit {_Pragma("message visit code for repl_expr");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
 
 
 %type repl_input: int
