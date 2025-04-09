@@ -37,12 +37,19 @@ static void rps_carbrepl_destructor_repl_atom(Rps_Value&val, int lin);
 static void rps_carbrepl_constructor_repl_expr(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin);
 
+extern "C" struct rpscarbrepl_stack;
+
+/// The following is related to the the visitor facility in carburetta 0.8.25 or newer (april 2025)
+/// See https://github.com/kingletbv/carburetta/issues/4
+extern "C" void rps_carbrepl_garbage_collect_stack(struct rpscarbrepl_stack*,Rps_GarbageCollector*,void*);
+%visit_params Rps_GarbageCollector*visitgc,void*visitdata
+
+
 %header%
 #pragma message "header part of carbrepl_rps.cbrt"
 extern "C" const char rps_carbrepl_gitid[];
 extern "C" const char rps_carbrepl_date[];
 extern "C" const char rps_carbrepl_shortgitid[];
-
 %%
 
 %prefix rpscarbrepl_
@@ -65,16 +72,19 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %type repl_object: Rps_ObjectRef
 %constructor rps_carbrepl_constructor_repl_object($$,__LINE__);
-%destructor  rps_carbrepl_destructor_repl_object($$,__LINE__);
+%destructor rps_carbrepl_destructor_repl_object($$,__LINE__);
+%visit {_Pragma("message visit code for repl_object");}
 
 %type repl_atom: Rps_Value
 %constructor rps_carbrepl_constructor_repl_atom($$,__LINE__);
 %destructor rps_carbrepl_destructor_repl_atom($$,__LINE__);
+%visit {_Pragma("message visit code for repl_atom");}
 
 
 %type repl_expr: Rps_Value
 %constructor rps_carbrepl_constructor_repl_expr($$,__LINE__);
 %destructor rps_carbrepl_destructor_repl_expr($$,__LINE__);
+%visit {_Pragma("message visit code for repl_expr");}
 
 
 %type repl_input: int
@@ -88,11 +98,15 @@ extern "C" const char rps_carbrepl_shortgitid[];
 /* the start symbol is the first non-terminal */
 repl_input: EOF {
   _Pragma("message repl_input as EOF in carbrepl_rps.cbrt");
+  RPS_ASSERT("empty repl_input" && tksrc != nullptr);
+  RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
   $$ = 0;
 }
 
 repl_input: repl_command repl_input {
    _Pragma("message repl_input as repl_command repl_input  in carbrepl_rps.cbrt");
+   RPS_ASSERT("command repl_input" && tksrc != nullptr);
+   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    $$ = $1 + 1;
 }
 
