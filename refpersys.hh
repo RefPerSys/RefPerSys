@@ -3005,7 +3005,7 @@ public:
   /// return, when successful, a larger expression. It accepts fields
   /// and message sending.
   Rps_Value parse_primary_complement(Rps_CallFrame*callframe, Rps_Value primaryexp, bool*pokparse=nullptr);
-#warning other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md
+#pragma message "other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md"
   ///////
   int line(void) const
   {
@@ -5369,7 +5369,7 @@ public:
     return  env_parent;
   };
   void put_parent_environment(Rps_ObjectRef envob);
-#warning Rps_PayloadEnvironment not fully implemented
+#pragma message "Rps_PayloadEnvironment not fully implemented"
 };                              // end Rps_PayloadEnvironment
 
 
@@ -5841,7 +5841,7 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   static std::mutex mtx_of_runnable_processes;
   friend Rps_PayloadUnixProcess*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadUnixProcess,Rps_ObjectZone*>(Rps_ObjectZone*);
-#warning Rps_PayloadUnixProcess may need cooperation with agenda.
+#pragma message "Rps_PayloadUnixProcess may need cooperation with agenda."
   /*** TODO:
    *
    *   Perhaps we need a field containing a Rps_ClosureValue to handle
@@ -5896,7 +5896,7 @@ public:
   // set the output closure, should be called before forking ie before
   // start_process.
   void put_output_closure(Rps_ClosureValue);
-#warning missing member functions related to output pipe...
+#pragma message "missing member functions related to output pipe..."
   /// fork the process
   void start_process(Rps_CallFrame*callframe);
   static void gc_mark_active_processes(Rps_GarbageCollector&);
