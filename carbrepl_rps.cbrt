@@ -238,9 +238,12 @@ rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvar
 		 Rps_ObjectRef obenv;
 		);
   _f.obenv = obenvarg;
+  struct rpscarbrepl_stack carbstack;
+  memset ((void*)&carbstack, 0, sizeof(carbstack));
+  rpscarbrepl_stack_init(&carbstack);
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc) {
     RPS_ASSERT(gc != nullptr);
-#warning should add code marking the carburetta stack using visitor
+    rpscarbrepl_stack_visit(&carbstack, gc);
     });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_DEBUG_LOG(CMD, "carburetta command \"" << Rps_QuotedC_String(cmd)
@@ -248,6 +251,9 @@ rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvar
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "carburetta command start"));
 #warning incomplete rps_do_parse_carburetta_command
+  /// TODO: should probably use generated scanning routines
+  /// the last statement should be the following cleanup
+  rpscarbrepl_stack_cleanup(&carbstack);
 }  // end rps_do_parse_carburetta_command
 
 extern "C" const char rps_carbrepl_gitid[];
