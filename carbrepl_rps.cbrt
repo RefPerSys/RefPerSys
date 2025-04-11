@@ -27,6 +27,9 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
+#warning rps_do_parse_carburetta_command should be declared in refpersys.hh
+extern "C" void rps_do_parse_carburetta_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
+                                        const std::string&cmd,    const char*title=nullptr);
 static void rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin);
 static void rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr, int lin);
 
@@ -223,6 +226,29 @@ rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin)
   val = nullptr;
   _Pragma("message \"rps_carbrepl_destructor_repl_expr\"");
 } // end rps_carbrepl_repl_object_destructor_repl_expr
+
+
+void
+rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
+                                const std::string&cmd,
+				const char*title)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //repl_command∈symbol
+	         callerframe,
+		 Rps_ObjectRef obenv;
+		);
+  _f.obenv = obenvarg;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc) {
+    RPS_ASSERT(gc != nullptr);
+#warning should add code marking the carburetta stack using visitor
+    });
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_DEBUG_LOG(CMD, "carburetta command \"" << Rps_QuotedC_String(cmd)
+		<< "\" in environment " << RPS_OBJECT_DISPLAY(_f.obenv)
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "carburetta command start"));
+#warning incomplete rps_do_parse_carburetta_command
+}  // end rps_do_parse_carburetta_command
 
 extern "C" const char rps_carbrepl_gitid[];
 const char rps_carbrepl_gitid[]= RPS_GITID;
