@@ -56,14 +56,34 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %%
 
 %prefix rpscarbrepl_
-%token INT
-%token DOUBLE
-%token STRING
-%token NAME
-%token OID
+//forbidden %token_action here since it must follow %token_type, %type, %class, %common_type or %common_class directive
 %end_token EOF
+
+%token INT
+%type INT: intptr_t
+%token_action _Pragma("message \"token_action for INT\"");
+
+%token DOUBLE
+%type DOUBLE: double
+%token_action _Pragma("message \"token_action for DOUBLE\"");
+
+%token STRING
+%type STRING: std::string
+%token_action _Pragma("message \"token_action for STRING\"");
+
+%token NAME
+%type NAME: std::string
+%token_action _Pragma("message \"token_action for NAME\"");
+
+%token OID
+%type OID: Rps_Id
+%token_action _Pragma("message \"token_action for OID\"");
+
 %token KEYW_SHOW
+%token_action _Pragma("message \"token_action for KEYW_SHOW\"");
+
 %token KEYW_OBJECT
+%token_action _Pragma("message \"token_action for KEYW_OBJECT\"");
 
 //
 
@@ -92,11 +112,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %type repl_input: int
 %type repl_command: int
-%type INT: intptr_t
-%type DOUBLE: double
-%type STRING: std::string
-%type NAME: std::string
-%type OID: Rps_Id
+
 
 /* the start symbol is the first non-terminal */
 repl_input: EOF {
