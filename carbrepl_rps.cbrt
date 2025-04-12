@@ -93,6 +93,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %nt repl_atom repl_object repl_expr
 
 
+
+// When the parser (not the scanner) needs a new input terminal symbol, the specified action code snippet is executed.
+// we probably need to use Rps_TokenSource::lookahead_token
+%on_next_token {_Pragma("message \"on_next_token code should read a terminal symbol using Rps_TokenSource::lookahead_token\"");}
+
 %type repl_object: Rps_ObjectRef
 %constructor rps_carbrepl_constructor_repl_object($$,__LINE__);
 %destructor rps_carbrepl_destructor_repl_object($$,__LINE__);
