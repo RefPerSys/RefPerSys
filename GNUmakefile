@@ -60,6 +60,7 @@ RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
         print-gmake-features \
         one-plugin \
         lto-refpersys \
+        snapshot \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a \
@@ -137,6 +138,10 @@ objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)  __ti
 
 .SECONDARY:  __timestamp.c 
 	$(SYNC)
+
+snapshot: clean
+	$(MAKE) __timestamp.c
+	/bin/tar -cjf $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
 
 lto-refpersys:
 	$(MAKE) clean
