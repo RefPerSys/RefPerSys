@@ -1619,6 +1619,13 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       return;
     }
+  else if (cmd[0] == '~') {
+    /*** a command starting with ~ is parsed using carburetta generated code */
+#warning incomplete code for carburetta commands
+    RPS_WARNOUT("rps_do_one_repl_command carburetta " << Rps_Cjson_String(cmd)
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta"));
+    RPS_POSSIBLE_BREAKPOINT();
+  }
   _f.lextokv = intoksrc.get_token(&_);
   _f.lexval = nullptr;
   _f.cmdob = nullptr;
