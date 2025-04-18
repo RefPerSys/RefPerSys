@@ -30,6 +30,7 @@
 #warning rps_do_parse_carburetta_command should be declared in refpersys.hh
 extern "C" void rps_do_parse_carburetta_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
                                         const std::string&cmd,    const char*title=nullptr);
+extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
 static void rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin);
 static void rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr, int lin);
 
@@ -79,8 +80,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %type OID: Rps_Id
 %token_action _Pragma("message \"token_action for OID\"");
 
-%token KEYW_SHOW
-%token_action _Pragma("message \"token_action for KEYW_SHOW\"");
+%token KEYW_DISPLAY
+%token_action _Pragma("message \"token_action for KEYW_DISPLAY\"");
 
 %token KEYW_OBJECT
 %token_action _Pragma("message \"token_action for KEYW_OBJECT\"");
@@ -134,9 +135,12 @@ repl_input: repl_command repl_input {
    $$ = $1 + 1;
 }
 
-repl_command: KEYW_SHOW repl_expr {
-   _Pragma("message \"repl_command as KEYW_SHOW repl_expr in carbrepl_rps.cbrt\"");
-   $$ = 1;
+repl_command: KEYW_DISPLAY repl_expr {
+   _Pragma("message \"repl_command as KEYW_DISPLAY repl_expr in carbrepl_rps.cbrt\"");
+   RPS_DEBUG_LOG(REPL, "show carburetta command:" << $1);
+   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+   rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $1);
+$$ = 1;
 }
 
 repl_command: error {
@@ -252,12 +256,12 @@ rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin)
 void
 rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                                 const std::string&cmd,
-				const char*title)
+                                const char*title)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //repl_command∈symbol
-	         callerframe,
-		 Rps_ObjectRef obenv;
-		);
+                 callerframe,
+                 Rps_ObjectRef obenv;
+                );
   _Pragma("message \"rps_do_parse_carburetta_command\"");
   _f.obenv = obenvarg;
   struct rpscarbrepl_stack carbstack;
@@ -270,9 +274,9 @@ rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvar
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(CMD, "carburetta command \"" << Rps_QuotedC_String(cmd)
-		<< "\" in environment " << RPS_OBJECT_DISPLAY(_f.obenv)
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "carburetta command start"));
+                << "\" in environment " << RPS_OBJECT_DISPLAY(_f.obenv)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "carburetta command start"));
 #warning incomplete rps_do_parse_carburetta_command
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
@@ -280,6 +284,30 @@ rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvar
   RPS_POSSIBLE_BREAKPOINT();
 }  // end rps_do_parse_carburetta_command
 
+
+
+ void
+ rps_carbrepl_do_display_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps_Value exprarg)
+ {
+   RPS_LOCALFRAME(RPS_ROOT_OBJECT(_006mAbXTG4G00QR5HS), ///display∈symbol h:2127571271
+		  callerframe,
+		  Rps_ObjRef obenv;
+		  Rps_Value exprv;
+		 );
+   _f.obenv = obenvarg;
+   _f.exprv = exprarg;
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(CMD, "carburetta display obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
+		<< "display expr=" << _f.exprv
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "carburetta command display"));
+  RPS_POSSIBLE_BREAKPOINT();
+#warning incomplete rps_do_display_carburetta_command	
+ } // end rps_carbrepl_do_display_command
+
+
+////////////////////////////////////////////////////////////////
 extern "C" const char rps_carbrepl_gitid[];
 const char rps_carbrepl_gitid[]= RPS_GITID;
 
