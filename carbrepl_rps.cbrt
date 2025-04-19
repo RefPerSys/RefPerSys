@@ -28,15 +28,15 @@
 #endif
 
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
-static void rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin);
-static void rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr, int lin);
+static void rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin);
+static void rps_carbrepl_destructor_replnt_object(Rps_ObjectRef&obr, int lin);
 
 
-static void rps_carbrepl_constructor_repl_atom(Rps_Value&val, int lin);
-static void rps_carbrepl_destructor_repl_atom(Rps_Value&val, int lin);
+static void rps_carbrepl_constructor_replnt_atom(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_replnt_atom(Rps_Value&val, int lin);
 
-static void rps_carbrepl_constructor_repl_expr(Rps_Value&val, int lin);
-static void rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin);
+static void rps_carbrepl_constructor_replnt_expr(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin);
 
 extern "C" struct rpscarbrepl_stack;
 
@@ -87,8 +87,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %grammar%
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
-%nt repl_input repl_command
-%nt repl_atom repl_object repl_expr
+%nt replnt_input replnt_command
+%nt replnt_atom replnt_object replnt_expr
 
 
 
@@ -96,91 +96,91 @@ extern "C" const char rps_carbrepl_shortgitid[];
 // we probably need to use Rps_TokenSource::lookahead_token
 %on_next_token {_Pragma("message \"on_next_token code should read a terminal symbol using Rps_TokenSource::lookahead_token\"");}
 
-%type repl_object: Rps_ObjectRef
-%constructor rps_carbrepl_constructor_repl_object($$,__LINE__);
-%destructor rps_carbrepl_destructor_repl_object($$,__LINE__);
-%visit {_Pragma("message \"visit code for repl_object\"");RPS_ASSERT(visitgc);$$->gc_mark(*visitgc);}
+%type replnt_object: Rps_ObjectRef
+%constructor rps_carbrepl_constructor_replnt_object($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_object($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_object\"");RPS_ASSERT(visitgc);$$->gc_mark(*visitgc);}
 
-%type repl_atom: Rps_Value
-%constructor rps_carbrepl_constructor_repl_atom($$,__LINE__);
-%destructor rps_carbrepl_destructor_repl_atom($$,__LINE__);
-%visit {_Pragma("message \"visit code for repl_atom\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
-
-
-%type repl_expr: Rps_Value
-%constructor rps_carbrepl_constructor_repl_expr($$,__LINE__);
-%destructor rps_carbrepl_destructor_repl_expr($$,__LINE__);
-%visit {_Pragma("message \"visit code for repl_expr\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+%type replnt_atom: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_atom($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_atom($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_atom\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
 
 
-%type repl_input: int
-%type repl_command: int
+%type replnt_expr: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_expr($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_expr($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_expr\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+%type replnt_input: int
+%type replnt_command: int
 
 
 /* the start symbol is the first non-terminal */
-repl_input: EOF {
-  _Pragma("message \"repl_input as EOF in carbrepl_rps.cbrt\"");
-  RPS_ASSERT("empty repl_input" && tksrc != nullptr);
+replnt_input: EOF {
+  _Pragma("message \"replnt_input as EOF in carbrepl_rps.cbrt\"");
+  RPS_ASSERT("empty replnt_input" && tksrc != nullptr);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
   $$ = 0;
 }
 
-repl_input: repl_command repl_input {
-   _Pragma("message \"repl_input as repl_command repl_input in carbrepl_rps.cbrt\"");
-   RPS_ASSERT("command repl_input" && tksrc != nullptr);
+replnt_input: replnt_command replnt_input {
+   _Pragma("message \"replnt_input as replnt_command replnt_input in carbrepl_rps.cbrt\"");
+   RPS_ASSERT("command replnt_input" && tksrc != nullptr);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    $$ = $1 + 1;
 }
 
-repl_command: KEYW_DISPLAY repl_expr {
-   _Pragma("message \"repl_command as KEYW_DISPLAY repl_expr in carbrepl_rps.cbrt\"");
+replnt_command: KEYW_DISPLAY replnt_expr {
+   _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
    RPS_DEBUG_LOG(REPL, "show carburetta command:" << $1);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $1);
 $$ = 1;
 }
 
-repl_command: error {
+replnt_command: error {
   RPS_WARNOUT("invalid syntax for command");
 }
 
-repl_atom: INT {
-_Pragma("message \"repl_atom as INT in carbrepl_rps.cbrt\"");
+replnt_atom: INT {
+_Pragma("message \"replnt_atom as INT in carbrepl_rps.cbrt\"");
   $$ = Rps_Value::make_tagged_int($0);
 }
 
-repl_atom: DOUBLE {
-_Pragma("message \"repl_atom as DOUBLE in carbrepl_rps.cbrt\"");
+replnt_atom: DOUBLE {
+_Pragma("message \"replnt_atom as DOUBLE in carbrepl_rps.cbrt\"");
   $$ = Rps_DoubleValue($0);
 }
 
-repl_atom: STRING {
-_Pragma("message \"repl_atom as STRING in carbrepl_rps.cbrt\"");
+replnt_atom: STRING {
+_Pragma("message \"replnt_atom as STRING in carbrepl_rps.cbrt\"");
   $$ = Rps_StringValue($0);
 }
 
-repl_atom: repl_object {
-  _Pragma("message \"repl_atom as repl_object in carbrepl_rps.cbrt\"");
+replnt_atom: replnt_object {
+  _Pragma("message \"replnt_atom as replnt_object in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectValue($0);
 }
 
-repl_object: NAME {
-  _Pragma("message \"repl_object as NAME in carbrepl_rps.cbrt\"");
+replnt_object: NAME {
+  _Pragma("message \"replnt_object as NAME in carbrepl_rps.cbrt\"");
   $$ = Rps_PayloadSymbol::find_named_object($0);
 }
 
-repl_object: OID {
-  _Pragma("message \"repl_object as OID in carbrepl_rps.cbrt\"");
+replnt_object: OID {
+  _Pragma("message \"replnt_object as OID in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectRef::really_find_object_by_oid($0);
 }
 
-repl_expr: repl_atom {
-  _Pragma("message \"repl_expr as repl_atom in carbrepl_rps.cbrt\"");
+replnt_expr: replnt_atom {
+  _Pragma("message \"replnt_expr as replnt_atom in carbrepl_rps.cbrt\"");
   $$ = $0;
 }
 
-repl_expr: KEYW_OBJECT repl_object {
-  _Pragma("message \"repl_expr as KEYW_OBJECT repl_object in carbrepl_rps.cbrt\"");
+replnt_expr: KEYW_OBJECT replnt_object {
+  _Pragma("message \"replnt_expr as KEYW_OBJECT replnt_object in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectValue($1);
 }
 
@@ -190,64 +190,64 @@ repl_expr: KEYW_OBJECT repl_object {
 
 //// for objects in REPL
 void
-rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin)
+rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin)
 {
   RPS_ASSERT(lin>0);
   RPS_POSSIBLE_BREAKPOINT();
-  _Pragma("message \"rps_carbrepl_constructor_repl_object\"");
+  _Pragma("message \"rps_carbrepl_constructor_replnt_object\"");
   obr = nullptr;
-} // end rps_carbrepl_constructor_repl_object
+} // end rps_carbrepl_constructor_replnt_object
 
 void
-rps_carbrepl_destructor_repl_object(Rps_ObjectRef&obr, int lin)
+rps_carbrepl_destructor_replnt_object(Rps_ObjectRef&obr, int lin)
 {
   RPS_ASSERT(lin>0);
   RPS_POSSIBLE_BREAKPOINT();
-  _Pragma("message \"rps_carbrepl_repl_object_destructor\"");
+  _Pragma("message \"rps_carbrepl_replnt_object_destructor\"");
   obr = nullptr;
-} // end rps_carbrepl_repl_object_destructor
+} // end rps_carbrepl_replnt_object_destructor
 
 
 
 //// for atoms in REPL
 void
-rps_carbrepl_constructor_repl_atom(Rps_Value&val, int lin)
+rps_carbrepl_constructor_replnt_atom(Rps_Value&val, int lin)
 {
   RPS_ASSERT(lin>0);
   RPS_POSSIBLE_BREAKPOINT();
   val = nullptr;
-  _Pragma("message \"rps_carbrepl_constructor_repl_atom\"");
-} // end rps_carbrepl_constructor_repl_atom
+  _Pragma("message \"rps_carbrepl_constructor_replnt_atom\"");
+} // end rps_carbrepl_constructor_replnt_atom
 
 void
-rps_carbrepl_destructor_repl_atom(Rps_Value&val, int lin)
+rps_carbrepl_destructor_replnt_atom(Rps_Value&val, int lin)
 {
   RPS_ASSERT(lin>0);
   RPS_POSSIBLE_BREAKPOINT();
   val = nullptr;
-  _Pragma("message \"rps_carbrepl_destructor_repl_atom\"");
-} // end rps_carbrepl_repl_object_destructor_repl_atom
+  _Pragma("message \"rps_carbrepl_destructor_replnt_atom\"");
+} // end rps_carbrepl_replnt_object_destructor_replnt_atom
 
 
 
 //// for expressions in REPL
 void
-rps_carbrepl_constructor_repl_expr(Rps_Value&val, int lin)
+rps_carbrepl_constructor_replnt_expr(Rps_Value&val, int lin)
 {
   RPS_ASSERT(lin>0);
   RPS_POSSIBLE_BREAKPOINT();
   val = nullptr;
-  _Pragma("message \"rps_carbrepl_constructor_repl_expr\"");
-} // end rps_carbrepl_constructor_repl_expr
+  _Pragma("message \"rps_carbrepl_constructor_replnt_expr\"");
+} // end rps_carbrepl_constructor_replnt_expr
 
 void
-rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin)
+rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin)
 {
   RPS_ASSERT(lin>0);
   RPS_POSSIBLE_BREAKPOINT();
   val = nullptr;
-  _Pragma("message \"rps_carbrepl_destructor_repl_expr\"");
-} // end rps_carbrepl_repl_object_destructor_repl_expr
+  _Pragma("message \"rps_carbrepl_destructor_replnt_expr\"");
+} // end rps_carbrepl_replnt_destructor_replnt_expr
 
 
 void
@@ -255,7 +255,7 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                                 const std::string&cmd,
                                 const char*title)
 {
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //repl_command∈symbol
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
                  callerframe,
                  Rps_ObjectRef obenv;
                 );
