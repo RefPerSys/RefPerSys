@@ -888,6 +888,7 @@ Rps_Loader::load_all_state_files(void)
       spacecnt2++;
       usleep(30);
     }
+  rps_load_add_todo(this,  rps_initialize_carburetta_after_load);
   while (run_some_todo_functions()>0)
     {
       // we sleep a tiny bit, so elapsed time is growing...

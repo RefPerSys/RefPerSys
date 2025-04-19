@@ -304,6 +304,16 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
  } // end rps_carbrepl_do_display_command
 
 
+void
+rps_initialize_carburetta_after_load(Rps_Loader*ld)
+{
+  RPS_ASSERT(ld);
+#warning unimplemented rps_initialize_carburetta_after_load
+  RPS_WARNOUT("unimplemented rps_initialize_carburetta_after_load"
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_carburetta_after_load"));
+} // end rps_initialize_carburetta_after_load
+
 ////////////////////////////////////////////////////////////////
 extern "C" const char rps_carbrepl_gitid[];
 const char rps_carbrepl_gitid[]= RPS_GITID;
@@ -320,7 +330,7 @@ extern "C" const size_t rpscarbrepl_stack_align;
 const size_t rpscarbrepl_stack_size = sizeof(struct rpscarbrepl_stack);
 const size_t rpscarbrepl_stack_align = alignof(struct rpscarbrepl_stack);
 /****************
- **                           for Emacs...
+ **      t                     for Emacs...
  ** Local Variables: ;;
  ** compile-command: "make _carbrepl_rps.o && make" ;;
  ** End: ;;

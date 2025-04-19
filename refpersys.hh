@@ -2837,6 +2837,8 @@ extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef o
                                         const char*title=nullptr);
 
 
+extern "C" void rps_initialize_carburetta_after_load(Rps_Loader*);
+
 /* TODO: actually this API for rps_do_carburetta_command is
    suboptimal, since the token source is built twice.  Perhaps
    rps_do_carburetta_command should be redesigned to get the
