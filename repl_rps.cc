@@ -1619,13 +1619,27 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       return;
     }
-  else if (cmd[0] == '~') {
-    /*** a command starting with ~ is parsed using carburetta generated code */
-#warning incomplete code for carburetta commands
-    RPS_WARNOUT("rps_do_one_repl_command carburetta " << Rps_Cjson_String(cmd)
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta"));
-    RPS_POSSIBLE_BREAKPOINT();
-  }
+  else if (cmd[0] == '~')
+    {
+      /*** a command starting with ~ is parsed using carburetta generated code */
+      intoksrc.advance_cursor_bytes(1);
+      RPS_INFORMOUT("rps_do_one_repl_command carburetta " << Rps_Cjson_String(cmd)
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        intoksrc.display_current_line_with_cursor(out);
+      })
+          << std::endl);
+      RPS_POSSIBLE_BREAKPOINT();
+      /* TODO: actually this API for rps_do_carburetta_command is
+         suboptimal, since the token source is built twice.  Perhaps
+         rps_do_carburetta_command should be redesigned to get the
+         command from a Rps_TokenSource.... */
+      rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv,
+                                /*cmd:*/ std::string(intoksrc.curcptr()),
+                                title);
+      RPS_POSSIBLE_BREAKPOINT();
+    }
   _f.lextokv = intoksrc.get_token(&_);
   _f.lexval = nullptr;
   _f.cmdob = nullptr;
@@ -1770,7 +1784,7 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
   auto paylenv = _f.envob->put_new_plain_payload<Rps_PayloadEnvironment>();
   RPS_ASSERT(paylenv);
   RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec start nbcmd:" << nbcmd
-                << std::endl << RPS_OBJECT_DISPLAY(_f.envob));
+                << RPS_OBJECT_DISPLAY(_f.envob));
   for (int cix=0; cix<nbcmd; cix++)
     {
       RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: " << cmdvec[cix]);
