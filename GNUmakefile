@@ -65,6 +65,7 @@ RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a \
         test08 test09 test-load \
+        testcarb1 \
 	testfltk1 testfltk2 testfltk3 testfltk4
 
 SYNC=/bin/sync
@@ -695,6 +696,11 @@ test10: refpersys
 test-load: refpersys
 	./refpersys --batch --run-name=test-load
 	@printf '\n\n\n////test-load FINISHED¤\n'
+
+## testing the carburetta-based command
+testcarb1: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./refpersys  -AREPL,CMD -c "~display help" -B --run-name=testcarb1
 
 ## testing the FLTK graphical interface
 testfltk1: refpersys
