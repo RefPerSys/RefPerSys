@@ -2837,6 +2837,9 @@ extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef o
                                         const char*title=nullptr);
 
 
+extern "C" void rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
+					  const std::string&cmd,
+					  const char*title=nullptr);
 
 
 ////////////////////////////////// token sources are for lexing

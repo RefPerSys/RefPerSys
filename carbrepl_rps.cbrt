@@ -27,8 +27,8 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
-#warning rps_do_parse_carburetta_command should be declared in refpersys.hh
-extern "C" void rps_do_parse_carburetta_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
+#warning rps_do_carburetta_command should be declared in refpersys.hh
+extern "C" void rps_do_carburetta_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
                                         const std::string&cmd,    const char*title=nullptr);
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
 static void rps_carbrepl_constructor_repl_object(Rps_ObjectRef&obr, int lin);
@@ -254,7 +254,7 @@ rps_carbrepl_destructor_repl_expr(Rps_Value&val, int lin)
 
 
 void
-rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
+rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                                 const std::string&cmd,
                                 const char*title)
 {
@@ -262,7 +262,7 @@ rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvar
                  callerframe,
                  Rps_ObjectRef obenv;
                 );
-  _Pragma("message \"rps_do_parse_carburetta_command\"");
+  _Pragma("message \"rps_do_carburetta_command\"");
   _f.obenv = obenvarg;
   struct rpscarbrepl_stack carbstack;
   memset ((void*)&carbstack, 0, sizeof(carbstack));
@@ -277,21 +277,21 @@ rps_do_parse_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvar
                 << "\" in environment " << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "carburetta command start"));
-#warning incomplete rps_do_parse_carburetta_command
+#warning incomplete rps_do_carburetta_command
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
   rpscarbrepl_stack_cleanup(&carbstack);
   RPS_POSSIBLE_BREAKPOINT();
-}  // end rps_do_parse_carburetta_command
+}  // end rps_do_carburetta_command
 
 
 
  void
  rps_carbrepl_do_display_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps_Value exprarg)
  {
-   RPS_LOCALFRAME(RPS_ROOT_OBJECT(_006mAbXTG4G00QR5HS), ///display∈symbol h:2127571271
+   RPS_LOCALFRAME(RPS_ROOT_OB(_006mAbXTG4G00QR5HS), ///display∈symbol h:2127571271
 		  callerframe,
-		  Rps_ObjRef obenv;
+		  Rps_ObjectRef obenv;
 		  Rps_Value exprv;
 		 );
    _f.obenv = obenvarg;
