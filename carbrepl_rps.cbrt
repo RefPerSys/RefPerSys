@@ -283,6 +283,9 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
     });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
+#warning check this
+  int r = rpscarbrepl_parse(&carbstack, /*sym:*/RPSCARBREPL_REPLNT_INPUT, tksrc, &_);
+  RPS_DEBUG_LOG(REPL, "after rpscarbrepl_parse r=" << r);
 #warning unimplemented rps_do_carburetta_tokensrc
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
