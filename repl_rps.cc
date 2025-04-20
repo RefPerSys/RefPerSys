@@ -1577,7 +1577,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
 #warning rps_do_one_repl_command unimplemented
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
                 << _f.obenv
-                << " " << title << " " << Rps_Cjson_String(cmd));
+                << " " << title << " cmd='" << Rps_Cjson_String(cmd) << "'");
+  RPS_POSSIBLE_BREAKPOINT();
   Rps_StringTokenSource intoksrc(cmd, std::string(title));
   if (!intoksrc.get_line())
     {
@@ -1586,8 +1587,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       return;
     }
   std::string commandpos = intoksrc.position_str();
-  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
-                << Rps_Cjson_String(cmd) << std::endl
+  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << "'"
+                << Rps_Cjson_String(cmd) << "'" << std::endl
                 << "… intoksrc:" << intoksrc
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
   /*** TODO:
