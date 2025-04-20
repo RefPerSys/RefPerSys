@@ -38,6 +38,8 @@ static void rps_carbrepl_destructor_replnt_atom(Rps_Value&val, int lin);
 static void rps_carbrepl_constructor_replnt_expr(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin);
 
+static int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin);
+
 extern "C" struct rpscarbrepl_stack;
 
 /// The following is related to the the visitor facility in carburetta 0.8.25 or newer (april 2025)
@@ -94,7 +96,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 // When the parser (not the scanner) needs a new input terminal symbol, the specified action code snippet is executed.
 // we probably need to use Rps_TokenSource::lookahead_token
-%on_next_token {_Pragma("message \"on_next_token code should read a terminal symbol using Rps_TokenSource::lookahead_token\"");}
+%on_next_token {return rps_carbrepl_next_token(callframe, tksrc, __LINE__);}
 
 %type replnt_object: Rps_ObjectRef
 %constructor rps_carbrepl_constructor_replnt_object($$,__LINE__);
@@ -249,6 +251,17 @@ rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin)
   _Pragma("message \"rps_carbrepl_destructor_replnt_expr\"");
 } // end rps_carbrepl_replnt_destructor_replnt_expr
 
+int
+rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
+                 callframe,
+                 Rps_ObjectRef obenv;
+                );
+  RPS_ASSERT(tksrc);
+#warning unimplemented rps_carbrepl_next_token
+  RPS_FATALOUT("unimplemented rps_carbrepl_next_token from lin=" << lin);
+} // end rps_carbrepl_next_token
 
 void
 rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
