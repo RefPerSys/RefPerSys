@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
  *      Nimesh Neema <nimeshneema@gmail.com> (India)
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -54,7 +54,7 @@ const char rps_lexer_shortgitid[]= RPS_SHORTGITID;
 extern "C" Rps_StringValue rps_lexer_token_name_str_val;
 Rps_StringValue rps_lexer_token_name_str_val(nullptr);
 
-Rps_TokenSource* Rps_TokenSource::toksrc_current_;
+
 
 Rps_TokenSource::Rps_TokenSource(std::string name)
   : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_counter(0),
@@ -62,8 +62,7 @@ Rps_TokenSource::Rps_TokenSource(std::string name)
     toksrc_token_deq(),
     toksrc_ptrnameval(nullptr)
 {
-  RPS_ASSERT(toksrc_current_ == nullptr);
-  toksrc_current_ = this;
+  RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_TokenSource::Rps_TokenSource
 
 void
@@ -171,7 +170,6 @@ Rps_TokenSource::~Rps_TokenSource()
   toksrc_col= -1;
   toksrc_linebuf.clear();
   toksrc_token_deq.clear();
-  toksrc_current_ = nullptr;
 } // end Rps_TokenSource::~Rps_TokenSource
 
 Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
@@ -270,6 +268,7 @@ Rps_CinTokenSource::display(std::ostream&out) const
 Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string name)
   : Rps_TokenSource(name), toksrcstr_inp(inptstr), toksrcstr_str(inptstr)
 {
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
                 << " from " << Rps_QuotedC_String(toksrcstr_str)
                 << " of " << toksrcstr_str.size() << " bytes, named " << name

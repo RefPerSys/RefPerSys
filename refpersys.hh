@@ -2864,7 +2864,6 @@ class Rps_TokenSource           // this is *not* a value .....
   std::string toksrc_name;
   int toksrc_line, toksrc_col;
   int toksrc_counter;
-  static Rps_TokenSource* toksrc_current_;
 protected:
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
@@ -2895,10 +2894,6 @@ protected:
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public:
   static constexpr unsigned max_gc_depth = 128;
-  static Rps_TokenSource* current_token_source(void)
-  {
-    return toksrc_current_;
-  };
   const char*curcptr(void) const
   {
     if (toksrc_linebuf.empty())
