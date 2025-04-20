@@ -2846,6 +2846,9 @@ extern "C" void rps_initialize_carburetta_after_load(Rps_Loader*);
 extern "C" void rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
     const std::string&cmd,
     const char*title=nullptr);
+extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
+    Rps_TokenSource*tksrc,
+    const char*title=nullptr);
 
 
 ////////////////////////////////// token sources are for lexing

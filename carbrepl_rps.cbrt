@@ -251,6 +251,33 @@ rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin)
 
 
 void
+rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
+                                Rps_TokenSource*tksrc,
+                                const char*title)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
+                 callerframe,
+                 Rps_ObjectRef obenv;
+                );
+  _Pragma("message \"rps_do_carburetta_tokensrc\"");
+  RPS_ASSERT(tksrc);
+  struct rpscarbrepl_stack carbstack;
+  memset ((void*)&carbstack, 0, sizeof(carbstack));
+  rpscarbrepl_stack_init(&carbstack);
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc) {
+    RPS_ASSERT(gc != nullptr);
+    rpscarbrepl_stack_visit(&carbstack, gc);
+    });
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_POSSIBLE_BREAKPOINT();
+#warning unimplemented rps_do_carburetta_tokensrc
+  /// TODO: should probably use generated scanning routines
+  /// the last statement should be the following cleanup
+  rpscarbrepl_stack_cleanup(&carbstack);
+  RPS_POSSIBLE_BREAKPOINT();
+} // end rps_do_carburetta_tokensrc
+
+void
 rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                                 const std::string&cmd,
                                 const char*title)
@@ -261,24 +288,10 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                 );
   _Pragma("message \"rps_do_carburetta_command\"");
   _f.obenv = obenvarg;
-  struct rpscarbrepl_stack carbstack;
-  memset ((void*)&carbstack, 0, sizeof(carbstack));
-  rpscarbrepl_stack_init(&carbstack);
-  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc) {
-    RPS_ASSERT(gc != nullptr);
-    rpscarbrepl_stack_visit(&carbstack, gc);
-    });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_WARNOUT("unimplemented carburetta command \"" << Rps_QuotedC_String(cmd)
-                << "\" in environment " << RPS_OBJECT_DISPLAY(_f.obenv)
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "carburetta command start"));
-#warning incomplete rps_do_carburetta_command
-  /// TODO: should probably use generated scanning routines
-  /// the last statement should be the following cleanup
-  rpscarbrepl_stack_cleanup(&carbstack);
-  RPS_POSSIBLE_BREAKPOINT();
+  Rps_StringTokenSource toksrc(cmd, std::string(title));
+  rps_do_carburetta_tokensrc(&_, _f.obenv, &toksrc, title);
 }  // end rps_do_carburetta_command
 
 
