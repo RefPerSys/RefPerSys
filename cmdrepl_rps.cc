@@ -777,7 +777,7 @@ Rps_PayloadEnvironment::output_payload(std::ostream&out, unsigned depth, unsigne
   std::vector<Rps_ObjectRef> attrvect(nbobjmap);
 #warning Rps_PayloadEnvironment::output_payload need a fix
 #if 0 && badcode
-  // TODO: should be replaced by using do_each_entry
+  // TODO: should be replaced by using do_each_obmap_entry
   for (auto it : obm_map)
     attrvect.push_back(it.first);
 #endif
