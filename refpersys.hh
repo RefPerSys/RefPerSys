@@ -5286,10 +5286,10 @@ public:
     obm_descr = d;
   };
   template <typename Data_t>
-  void do_each_obmap_entry(Data_t tpd, std::function<bool(Data_t, Rps_ObjectRef,Rps_Value,void*)>, void*clientdata=nullptr) const {
+  void do_each_obmap_entry(Data_t tpd, std::function<bool(Data_t, Rps_ObjectRef,Rps_Value,void*)>fun, void*clientdata=nullptr) const {
     for (auto it: obm_map)
       {
-        if (f(tpd, it.first, it.second, clientdata))
+        if (fun(tpd, it.first, it.second, clientdata))
           break;
       }
   }; ///-end templated do_each_obmap_entry
