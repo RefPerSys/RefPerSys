@@ -5226,7 +5226,8 @@ public:
 
 
 extern "C" rpsldpysig_t rpsldpy_objmap;
-// Rps_PayloadObjMap contains a std::map of objects to values.
+// Rps_PayloadObjMap contains a std::map of objects to values and a
+// descriptive value and is subclassed by Rps_PayloadEnvironment
 class Rps_PayloadObjMap : public Rps_Payload
 {
   std::map<Rps_ObjectRef,Rps_Value> obm_map;
@@ -5260,6 +5261,7 @@ protected:
     return false;
   };
 public:
+  size_t get_obmap_size() const { return obm_map.size(); };
   virtual const std::string payload_type_name(void) const
   {
     return "objmap";
@@ -5331,6 +5333,11 @@ extern "C" int rps_environment_remove_deep_binding(Rps_CallFrame*callframe,
     Rps_ObjectRef*penvob=nullptr,
     Rps_Value*poldval=nullptr);
 
+
+
+
+
+
 class Rps_PayloadEnvironment : public Rps_PayloadObjMap
 {
   Rps_ObjectRef env_parent;
@@ -5364,6 +5371,7 @@ public:
   {
     return "environment";
   };
+  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
   inline Rps_PayloadEnvironment(Rps_ObjectZone*obz, Rps_Loader*ld);
   static Rps_ObjectZone* make(Rps_CallFrame*cf, Rps_ObjectRef classob=nullptr, Rps_ObjectRef spaceob=nullptr);
   static Rps_ObjectZone* make_with_parent_environment(Rps_CallFrame*cf,

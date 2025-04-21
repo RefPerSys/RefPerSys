@@ -748,6 +748,55 @@ Rps_PayloadEnvironment::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 } // end Rps_PayloadEnvironment::dump_json_content
 
 void
+Rps_PayloadEnvironment::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+{
+  /// most of the code below is "temporarily" duplicated from
+  /// Rps_PayloadObjMap::output_payload in file morevalues_rps.cc
+  /// we hope to later (in 2025?) have this C++ code generated at dump time
+  RPS_ASSERT(depth <= maxdepth);
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  int nbobjmap = (int) get_obmap_size();
+  if (nbobjmap==0)
+    out << BOLD_esc << "-empty environment-" << NORM_esc;
+  else
+    out << BOLD_esc << "-environment of " << nbobjmap
+	<< ((nbobjmap>1)?" entries":" entry");
+  Rps_Value dv = get_descr();
+  if (dv)
+    out << " described by " << NORM_esc << Rps_OutputValue(dv, depth, maxdepth) << std::endl;
+  else
+    out << " plain" << NORM_esc << std::endl;
+  std::vector<Rps_ObjectRef> attrvect(nbobjmap);
+#warning Rps_PayloadEnvironment::output_payload need a fix
+#if 0 && badcode
+  // TODO: should be replaced by using do_each_entry
+  for (auto it : obm_map)
+    attrvect.push_back(it.first);
+#endif
+  rps_sort_object_vector_for_display(attrvect);
+  for (int ix=0; ix<(int)nbobjmap; ix++)
+    {
+      const Rps_ObjectRef curattr = attrvect[ix];
+      const Rps_Value curval = get_obmap(curattr);
+      out << BOLD_esc << "*"
+          << NORM_esc << curattr << ": "
+          << Rps_OutputValue(curval, depth, maxdepth)
+          << std::endl;
+    };
+#warning Rps_PayloadEnvironment::output_payload incomplete
+} // end Rps_PayloadEnvironment::output_payload
+
+
+
+void
 rpsldpy_environment (Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);

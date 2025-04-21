@@ -712,6 +712,9 @@ Rps_PayloadObjMap::put_obmap(Rps_ObjectRef obkey, Rps_Value val)
 void
 Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  /// most of the code below is duplicated in
+  /// Rps_PayloadEnvironment::output_payload in file cmdrepl_rps.cc
+  /// we hope to later (in 2025?) have this C++ code generated at dump time
   RPS_ASSERT(depth <= maxdepth);
   bool ontty =
     (&out == &std::cout)?isatty(STDOUT_FILENO)
