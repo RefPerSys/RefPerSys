@@ -63,6 +63,8 @@ Rps_TokenSource::Rps_TokenSource(std::string name)
     toksrc_ptrnameval(nullptr)
 {
   RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource @" << this << " named " << name
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource constr"));
 } // end Rps_TokenSource::Rps_TokenSource
 
 void
@@ -165,6 +167,8 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
 
 Rps_TokenSource::~Rps_TokenSource()
 {
+  RPS_DEBUG_LOG(REPL, "~Rps_TokenSource " << toksrc_name << " @" << this
+		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "~Rps_TokenSource"));
   toksrc_name.clear();
   toksrc_line= -1;
   toksrc_col= -1;
@@ -173,7 +177,8 @@ Rps_TokenSource::~Rps_TokenSource()
 } // end Rps_TokenSource::~Rps_TokenSource
 
 Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
-  : Rps_TokenSource(""), toksrc_input_stream()
+  : Rps_TokenSource(std::string{"stream "}+path),
+    toksrc_input_stream()
 {
   wordexp_t wx= {};
   int err = wordexp(path.c_str(), &wx, WRDE_SHOWERR);
