@@ -613,7 +613,7 @@ test00: refpersys
 
 test01: refpersys
 	@echo test01 testing simple show help with a lot of debug
-	./refpersys -AREPL -c 'show help' -B --run-name=test01
+	./refpersys -AREPL,CMD -c 'show help' -B --run-name=test01
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
 test01a:  refpersys
