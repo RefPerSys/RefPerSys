@@ -430,9 +430,13 @@ Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
 bool
 Rps_MemoryFileTokenSource::get_line(void)
 {
-#warning unimplemented Rps_MemoryFileTokenSource::get_line
-  RPS_FATALOUT("unimplemented Rps_MemoryFileTokenSource::get_line " << *this);
-  return false;
+ const char*c = toksrcmfil_line;
+ while (c<toksrcmfil_end && *c != '\n') c++;
+ if (c<toksrcmfil_end && *c == '\n') {
+   c++;
+   starting_new_input_line();
+ };
+ return c > toksrcmfil_line;
 } // end Rps_MemoryFileTokenSource::get_line
 
 
