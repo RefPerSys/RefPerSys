@@ -619,8 +619,8 @@ test01: refpersys
 test01a:  refpersys
 	@echo test01a testing simple show class with a lot of debug
 	./refpersys -AREPL -c 'show class' -B --run-name=test01a
-
 	@printf '\n\n\n////test01 FINISHED¤\n'
+
 test01b: refpersys
 	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=test01b
 	@printf '\n\n\n////test01b FINISHED¤\n'
