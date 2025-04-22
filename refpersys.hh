@@ -5261,7 +5261,10 @@ protected:
     return false;
   };
 public:
-  size_t get_obmap_size() const { return obm_map.size(); };
+  size_t get_obmap_size() const
+  {
+    return obm_map.size();
+  };
   virtual const std::string payload_type_name(void) const
   {
     return "objmap";
@@ -5286,7 +5289,8 @@ public:
     obm_descr = d;
   };
   template <typename Data_t>
-  void do_each_obmap_entry(Data_t tpd, std::function<bool(Data_t, Rps_ObjectRef,Rps_Value,void*)>fun, void*clientdata=nullptr) const {
+  void do_each_obmap_entry(Data_t tpd, std::function<bool(Data_t, Rps_ObjectRef,Rps_Value,void*)>fun, void*clientdata=nullptr) const
+  {
     for (auto it: obm_map)
       {
         if (fun(tpd, it.first, it.second, clientdata))

@@ -768,7 +768,7 @@ Rps_PayloadEnvironment::output_payload(std::ostream&out, unsigned depth, unsigne
     out << BOLD_esc << "-empty environment-" << NORM_esc;
   else
     out << BOLD_esc << "-environment of " << nbobjmap
-	<< ((nbobjmap>1)?" entries":" entry");
+        << ((nbobjmap>1)?" entries":" entry");
   Rps_Value dv = get_descr();
   if (dv)
     out << " described by " << NORM_esc << Rps_OutputValue(dv, depth, maxdepth) << std::endl;
