@@ -1789,19 +1789,22 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
   for (int cix=0; cix<nbcmd; cix++)
     {
       RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: "
-		    << cmdvec[cix]);
+                    << cmdvec[cix]);
       if (cix % 4 == 0)
         usleep(128*1024);
       RPS_POSSIBLE_BREAKPOINT();
 #warning improve bufpath to contain start of command
       char bufpath[64];
+      int n = -1;
       memset (bufpath, 0, sizeof(bufpath));
-      snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]", cix);
+      n = snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]'%s'", cix,
+                   Rps_Cjson_String(cmdvec[cix]).c_str());
+      RPS_ASSERT(n>0);
       /// do the command
       try
         {
           rps_do_one_repl_command(&_, _f.envob, cmdvec[cix],
-			/*title:*/bufpath);
+                                  /*title:*/bufpath);
           RPS_DEBUG_LOG(REPL, "REPL command " << Rps_Cjson_String(cmdvec[cix])
                         << " done");
         }
