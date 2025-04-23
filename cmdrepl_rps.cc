@@ -1092,8 +1092,15 @@ Rps_Object_Display::output_display(std::ostream&out) const
        << NORM_esc
        << std::endl << "  of class "
        << _dispobref->get_class()
-       << std::endl
-       << " in space " << _dispobref->get_space() << std::endl;
+       << std::endl;
+  {
+    Rps_ObjectRef obspace =  _dispobref->get_space();
+    if (!obspace.is_empty())
+      out <<  "¤ in space " << _dispobref->get_space() << std::endl;
+    else
+      out << BOLD_esc << "¤ temporary" << NORM_esc << " space"
+	  << std::endl;
+  };
   double obmtim = _dispobref->get_mtime();
   {
     char mtimbuf[64];
