@@ -85,6 +85,13 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token KEYW_OBJECT
 %token_action _Pragma("message \"token_action for KEYW_OBJECT\"");
 
+%token KEYW_PUT
+%token_action _Pragma("message \"token_action for KEYW_PUT\"");
+
+%token DOT
+%token_action _Pragma("message \"token_action for DOT\"");
+%token ASSIGN
+%token_action _Pragma("message \"token_action for ASSIGN\"");
 //
 
 %grammar%
@@ -140,6 +147,12 @@ replnt_command: KEYW_DISPLAY replnt_expr {
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $1);
 $$ = 1;
+}
+
+replnt_command: KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
+   _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
+   RPS_DEBUG_LOG(REPL, "put carburetta command:" << $1 << " attr " << $3 << " expr " << $5);
+   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
 }
 
 replnt_command: error {
