@@ -775,12 +775,14 @@ Rps_PayloadEnvironment::output_payload(std::ostream&out, unsigned depth, unsigne
   else
     out << " plain" << NORM_esc << std::endl;
   std::vector<Rps_ObjectRef> attrvect(nbobjmap);
-#warning Rps_PayloadEnvironment::output_payload need a fix
-#if 0 && badcode
-  // TODO: should be replaced by using do_each_obmap_entry
-  for (auto it : obm_map)
-    attrvect.push_back(it.first);
-#endif
+  do_each_obmap_entry<std::vector<Rps_ObjectRef>&>(attrvect,
+      [&](std::vector<Rps_ObjectRef>&atvec,
+          Rps_ObjectRef atob,
+          [[unused]]Rps_Value, [[unused]]void*)
+  {
+    atvec.push_back(atob);
+    return false;
+  });
   rps_sort_object_vector_for_display(attrvect);
   for (int ix=0; ix<(int)nbobjmap; ix++)
     {
@@ -791,7 +793,13 @@ Rps_PayloadEnvironment::output_payload(std::ostream&out, unsigned depth, unsigne
           << Rps_OutputValue(curval, depth, maxdepth)
           << std::endl;
     };
-#warning Rps_PayloadEnvironment::output_payload incomplete
+  Rps_ObjectRef parenvob = get_parent_environment();
+  if (!parenvob)
+    out << BOLD_esc << "- no parent env -" << NORM_esc
+        << std::endl;
+  else
+    out << BOLD_esc << "- parent env: " << NORM_esc;
+  out << parenvob << BOLD_esc << "-" << NORM_esc << std::endl;
 } // end Rps_PayloadEnvironment::output_payload
 
 
@@ -1099,7 +1107,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
       out <<  "¤ in space " << _dispobref->get_space() << std::endl;
     else
       out << BOLD_esc << "¤ temporary" << NORM_esc << " space"
-	  << std::endl;
+          << std::endl;
   };
   double obmtim = _dispobref->get_mtime();
   {
