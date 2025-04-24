@@ -1569,6 +1569,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                  Rps_Value parsmainv;
                  Rps_Value parsextrav;
                  Rps_Value cmdparserv;
+                 Rps_Value tok0, tok1, tok2;
                 );
   _f.obenv = obenvarg;
   if (!title)
@@ -1586,11 +1587,17 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                     << Rps_Cjson_String(cmd));
       return;
     }
+  RPS_POSSIBLE_BREAKPOINT();
+  _f.tok0 = intoksrc.lookahead_token(&_, 0);
+  _f.tok1 = intoksrc.lookahead_token(&_, 1);
+  _f.tok2 = intoksrc.lookahead_token(&_, 2);
   std::string commandpos = intoksrc.position_str();
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << "'"
                 << Rps_Cjson_String(cmd) << "'" << std::endl
                 << "… intoksrc:" << intoksrc
-                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << " tok0=" << _f.tok0 << " tok1=" << _f.tok1
+                << " tok2=" << _f.tok2);
   /*** TODO:
        For debugging purposes, we want builtin commands like !parse_term etc...
    ***/
