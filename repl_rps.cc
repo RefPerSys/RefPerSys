@@ -1807,7 +1807,7 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
       n = snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]'%s'", cix,
                    Rps_Cjson_String(cmdvec[cix]).c_str());
       RPS_ASSERT(n>0);
-      if (n>sizeof(bufpath)-5)
+      if (n>(int)sizeof(bufpath)-5)
         {
           n = snprintf(bufpath, sizeof(bufpath), "ReplCmd{%d}", cix);
           RPS_DEBUG_LOG(REPL, "REPL " << bufpath
