@@ -10,12 +10,13 @@
 /// Purpose: build a plugin for RefPerSys
 ///
 /// Caveat: this do-build-refpersys-plugin program should run quickly
-/// and uses ninja from ninja-build.org. It could leak memory.
+/// and uses GNU make or ninja from ninja-build.org.  It could leak
+/// memory.
 ///
 /// invocation: do-build-refpersys-plugin <plugin-c++-source> -o <plugin-shared-object>
 /// e.g. do-build-refpersys-plugin plugins_dir/foo.cc -o /tmp/foo.so
 /// other program options are:
-/// 	./do-build-refpersys-plugin --version | -V #give also defaults
+///   ./do-build-refpersys-plugin --version | -V #give also defaults
 ///     ./do-build-refpersys-plugin --verbose | -v #verbose execution
 ///     ./do-build-refpersys-plugin --output=PLUGIN | -o PLUGIN #output generated .so
 ///     ./do-build-refpersys-plugin --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files
@@ -174,12 +175,12 @@ bp_usage(void)
   std::cout << '\t' << bp_progname << " --plugin-src=DIRNAME | -s DIRNAME #plugin source directory" << std::endl;
   std::cout << '\t' << bp_progname << " --guile=GUILE_CODE | -G GUILE_CODE #GUILE code for GNU make" << std::endl;
   std::cout << '\t' << bp_spaces << "if GUILE_CODE starts with a left-paren, space or semicolon, it is passed to the interpreter inside make"
-	    << std::endl;
+            << std::endl;
   std::cout << '\t' << bp_spaces << "if GUILE_CODE starts with a pipe or exclamation, it is popen-ed"
-	    << std::endl;
+            << std::endl;
   std::cout << '\t' << bp_spaces << "otherwise GUILE_CODE is a file with GNU Guile Scheme code"
-	    << std::endl;
-  
+            << std::endl;
+
   std::cout << '\t' << bp_progname << " --help | -h #this help" << std::endl;
   std::cout << "\t #from " << __FILE__ << ':' << __LINE__ << " git " << bp_git_id << std::endl;
   std::cout << "\t #see refpersys.org and github.com/RefPerSys/RefPerSys" << std::endl;
@@ -330,11 +331,11 @@ bp_prog_options(int argc, char**argv)
           fflush(nullptr);
         }
         break;
-	case 'G': // --guile GUILECODE
-	  {
+        case 'G': // --guile GUILECODE
+        {
 #warning GUILECODE not handled
-	  }
-	  break;
+        }
+        break;
         } // end switch opt
     }
   while (opt > 0 && ix < argc);
@@ -500,7 +501,7 @@ main(int argc, char**argv, const char**env)
                 bp_plugin_binary);
     else
       snprintf (buildcmd, sizeof(buildcmd), "%s -C %s %s",
-                rps_plugin_builder,
+                rps_gnu_make,
                 rps_topdirectory,
                 bp_plugin_binary);
     printf("%s [%s:%d] running gmake as \n  %s"
