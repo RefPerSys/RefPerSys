@@ -76,6 +76,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins/rpsplug_createdelim.cc -o /tmp/rpsplug_createdelim.so" ;;
+ ** compile-command: "cd ..; ./do-build-refpersys-plugin -v plugins_dir/rpsplug_createdelim.cc -o /tmp/rpsplug_createdelim.so" ;;
  ** End: ;;
  ****************/
