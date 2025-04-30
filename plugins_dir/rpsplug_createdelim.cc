@@ -23,6 +23,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obclasscommut;
                            Rps_ObjectRef obclassoper;
                            Rps_ObjectRef obclassrepldelim;
+                           Rps_ObjectRef obdelim;
                            Rps_ObjectRef obreplprecedence;
                            Rps_Value strname;
                 );
@@ -49,8 +50,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
       for (const char*pc = plugarg; allpunct && *pc; pc++)
         allpunct = ispunct(*pc);
       argispunct = allpunct;
-    };
-  if (isalpha(plugarg[0]))
+    }
+  else if (isalpha(plugarg[0]))
     {
       bool allident = true;
       for (const char*pc = plugarg; allident && *pc; pc++)
@@ -61,6 +62,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
     RPS_FATALOUT("rpsplug_createdelim with bad argument "
                  <<  Rps_QuotedC_String(plugarg)
                  << " not identifier or all-delim");
+  _f.obdelim =
+    Rps_ObjectRef::make_object(&_,
+                               _f.obclassrepldelim,
+                               Rps_ObjectRef::root_space());
+#warning still incomplete rpsplug_createdelim.cc
+  /* TODO: should fill the delimiter and register it appropriately */
   RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
                 << Rps_QuotedC_String(plugarg)
                 << " and extra name " << Rps_QuotedC_String(xtraname)
