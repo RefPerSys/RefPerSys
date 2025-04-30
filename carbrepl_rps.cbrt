@@ -398,8 +398,9 @@ extern "C" const size_t rpscarbrepl_stack_align;
 const size_t rpscarbrepl_stack_size = sizeof(struct rpscarbrepl_stack);
 const size_t rpscarbrepl_stack_align = alignof(struct rpscarbrepl_stack);
 /****************
- **      t                     for Emacs...
+ **                           for Emacs...
  ** Local Variables: ;;
+ ** mode: c++ ;;
  ** compile-command: "make _carbrepl_rps.o && make" ;;
  ** End: ;;
  ****************/
