@@ -24,6 +24,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obclassoper;
                            Rps_ObjectRef obclassrepldelim;
                            Rps_ObjectRef obdelim;
+                           Rps_ObjectRef obdictdelim;
                            Rps_ObjectRef obreplprecedence;
                            Rps_Value strname;
                 );
@@ -36,6 +37,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
   const char*xtraname = rps_get_extra_arg("name");
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassrepldelim);
+  _f.obdictdelim = RPS_ROOT_OB(627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
+  RPS_ASSERT(_f.obdictdelim);
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
