@@ -65,10 +65,18 @@ rps_do_plugin(const Rps_Plugin* plugin)
     RPS_FATALOUT("rpsplug_createdelim with bad argument "
                  <<  Rps_QuotedC_String(plugarg)
                  << " not identifier or all-delim");
+  std::lock_guard<std::recursive_mutex> gudictdelim(*_f.obdictdelim->objmtxptr());
   _f.obdelim =
     Rps_ObjectRef::make_object(&_,
                                _f.obclassrepldelim,
                                Rps_ObjectRef::root_space());
+  std::lock_guard<std::recursive_mutex> gunewdelim(*_f.obdelim->objmtxptr());
+  auto paylstrdict = _f.obdictdelim->get_dynamic_payload<Rps_PayloadStringDict>();
+  if (!paylstrdict)
+    RPS_FATALOUT("the delimiter dictionary " << _f.obdictdelim << " has a wrong payload");
+  paylstrdict->add(plugarg, _f.obdelim);
+  // TODO: add the name and the delimiter attributes and the comment
+  // one inside _f.obdelim
 #warning still incomplete rpsplug_createdelim.cc
   /* TODO: should fill the delimiter and register it appropriately */
   RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
