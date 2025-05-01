@@ -501,7 +501,7 @@ main(int argc, char**argv, const char**env)
     BP_NOP_BREAKPOINT();
     if (bp_verbose)
       snprintf (buildcmd, sizeof(buildcmd), "%s -v -C %s %s",
-                rps_plugin_builder,
+                rps_gnu_make,
                 rps_topdirectory,
                 bp_plugin_binary);
     else
