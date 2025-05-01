@@ -63,6 +63,9 @@
 #define BP_HEAD_LINES_THRESHOLD 512
 #define BP_MAX_OPTIONS 32
 
+/// a macro to ease GDB breakpoint
+#define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop");} while(1)
+
 #warning perhaps replace pkg-config with "https://github.com/pkgconf/pkgconf"
 
 extern "C" {
@@ -413,6 +416,7 @@ int
 main(int argc, char**argv, const char**env)
 {
   bp_options_ptr = bp_options_arr;
+  BP_NOP_BREAKPOINT();
   std::string bp_first_base;
 #warning do-build-refpersys-plugin should be much improved
   ///TODO to accept secondary source files for the plugin and more
@@ -494,6 +498,7 @@ main(int argc, char**argv, const char**env)
   {
     char buildcmd[384];
     memset (buildcmd, 0, sizeof(buildcmd));
+    BP_NOP_BREAKPOINT();
     if (bp_verbose)
       snprintf (buildcmd, sizeof(buildcmd), "%s -v -C %s %s",
                 rps_plugin_builder,
@@ -512,6 +517,7 @@ main(int argc, char**argv, const char**env)
            (int)bp_vect_cpp_sources.size(),
            bp_vect_cpp_sources.at(0).c_str());
     fflush (nullptr);
+    BP_NOP_BREAKPOINT();
     int ex = system(buildcmd);
     sync ();
     if (ex)
