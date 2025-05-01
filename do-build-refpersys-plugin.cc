@@ -64,7 +64,7 @@
 #define BP_MAX_OPTIONS 32
 
 /// a macro to ease GDB breakpoint
-#define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop");} while(1)
+#define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop");} while(0)
 
 #warning perhaps replace pkg-config with "https://github.com/pkgconf/pkgconf"
 
