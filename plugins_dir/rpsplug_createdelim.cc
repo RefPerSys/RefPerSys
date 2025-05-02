@@ -24,9 +24,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obclassoper;
                            Rps_ObjectRef obclassrepldelim;
                            Rps_ObjectRef obdelim;
+                           Rps_ObjectRef obsymbol;
                            Rps_ObjectRef obdictdelim;
                            Rps_ObjectRef obreplprecedence;
                            Rps_Value strname;
+                           Rps_Value strdelim;
+                           Rps_Value strcomment;
                 );
 #define MYARGMAXLEN 64
   char argcopy[MYARGMAXLEN];
@@ -35,6 +38,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   memset (argcopy, 0, MYARGMAXLEN);
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*xtraname = rps_get_extra_arg("name");
+  const char*comment = rps_get_extra_arg("comment");
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassrepldelim);
   _f.obdictdelim = RPS_ROOT_OB(627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
@@ -61,10 +65,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
         allident = isalnum(*pc) || *pc=='_';
       argisident = allident;
     }
-  if (!argispunct && !argisident)
+  if (!plugarg[0] && !argispunct && !argisident)
     RPS_FATALOUT("rpsplug_createdelim with bad argument "
                  <<  Rps_QuotedC_String(plugarg)
                  << " not identifier or all-delim");
+  _f.strdelim = Rps_StringValue(plugarg);
   std::lock_guard<std::recursive_mutex> gudictdelim(*_f.obdictdelim->objmtxptr());
   _f.obdelim =
     Rps_ObjectRef::make_object(&_,
@@ -75,10 +80,17 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!paylstrdict)
     RPS_FATALOUT("the delimiter dictionary " << _f.obdictdelim << " has a wrong payload");
   paylstrdict->add(plugarg, _f.obdelim);
-  // TODO: add the name and the delimiter attributes and the comment
-  // one inside _f.obdelim
+  _f.obdelim->put_attr(RPS__ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
+                       _f.strdelim);
+  if (xtraname && isalpha(xtraname))
+    {
+#warning handling of name is incomplete
+      _f.strname = Rps_StringValue(xtraname);
+      _f.obdelim->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+                           _f.namestr);
+    }
+  // TODO: add the name and the comment attributes inside _f.obdelim
 #warning still incomplete rpsplug_createdelim.cc
-  /* TODO: should fill the delimiter and register it appropriately */
   RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
                 << Rps_QuotedC_String(plugarg)
                 << " and extra name " << Rps_QuotedC_String(xtraname)
