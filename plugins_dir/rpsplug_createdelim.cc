@@ -25,7 +25,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obclassrepldelim;
                            Rps_ObjectRef obdelim;
                            Rps_ObjectRef obsymbol;
-			   Rps_ObjectRef obold;
+                           Rps_ObjectRef obold;
                            Rps_ObjectRef obdictdelim;
                            Rps_ObjectRef obreplprecedence;
                            Rps_Value strname;
@@ -40,6 +40,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*xtraname = rps_get_extra_arg("name");
   const char*comment = rps_get_extra_arg("comment");
+  RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
+                << Rps_QuotedC_String(plugarg)
+                << " and extra name " << Rps_QuotedC_String(xtraname));
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassrepldelim);
   _f.obdictdelim = RPS_ROOT_OB(627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
@@ -86,32 +89,36 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (xtraname && isalpha(xtraname))
     {
       if (!Rps_PayloadSymbol::valid_name(xtraname))
-	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
-		     << "' is invalid");
+        RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
+                     << "' is invalid");
       _f.obold = Rps_PayloadSymbol::find_named_object(xtraname);
       if (_f.obold)
-	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
-		     << "' is already used by " << _f.obold);
+        RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
+                     << "' is already used by " << _f.obold);
       _f.strname = Rps_StringValue(xtraname);
       _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, _f.strname);
       _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-                           _f.namestr);
+                            _f.namestr);
       _f.obsymbol->put_attr(RPS__ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
-			    _f.obdelim);
+                            _f.obdelim);
       _f.obdelim->put_attr2(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-			    _f.namestr,
-			    RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
-			    _f.obsymbol);
+                            _f.namestr,
+                            RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
+                            _f.obsymbol);
     }
-  RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
-                << Rps_QuotedC_String(plugarg)
-                << " and extra name " << Rps_QuotedC_String(xtraname));
-  /** TODO: put the comment...
-   *
-   **/
-  RPS_FATALOUT("rpsplug_createdelim not implemented for "
-               <<  Rps_QuotedC_String(plugarg));
-#warning unimplemented rpsplug_createdelim
+  if (comment && comment[0])
+    {
+      _f.strcomment = Rps_StringValue(comment);
+      _f.obsymbol->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol)
+                            _f.strcomment);
+    }
+  RPS_INFORMOUT("plugin " << plugin->plugin_name
+                << " created delimiter:" << std::endl
+                << RPS_OBJECT_DISPLAY(_f.obdelim)
+                << std::endl
+                << "... with symbol:" << std::endl
+                << RPS_OBJECT_DISPLAY(_f.obsymbol)
+                << std::endl);
 } // end rps_do_plugin
 
 /****************
