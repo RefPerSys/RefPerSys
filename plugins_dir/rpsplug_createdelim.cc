@@ -25,6 +25,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obclassrepldelim;
                            Rps_ObjectRef obdelim;
                            Rps_ObjectRef obsymbol;
+			   Rps_ObjectRef obold;
                            Rps_ObjectRef obdictdelim;
                            Rps_ObjectRef obreplprecedence;
                            Rps_Value strname;
@@ -84,6 +85,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
                        _f.strdelim);
   if (xtraname && isalpha(xtraname))
     {
+      _f.obold = Rps_PayloadSymbol::find_named_object(xtraname);
+      if (_f.obold)
+	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
+		     << "' is already used by " << _f.obold);
 #warning handling of name is incomplete
       _f.strname = Rps_StringValue(xtraname);
       _f.obdelim->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
