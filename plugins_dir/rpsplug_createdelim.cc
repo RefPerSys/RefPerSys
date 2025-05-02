@@ -89,8 +89,16 @@ rps_do_plugin(const Rps_Plugin* plugin)
       if (_f.obold)
 	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
 		     << "' is already used by " << _f.obold);
-#warning handling of name is incomplete
+      if (!Rps_PayloadSymbol::valid_name(xtraname))
+	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
+		     << "' is invalid");
       _f.strname = Rps_StringValue(xtraname);
+      _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, _f.strname);
+      _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+                           _f.namestr);
+      _f.obsymbol->put_attr(RPS__ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
+			    _f.obdelim);
+      /// TODO: the symbol payload should have the delim as its value.
       _f.obdelim->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                            _f.namestr);
     }
