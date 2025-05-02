@@ -525,29 +525,30 @@ main(int argc, char**argv, const char**env)
   }
   /// temporary files should be removed using at(1) utility in ten minutes
   /// see https://linuxize.com/post/at-command-in-linux/
-  {
-    char atcmd[80];
-    memset (atcmd, 0, sizeof(atcmd));
-    snprintf(atcmd, sizeof(atcmd), "/bin/at now + 10 minutes");
-    FILE *p = popen(atcmd, "w");
-    if (!p)
-      {
-        fprintf(stderr, "%s won't remove later file %s\n",
-                bp_progname, bp_temp_ninja.c_str());
-        return 0;
-      }
-    fprintf (p, "/bin/rm -f '%s'\n", bp_temp_ninja.c_str());
-    if (symlkbuf[0])
-      fprintf(p, "/bin/rm -f '%s'\n", symlkbuf);
-    pclose(p);
-  }
-  if (bp_verbose)
+  if (!bp_temp_ninja.empty() || symlkbuf[0])
     {
-      printf("%s: will remove ninja temporary script %s in ten minutes thru /bin/at\n",
-             bp_progname, bp_temp_ninja.c_str());
+      char atcmd[80];
+      memset (atcmd, 0, sizeof(atcmd));
+      snprintf(atcmd, sizeof(atcmd), "/bin/at now + 10 minutes");
+      FILE *p = popen(atcmd, "w");
+      if (!p)
+        {
+          fprintf(stderr, "%s won't remove later file %s\n",
+                  bp_progname, bp_temp_ninja.c_str());
+          return 0;
+        }
+      fprintf (p, "/bin/rm -f '%s'\n", bp_temp_ninja.c_str());
       if (symlkbuf[0])
-        printf("%s: will remove symlink %s in ten minutes thru /bin/at\n",
-               bp_progname, symlkbuf);
+        fprintf(p, "/bin/rm -f '%s'\n", symlkbuf);
+      pclose(p);
+      if (bp_verbose)
+        {
+          printf("%s: will remove ninja temporary script %s in ten minutes thru /bin/at\n",
+                 bp_progname, bp_temp_ninja.c_str());
+          if (symlkbuf[0])
+            printf("%s: will remove symlink %s in ten minutes thru /bin/at\n",
+                   bp_progname, symlkbuf);
+        }
     }
   fflush(nullptr);
   bp_options_ptr = nullptr;
