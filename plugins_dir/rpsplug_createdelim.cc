@@ -85,30 +85,28 @@ rps_do_plugin(const Rps_Plugin* plugin)
                        _f.strdelim);
   if (xtraname && isalpha(xtraname))
     {
+      if (!Rps_PayloadSymbol::valid_name(xtraname))
+	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
+		     << "' is invalid");
       _f.obold = Rps_PayloadSymbol::find_named_object(xtraname);
       if (_f.obold)
 	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
 		     << "' is already used by " << _f.obold);
-      if (!Rps_PayloadSymbol::valid_name(xtraname))
-	RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
-		     << "' is invalid");
       _f.strname = Rps_StringValue(xtraname);
       _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, _f.strname);
       _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                            _f.namestr);
       _f.obsymbol->put_attr(RPS__ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
 			    _f.obdelim);
-      /// TODO: the symbol payload should have the delim as its value.
-      _f.obdelim->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-                           _f.namestr);
+      _f.obdelim->put_attr2(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+			    _f.namestr,
+			    RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
+			    _f.obsymbol);
     }
-  // TODO: add the name and the comment attributes inside _f.obdelim
-#warning still incomplete rpsplug_createdelim.cc
   RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
                 << Rps_QuotedC_String(plugarg)
-                << " and extra name " << Rps_QuotedC_String(xtraname)
-                << " and extra precedence " << Rps_QuotedC_String(xtraprecedence));
-  /** TODO:
+                << " and extra name " << Rps_QuotedC_String(xtraname));
+  /** TODO: put the comment...
    *
    **/
   RPS_FATALOUT("rpsplug_createdelim not implemented for "
