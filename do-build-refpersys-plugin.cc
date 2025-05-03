@@ -419,9 +419,18 @@ bp_prog_options(int argc, char**argv)
 int
 main(int argc, char**argv, const char**env)
 {
+  bp_progname = argv[0];
+  bp_argc_prog = argc;
+  bp_argv_prog = argv;
+  bp_env_prog = env;
   bp_options_ptr = bp_options_arr;
   BP_NOP_BREAKPOINT();
   std::string bp_first_base;
+  if (chdir(rps_topdirectory)) {
+    std::clog << bp_progname << " failed to chdir " << rps_topdirectory
+	      << " : " << strerror(errno) << std::endl;
+    exit(EXIT_FAILURE);
+  };
 #warning do-build-refpersys-plugin should be much improved and fixed
   /// TODO: we need to chdir into rps_topdirectory
   /// we need to replace the source files with their realpath(3)
@@ -432,10 +441,6 @@ main(int argc, char**argv, const char**env)
   
   ///TODO to accept secondary source files for the plugin and more
   ///program options and improve GNUmakefile
-  bp_progname = argv[0];
-  bp_argc_prog = argc;
-  bp_argv_prog = argv;
-  bp_env_prog = env;
   memset (bp_hostname, 0, sizeof(bp_hostname));
   gethostname(bp_hostname, sizeof(bp_hostname)-1);
   char symlkbuf[384];
