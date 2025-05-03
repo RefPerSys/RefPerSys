@@ -66,7 +66,11 @@
 /// a macro to ease GDB breakpoint
 #define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop");} while(0)
 
+#pragma message compiling __FILE__
+
 #warning perhaps replace pkg-config with "https://github.com/pkgconf/pkgconf"
+
+#warning fix issue #24 on github.com/RefPerSys/RefPerSys
 
 extern "C" {
 #include "__timestamp.c"
@@ -418,7 +422,14 @@ main(int argc, char**argv, const char**env)
   bp_options_ptr = bp_options_arr;
   BP_NOP_BREAKPOINT();
   std::string bp_first_base;
-#warning do-build-refpersys-plugin should be much improved
+#warning do-build-refpersys-plugin should be much improved and fixed
+  /// TODO: we need to chdir into rps_topdirectory
+  /// we need to replace the source files with their realpath(3)
+  /// we need to build the plugin in the rps_topdirectory
+
+  /// passing -C to gmake is wrong; the chdir should be done before
+  /// running gmake...
+  
   ///TODO to accept secondary source files for the plugin and more
   ///program options and improve GNUmakefile
   bp_progname = argv[0];
@@ -562,6 +573,6 @@ main(int argc, char**argv, const char**env)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "make do-build-refpersys-plugin" ;;
+ ** compile-command: "cd $RPS_TOPDIR && make do-build-refpersys-plugin" ;;
  ** End: ;;
  ****************/
