@@ -15,6 +15,13 @@
 
 #include "refpersys.hh"
 
+extern "C" const char rpsplugdelim_gitid[];
+extern "C" const char rpsplugdelim_shortgitid[];
+extern "C" const char rpsplugdelim_date[];
+const char rpsplugdelim_gitid[]=RPS_GITID;
+const char rpsplugdelim_shortgitid[]= RPS_SHORTGITID;
+const char rpsplugdelim_date[]=__DATE__;
+
 void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
