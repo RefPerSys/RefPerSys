@@ -272,7 +272,7 @@ bp_prog_options(int argc, char**argv)
               if (!S_ISDIR(dirstat.st_mode))
                 {
                   std::cerr << bp_progname
-                            << " : specified plugin soursr directory " << optarg
+                            << " : specified plugin source directory " << optarg
                             << " is not a directory." << std::endl;
                   exit(EXIT_FAILURE);
                 };
@@ -371,13 +371,21 @@ bp_prog_options(int argc, char**argv)
               exit(EXIT_FAILURE);
             };
         }
-      if (bp_verbose)
-        {
-          printf("%s adding plugin C++ source file#%d %s\n",
-                 bp_progname, srcix, curarg.c_str());
-          fflush(nullptr);
-        };
-      bp_vect_cpp_sources.push_back(curarg);
+      {
+        std::string realfile;
+        char*rp = realpath(curarg.c_str(),nullptr);
+        if (rp) realfile.assign(rp);
+        else
+          realfile = curarg;
+        if (bp_verbose)
+          {
+            printf("%s adding plugin C++ source file#%d %s really %s\n",
+                   bp_progname, srcix, curarg.c_str(), realfile.c_str());
+            fflush(nullptr);
+          };
+        bp_vect_cpp_sources.push_back(realfile);
+        /// dont bother freeing rp....
+      }
       optind++;
     };        // end while(optind<argc)
   asm volatile ("nop; nop; nop; nop");
@@ -426,19 +434,8 @@ main(int argc, char**argv, const char**env)
   bp_options_ptr = bp_options_arr;
   BP_NOP_BREAKPOINT();
   std::string bp_first_base;
-  if (chdir(rps_topdirectory)) {
-    std::clog << bp_progname << " failed to chdir " << rps_topdirectory
-	      << " : " << strerror(errno) << std::endl;
-    exit(EXIT_FAILURE);
-  };
 #warning do-build-refpersys-plugin should be much improved and fixed
-  /// TODO: we need to chdir into rps_topdirectory
-  /// we need to replace the source files with their realpath(3)
-  /// we need to build the plugin in the rps_topdirectory
 
-  /// passing -C to gmake is wrong; the chdir should be done before
-  /// running gmake...
-  
   ///TODO to accept secondary source files for the plugin and more
   ///program options and improve GNUmakefile
   memset (bp_hostname, 0, sizeof(bp_hostname));
@@ -466,6 +463,12 @@ main(int argc, char**argv, const char**env)
       bp_verbose = true;
     };
   bp_prog_options(argc, argv);
+  if (chdir(rps_topdirectory))
+    {
+      std::clog << bp_progname << " failed to chdir " << rps_topdirectory
+                << " : " << strerror(errno) << std::endl;
+      exit(EXIT_FAILURE);
+    };
   asm volatile ("nop; nop; nop; nop");
   if (bp_verbose)
     {
