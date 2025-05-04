@@ -68,7 +68,7 @@
 /// a macro to ease GDB breakpoint
 #define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop");} while(0)
 
-#pragma message compiling __FILE__
+#pragma message "compiling " __FILE__
 
 #warning perhaps replace pkg-config with "https://github.com/pkgconf/pkgconf"
 
@@ -84,6 +84,7 @@ extern "C" {
   const char** bp_env_prog;
   const char* bp_plugin_binary; // generated shared object
   std::string bp_srcdir;  // plugin source directory
+  void bp_initialize_guile_scheme(void);
 #warning bp_srcdir plugin source directory incompletely handled
   // if only once C++ source given set bp_srcdir to its dirname
   std::string bp_objdir; // plugin object directory
@@ -210,7 +211,7 @@ bp_prog_options(int argc, char**argv)
   int ix= 0;
   do
     {
-      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:", bp_options_ptr, &ix);
+      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:G:", bp_options_ptr, &ix);
       if (ix >= argc)
         break;
       switch (opt)
@@ -342,7 +343,15 @@ bp_prog_options(int argc, char**argv)
         break;
         case 'G': // --guile GUILECODE
         {
+          if (bp_verbose)
+            {
+              printf("%s is running GUILE Scheme code %s [%s:%d]\n",
+                     bp_progname, optarg,  __FILE__, __LINE__-1);
+            }
+          fflush(nullptr);
 #warning GUILECODE not handled
+	  std::clog << bp_progname << " dont handle guile code " << optarg
+		    << " [" <<  __FILE__ << ":" << __LINE__-1 << std::endl;
         }
         break;
         } // end switch opt
@@ -424,6 +433,39 @@ bp_prog_options(int argc, char**argv)
 } // end bp_prog_options
 
 
+/// by convention Scheme primitives for GNU guile are prefixed by bpscm
+static SCM
+bpscm_false0(void)
+{
+  //// just in case to use the breakpoint below from GDB
+  BP_NOP_BREAKPOINT();
+  return SCM_BOOL_F;
+} // end bpscm_false0
+
+static SCM
+bpscm_false1(void)
+{
+  //// just in case to use the breakpoint below from GDB
+  BP_NOP_BREAKPOINT();
+  return SCM_BOOL_F;
+} // end bpscm_false1
+
+static SCM
+bpscm_git_id(void)
+{
+  return scm_from_locale_string(bp_git_id);
+} // end bpscm_git_id
+
+void
+bp_initialize_guile_scheme(void)
+{
+  scm_c_define_gsubr ("bpscm:false0", /*nbreq:*/0, /*nbopt:*/0, /*nbrest:*/0,
+                      (scm_t_subr)bpscm_false0);
+  scm_c_define_gsubr ("bpscm:false1", /*nbreq:*/0, /*nbopt:*/0, /*nbrest:*/0,
+                      (scm_t_subr)bpscm_false1);
+  scm_c_define_gsubr ("bpscm:git_id", /*nbreq:*/0, /*nbopt:*/0, /*nbrest:*/0,
+                      (scm_t_subr)bpscm_git_id);
+} // end bp_initialize_guile_scheme
 
 ////////////////////////////////////////////////////////////////
 int
@@ -435,6 +477,7 @@ main(int argc, char**argv, const char**env)
   bp_env_prog = env;
   bp_options_ptr = bp_options_arr;
   scm_init_guile();
+  bp_initialize_guile_scheme();
   BP_NOP_BREAKPOINT();
   std::string bp_first_base;
 #warning do-build-refpersys-plugin should be much improved and fixed
