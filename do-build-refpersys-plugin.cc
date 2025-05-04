@@ -349,9 +349,16 @@ bp_prog_options(int argc, char**argv)
                      bp_progname, optarg,  __FILE__, __LINE__-1);
             }
           fflush(nullptr);
-#warning GUILECODE not handled
-	  std::clog << bp_progname << " dont handle guile code " << optarg
-		    << " [" <<  __FILE__ << ":" << __LINE__-1 << std::endl;
+          SCM guilexp = scm_from_utf8_string(optarg);
+          SCM resguile = scm_primitive_eval(guilexp);
+          fflush(nullptr);
+          if (bp_verbose)
+            {
+              char*strguile = scm_to_utf8_string(resguile);
+              printf("%s evaluated GUILE code %s as %s [%s:%d]\n",
+                     bp_progname, optarg, strguile,  __FILE__, __LINE__-1);
+            };
+          fflush(nullptr);
         }
         break;
         } // end switch opt
@@ -453,7 +460,8 @@ bpscm_false1(void)
 static SCM
 bpscm_git_id(void)
 {
-  return scm_from_locale_string(bp_git_id);
+  BP_NOP_BREAKPOINT();
+  return scm_from_utf8_string(bp_git_id);
 } // end bpscm_git_id
 
 void
