@@ -188,7 +188,7 @@ do-scan-refpersys-pkgconfig: do-scan-refpersys-pkgconfig.c |GNUmakefile rps-gene
               $(CFLAGS) $^ -o $@
 
 do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
-	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $(CFLAGS) -g $^ -o $@
+	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $(CFLAGS) $(shell pkg-config --cflags guile-3.0) -g $^ -o  $@  $(shell pkg-config --libs guile-3.0) 
 
 
 

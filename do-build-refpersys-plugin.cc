@@ -59,6 +59,8 @@
 #include <libgen.h>
 
 
+//// www.gnu.org/software/guile/ version 3
+#include <libguile.h>
 ///
 #define BP_HEAD_LINES_THRESHOLD 512
 #define BP_MAX_OPTIONS 32
@@ -432,6 +434,7 @@ main(int argc, char**argv, const char**env)
   bp_argv_prog = argv;
   bp_env_prog = env;
   bp_options_ptr = bp_options_arr;
+  scm_init_guile();
   BP_NOP_BREAKPOINT();
   std::string bp_first_base;
 #warning do-build-refpersys-plugin should be much improved and fixed
