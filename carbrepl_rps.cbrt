@@ -59,6 +59,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
 //forbidden %token_action here since it must follow %token_type, %type, %class, %common_type or %common_class directive
 %end_token EOF
 
+%token ATSIGN
+
+
 %token INT
 %type INT: intptr_t
 %token_action _Pragma("message \"token_action for INT\"");
@@ -141,17 +144,17 @@ replnt_input: replnt_command replnt_input {
    $$ = $1 + 1;
 }
 
-replnt_command: KEYW_DISPLAY replnt_expr {
+replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "show carburetta command:" << $1);
+   RPS_DEBUG_LOG(REPL, "show carburetta command:" << $2);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
-   rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $1);
-$$ = 1;
+   rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $2);
+   $$ = 1;
 }
 
-replnt_command: KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
+replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
    _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "put carburetta command:" << $1 << " attr " << $3 << " expr " << $5);
+   RPS_DEBUG_LOG(REPL, "put carburetta command:" << $2 << " attr " << $4 << " expr " << $6);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
 }
 
