@@ -16,10 +16,11 @@
 #include "refpersys.hh"
 
 extern "C" const char rpsplugdelim_gitid[];
-extern "C" const char rpsplugdelim_shortgitid[];
+extern "C" const char rpsplugdelim_shortgit[];
 extern "C" const char rpsplugdelim_date[];
+
 const char rpsplugdelim_gitid[]=RPS_GITID;
-const char rpsplugdelim_shortgitid[]= RPS_SHORTGITID;
+const char rpsplugdelim_shortgit[]= RPS_SHORTGIT;
 const char rpsplugdelim_date[]=__DATE__;
 
 void
@@ -91,9 +92,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!paylstrdict)
     RPS_FATALOUT("the delimiter dictionary " << _f.obdictdelim << " has a wrong payload");
   paylstrdict->add(plugarg, _f.obdelim);
-  _f.obdelim->put_attr(RPS__ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
+  _f.obdelim->put_attr(RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
                        _f.strdelim);
-  if (xtraname && isalpha(xtraname))
+  if (xtraname && isalpha(xtraname[0]))
     {
       if (!Rps_PayloadSymbol::valid_name(xtraname))
         RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
@@ -106,11 +107,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
       _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, xtraname);
       _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                             _f.strname);
-      _f.obsymbol->put_attr(RPS__ROOT_OBJ(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
+      _f.obsymbol->put_attr(RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
                             _f.obdelim);
-      _f.obdelim->put_attr2(RPS_ROOT_OBJ(_1EBVGSfW2m200z18rx), //name∈named_attribute
+      _f.obdelim->put_attr2(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                             _f.strname,
-                            RPS_ROOT_OBJ(_36I1BY2NetN03WjrOv), //symbol∈class
+                            RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
                             _f.obsymbol);
     }
   if (comment && comment[0])
