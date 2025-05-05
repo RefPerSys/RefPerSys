@@ -349,7 +349,8 @@ bp_prog_options(int argc, char**argv)
                      bp_progname, optarg,  __FILE__, __LINE__-1);
             }
           fflush(nullptr);
-          SCM guilexp = scm_from_utf8_string(optarg);
+	  /// https://lists.gnu.org/archive/html/guile-user/2025-05/msg00005.html
+          SCM guilexp = scm_c_read_string(optarg);
           SCM resguile = scm_primitive_eval(guilexp);
           fflush(nullptr);
           if (bp_verbose)
@@ -582,10 +583,11 @@ main(int argc, char**argv, const char**env)
                 rps_gnu_make,
                 rps_topdirectory,
                 bp_plugin_binary);
-    printf("%s [%s:%d] running gmake as \n  %s"
+    printf("%s [%s:%d] running GNU make in %s as \n  %s"
            "\n (plugin binary %s, %d sources starting with %s)\n",
            bp_progname,
            __FILE__, __LINE__-2,
+	   rps_topdirectory,
            buildcmd,  bp_plugin_binary,
            (int)bp_vect_cpp_sources.size(),
            bp_vect_cpp_sources.at(0).c_str());
