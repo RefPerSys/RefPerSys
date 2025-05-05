@@ -391,13 +391,20 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
 #- 	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc -o $@
 
 
-plugins_dir/%.so: plugins_dir/%.cc refpersys.hh do-build-refpersys-plugin |GNUmakefile
+plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-plugin
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	@printf "RPS_MAKE is %s and MAKE is %s for refpersys plugin at=%s PATH=%s\n" \ "$(RPS_MAKE)" "$(MAKE)" "$@"  "$$PATH"
 #	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) /usr/bin/printenv
 #	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v $< -o $@
 	/usr/bin/printenv
-	./do-build-refpersys-plugin -v $< -o $@
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+	       -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+	       -DRPS_HOST=$(RPS_HOST) \
+	       -DRPS_ARCH=$(RPS_ARCH) \
+	       -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	$< -o $@
+
 
 
 ################################# obsolete stuff
