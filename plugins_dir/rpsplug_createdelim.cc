@@ -52,7 +52,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                 << " and extra name " << Rps_QuotedC_String(xtraname));
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassrepldelim);
-  _f.obdictdelim = RPS_ROOT_OB(627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
+  _f.obdictdelim = RPS_ROOT_OB(_627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
   RPS_ASSERT(_f.obdictdelim);
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
@@ -103,14 +103,14 @@ rps_do_plugin(const Rps_Plugin* plugin)
         RPS_FATALOUT("The name '" << Rps_QuotedC_String(xtraname)
                      << "' is already used by " << _f.obold);
       _f.strname = Rps_StringValue(xtraname);
-      _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, _f.strname);
+      _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, xtraname);
       _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-                            _f.namestr);
-      _f.obsymbol->put_attr(RPS__ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
+                            _f.strname);
+      _f.obsymbol->put_attr(RPS__ROOT_OBJ(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
                             _f.obdelim);
-      _f.obdelim->put_attr2(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-                            _f.namestr,
-                            RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
+      _f.obdelim->put_attr2(RPS_ROOT_OBJ(_1EBVGSfW2m200z18rx), //name∈named_attribute
+                            _f.strname,
+                            RPS_ROOT_OBJ(_36I1BY2NetN03WjrOv), //symbol∈class
                             _f.obsymbol);
     }
   if (comment && comment[0])
