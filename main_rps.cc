@@ -1469,7 +1469,7 @@ main (int argc, char** argv)
   char*mylocale = nullptr;
   bool helpwanted = false;
   bool versionwanted = false;
-  _Pragma("message start of main");
+  _Pragma("message \"start of main\"");
   if (argc>1 && !strcmp(argv[1], "--help"))
     helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
