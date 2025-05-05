@@ -313,7 +313,8 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
 	$(guile rpsguilemk-compile-plugin $(REFPERSYS_PLUGIN_SOURCE) $(REFPERSYS_PLUGIN_SHARED_OBJECT))
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -324,6 +325,7 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -334,6 +336,7 @@ plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  r
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -344,6 +347,7 @@ plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedsele
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -354,6 +358,7 @@ plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedatt
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -364,6 +369,7 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -375,6 +381,8 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -385,6 +393,8 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
 #- 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
 #-              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
 #-             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+#-             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+#-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 #-             -DRPS_HOST=$(RPS_HOST) \
 #-             -DRPS_ARCH=$(RPS_ARCH) \
 #-             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -399,7 +409,8 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 	/usr/bin/printenv
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
 	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-	       -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+	       -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 	       -DRPS_HOST=$(RPS_HOST) \
 	       -DRPS_ARCH=$(RPS_ARCH) \
 	       -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -421,6 +432,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 #	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 #	$(REFPERSYS_GPP) -x -I generated/ -I . \
 #            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+#            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 #            -DRPS_HOST=$(RPS_HOST) \
 #            -DRPS_ARCH=$(RPS_ARCH) \
 #            -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -532,7 +544,6 @@ fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefil
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
@@ -552,7 +563,6 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
