@@ -138,8 +138,8 @@ private:
   void scan_loop_pass(void);
   void add_constants_known_from_RefPerSys_system(void);
   /// returned number of found constants
-  int scan_cplusplus_source_file_for_constants(const std::string&relfilename);
-  void scan_every_cplusplus_source_file_for_constants(void);
+  int scan_source_file_for_constants(const std::string&relfilename);
+  void scan_every_source_file_for_constants(void);
   void copy_one_source_file(const std::string& relsrcpath);
   void make_source_directory(const std::string&relsrcdir);
   void write_all_space_files(void);
@@ -446,12 +446,12 @@ Rps_Dumper::open_output_file(const std::string& relpath)
 
 
 int
-Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilename)
+Rps_Dumper::scan_source_file_for_constants(const std::string&relfilename)
 {
   int nbconst = 0;
-  RPS_DEBUG_LOG(DUMP, "start dumper scan_cplusplus_source_file_for_constants file " << relfilename
+  RPS_DEBUG_LOG(DUMP, "start dumper scan_source_file_for_constants file " << relfilename
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper::scan_cplusplus_source_file_for_constants"));
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper::scan_source_file_for_constants"));
   RPS_ASSERT(relfilename.size()>2 && isalpha(relfilename[0]));
   std::string fullpath = std::string(rps_topdirectory) + "/" + relfilename;
   std::ifstream ins(fullpath);
@@ -483,7 +483,7 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
                   nbconst++;
                   std::lock_guard<std::recursive_mutex> gu(du_mtx);
                   if (du_constantobset.find(obr) != du_constantobset.end())
-                    RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants const#" << nbconst
+                    RPS_DEBUG_LOG(DUMP, "scan_source_file_for_constants const#" << nbconst
                                   << " is " << obr);
                   du_constantobset.insert(obr);
                 }
@@ -501,9 +501,9 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
                   << " in file " << fullpath
                   << " of " << lincnt << " lines.");
   else
-    RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants no constants in " << fullpath);
+    RPS_DEBUG_LOG(DUMP, "scan_source_file_for_constants no constants in " << fullpath);
   return nbconst;
-} // end Rps_Dumper::scan_cplusplus_source_file_for_constants
+} // end Rps_Dumper::scan_source_file_for_constants
 
 void
 Rps_Dumper::add_constants_known_from_RefPerSys_system(void)
@@ -933,7 +933,7 @@ Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
 
 
 void
-Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
+Rps_Dumper::scan_every_source_file_for_constants(void)
 {
   int nbscanedfiles = 0;
   int nbtotconsts = 0;
@@ -941,20 +941,22 @@ Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
     {
       const char*curpath = *pcurfilename;
       int lencurpath = strlen(curpath);
-      if (lencurpath < 6 || strstr(curpath, "generated/") || strstr(curpath, "attic/"))
+      if (lencurpath < 8 || strstr(curpath, "generated/") || strstr(curpath, "attic/"))
         continue;
-      if (curpath[lencurpath-3] != '.') continue;
-      if ((curpath[lencurpath-2] == 'h' && curpath[lencurpath-1] == 'h')
-          || (curpath[lencurpath-2] == 'c' && curpath[lencurpath-1] == 'c'))
+      if (!strcmp(curpath+lencurpath-3, ".cc")
+	  || !strcmp(curpath+lencurpath-3, ".hh")
+	  || !strcmp(curpath+lencurpath-3, ".yy")
+	  || !strcmp(curpath+lencurpath-4, ".yyp")
+	  || (!strcmp(curpath+lencurpath-5, ".cbrt")))
         {
           std::string relfilname = curpath;
-          nbtotconsts += scan_cplusplus_source_file_for_constants(relfilname);
+          nbtotconsts += scan_source_file_for_constants(relfilname);
           nbscanedfiles++;
         };
     };
   RPS_INFORMOUT("scanned " << nbscanedfiles << " source files for constants." << std::endl
                 << "found " << nbtotconsts << " occurrences.");
-} // end of scan_every_cplusplus_source_file_for_constants
+} // end of scan_every_source_file_for_constants
 
 void
 Rps_Dumper::copy_one_source_file(const std::string& relsrcpath)
@@ -1992,7 +1994,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
         }
       dumper.scan_roots();
       dumper.add_constants_known_from_RefPerSys_system();
-      dumper.scan_every_cplusplus_source_file_for_constants();
+      dumper.scan_every_source_file_for_constants();
       dumper.scan_loop_pass();
       RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " start writing "
                     << (rps_elapsed_real_time() - startelapsed) << " elapsed, "
