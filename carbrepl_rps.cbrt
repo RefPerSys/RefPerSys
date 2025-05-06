@@ -379,6 +379,9 @@ void
 rps_initialize_carburetta_after_load(Rps_Loader*ld)
 {
   RPS_ASSERT(ld);
+  rpskob_7LMYzEqjeDH00ZI1CO //$at_sign∈repl_delimiter h:150658742
+    ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
+	     Rps_Value::make_tagged_int(RPSCARBREPL_ATSIGN));
 #warning unimplemented rps_initialize_carburetta_after_load
   RPS_WARNOUT("unimplemented rps_initialize_carburetta_after_load"
 	      << std::endl
