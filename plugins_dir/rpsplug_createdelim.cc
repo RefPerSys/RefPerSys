@@ -120,8 +120,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
       _f.obsymbol->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol)
                             _f.strcomment);
     }
+  rps_add_constant_object(_f.obdelim);
   RPS_INFORMOUT("plugin " << plugin->plugin_name
-                << " created delimiter:" << std::endl
+                << " created constant delimiter:" << std::endl
                 << RPS_OBJECT_DISPLAY(_f.obdelim)
                 << std::endl
                 << "... with symbol:" << std::endl
