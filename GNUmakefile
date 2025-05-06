@@ -718,7 +718,7 @@ test-load: refpersys
 ## testing the carburetta-based command
 testcarb1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "~display help" -B --run-name=testcarb1
+	./refpersys  -AREPL,CMD -c "@display help" -B --run-name=testcarb1
 
 ## testing the FLTK graphical interface
 testfltk1: refpersys
