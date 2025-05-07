@@ -316,6 +316,7 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                 );
   _Pragma("message \"rps_do_carburetta_tokensrc\"");
   RPS_ASSERT(tksrc);
+  _f.obenv = obenvarg;
   struct rpscarbrepl_stack carbstack;
   memset ((void*)&carbstack, 0, sizeof(carbstack));
   rpscarbrepl_stack_init(&carbstack);
@@ -325,15 +326,19 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
     });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc obenv=" << _f.obenv << " tksrc=" << tksrc);
 #warning check this
   int r = rpscarbrepl_parse(&carbstack, /*sym:*/RPSCARBREPL_REPLNT_INPUT, tksrc, &_);
-  RPS_DEBUG_LOG(REPL, "after rpscarbrepl_parse r=" << r);
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc after rpscarbrepl_parse r=" << r << " obenv=" << _f.obenv
+		<< " tksrc=" << tksrc);
 #warning unimplemented rps_do_carburetta_tokensrc
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
   rpscarbrepl_stack_cleanup(&carbstack);
   RPS_POSSIBLE_BREAKPOINT();
 } // end rps_do_carburetta_tokensrc
+
+
 
 void
 rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
@@ -365,13 +370,18 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
    _f.obenv = obenvarg;
    _f.exprv = exprarg;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_do_display_command starting obenv="
+		<< RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
+		<< " expr=" << _f.exprv);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(CMD, "carburetta display obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
 		<< "display expr=" << _f.exprv
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "carburetta command display"));
   RPS_POSSIBLE_BREAKPOINT();
-#warning incomplete rps_do_display_carburetta_command	
+#warning incomplete rps_do_display_carburetta_command
+  // TODO: should evaluate exprv in obenv and display it
+  RPS_WARNOUT("incomplete rps_carbrepl_do_display_command obenv=" << _f.obenv << " exprv=" << _f.exprv);
  } // end rps_carbrepl_do_display_command
 
 
