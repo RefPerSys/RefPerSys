@@ -1627,11 +1627,13 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       return;
     }
-  else if (cmd[0] == '~')
+  else if (cmd[0] == '@')
     {
-      /*** a command starting with ~ is parsed using carburetta generated code */
+      /*** A command starting with @ is parsed using carburetta
+	   generated code from file carbrepl_rps.cbrt  */
       intoksrc.advance_cursor_bytes(1);
-      RPS_INFORMOUT("rps_do_one_repl_command carburetta " << Rps_Cjson_String(cmd)
+      RPS_INFORMOUT("rps_do_one_repl_command carburetta '" << Rps_Cjson_String(cmd)
+		    << "'"
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -1643,11 +1645,14 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
          suboptimal, since the token source is built twice.  Perhaps
          rps_do_carburetta_command should be redesigned to get the
          command from a Rps_TokenSource.... */
-      rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv,
-                                /*cmd:*/ std::string(intoksrc.curcptr()),
-                                title);
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " before calling rps_do_carburetta_command intoksrc=" << intoksrc);
       RPS_POSSIBLE_BREAKPOINT();
-    }
+      rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv,
+                                /*cmd:*/ std::string(intoksrc.curcptr()?:"?"),
+                                title);
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " after calling rps_do_carburetta_command");
+      RPS_POSSIBLE_BREAKPOINT();
+    } // end of carburetta handled commands
   _f.lextokv = intoksrc.get_token(&_);
   _f.lexval = nullptr;
   _f.cmdob = nullptr;
