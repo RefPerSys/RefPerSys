@@ -277,7 +277,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
                 );
   RPS_ASSERT(tksrc);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from lin=" << lin
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from lin=" << lin << " tksrc=" << tksrc
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
@@ -292,7 +292,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
     tksrc->display_current_line_with_cursor(out);
   })
       << std::endl
-      << "tokv=" << _f.tokv);
+		<< "tokv=" << _f.tokv << " tksrc=" << tksrc);
 #warning unimplemented rps_carbrepl_next_token
   RPS_FATALOUT("unimplemented rps_carbrepl_next_token from lin=" << lin
                 << Rps_Do_Output([&](std::ostream& out)
