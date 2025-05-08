@@ -64,37 +64,39 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token INT
 %type INT: intptr_t
-%token_action _Pragma("message \"token_action for INT\"");
+%token_action {  _Pragma("message \"token_action for INT\""); }
 
 %token DOUBLE
 %type DOUBLE: double
-%token_action _Pragma("message \"token_action for DOUBLE\"");
+%token_action {  _Pragma("message \"token_action for DOUBLE\""); }
 
 %token STRING
 %type STRING: std::string
-%token_action _Pragma("message \"token_action for STRING\"");
+%token_action { _Pragma("message \"token_action for STRING\""); }
 
 %token NAME
 %type NAME: std::string
-%token_action _Pragma("message \"token_action for NAME\"");
+%token_action {  _Pragma("message \"token_action for NAME\""); }
 
 %token OID
 %type OID: Rps_Id
-%token_action _Pragma("message \"token_action for OID\"");
+%token_action { _Pragma("message \"token_action for OID\""); }
 
 %token KEYW_DISPLAY
-%token_action _Pragma("message \"token_action for KEYW_DISPLAY\"");
+%token_action { _Pragma("message \"token_action for KEYW_DISPLAY\""); }
 
 %token KEYW_OBJECT
-%token_action _Pragma("message \"token_action for KEYW_OBJECT\"");
+%token_action { _Pragma("message \"token_action for KEYW_OBJECT\""); }
 
 %token KEYW_PUT
-%token_action _Pragma("message \"token_action for KEYW_PUT\"");
+%token_action { _Pragma("message \"token_action for KEYW_PUT\""); }
+ 
 
 %token DOT
-%token_action _Pragma("message \"token_action for DOT\"");
+%token_action { _Pragma("message \"token_action for DOT\""); }
+
 %token ASSIGN
-%token_action _Pragma("message \"token_action for ASSIGN\"");
+%token_action {_Pragma("message \"token_action for ASSIGN\""); }
 //
 
 %grammar%
@@ -107,6 +109,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
 // When the parser (not the scanner) needs a new input terminal symbol, the specified action code snippet is executed.
 // we probably need to use Rps_TokenSource::lookahead_token
 %on_next_token {return rps_carbrepl_next_token(callframe, tksrc, __LINE__);}
+
+
 
 %type replnt_object: Rps_ObjectRef
 %constructor rps_carbrepl_constructor_replnt_object($$,__LINE__);
