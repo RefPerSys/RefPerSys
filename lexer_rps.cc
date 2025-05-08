@@ -168,7 +168,7 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
 Rps_TokenSource::~Rps_TokenSource()
 {
   RPS_DEBUG_LOG(REPL, "~Rps_TokenSource " << toksrc_name << " @" << this
-		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "~Rps_TokenSource"));
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "~Rps_TokenSource"));
   toksrc_name.clear();
   toksrc_line= -1;
   toksrc_col= -1;
@@ -348,6 +348,9 @@ Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdep
     out << Rps_QuotedC_String(abbrev);
   out << '@' << position_str() << " tok.cnt:" << token_count()
       << " str: " << Rps_QuotedC_String(toksrcstr_inp.str());
+  if (depth == 0)
+    out << " deq:" << token_dequeue();
+  out << std::flush;
 }       // end Rps_StringTokenSource::output
 
 
@@ -430,13 +433,14 @@ Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
 bool
 Rps_MemoryFileTokenSource::get_line(void)
 {
- const char*c = toksrcmfil_line;
- while (c<toksrcmfil_end && *c != '\n') c++;
- if (c<toksrcmfil_end && *c == '\n') {
-   c++;
-   starting_new_input_line();
- };
- return c > toksrcmfil_line;
+  const char*c = toksrcmfil_line;
+  while (c<toksrcmfil_end && *c != '\n') c++;
+  if (c<toksrcmfil_end && *c == '\n')
+    {
+      c++;
+      starting_new_input_line();
+    };
+  return c > toksrcmfil_line;
 } // end Rps_MemoryFileTokenSource::get_line
 
 
