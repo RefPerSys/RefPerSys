@@ -64,7 +64,10 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token INT
 %type INT: intptr_t
-%token_action {  _Pragma("message \"token_action for INT\""); }
+%token_action {  _Pragma("message \"token_action for INT\""); \
+  /* should assign $$ */ $$ = __LINE__; \
+  RPS_FATALOUT("INT token_action is wrong tksrc=" << tksrc); \
+ }
 
 %token DOUBLE
 %type DOUBLE: double
