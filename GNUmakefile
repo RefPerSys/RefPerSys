@@ -147,7 +147,6 @@ snapshot: clean
 
 lto-refpersys:
 	$(MAKE) clean
-	$(RM) __timestamp.o
 	$(MAKE) -j3 REFPERSYS_LTO=-flto objects
 	$(REFPERSYS_CXX) -flto -rdynamic \
              $(REFPERSYS_COMPILER_FLAGS) \
@@ -258,7 +257,6 @@ __timestamp.o: __timestamp.c |GNUmakefile
 #               $(REFPERSYS_GENERATED_CPP_OBJECTS) \
 #                   __timestamp.c |  GNUmakefile
 refpersys: objects |  GNUmakefile _config-refpersys.mk
-	$(RM) __timestamp.o
 	$(MAKE) __timestamp.o
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
@@ -284,7 +282,6 @@ refpersys: objects |  GNUmakefile _config-refpersys.mk
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
-	@/bin/rm -vf __timestamp.o
 
 
 
