@@ -47,6 +47,16 @@ const char rps_main_shortgitid[]= RPS_SHORTGITID;
 extern "C" char rps_buffer_proc_version[];
 char rps_buffer_proc_version[rps_path_byte_size];
 
+#pragma message "Compiling " __FILE__ " on operating system " RPS_OPERSYS " for architecture " RPS_ARCH
+
+#if RPS_HAS_OPERSYS_GNU_Linux
+#pragma message "Compiling " __FILE__ " on GNU/Linux"
+#endif
+
+#if RPS_HAS_ARCH_86_64
+#pragma message "Compiling " __FILE__ " for 64 bits x86"
+#endif
+
 struct utsname rps_utsname;
 
 char rps_progexe[rps_path_byte_size];
