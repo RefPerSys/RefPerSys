@@ -252,11 +252,12 @@ __timestamp.c: rps-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh genera
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
 
+
 #was
 #refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
 #               $(REFPERSYS_GENERATED_CPP_OBJECTS) \
 #                   __timestamp.c |  GNUmakefile
-refpersys: objects |  GNUmakefile
+refpersys: objects |  GNUmakefile _config-refpersys.mk
 	$(RM) __timestamp.o
 	$(MAKE) __timestamp.o
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
@@ -273,6 +274,7 @@ refpersys: objects |  GNUmakefile
 	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
+	@echo Linking $@
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
@@ -286,7 +288,7 @@ refpersys: objects |  GNUmakefile
 
 
 
-%.ii: %.cc | refpersys.hh GNUmakefile
+%.ii: %.cc | refpersys.hh GNUmakefile _config-refpersys.mk
 
 plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	@printf "\n\n making plugins desired basenames=%s\n" "$(REFPERSYS_DESIRED_PLUGIN_BASENAMES)"
@@ -315,64 +317,64 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\" -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $(REFPERSYS_PLUGIN_SOURCE) -o $(REFPERSYS_PLUGIN_SHARED_OBJECT)
 
 plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
 
 plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
 
 plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
 
 plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
 
 plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
 
 
@@ -380,24 +382,24 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
 
 #- plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc refpersys.hh  |GNUmakefile refpersys
 #- 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 #- 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
 #-              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-#-             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+#-             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
 #-             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 #-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-#-             -DRPS_HOST=$(RPS_HOST) \
-#-             -DRPS_ARCH=$(RPS_ARCH) \
-#-             -DRPS_OPERSYS=$(RPS_OPERSYS) \
+#-             -DRPS_HOST=\"$(RPS_HOST)\" \
+#-             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+#-             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 #- 	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc -o $@
 
 
@@ -411,9 +413,9 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
 	       -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
                -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-	       -DRPS_HOST=$(RPS_HOST) \
-	       -DRPS_ARCH=$(RPS_ARCH) \
-	       -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	       -DRPS_HOST=\"$(RPS_HOST)\" \
+	       -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+	       -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	$< -o $@
 
 
@@ -431,11 +433,11 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 #plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 #	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 #	$(REFPERSYS_GPP) -x -I generated/ -I . \
-#            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+#            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
 #            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-#            -DRPS_HOST=$(RPS_HOST) \
-#            -DRPS_ARCH=$(RPS_ARCH) \
-#            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+#            -DRPS_HOST=\"$(RPS_HOST)\" \
+#            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+#            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 #            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
 #            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
 #            -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
@@ -482,7 +484,7 @@ endif
 	$(SYNC)
 
 load_rps.o: load_rps.cc refpersys.hh \
-            generated/rps-constants.hh  generated/rps-names.hh generated/rps-roots.hh |GNUmakefile
+            generated/rps-constants.hh  generated/rps-names.hh generated/rps-roots.hh |GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
@@ -492,7 +494,10 @@ load_rps.o: load_rps.cc refpersys.hh \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \ \
+               -DRPS_HOST=\"$(RPS_HOST)\" \
+               -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+               -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       -c -o $@ $<
 	$(SYNC)
 
@@ -504,7 +509,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 #-                      --output=$@ $^ --no-lines
 #-   
 
-%_rps.o: %_rps.cc refpersys.hh
+%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -516,6 +521,9 @@ load_rps.o: load_rps.cc refpersys.hh \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       -c -o $@ $<
 	$(SYNC)
 
@@ -530,6 +538,9 @@ load_rps.o: load_rps.cc refpersys.hh \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_HOST=\"$(RPS_HOST)\" \
+               -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+               -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       $< | /bin/sed 's:^#://#:g' | $(ASTYLE) $(ASTYLEFLAGS)  > $@
 
 fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefile _config-refpersys.mk
@@ -544,9 +555,9 @@ fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefil
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+               -DRPS_HOST=\"$(RPS_HOST)\" \
+               -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+               -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
 	       -c -o $@ $<
 	$(SYNC)
@@ -563,9 +574,9 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
 	       $< | /bin/sed 's:^#://#:g'| $(ASTYLE) $(ASTYLEFLAGS)  > $@
 
