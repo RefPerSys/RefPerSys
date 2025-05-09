@@ -18,6 +18,17 @@
 
 #include "refpersys.hh"
 
+
+extern "C" const char rpsplugcreatnamattr_gitid[];
+extern "C" const char rpsplugcreatnamattr_shortgit[];
+extern "C" const char rpsplugcreatnamattr_date[];
+
+const char rpsplugcreatnamattr_gitid[]=RPS_GITID;
+const char rpsplugcreatnamattr_shortgit[]= RPS_SHORTGIT;
+const char rpsplugcreatnamattr_date[]=__DATE__;
+
+#pragma message "compiling refpersys plugin " __FILE__
+
 void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
