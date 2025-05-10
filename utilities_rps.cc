@@ -1738,13 +1738,13 @@ rps_fatal_stop_at (const char *filnam, int lin)
   static constexpr int skipfatal=2;
   assert(filnam != nullptr);
   assert (lin>=0);
-  char errbuf[80];
+  char errbuf[128];
   memset (errbuf, 0, sizeof(errbuf));
   char cwdbuf[rps_path_byte_size];
   memset (cwdbuf, 0, sizeof(cwdbuf));
   if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
     strcpy(cwdbuf, "./");
-  snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
+  snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s", filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
          "... build %s pid %d on %s,\n"
@@ -1769,12 +1769,13 @@ rps_fatal_stop_at (const char *filnam, int lin)
             " RefPerSys gitid %s,\n"
             "\t built timestamp %s,\n"
             "\t on host %s, md5sum %s,\n"
-            "\t elapsed %.3f, process %.3f sec in %s\n",
+            "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
             ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
             rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
-            rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf);
+            rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
+            rps_current_pthread_name().c_str());
   if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0])
     {
       fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
