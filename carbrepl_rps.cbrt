@@ -135,7 +135,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {_Pragma("message \"token_action for ASSIGN\""); \
   /* should assign $$ for ASSIGN */ \
   RPS_FATALOUT("ASSIGN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));	\
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action ASSIGN"));	\
  }
 //
 
