@@ -179,6 +179,11 @@ public:
   virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
 };        // end class Rps_PayloadLightningCodeGen
 
+
+
+
+
+////////////////////////////////////////////////////////////////
 Rps_PayloadLightningCodeGen::Rps_PayloadLightningCodeGen(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylLightCodeGen,owner), lightg_jist(nullptr),
     lightg_nod2num_map(), lightg_num2nod_map()
@@ -238,6 +243,7 @@ rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::
   RPS_WARNOUT("unimplemented rpsldpy_lightning_code_generator jv=" << jv << std::endl
               << " spacid=" << spacid
               << " lineno=" << lineno << std::endl
+	      << " obz=" << RPS_OBJECT_DISPLAY(obz) << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_lightning_code_generator"));
 } // end rpsldpy_lightning_code_generator
 
