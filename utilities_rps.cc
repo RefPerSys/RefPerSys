@@ -2063,7 +2063,9 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
      )
     {
       RPS_POSSIBLE_BREAKPOINT();
-      RPS_WARNOUT("cannot add core sacred root object as constant " << _f.obconst << " of class " << _f.obconst->get_class()
+      RPS_WARNOUT("cannot add core sacred root object as constant "
+                  << RPS_OBJECT_DISPLAY(_f.obconst)
+                  << " of class " << _f.obconst->get_class()
                   << " thread " << rps_current_pthread_name()
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object")
