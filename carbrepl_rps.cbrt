@@ -361,6 +361,11 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   _Pragma("message \"rps_do_carburetta_tokensrc\"");
   RPS_ASSERT(tksrc);
   _f.obenv = obenvarg;
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv=" << _f.obenv << " tksrc=" << tksrc
+		<< " from thread " << rps_current_pthread_name()
+		<< RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
+		<< std::endl);
+  RPS_POSSIBLE_BREAKPOINT();
   struct rpscarbrepl_stack carbstack;
   memset ((void*)&carbstack, 0, sizeof(carbstack));
   rpscarbrepl_stack_init(&carbstack);
