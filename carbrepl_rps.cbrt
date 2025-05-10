@@ -60,46 +60,83 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %end_token EOF
 
 %token ATSIGN
-
+ //ATSIGN being untyped cannot have a token_action
 
 %token INT
 %type INT: intptr_t
 %token_action {  _Pragma("message \"token_action for INT\""); \
-  /* should assign $$ */ $$ = __LINE__; \
-  RPS_FATALOUT("INT token_action is wrong tksrc=" << tksrc); \
+  /* should assign $$ for INT */ \
+  RPS_FATALOUT("INT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action INT"));	\
  }
 
 %token DOUBLE
 %type DOUBLE: double
-%token_action {  _Pragma("message \"token_action for DOUBLE\""); }
+%token_action {  _Pragma("message \"token_action for DOUBLE\""); \
+  /* should assign $$ for DOUBLE */ \
+  RPS_FATALOUT("DOUBLE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action DOUBLE"));	\
+ }
 
 %token STRING
 %type STRING: std::string
-%token_action { _Pragma("message \"token_action for STRING\""); }
+%token_action { _Pragma("message \"token_action for STRING\""); \
+  /* should assign $$ for STRING */ \
+  RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action STRING"));	\
+ }
 
 %token NAME
 %type NAME: std::string
-%token_action {  _Pragma("message \"token_action for NAME\""); }
+%token_action {  _Pragma("message \"token_action for NAME\"");  \
+  /* should assign $$ for NAME */ \
+  RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));	\
+ }
 
 %token OID
 %type OID: Rps_Id
-%token_action { _Pragma("message \"token_action for OID\""); }
+%token_action { _Pragma("message \"token_action for OID\"");   \
+  /* should assign $$ for OID */ \
+  RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));	\
+ }
 
 %token KEYW_DISPLAY
-%token_action { _Pragma("message \"token_action for KEYW_DISPLAY\""); }
+%token_action { _Pragma("message \"token_action for KEYW_DISPLAY\"");  \
+  /* should assign $$ for KEYW_DISPLAY */ \
+  RPS_FATALOUT("KEYW_DISPLAY token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_DISPLAY"));	\
+ }
 
 %token KEYW_OBJECT
-%token_action { _Pragma("message \"token_action for KEYW_OBJECT\""); }
+%token_action { _Pragma("message \"token_action for KEYW_OBJECT\""); \
+  /* should assign $$ for KEYW_OBJECT */ \
+  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));	\
+ }
 
 %token KEYW_PUT
-%token_action { _Pragma("message \"token_action for KEYW_PUT\""); }
+%token_action { _Pragma("message \"token_action for KEYW_PUT\"");  \
+  /* should assign $$ for KEYW_PUT */ \
+  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));	\
+ }
  
 
 %token DOT
-%token_action { _Pragma("message \"token_action for DOT\""); }
+%token_action { _Pragma("message \"token_action for DOT\""); \
+  /* should assign $$ for DOT */ \
+  RPS_FATALOUT("DOT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));	\
+ }
 
 %token ASSIGN
-%token_action {_Pragma("message \"token_action for ASSIGN\""); }
+%token_action {_Pragma("message \"token_action for ASSIGN\""); \
+  /* should assign $$ for ASSIGN */ \
+  RPS_FATALOUT("ASSIGN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));	\
+ }
 //
 
 %grammar%
