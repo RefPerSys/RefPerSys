@@ -930,7 +930,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       RPS_INFORMOUT("rps_edit_run_cplusplus_code should compile C++ code in " << tempcppfilename
                     << std::endl
                     << " - from "
-                    << Rps_ShowCallFrame(&_));
+                    << RPS_FULL_BACKTRACE_HERE(1,
+                        "rps_edit_run_cplusplus_code")
+                    << std::endl);
       std::string cwdpath;
       bool needchdir = false;
       {
@@ -944,19 +946,22 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       }
       needchdir = cwdpath != std::string{};
       //// our compilation command is...
-      std::string buildplugincmd{rps_topdirectory};
-      buildplugincmd += "/do-build-refpersys-plugin ";
-      buildplugincmd += tempcppfilename;
-      buildplugincmd += " -o ";
-      buildplugincmd += tempsofilename;
-      RPS_WARNOUT("rps_edit_run_cplusplus_code incomplete for C++ code in "<< tempcppfilename
-                  << " should compile into " << tempsofilename
-                  << " using either make plugin or do-build-refpersys-plugin"
-                  << std::endl
-                  << " - from "
-                  << Rps_ShowCallFrame(&_)
-                  << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *incomplete*"));
+      std::string buildplugincmd;
+      buildplugincmd.reserve(140);
+      if (needchdir)
+        {
+          buildplugincmd += "cd '";
+          buildplugincmd += Rps_QuotedC_String(rps_topdirectory);
+          buildplugincmd += "' && ";
+        };
+      buildplugincmd += rps_gnu_make;
+      buildplugincmd += " one-plugin ";
+      buildplugincmd += "REFPERSYS_PLUGIN_SOURCE='";
+      buildplugincmd += Rps_QuotedC_String(tempcppfilename);
+      buildplugincmd += "' ";
+      buildplugincmd += "REFPERSYS_PLUGIN_SHARED_OBJECT='";
+      buildplugincmd += Rps_QuotedC_String(tempsofilename);
+      buildplugincmd += "'\n";
       errno= 0;
       if (needchdir)
         {
