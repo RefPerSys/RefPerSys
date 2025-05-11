@@ -875,7 +875,8 @@ Rps_Loader::load_all_state_files(void)
           RPS_INFORM("%s loaded extra space#%d %s", thisprog, spacecnt1, spacbuf);
         }
     }
-  RPS_INFORM("%s loaded %d space files in first pass", thisprog, spacecnt1);
+  RPS_INFORM("%s loaded %d space files in first pass",
+	     thisprog, spacecnt1);
   initialize_constant_objects();
   /// conceptually, the second pass might be done in parallel
   /// (multi-threaded, with different threads working on different
@@ -888,6 +889,8 @@ Rps_Loader::load_all_state_files(void)
       spacecnt2++;
       usleep(30);
     }
+  RPS_INFORM("%s loaded %d space files in second pass",
+	     thisprog, spacecnt2);
   rps_load_add_todo(this,  rps_initialize_carburetta_after_load);
   while (run_some_todo_functions()>0)
     {
