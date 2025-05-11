@@ -38,6 +38,15 @@ static void rps_carbrepl_destructor_replnt_atom(Rps_Value&val, int lin);
 static void rps_carbrepl_constructor_replnt_expr(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin);
 
+static void rps_carbrepl_constructor_replnt_factor(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_replnt_factor(Rps_Value&val, int lin);
+
+static void rps_carbrepl_constructor_replnt_term(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_replnt_term(Rps_Value&val, int lin);
+
+static void rps_carbrepl_constructor_replnt_value(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin);
+
 static int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin);
 
 extern "C" struct rpscarbrepl_stack;
@@ -144,12 +153,52 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("LEFTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
 	       << RPS_FULL_BACKTRACE_HERE(1, "token_action LEFTPAREN"));	\
  }
+
+%token RIGHTPAREN
+%token_action {_Pragma("message \"token_action for RIGHTPAREN\""); \
+  /* should assign $$ for RIGHTPAREN */ \
+  RPS_FATALOUT("RIGHTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action RIGHTPAREN"));	\
+ }
+//
+
+%token PLUS 
+%token_action {_Pragma("message \"token_action for PLUS\""); \
+  /* should assign $$ PLUS */ \
+  RPS_FATALOUT("PLUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action PLUS"));	\
+ }
+//
+
+%token MINUS 
+%token_action {_Pragma("message \"token_action for MINUS\""); \
+  /* should assign $$ MINUS */ \
+  RPS_FATALOUT("MINUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action MINUS"));	\
+ }
+//
+
+
+%token ASTERISK 
+%token_action {_Pragma("message \"token_action for ASTERISK\""); \
+  /* should assign $$ ASTERISK */ \
+  RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action ASTERISK"));	\
+ }
+//
+
+%token SLASH 
+%token_action {_Pragma("message \"token_action for SLASH\""); \
+  /* should assign $$ SLASH */ \
+  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action SLASH"));	\
+ }
 //
 
 %grammar%
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe
 %nt replnt_input replnt_command
-%nt replnt_atom replnt_object replnt_expr
+%nt replnt_atom replnt_object replnt_expr replnt_term replnt_factor replnt_value
 
 
 
@@ -174,6 +223,26 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %constructor rps_carbrepl_constructor_replnt_expr($$,__LINE__);
 %destructor rps_carbrepl_destructor_replnt_expr($$,__LINE__);
 %visit {_Pragma("message \"visit code for replnt_expr\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+
+%type replnt_term: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_term($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_term($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_term\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+
+%type replnt_factor: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_factor($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_factor($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_factor\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+%type replnt_value: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_value($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_value($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_value\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
 
 
 %type replnt_input: int
@@ -243,17 +312,60 @@ replnt_object: OID {
   $$ = Rps_ObjectRef::really_find_object_by_oid($0);
 }
 
-replnt_expr: replnt_atom {
-  _Pragma("message \"replnt_expr as replnt_atom in carbrepl_rps.cbrt\"");
-  $$ = $0;
-}
 
 replnt_expr: KEYW_OBJECT replnt_object {
   _Pragma("message \"replnt_expr as KEYW_OBJECT replnt_object in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectValue($1);
 }
 
+
+replnt_expr: replnt_term                      {
+  _Pragma("message \"replnt_expr as replnt_term in carbrepl_rps.cbrt\"");
+  $$ = $0;
+}
+
+replnt_expr: replnt_expr PLUS replnt_term            {            
+  _Pragma("message \"replnt_expr as replnt_expr PLUS replnt_term in carbrepl_rps.cbrt\"");
+  // $$ = $0 + $2;
+}
+
+replnt_expr: replnt_expr MINUS replnt_term           {
+  _Pragma("message \"replnt_expr as replnt_expr MINUS replnt_term in carbrepl_rps.cbrt\"");
+  // $$ = $0 - $2;
+}
+  
+replnt_term: replnt_factor                    {
+  _Pragma("message \"replnt_term as replnt_factor in carbrepl_rps.cbrt\"");
+  $$ = $0;
+}
+
+replnt_term: replnt_term ASTERISK replnt_factor      {
+  _Pragma("message \"replnt_term as replnt_term ASTERISK replnt_factor in carbrepl_rps.cbrt\"");
+  //  $$ = $0 * $2;
+  }
+
+replnt_term: replnt_term SLASH replnt_factor         {
+  _Pragma("message \"replnt_term as replnt_term SLASH replnt_factor in carbrepl_rps.cbrt\"");
+  //  $$ = $0 / $2;
+  }
+  
+replnt_factor: replnt_atom                   {
+  _Pragma("message \"replnt_factor as replnt_atom in carbrepl_rps.cbrt\"");
+  // $$ = $0;
+  }
+replnt_factor: MINUS replnt_factor            {
+  _Pragma("message \"replnt_factor as MINUS replnt_factor in carbrepl_rps.cbrt\"");
+  // $$ = -$1;
+  }
+
+replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
+  _Pragma("message \"replnt_factor as LEFTPAREN replnt_factor RIGHTPAREN in carbrepl_rps.cbrt\"");
+  // $$ = $1;
+  }
+
+ 
 %%
+
 
 #pragma message "trailer of carbrepl_rps.cbrt"
 
@@ -317,6 +429,60 @@ rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin)
   val = nullptr;
   _Pragma("message \"rps_carbrepl_destructor_replnt_expr\"");
 } // end rps_carbrepl_replnt_destructor_replnt_expr
+
+void
+rps_carbrepl_constructor_replnt_term(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_constructor_replnt_term\"");
+} // end rps_carbrepl_constructor_replnt_term
+
+void
+rps_carbrepl_destructor_replnt_term(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_destructor_replnt_term\"");
+} // end rps_carbrepl_replnt_destructor_replnt_term
+
+void
+rps_carbrepl_constructor_replnt_factor(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_constructor_replnt_factor\"");
+} // end rps_carbrepl_constructor_replnt_factor
+
+void
+rps_carbrepl_destructor_replnt_factor(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_destructor_replnt_factor\"");
+} // end rps_carbrepl_replnt_destructor_replnt_factor
+
+void
+rps_carbrepl_constructor_replnt_value(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_constructor_replnt_value\"");
+} // end rps_carbrepl_constructor_replnt_factor
+
+void
+rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_destructor_replnt_value\"");
+} // end rps_carbrepl_replnt_destructor_replnt_value
 
 int
 rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
@@ -448,12 +614,13 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   rpskob_7LMYzEqjeDH00ZI1CO //$at_sign∈repl_delimiter h:150658742
     ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
 	     Rps_Value::make_tagged_int(RPSCARBREPL_ATSIGN));
-#if 0 /// the leftparen is a root, not a constant, in commit
-      /// a7e15819212 (May 10, 2025)
-  rpskob_4YM7mv0GrSp03OkF8T //$leftparen!delim∈repl_delimiter
+  rpskob_4YM7mv0GrSp03OkF8T //!leftparen!delim∈repl_delimiter
     ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
 	     Rps_Value::make_tagged_int(RPSCARBREPL_LEFTPAREN));
-#endif
+  rpskob_7CG9m1NXpMo01edTUl //!rightparen!delim∈repl_delimiter
+    ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
+	     Rps_Value::make_tagged_int(RPSCARBREPL_RIGHTPAREN));
+
 #warning incomplete rps_initialize_carburetta_after_load
   RPS_WARNOUT("incomplete rps_initialize_carburetta_after_load"
 	      << std::endl
