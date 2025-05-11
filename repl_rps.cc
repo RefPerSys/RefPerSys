@@ -1577,8 +1577,11 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   RPS_ASSERT(!_f.obenv || (Rps_Value(_f.obenv)).is_object());
 #warning rps_do_one_repl_command unimplemented
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
-                << _f.obenv
-                << " " << title << " cmd='" << Rps_Cjson_String(cmd) << "'");
+                << RPS_OBJECT_DISPLAY(_f.obenv)
+                << std::endl << title << " cmd='" << Rps_Cjson_String(cmd) << "'"
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command")
+		<< std::endl << " in thread "
+		<< rps_current_pthread_name());
   RPS_POSSIBLE_BREAKPOINT();
   Rps_StringTokenSource intoksrc(cmd, std::string(title));
   if (!intoksrc.get_line())
@@ -1587,6 +1590,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                     << Rps_Cjson_String(cmd));
       return;
     }
+  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
+		<< " obenv=" << _f.obenv);
   RPS_POSSIBLE_BREAKPOINT();
   _f.tok0 = intoksrc.lookahead_token(&_, 0);
   _f.tok1 = intoksrc.lookahead_token(&_, 1);
@@ -1631,7 +1636,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
     {
       /*** A command starting with @ is parsed using carburetta
 	   generated code from file carbrepl_rps.cbrt  */
-      intoksrc.advance_cursor_bytes(1);
+      //intoksrc.advance_cursor_bytes(1);
       RPS_INFORMOUT("rps_do_one_repl_command carburetta '" << Rps_Cjson_String(cmd)
 		    << "'"
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
