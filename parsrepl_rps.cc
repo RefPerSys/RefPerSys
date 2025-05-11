@@ -2549,7 +2549,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " position:" << position_str() << " startpos:" << startpos);
       // test for  leftparen _4YM7mv0GrSp03OkF8T
       if (_f.obdelim
-          == RPS_ROOT_OB(_4YM7mv0GrSp03OkF8T) //leftparen!delim∊repl_delimiter
+          ==  rpskob_4YM7mv0GrSp03OkF8T //leftparen!delim∊repl_delimiter
          )
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " got leftparen "
@@ -2758,7 +2758,7 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe)
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_start_primary¤" << callnum << " delimob "
                         << _f.delimob<< " at startpos: " << startpos
                         << " position_str:" << position_str());
-          if (_f.delimob == RPS_ROOT_OB(_4YM7mv0GrSp03OkF8T))   // leftparen!delim∊repl_delimiter
+          if (_f.delimob == rpskob_4YM7mv0GrSp03OkF8T)   // leftparen!delim∊repl_delimiter
             {
               return true;
             }
