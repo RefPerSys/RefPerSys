@@ -1096,7 +1096,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
   std::lock_guard<std::recursive_mutex> gudispob(*_dispobref->objmtxptr());
   out  << std::endl
        << BOLD_esc
-       << "¤¤ showing object " << _dispobref
+       << "¤¤ object " << _dispobref
        << NORM_esc
        << std::endl << "  of class "
        << _dispobref->get_class()
@@ -1261,7 +1261,7 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
       (*pout)
           << std::endl << std::endl << "================================" << std::endl
           << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
-          << "¤¤ showing object " << _f.shownob
+          << "¤! object " << _f.shownob
           << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
           << std::endl << "  of class "
           << _f.shownob->get_class()
