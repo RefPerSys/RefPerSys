@@ -632,7 +632,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         curp++, toksrc_col++;
       std::string namestr(startname, toksrc_col-startcol);
       RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "? namestr: '"
-                    << Rps_Cjson_String(namestr)
+                    << Rps_Cjson_String(namestr) << std::endl
                     << "' tokensrc:" << *this << " startcol=" << startcol
                     << " toksrc_col:" << toksrc_col);
       _f.namev = source_name_val(&_);
@@ -640,9 +640,14 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << position_str(startcol) << " ... " << position_str()
                     << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
       _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
-      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "?  oid|name '" << namestr << "' oblex=" << _f.oblex);
+      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
+                    << "?  oid|name '" << namestr << "' oblex="
+                    << _f.oblex);
       const Rps_String* str = _f.namev.to_string();
-      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "?  namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
+      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
+                    << "?  namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
+                    << std::endl
+                    << " tokensrc:" << *this
                     << " namev=" << _f.namev << ", str=" << Rps_Value(str)<< " at "
                     << position_str(startcol) << " ... " << position_str());
       if (_f.oblex)
