@@ -576,7 +576,11 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
   Rps_StringTokenSource toksrc(cmd, std::string(title));
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command start toksrc=" << toksrc
+		<< " obenv=" << _f.obenv);
   rps_do_carburetta_tokensrc(&_, _f.obenv, &toksrc, title);
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command end toksrc=" << toksrc
+		<< " obenv=" << _f.obenv);
 }  // end rps_do_carburetta_command
 
 
