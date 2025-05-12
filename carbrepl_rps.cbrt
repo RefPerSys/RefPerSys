@@ -487,6 +487,10 @@ rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin)
 int
 rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
 {
+  /// used by %on_next_token above
+  bool gdb_do_return=false; // to be set from GDB
+  int gdb_returned= 0;      // to be set from GDB
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
                  callframe,
                  Rps_ObjectRef obenv;
@@ -494,7 +498,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
                 );
   RPS_ASSERT(tksrc);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from lin=" << lin << " tksrc=" << tksrc
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from lin=" << lin
+		<< " tksrc=" << tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
@@ -510,6 +515,15 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   })
       << std::endl
 		<< "tokv=" << _f.tokv << " tksrc=" << tksrc);
+  RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
+  RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
+  //// for GDB
+  if (gdb_do_return) {
+    RPS_INFORMOUT("rps_carbrepl_next_token from lin=" << lin
+		  << " GDB returning " << gdb_returned);
+    return gdb_returned;
+  }
+  ////
 #warning unimplemented rps_carbrepl_next_token
   RPS_FATALOUT("unimplemented rps_carbrepl_next_token from lin=" << lin
                 << Rps_Do_Output([&](std::ostream& out)
