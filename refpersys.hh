@@ -1247,12 +1247,22 @@ rps_timer_cpu_elapsed(const rps_timer *hnd)
 /* the debugger could put a breakpoint, or we could overwrite the
    binary executable code with a call; don't forget to flush the
    caches! */
-#define RPS_POSSIBLE_BREAKPOINT() do { \
-  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n" \
-                "nop; nop; nop; nop; nop; nop; nop; nop;\n" \
-                "nop; nop; nop; nop; nop; nop; nop; nop;\n" \
-); } while(0)
 
+#ifndef RPS_BASENAME
+#error RPS_BASENAME should be a string and is needed here
+#endif
+
+#define RPS_POSSIBLE_BREAKPOINT_AT(Fil,Lin) do {		\
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n");	\
+    asm volatile ("__" RPS_BASENAME "_brk_" #Lin ": nop\n");    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n");	\
+ } while(0)
+
+#define RPS_POSSIBLE_BREAKPOINT_AT_BIS(Fil,Lin) \
+  RPS_POSSIBLE_BREAKPOINT_AT(Fil,Lin)
+
+#define RPS_POSSIBLE_BREAKPOINT() RPS_POSSIBLE_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C" const char* rps_hostname(void);
