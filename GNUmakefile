@@ -315,6 +315,7 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(REFPERSYS_PLUGIN_SOURCE)))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\" -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $(REFPERSYS_PLUGIN_SOURCE) -o $(REFPERSYS_PLUGIN_SHARED_OBJECT)
@@ -326,6 +327,7 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $<))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
@@ -337,6 +339,7 @@ plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  r
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
@@ -348,6 +351,7 @@ plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedsele
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
@@ -359,6 +363,7 @@ plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedatt
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
@@ -370,6 +375,7 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
@@ -383,6 +389,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
@@ -395,6 +402,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
 #-             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 #-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 #-             -DRPS_HOST=\"$(RPS_HOST)\" \
+#-	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 #-             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
 #-             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 #- 	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc -o $@
@@ -411,6 +419,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 	       -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
                -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 	       -DRPS_HOST=\"$(RPS_HOST)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	       -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
 	       -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	$< -o $@
@@ -436,6 +445,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 #            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
 #            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 #            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
+#	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 #            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
 #            -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
 #            -o $@ $<
@@ -445,6 +455,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 #	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty \
 #                     --language=c++ --debug  --token-table \
 #                     --header=plugins_dir/_rpsplug_gramrepl.hh \
+#            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
 #                     --output=$@ \
 #                   $<
 ################################
@@ -488,11 +499,12 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
-	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
-               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+	        $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \ \
                -DRPS_HOST=\"$(RPS_HOST)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
                -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
                -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       -c -o $@ $<
@@ -518,6 +530,7 @@ load_rps.o: load_rps.cc refpersys.hh \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -535,6 +548,7 @@ load_rps.o: load_rps.cc refpersys.hh \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
                -DRPS_HOST=\"$(RPS_HOST)\" \
                -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
                -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -553,6 +567,7 @@ fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefil
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
                -DRPS_HOST=\"$(RPS_HOST)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
                -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
                -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
@@ -572,6 +587,7 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
