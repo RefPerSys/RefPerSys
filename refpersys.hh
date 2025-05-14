@@ -388,9 +388,10 @@ extern "C" const char rps_carburetta_version[];
 /// subdirectoris
 extern "C" const char*const rps_subdirectories[];
 
-/// realpath and version of the GNU C++ compiler see gcc.gnu.org
+/// realpath and version and flags of the GNU C++ compiler see gcc.gnu.org
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
+extern "C" const char rps_cxx_compiler_flags[];
 
 /// the GPP generic preprocessor from logological.org/gpp
 /// we may in 2025 not need to use it
