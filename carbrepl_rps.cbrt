@@ -268,59 +268,72 @@ replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
    RPS_DEBUG_LOG(REPL, "show carburetta command:" << $2);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+   RPS_POSSIBLE_BREAKPOINT();
    rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $2);
+   RPS_POSSIBLE_BREAKPOINT();
    $$ = 1;
 }
 
 replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
    _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
    RPS_DEBUG_LOG(REPL, "put carburetta command:" << $2 << " attr " << $4 << " expr " << $6);
+   RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
 }
 
 replnt_command: error {
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("invalid syntax for command");
 }
 
 replnt_atom: INT {
 _Pragma("message \"replnt_atom as INT in carbrepl_rps.cbrt\"");
+ RPS_POSSIBLE_BREAKPOINT();
   $$ = Rps_Value::make_tagged_int($0);
+  RPS_DEBUG_LOG(REPL, "atom is INT " << $$);
 }
 
 replnt_atom: DOUBLE {
 _Pragma("message \"replnt_atom as DOUBLE in carbrepl_rps.cbrt\"");
   $$ = Rps_DoubleValue($0);
+  RPS_DEBUG_LOG(REPL, "atom is DOUBLE " << $$);
 }
 
 replnt_atom: STRING {
 _Pragma("message \"replnt_atom as STRING in carbrepl_rps.cbrt\"");
   $$ = Rps_StringValue($0);
+  RPS_DEBUG_LOG(REPL, "atom is STRING " << $$);
 }
 
 replnt_atom: replnt_object {
   _Pragma("message \"replnt_atom as replnt_object in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectValue($0);
+  RPS_DEBUG_LOG(REPL, "atom is object " << $$);
 }
 
 replnt_object: NAME {
   _Pragma("message \"replnt_object as NAME in carbrepl_rps.cbrt\"");
   $$ = Rps_PayloadSymbol::find_named_object($0);
+  RPS_DEBUG_LOG(REPL, "object is name " << $$);
 }
 
 replnt_object: OID {
   _Pragma("message \"replnt_object as OID in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectRef::really_find_object_by_oid($0);
+  RPS_DEBUG_LOG(REPL, "object is oid " << $$);
 }
 
 
 replnt_expr: KEYW_OBJECT replnt_object {
   _Pragma("message \"replnt_expr as KEYW_OBJECT replnt_object in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectValue($1);
+  RPS_DEBUG_LOG(REPL, "expr is object " << $$);
 }
 
 
 replnt_expr: replnt_term                      {
   _Pragma("message \"replnt_expr as replnt_term in carbrepl_rps.cbrt\"");
+  RPS_DEBUG_LOG(REPL, "expr is term " << $$);
   $$ = $0;
 }
 
