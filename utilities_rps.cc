@@ -570,7 +570,9 @@ void
 rps_show_version_handwritten_source_files(void)
 {
   RPS_POSSIBLE_BREAKPOINT();
-  int nbsourcefiles=0;
+  int nbsourcefiles =0;
+  int nbshownfiles =0;
+  bool nl= false;
   for (const char*const*curfileptr = rps_files;
        curfileptr && *curfileptr; curfileptr++)
     nbsourcefiles++;
@@ -654,8 +656,9 @@ rps_show_version_handwritten_source_files(void)
         symgit = (const char*)dlsym(rps_proghdl, cursymgit);
         if (!symgit)
           {
-            RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit << " failed "
-                          << dlerror());
+            RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
+                        << dlerror());
+            continue;
           }
         RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit
                       << " gives symgit=" << Rps_Cjson_String(symgit));
@@ -683,11 +686,19 @@ rps_show_version_handwritten_source_files(void)
         {
           char msgbuf[80];
           memset (msgbuf, 0, sizeof(msgbuf));
-          if (snprintf(msgbuf, sizeof(msgbuf)-1, "%-20s git %.15s built %s",
+          nbshownfiles++;
+          if (snprintf(msgbuf, sizeof(msgbuf)-1, "%-16s git %.12s built %s",
                        curfile, symgit, symdat)>0)
-            std::cout << "#" << msgbuf << std::endl;
-        }
-    }
+            std::cout << "#" << msgbuf << std::flush;
+          if (nbshownfiles % 2 == 0)
+            {
+              std::cout << std::endl;
+              nl= true;
+            };
+        };
+    };
+  if (!nl)
+    std::cout << std::endl;
 } // end rps_show_version_handwritten_source_files
 
 
@@ -775,6 +786,10 @@ rps_show_version(void)
             << rps_building_user_name
             << " of email " << rps_building_user_email << std::endl
             << "See refpersys.org and code on github.com/RefPerSys/RefPerSys"
+            << std::endl;
+  std::cout << "Compiled by " << rps_cxx_compiler_version << " as " << rps_cxx_compiler_realpath
+            << std::endl
+            << "with " << rps_cxx_compiler_flags
             << std::endl;
   /////
   rps_show_version_handwritten_source_files();
