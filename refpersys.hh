@@ -385,7 +385,7 @@ extern "C" const char rps_carburetta[];
 extern "C" const char rps_carburetta_version[];
 
 
-/// subdirectoris
+/// subdirectories
 extern "C" const char*const rps_subdirectories[];
 
 /// realpath and version and flags of the GNU C++ compiler see gcc.gnu.org
