@@ -540,7 +540,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   else {
     RPS_POSSIBLE_BREAKPOINT();
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token tksrc=" << tksrc
-		  << " tokv=" << tokv
+		  << " tokv=" << _f.tokv
 		  << " no gdb_do_return");
   };
   ////
