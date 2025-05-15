@@ -530,6 +530,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
 		<< "tokv=" << _f.tokv << " tksrc=" << tksrc
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/b"));
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
+  //// temporary trick to help debugging with GDB
+  asm volatile (".global carbrepl_rps_issue; nop; carbrepl_rps_issue: nop; nop; nop");
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   //// for GDB
   if (gdb_do_return) {
