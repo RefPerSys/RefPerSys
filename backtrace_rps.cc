@@ -666,9 +666,10 @@ Rps_Backtracer::~Rps_Backtracer()
     RPS_FASTABORT("corrupted backtracer");
   if (backtr_outs)
     {
-      *backtr_outs << "--------------------------------";
+      *backtr_outs << "-----++-----";
       if (!backtr_fromfile.empty())
         *backtr_outs << "/ " << backtr_fromfile << ":" << backtr_fromline;
+      *backtr_outs << " -- " << backtr_name;
       *backtr_outs << std::endl;
     }
 } // end Rps_Backtracer::~Rps_Backtracer
