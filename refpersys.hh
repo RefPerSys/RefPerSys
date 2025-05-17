@@ -1253,11 +1253,11 @@ rps_timer_cpu_elapsed(const rps_timer *hnd)
 #error RPS_BASENAME should be a string and is needed here
 #endif
 
-#define RPS_POSSIBLE_BREAKPOINT_AT(Fil,Lin) do {		\
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n");	\
+#define RPS_POSSIBLE_BREAKPOINT_AT(Fil,Lin) do {    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
     asm volatile ("__" RPS_BASENAME "_brk_" #Lin ": nop\n");    \
     asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n");	\
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
  } while(0)
 
 #define RPS_POSSIBLE_BREAKPOINT_AT_BIS(Fil,Lin) \
@@ -3078,7 +3078,7 @@ public:
 };             // end Rps_StreamTokenSource
 
 
-
+////////////////
 class Rps_StringTokenSource : public Rps_TokenSource
 {
   std::istringstream toksrcstr_inp;
@@ -3093,7 +3093,7 @@ public:
     return toksrcstr_str;
   };
   virtual void display(std::ostream&out) const;
-};                                                            // end Rps_StringTokenSource
+};          // end Rps_StringTokenSource
 
 class Rps_MemoryFileTokenSource;
 extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
