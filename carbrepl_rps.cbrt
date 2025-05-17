@@ -535,7 +535,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
     tksrc->display_current_line_with_cursor(out);
   })
 		<< std::endl
-		<< "tokv=" << _f.tokv << " tksrc=" << tksrc
+		<< "tokv=" << _f.tokv << " tksrc=" << *tksrc << std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/b")
 		<< " currentline='" << Rps_QuotedC_String(tksrc->current_line()) << "'"
 		<< " at " << tksrc->position_str());
@@ -551,7 +551,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   }
   else {
     RPS_POSSIBLE_BREAKPOINT();
-    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token tksrc=" << tksrc
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token tksrc=" << *tksrc
 		  << " tokv=" << _f.tokv
 		  << " no gdb_do_return");
   };
@@ -581,7 +581,8 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   _Pragma("message \"rps_do_carburetta_tokensrc\"");
   RPS_ASSERT(tksrc);
   _f.obenv = obenvarg;
-  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv=" << _f.obenv << " tksrc=" << tksrc
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv=" << _f.obenv
+		<< " tksrc=" << *tksrc
 		<< " from thread " << rps_current_pthread_name()
 		<< RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
 		<< std::endl);
@@ -595,12 +596,14 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
     });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc obenv=" << _f.obenv << " tksrc=" << tksrc);
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc obenv=" << _f.obenv
+		<< " tksrc=" << *tksrc);
   RPS_POSSIBLE_BREAKPOINT();
 #warning check this
   int r = rpscarbrepl_parse(&carbstack, /*sym:*/RPSCARBREPL_REPLNT_INPUT, tksrc, &_);
-  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc after rpscarbrepl_parse r=" << r << " obenv=" << _f.obenv
-		<< " tksrc=" << tksrc);
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc after rpscarbrepl_parse r=" << r
+		<< " obenv=" << _f.obenv
+		<< " tksrc=" << *tksrc);
 #warning unimplemented rps_do_carburetta_tokensrc
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
@@ -623,11 +626,15 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   _f.obenv = obenvarg;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
-  Rps_StringTokenSource toksrc(cmd, std::string(title));
-  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command start toksrc=" << toksrc
+  Rps_StringTokenSource tokensrc(cmd, std::string(title));
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command start tokensrc=" << tokensrc
 		<< " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command start"));
-  rps_do_carburetta_tokensrc(&_, _f.obenv, &toksrc, title);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command before rps_do_carburetta_tokensrc tokensrc="
+		<< tokensrc);
+  RPS_POSSIBLE_BREAKPOINT();
+  rps_do_carburetta_tokensrc(&_, _f.obenv, &tokensrc, title);
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command end toksrc=" << toksrc
 		<< " obenv=" << _f.obenv);
 }  // end rps_do_carburetta_command
