@@ -4341,7 +4341,7 @@ typedef Rps_ProtoCallFrame Rps_CallFrame;
 typedef void Rps_CallFrameOutputSig_t(std::ostream&/*out*/, const Rps_ProtoCallFrame*/*frame*/,unsigned/*depth*/,unsigned /*maxdepth*/);
 ////////////////////////////////////////////////////////////////
 //// the common superclass of our call frames
-class Rps_ProtoCallFrame : public Rps_TypedZone
+class Rps_ProtoCallFrame : public Rps_TypedZone /// actually Rps_CallFrame
 {
   friend unsigned rps_call_frame_depth(const Rps_CallFrame*);
 protected:
