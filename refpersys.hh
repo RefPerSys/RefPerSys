@@ -875,10 +875,11 @@ void rps_set_debug_output_path(const char*filepath);
 /// rps_set_debug_output_path ....; if fline is negative, print a
 /// newline before....
 void
-rps_debug_printf_at(const char *fname, int fline,const char*funcname, Rps_Debug dbgopt,
+rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug dbgopt,
                     const char *fmt, ...)
 __attribute__ ((format (printf, 5, 6)));
 
+#warning we may want to define a std::ostream subclass for the debugging stream (with a singleton)
 
 #define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)    \
 do                                                             \
