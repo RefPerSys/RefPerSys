@@ -66,6 +66,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   RPS_ASSERT_CALLFRAME (callframe);
   RPS_ASSERT(envobarg);
   constexpr int maxloop=256;
+  int framdepth = callframe->call_frame_depth();
   unsigned startdbgflags = rps_debug_flags.load();
   static std::atomic<unsigned long> eval_repl_counter_;
   const unsigned long eval_number = 1+eval_repl_counter_.fetch_add(1);
@@ -134,7 +135,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
                 << eval_number << " *STARTEVAL*"
                 << " expr:" << _f.exprv
-                << " in env:" << _f.envob);
+                << " in env:" << _f.envob << " framdepth=" << framdepth);
   /// to check the above failure macro:
   if (!_f.envob || _f.envob->stored_type() != Rps_Type::Object)
     {
@@ -982,14 +983,16 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
       if (dirh)
         {
           closedir(dirh);
-          RPS_DEBUG_LOG(CMD, "REPL command dumping into existing dir '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
+          RPS_DEBUG_LOG(CMD, "REPL command dumping into existing dir '"
+                        << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
           rps_dump_into(dirstr.c_str(), &_);
           dumpdir = dirstr;
           dumped = true;
         }
       else if (!mkdir(dirstr.c_str(), 0750))
         {
-          RPS_DEBUG_LOG(CMD, "REPL command dumping into fresh dir '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
+          RPS_DEBUG_LOG(CMD, "REPL command dumping into fresh dir '"
+                        << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
           rps_dump_into(dirstr.c_str(), &_);
           dumpdir = dirstr;
           dumped = true;
@@ -999,11 +1002,13 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
         // see https://man7.org/linux/man-pages/man3/wordexp.3.html
         RPS_WARNOUT("REPL command dump unimplemented into '" << dirstr << "' callcnt#" << callcnt);
     }
-  RPS_DEBUG_LOG(CMD, "REPL command dump dumped= " << (dumped?"true":"false") << " dumpdir=" << dumpdir << " callcnt#" << callcnt<< " nextlexob:" << _f.nextlexval);
+  RPS_DEBUG_LOG(CMD, "REPL command dump dumped= " << (dumped?"true":"false")
+                << " dumpdir=" << dumpdir << " callcnt#" << callcnt<< " nextlexob:" << _f.nextlexval);
   if (dumped)
     return {Rps_StringValue(dumpdir),nullptr};
   else
-    RPS_WARNOUT("non-dumped REPL token for command dump - dumpdir=" << dumpdir << " callcnt#" << callcnt<< " nextlexval" << _f.nextlexval);
+    RPS_WARNOUT("non-dumped REPL token for command dump - dumpdir=" << dumpdir
+                << " callcnt#" << callcnt<< " nextlexval" << _f.nextlexval);
 #warning incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump
   RPS_WARNOUT("incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
@@ -1099,7 +1104,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
   if (!_dispobref)
     {
       out << BOLD_esc << "__" << NORM_esc
-	  << " (*" << _dispfile << ":" << _displine << "*)" << std::endl;
+          << " (*" << _dispfile << ":" << _displine << "*)" << std::endl;
       return;
     };
   /// We lock the displayed object to avoid other threads modifying it
@@ -1221,11 +1226,12 @@ Rps_Object_Display::output_display(std::ostream&out) const
     {
       out << BOLD_esc << "* no payload *" << NORM_esc << std::endl;
     }
-  else {
-    out << BOLD_esc << "* " << payl->payload_type_name() << " payload *"
-	<< NORM_esc << std::endl;
-    payl->output_payload(out, _dispdepth, disp_max_depth);
-  };
+  else
+    {
+      out << BOLD_esc << "* " << payl->payload_type_name() << " payload *"
+          << NORM_esc << std::endl;
+      payl->output_payload(out, _dispdepth, disp_max_depth);
+    };
   char oidpref[16];
   memset (oidpref, 0, sizeof(oidpref));
   memcpy (oidpref, obidbuf, sizeof(oidpref)/2);
