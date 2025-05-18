@@ -1805,13 +1805,13 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
                 << RPS_OBJECT_DISPLAY(_f.envob));
   for (int cix=0; cix<nbcmd; cix++)
     {
+      RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: "
                     << cmdvec[cix]);
       if (cix % 4 == 0)
         usleep(128*1024);
       RPS_POSSIBLE_BREAKPOINT();
-#warning improve bufpath to contain start of command
-      char bufpath[64];
+      char bufpath[72];
       int n = -1;
       memset (bufpath, 0, sizeof(bufpath));
       n = snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]'%s'", cix,
@@ -1826,10 +1826,16 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
       /// do the command
       try
         {
+	  RPS_POSSIBLE_BREAKPOINT();
+          RPS_DEBUG_LOG(REPL, "REPL before doing command " << Rps_Cjson_String(cmdvec[cix])
+			<< " in env=" << _f.envob
+			<< " " << bufpath);
+	  RPS_POSSIBLE_BREAKPOINT();
           rps_do_one_repl_command(&_, _f.envob, cmdvec[cix],
                                   /*title:*/bufpath);
           RPS_DEBUG_LOG(REPL, "REPL command " << Rps_Cjson_String(cmdvec[cix])
                         << " done");
+	  RPS_POSSIBLE_BREAKPOINT();
         }
       catch (std::exception&ex)
         {
