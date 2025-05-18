@@ -566,6 +566,8 @@ rps_print_types_info(void)
 ////////////////////////////////////////////////////////////////
 extern "C" void rps_show_version_handwritten_source_files(void);
 
+static void rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int& nbshownfiles, bool&nl);
+
 void
 rps_show_version_handwritten_source_files(void)
 {
@@ -589,14 +591,14 @@ rps_show_version_handwritten_source_files(void)
     {
       char curbase[64];
       memset (curbase, 0, sizeof(curbase));
-      char cursuffix[16];
-      memset (cursuffix, 0, sizeof(cursuffix));
       int endpos = -1;
       const char*curfile = *curfileptr;
       if (!curfile)
         break;
       RPS_POSSIBLE_BREAKPOINT();
       curfilno++;
+      char cursuffix[16];
+      memset (cursuffix, 0, sizeof(cursuffix));
       RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile));
       if (!isalpha(curfile[0]))
         continue;
@@ -605,104 +607,110 @@ rps_show_version_handwritten_source_files(void)
       if ((sscanf(curfile, "%60[a-zA-Z_].%10[a-z]%n", curbase, cursuffix, &endpos))<1
           || endpos<2 || curfile[endpos]!=(char)0)
         continue;
-      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
-                    << " curbase=" <<  Rps_Cjson_String(curbase));
-      int lencurbase=strlen(curbase);
-      /// Human written source files (not scripts) are *_rps.* and dont start with underscores.
-      if (curbase[0]=='_' || lencurbase<6)
-        {
-          /// by convention basenames starting with an underscore are generated
-          RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno<< " =" << Rps_Cjson_String(curfile)
-                        << " skipping curbase=" << Rps_Cjson_String(curbase));
-          continue;
-        }
-      RPS_POSSIBLE_BREAKPOINT();
-      // Human written source files are *_rps.* (except for refperys.hh)
-      if (!strcmp(curbase+lencurbase-4, "_rps"))
-        {
-          curbase[lencurbase-4]=(char)0;
-          RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
-                        << " shrinked curbase=" << Rps_Cjson_String(curbase));
-          RPS_POSSIBLE_BREAKPOINT();
-        }
-      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
-                    << " curbase=" << Rps_Cjson_String(curbase)
-                    << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
-      if (!strcmp(cursuffix, "so") || !strcmp(cursuffix, "o") || !strcmp(cursuffix, "a")
-          || !strcmp(cursuffix, "la") || !strcmp(cursuffix, "status"))
-        {
-          RPS_POSSIBLE_BREAKPOINT();
-          RPS_DEBUG_LOG(PROGARG, "curfile=" << Rps_Cjson_String(curfile)
-                        << " skipped cursuffix=" << Rps_Cjson_String(cursuffix));
-          continue;
-        };
-      RPS_POSSIBLE_BREAKPOINT();
-      RPS_DEBUG_LOG(PROGARG, "before µdlsyming curfile=" << Rps_Cjson_String(curfile)
-                    << " curbase=" << Rps_Cjson_String(curbase));
-      const char* symgit = nullptr;
-      const char* symdat = nullptr;
-      const char* symshortgit = nullptr;
-      {
-        char cursymgit[80];
-        char cursymdat[80];
-        char cursymshortgit[80];
-        memset (cursymgit, 0, sizeof(cursymgit));
-        memset (cursymdat, 0, sizeof(cursymdat));
-        memset (cursymshortgit, 0, sizeof(cursymshortgit));
-        snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
-        snprintf (cursymshortgit, sizeof(cursymgit), "rps_%s_shortgitid", curbase);
-        snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
-        RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
-        symgit = (const char*)dlsym(rps_proghdl, cursymgit);
-        if (!symgit)
-          {
-            RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
-                        << dlerror());
-            continue;
-          }
-        RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit
-                      << " gives symgit=" << Rps_Cjson_String(symgit));
-        if (!symgit || !isalnum(symgit[0]))
-          {
-            continue;
-          }
-        symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
-        if (!symshortgit || !isalnum(symshortgit[0]))
-          continue;
-        symdat = (const char*)dlsym(rps_proghdl, cursymdat);
-        if (!symdat || !isalnum(symdat[0]))
-          continue;
-        if (symgit && symshortgit
-            && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2))
-          {
-            /// this should not happen and is likely a bug in C++ files or build procedure
-            RPS_POSSIBLE_BREAKPOINT();
-            RPS_WARNOUT("perhaps corrupted " << curfile << " in topdir " << rps_topdirectory
-                        << " with " << cursymgit << "=" << symgit
-                        << " and " << cursymshortgit << "=" << symshortgit);
-          }
-      };
-      if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0]))
-        {
-          char msgbuf[80];
-          memset (msgbuf, 0, sizeof(msgbuf));
-          nbshownfiles++;
-          if (snprintf(msgbuf, sizeof(msgbuf)-1, "%-16s git %.12s built %s",
-                       curfile, symgit, symdat)>0)
-            std::cout << "#" << msgbuf << std::flush;
-          if (nbshownfiles % 2 == 0)
-            {
-              std::cout << std::endl;
-              nl= true;
-            };
-        };
-    };
+      rps_show_version_one_source_file(curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
+    };        // end major loop of rps_show_version_handwritten_source_files
+  ////
+  ////
   if (!nl)
     std::cout << std::endl;
 } // end rps_show_version_handwritten_source_files
 
-
-
+void
+rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int &nbshownfiles, bool&nl)
+{
+  RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
+                << " curbase=" <<  Rps_Cjson_String(curbase));
+  int lencurbase=strlen(curbase);
+  /// Human written source files (not scripts) are *_rps.* and dont start with underscores.
+  if (curbase[0]=='_' || lencurbase<6)
+    {
+      /// by convention basenames starting with an underscore are generated
+      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno<< " =" << Rps_Cjson_String(curfile)
+                    << " skipping curbase=" << Rps_Cjson_String(curbase));
+      return;
+    }
+  RPS_POSSIBLE_BREAKPOINT();
+  // Human written source files are *_rps.* (except for refperys.hh)
+  if (!strcmp(curbase+lencurbase-4, "_rps"))
+    {
+      curbase[lencurbase-4]=(char)0;
+      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
+                    << " shrinked curbase=" << Rps_Cjson_String(curbase));
+      RPS_POSSIBLE_BREAKPOINT();
+    }
+  RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
+                << " curbase=" << Rps_Cjson_String(curbase)
+                << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
+  if (!strcmp(cursuffix, "so") || !strcmp(cursuffix, "o") || !strcmp(cursuffix, "a")
+      || !strcmp(cursuffix, "la") || !strcmp(cursuffix, "status"))
+    {
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(PROGARG, "curfile=" << Rps_Cjson_String(curfile)
+                    << " skipped cursuffix=" << Rps_Cjson_String(cursuffix));
+      return;
+    };
+  RPS_POSSIBLE_BREAKPOINT();
+  ////
+  RPS_DEBUG_LOG(PROGARG, "before µdlsyming curfile=" << Rps_Cjson_String(curfile)
+                << " curbase=" << Rps_Cjson_String(curbase));
+  const char* symgit = nullptr;
+  const char* symdat = nullptr;
+  const char* symshortgit = nullptr;
+  {
+    char cursymgit[80];
+    char cursymdat[80];
+    char cursymshortgit[80];
+    memset (cursymgit, 0, sizeof(cursymgit));
+    memset (cursymdat, 0, sizeof(cursymdat));
+    memset (cursymshortgit, 0, sizeof(cursymshortgit));
+    snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
+    snprintf (cursymshortgit, sizeof(cursymgit), "rps_%s_shortgitid", curbase);
+    snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
+    RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
+    symgit = (const char*)dlsym(rps_proghdl, cursymgit);
+    if (!symgit)
+      {
+        RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
+                    << dlerror());
+        return;
+      }
+    RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit
+                  << " gives symgit=" << Rps_Cjson_String(symgit));
+    if (!symgit || !isalnum(symgit[0]))
+      {
+        return;
+      }
+    symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
+    if (!symshortgit || !isalnum(symshortgit[0]))
+      return;
+    symdat = (const char*)dlsym(rps_proghdl, cursymdat);
+    if (!symdat || !isalnum(symdat[0]))
+      return;
+    if (symgit && symshortgit
+        && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2))
+      {
+        /// this should not happen and is likely a bug in C++ files or build procedure
+        RPS_POSSIBLE_BREAKPOINT();
+        RPS_WARNOUT("perhaps corrupted " << curfile << " in topdir " << rps_topdirectory
+                    << " with " << cursymgit << "=" << symgit
+                    << " and " << cursymshortgit << "=" << symshortgit);
+      }
+  };
+  if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0]))
+    {
+      char msgbuf[80];
+      memset (msgbuf, 0, sizeof(msgbuf));
+      nbshownfiles++;
+      if (snprintf(msgbuf, sizeof(msgbuf)-1, "%-16s git %.12s built %s",
+                   curfile, symgit, symdat)>0)
+        std::cout << "#" << msgbuf << std::flush;
+      if (nbshownfiles % 2 == 0)
+        {
+          std::cout << std::endl;
+          nl= true;
+        };
+    };
+} // end  rps_show_version_one_source_file
 
 void
 rps_show_version(void)
