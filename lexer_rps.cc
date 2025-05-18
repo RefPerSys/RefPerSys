@@ -274,15 +274,16 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
   : Rps_TokenSource(name), toksrcstr_inp(inptstr), toksrcstr_str(inptstr)
 {
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
+  RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this
                 << " from " << Rps_QuotedC_String(toksrcstr_str)
                 << " of " << toksrcstr_str.size() << " bytes, named " << name
-                << std::endl
+                << std::endl << " " << (*this)
                 << RPS_FULL_BACKTRACE_HERE(1, "const StringTokenSource"));
-  RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
-                << " from " << Rps_QuotedC_String(toksrcstr_str));
-  RPS_DEBUG_LOG(CMD, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
-                << " from " << Rps_QuotedC_String(toksrcstr_str));
+  //RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
+  //              << " from " << Rps_QuotedC_String(toksrcstr_str));
+  if (!RPS_DEBUG_ENABLED(REPL))
+    RPS_DEBUG_LOG(CMD, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
+                  << " from " << Rps_QuotedC_String(toksrcstr_str));
 } // end Rps_StringTokenSource::Rps_StringTokenSource
 
 
@@ -292,8 +293,9 @@ Rps_StringTokenSource::~Rps_StringTokenSource()
                 << " with "  << Rps_QuotedC_String(toksrcstr_str)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "destr StringTokenSource"));
-  RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(CMD, "destr StringTokenSource@ " <<(void*)this << " " << *this);
+  //RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
+  if (!RPS_DEBUG_ENABLED(REPL))
+    RPS_DEBUG_LOG(CMD, "destr StringTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StringTokenSource::~Rps_StringTokenSource
 
 
@@ -1541,11 +1543,11 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token loop rank#"
                     << rank << " in " << (*this) << std::endl
-		    << " pos:" << position_str() << std::endl
+                    << " pos:" << position_str() << std::endl
                     << "… curcptr:" << Rps_QuotedC_String(curcptr())
-		    << std::endl
-		    << "… token_deq:" << toksrc_token_deq
-		    << std::endl);
+                    << std::endl
+                    << "… token_deq:" << toksrc_token_deq
+                    << std::endl);
       _f.lextokv = get_token(&_);
       if (_f.lextokv)
         {
