@@ -1388,7 +1388,7 @@ rps_fltk_run (void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run"));
   RPS_ASSERT(rps_is_main_thread());
-  constexpr double minimal_wait_delay = 1.25;;
+  constexpr double minimal_wait_delay = 4.25;  /// in rps_fltk_run file fltk_rps.cc
   constexpr double plain_wait_delay = 16.0;
   if (rps_run_delay > 0.0)
     {
