@@ -1075,14 +1075,11 @@ rps_sort_object_vector_for_display(std::vector<Rps_ObjectRef>&vectobr)
 void
 Rps_Object_Display::output_display(std::ostream&out) const
 {
+  char obidbuf[32];
+  memset (obidbuf, 0, sizeof(obidbuf));
 #warning incomplete Rps_Object_Display::output_display should be moved to objects_rps.cc
   if (!_dispfile)
     return;
-  if (!_dispobref)
-    {
-      out << "__ (*" << _dispfile << ":" << _displine << "*)" << std::endl;
-      return;
-    };
   bool ontty =
     (&out == &std::cout)?isatty(STDOUT_FILENO)
     :(&out == &std::cerr)?isatty(STDERR_FILENO)
@@ -1091,12 +1088,27 @@ Rps_Object_Display::output_display(std::ostream&out) const
     ontty = false;
   const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  /*** FIXME:
+   *
+   * in practice we may need to define a special debugging output
+   * stream, since in commit 31e7ab2efcce973 (may 2025) the ontty
+   * above is always false because RPS_DEBUGNL_LOG_AT and RPS_DEBUG_AT
+   * macros are declaring a local std::ostringstream...
+   ***/
+  RPS_POSSIBLE_BREAKPOINT();
+  if (!_dispobref)
+    {
+      out << BOLD_esc << "__" << NORM_esc
+	  << " (*" << _dispfile << ":" << _displine << "*)" << std::endl;
+      return;
+    };
   /// We lock the displayed object to avoid other threads modifying it
   /// during the display.
   std::lock_guard<std::recursive_mutex> gudispob(*_dispobref->objmtxptr());
+  _dispobref->oid().to_cbuf24(obidbuf);
   out  << std::endl
        << BOLD_esc
-       << "¤¤ object " << _dispobref
+       << "{¤¤ object " << _dispobref
        << NORM_esc
        << std::endl << "  of class "
        << _dispobref->get_class()
@@ -1208,11 +1220,16 @@ Rps_Object_Display::output_display(std::ostream&out) const
   if (!payl)
     {
       out << BOLD_esc << "* no payload *" << NORM_esc << std::endl;
-      return;
     }
-  out << BOLD_esc << "* " << payl->payload_type_name() << " payload *"
-      << NORM_esc << std::endl;
-  payl->output_payload(out, _dispdepth, disp_max_depth);
+  else {
+    out << BOLD_esc << "* " << payl->payload_type_name() << " payload *"
+	<< NORM_esc << std::endl;
+    payl->output_payload(out, _dispdepth, disp_max_depth);
+  };
+  char oidpref[16];
+  memset (oidpref, 0, sizeof(oidpref));
+  memcpy (oidpref, obidbuf, sizeof(oidpref)/2);
+  out << " " << BOLD_esc << "|-" << oidpref << "¤¤}" << NORM_esc << std::endl;
 } // end Rps_Object_Display::output_display
 
 
