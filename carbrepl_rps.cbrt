@@ -206,9 +206,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
 // we probably need to use Rps_TokenSource::lookahead_token
 %on_next_token {_Pragma("message \"on_next_token code\""); \
     RPS_POSSIBLE_BREAKPOINT(); \
-    RPS_DEBUG_LOG(REPL, "on_next_token start tksrc=" << tksrc); \
+    RPS_DEBUG_LOG(REPL, "on_next_token start tksrc=" << *tksrc); \
     int ntk = rps_carbrepl_next_token(callframe, tksrc, __LINE__); \
-    RPS_DEBUG_LOG(REPL, "on_next_token tksrc=" << tksrc << " is " << ntk); \
+    RPS_DEBUG_LOG(REPL, "on_next_token tksrc=" << *tksrc << " is " << ntk); \
     return ntk; }
 
 
@@ -518,7 +518,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
 		<< __FILE__ << ":" << lin
-		<< " tksrc=" << tksrc << std::endl
+		<< " tksrc=" << *tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
@@ -529,7 +529,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   _f.tokv = tksrc->lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
 		<< __FILE__ << ":" << lin
-		<< " tksrc=" << tksrc << std::endl
+		<< " tksrc=" << *tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
