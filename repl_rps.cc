@@ -1586,14 +1586,17 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   Rps_StringTokenSource intoksrc(cmd, std::string(title));
   if (!intoksrc.get_line())
     {
-      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " no line from "
-                    << Rps_Cjson_String(cmd));
+      RPS_WARNOUT("rps_do_one_repl_command " << title << " no line from "
+		  << Rps_Cjson_String(cmd) << " in thread "
+		  << rps_current_pthread_name());
       return;
     }
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
 		<< " obenv=" << _f.obenv);
   RPS_POSSIBLE_BREAKPOINT();
   _f.tok0 = intoksrc.lookahead_token(&_, 0);
+  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
+		<< " tok0=" << _f.tok0);
   _f.tok1 = intoksrc.lookahead_token(&_, 1);
   _f.tok2 = intoksrc.lookahead_token(&_, 2);
   std::string commandpos = intoksrc.position_str();
