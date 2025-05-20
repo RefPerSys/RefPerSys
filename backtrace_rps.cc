@@ -44,12 +44,12 @@ extern "C" const char rps_backtrace_shortgitid[];
 const char rps_backtrace_shortgitid[]= RPS_SHORTGITID;
 
 #define RPS_FASTABORT(Msg) do {                                 \
-  std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'      \
-      << __LINE__  << std::endl                                 \
-      << "..@" << __PRETTY_FUNCTION__                           \
-      << " §¤: " << Msg << std::endl << std::flush;             \
-  abort();                                                      \
-} while(0)
+    std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'    \
+              << __LINE__  << std::endl                         \
+              << "..@" << __PRETTY_FUNCTION__                   \
+              << " §¤: " << Msg << std::endl << std::flush;     \
+    abort();                                                    \
+  } while(0)
 
 /// actually, in file main_rps.cc we have something like  asm volatile ("rps_end_of_main: nop");
 extern "C" void rps_end_of_main(void);
@@ -191,6 +191,11 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("pc_to_string: corrupted Rps_Backtracer");
+  const char* BOLD_esc = (backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* ITALICS_esc = (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"");
+  const char* UNDERLINE_esc = (backtr_ontty?RPS_TERMINAL_UNDERLINE_ESCAPE:"");
+  const char* FAINT_esc = (backtr_ontty?RPS_TERMINAL_FAINT_ESCAPE:"");
+  const char* NORMAL_esc = (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   if (gotmain)
     *gotmain = false;
   if (RPS_UNLIKELY(pc < 0xffff))
@@ -198,10 +203,7 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
       char buf[32];
       memset (buf, 0, sizeof(buf));
       snprintf(buf, sizeof(buf), "%s%s[%03d] /??%s %p",
-               backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",
-               backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-               backtr_depth,
-               backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
+               ITALICS_esc,  BOLD_esc, backtr_depth,  NORMAL_esc,
                (void*)pc);
       return std::string(buf);
     }
@@ -212,8 +214,8 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
         char beforebuf[32];
         memset (beforebuf, 0, sizeof(beforebuf));
         snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
-        outs << (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"")   <<  (backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
-             << beforebuf << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+        outs << ITALICS_esc <<  BOLD_esc
+             << beforebuf << NORMAL_esc;
       }
       const char*demangled = nullptr;
       Dl_info dif = {};
@@ -278,8 +280,7 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
                   outs <<  ' ' << (void*)pc
                        << "!: " << filnamestr
                        << "+" << std::showbase << std::hex << delta
-                       << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
-                       << std::flush;
+                       << NORMAL_esc << std::flush;
                 }
               else
                 {
@@ -287,8 +288,7 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
                        << "!: " << filnamestr
                        << "+" << std::showbase << std::hex << delta
                        << ' ' << funamestr
-                       << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
-                       << std::flush;
+                       << NORMAL_esc << std::flush;
                 }
             } // end if delta != 0
           else // delta is 0
@@ -334,6 +334,11 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("detailed_pc_to_string: corrupted Rps_Backtracer");
+  const char* BOLD_esc = (backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* ITALICS_esc = (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"");
+  const char* UNDERLINE_esc = (backtr_ontty?RPS_TERMINAL_UNDERLINE_ESCAPE:"");
+  const char* FAINT_esc = (backtr_ontty?RPS_TERMINAL_FAINT_ESCAPE:"");
+  const char* NORMAL_esc = (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   if (pcfile && pcfile[0] && pcfun && pcfun[0])
     {
       const char*basepcfile = pcfile;
@@ -347,7 +352,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
         char beforebuf[32];
         memset (beforebuf, 0, sizeof(beforebuf));
         snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
-        outs << (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"") << beforebuf << ' ';
+        outs << ITALICS_esc << beforebuf << ' ';
       }
       char *dempcfun = nullptr;
       if (pcfun[0] == '_')
@@ -357,16 +362,10 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
           if (demangled && status==0)
             dempcfun = (char*) demangled;
         }
-      outs <<(backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"") << basepcfile << ':' << pclineno
-           << "°:"
-           << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+      outs << ITALICS_esc << basepcfile << ':' << pclineno << "°:" << NORMAL_esc << " "
+           << UNDERLINE_esc << (dempcfun?dempcfun:pcfun) << NORMAL_esc
            << " "
-           << (backtr_ontty?RPS_TERMINAL_UNDERLINE_ESCAPE:"")
-           << (dempcfun?dempcfun:pcfun)
-           << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
-           << " "
-           << (backtr_ontty?RPS_TERMINAL_FAINT_ESCAPE:"") << "@" << (void*)pc
-           << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+           << FAINT_esc << "@" << (void*)pc << NORMAL_esc
            << std::flush;
       if (dempcfun)
         free((void*)dempcfun);
