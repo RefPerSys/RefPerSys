@@ -540,8 +540,13 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
 		<< " currentline=" << Rps_QuotedC_String(tksrc->current_line())
 		<< " at " << tksrc->position_str());
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token gdb_do_return at "
+		<< (void*)&gdb_do_return
+		<< " gdb_returned at " << (void*)&gdb_returned);
+  RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   //// temporary trick to help debugging with GDB
   asm volatile (".global carbrepl_rps_issue; nop; carbrepl_rps_issue: nop; nop; nop");
+  RPS_ASSERT(&gdb_do_return != nullptr);
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   //// for GDB
   if (gdb_do_return) {
