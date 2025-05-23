@@ -1,0 +1,42 @@
+s,final,smaller,a4]{beamer}
+\usepackage{relsize}
+\usepackage{luacode}
+\usepackage{xcolor}
+\usepackage{alltt}
+\usepackage{wasysym}
+\usepackage{hyperref}
+\usepackage{newunicodechar}
+
+\hypersetup{
+  colorlinks   = true, %Colours links instead of ugly boxes
+  urlcolor     = NavyBlue, %Colour for external hyperlinks
+  linkcolor    = DarkGreen, %Colour of internal links
+  citecolor   = DarkMagenta, %Colour of citations
+  frenchlinks = true,
+}
+\begin{document}
+ \begin{luacode*}
+   local gitpip=io.popen("git log --no-color --format=oneline -1 --abbrev=16 --abbrev-commit -q | cut -d' ' -f1")
+   gitid=gitpip:read()
+   gitpip:close()
+ \end{luacode*}
+ \newcommand{\mygitid}{\luadirect{tex.print(gitid)}}
+
+
+ \begin{frame}
+   {motivations pour RefPerSys}
+
+   \begin{center}
+     
+     \includegraphics[width=0.1\textwidth]{cc-by-nc-sa} Basile \textsc{Starynkévitch} - mars 2023
+
+     git {\texttt \mygitid}
+   \end{center}
+ \end{frame}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Local Variables: ;;
+%% compile-command: "./build-refpersys-jdll2025.sh" ;;
+%% End: ;;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
