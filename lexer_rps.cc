@@ -911,6 +911,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
                  Rps_Value delimv;
                  Rps_Value namev;
                  Rps_ObjectRef lexkindob;
+		 Rps_ObjectRef delimob;
                  Rps_Value lextokv;
                 );
   const char*curp=nullptr;
@@ -978,6 +979,13 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
       if (_f.delimv)
         {
           _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
+	  _f.delimob = _f.delimv.as_object();
+	  if (_f.delimob) {
+	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimob="
+			  << RPS_OBJECT_DISPLAY(_f.delimob)
+			  << "' loopcnt#" << loopcnt
+			  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter/ob"));
+	  };
           _f.lextokv = _f.delimv;
           toksrc_col += delimstr.size();
           const Rps_String* strv = _f.namev.to_string();
