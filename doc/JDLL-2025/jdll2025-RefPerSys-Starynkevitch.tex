@@ -90,7 +90,9 @@
      états-uniens)}
    \item s'occuper 
    \item expérimenter un logiciel
-   \item populariser des idées méconnues (celles de Jacques Pitrat)
+   \item populariser et affiner des idées méconnues (celles de
+     \href{https://fr.wikipedia.org/wiki/Jacques_Pitrat}{\it Jacques
+       Pitrat})
    \item \textbf{un projet \textcolor{red}{en cours de dévelopement} qui cherche des contributeurs}
    \end{itemize}
 
@@ -114,22 +116,73 @@
    \item \textbf{les moteurs d'inférences des systèmes experts} des années 1990
      \href{https://clipsrules.net/}{\textsc{CLIPSrules}} (NASA)
 
-   \item \textbf{le système \textcolor{red}{CAIA}} (``chercheur artificiel en intelligence artificielle'') de J.Pitrat
+   \item \textbf{le système \textcolor{red}{CAIA}} (``chercheur
+     artificiel en intelligence artificielle'') de J.Pitrat en
+     {\texttt{\href{https://github.com/bstarynk/caia-pitrat}{github.com/bstarynk/caia-pitrat/}}}
+     qui auto-génère son demi-million de lignes de C (1990-2018)
      
    \item \textbf{les outils d'aide à la démonstration} ou assistants
      de preuve \href{https://rocq-prover.org/}{\textsc{Rocq}} (ex
      \textsc{Coq})
 
-     \item La problématique de \textbf{\textcolor{red}{l'amorçage des compilateurs}}: tous les
-       compilateurs se compilent eux-même.
+     \item La problèmatique de \textbf{\textcolor{red}{l'amorçage des
+         compilateurs}}: tous les compilateurs se compilent
+       eux-mêmes. Idéalement \textit{\textcolor{red}{RefPerSys devrait générer son
+         propre code}}.
    \end{itemize}
 
    \bigskip
 
    En France, il existe une grosse culture mathématique de systèmes
-   formels de preuve. Ma philosophie est plus pragmatique.
+   formels de preuve. Ma philosophie est plus pragmatique et plus ludique.
    
  \end{frame}
+ 
+ \begin{frame}{une propriété méconnue de Linux: les greffons à foison}
+
+
+   Un programme sous Linux est {\relsize{-1}{(très souvent)}}
+   utilisateur de nombreuses bibliothèques dynamiques
+   {\relsize{-1}{(``shared objects'')}}, les fichiers
+   \texttt{lib*.so}. Ce mécanisme optimise l'utilisation de la mémoire
+   RAM et il est utilisé pour les greffons
+   {\relsize{-1}{(``plugins'')}} chargés par la fonction
+   \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlopen.3.html}{dlopen(3)}}}. Le
+   programme obtient par
+   \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{dlsym(3)}}},
+   durant l'exécution, les fonctions d'un greffon à partir de leur nom.
+
+   \medskip
+     
+   Un grand nombre de programmes sous Linux {\relsize{-1.5}{(dont le
+       navigateur \href{https://firefox.org}{\textsc{Firefox}},
+       l'éditeur programmable
+       \href{https://www.gnu.org/software/emacs/}{\textsc{GNU emacs}},
+       le compilateur \href{https://gcc.gnu.org/}{\textsc{Gcc}}, les
+       interprètes de commandes
+       \href{https://www.gnu.org/software/bash/}{\textsc{Bash}} ou
+       \href{https://zsh.org}{\textsc{Zsh}} ou
+       \href{https://lua.org}{\textsc{Lua})}}} acceptent des greffons,
+   pour permettre d'en étendre le comportement. Ceux-ci peuvent être
+   codés par d'autres dévelopeurs.
+
+   \bigskip
+
+   En pratique \textbf{un programme qui s'exécute} (son processus)
+   \textbf{peut charger \textcolor{red}{un grand nombre} de greffons}
+   (dizaines ou centaines de milliers).
+
+   Donc \textbf{un programme \textcolor{red}{peut générer beaucoup de greffons}
+     temporaires}.
+
+   \smallskip
+
+   \small{Cf
+   \href{https://github.com/bstarynk/misc-basile/blob/master/manydl.c}{\texttt{manydl.c}
+     dans \texttt{github.com/bstarynk/misc-basile}}.}
+
+ \end{frame}
+
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
