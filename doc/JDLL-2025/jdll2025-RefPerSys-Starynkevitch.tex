@@ -183,6 +183,37 @@
 
  \end{frame}
 
+ \begin{frame}{Chargement et déchargement de code, une idée ancienne}
+
+   Dans les années 1950 ou 1960, \textbf{les ordinateurs avaient peu
+     de mémoire} {\relsize{-1.5}{(quelques kilo-octets ou un-demi
+       méga-octet)}} \textbf{et} {\relsize{-0.5}{l'IBM 1130, les
+       CAB500 et CAB2020 de la
+       \href{https://fr.wikipedia.org/wiki/Soci\%C3\%A9t\%C3\%A9_d\%27\%C3\%A9lectronique_et_d\%27automatisme}{SEA},
+       l'IBM 360 et d'autres machines}}\footnote{Les µ-ordinateurs des
+   années 1970 ou 1980 aussi: PC/XT, TRS-80, Amiga 500.}
+   \textbf{chargeaient le code par bouts}. \textbf{Un segment de code
+     devenu inutile était supprimé de la mémoire centrale}, et la
+   gestion fine du chargement et déchargement de ces segments
+   nécessitait la coopération des programmeurs humains, du système
+   d'exploitation (le ``moniteur'') et était une source de bogues
+   intéressants.
+
+   \bigskip
+
+   Sous Linux, il n'est guère indispensable de décharger un
+   greffon\footnote{L'exception serait un code hypothétique de calcul
+   qui tourne pendant des mois sur un \textit{super-calculateur} du
+   \href{https://top500.org/}{\texttt{top500.org}} en chargeant des
+   millions de greffons générés temporairement.\\} par
+   \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlclose.3.html}{dlclose(3)}}}. La
+   puissance des machines et la performance du noyau
+   {\relsize{-1.5}{(sous-système de gestion de la mémoire virtuelle)}}
+   permet de ne pas le faire\footnote{On accepte alors une fuite
+   mémoire sans dommage.\\}.
+
+ \end{frame}
+
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
