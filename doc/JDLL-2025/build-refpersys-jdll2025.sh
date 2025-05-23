@@ -13,11 +13,11 @@ if ! [ -f jdll2025-RefPerSys-Starynkevitch.tex ]; then
 	   $0 "$(/bin/pwd)"
     exit 1
 fi
-/bin/mv -v *~ *.pdf /tmp 
+/bin/mv *.pdf /tmp 
 for svgfile in *.svg ; do
     svgbase=$(basename $svgfile .svg)
-    inkscape --without-gui --export-file=$svgbase.pdf $svgfile
-    inkscape --without-gui --export-file=$svgbase.eps $svgfile
+    inkscape  --export-filename=$svgbase.pdf $svgfile
+    inkscape  --export-filename=$svgbase.eps $svgfile
 done
 for dotfile in *.dot ; do
     dotbase=$(basename $dotfile .dot)

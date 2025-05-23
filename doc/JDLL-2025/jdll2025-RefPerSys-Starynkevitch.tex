@@ -1,19 +1,24 @@
 \documentclass[final,a4]{beamer}
+\usetheme{Madrid}
+\title{le projet RefPerSys}
+\author{Basile STARYNKEVITCH}
+\date{mai 2025}
 \usepackage{relsize}
 \usepackage{luacode}
 \usepackage{xcolor}
 \usepackage{alltt}
-\usepackage{wasysym}
+%\usepackage{wasysym}
 \usepackage{hyperref}
-\usepackage{newunicodechar}
+%\usepackage{newunicodechar}
 
-\hypersetup{
-  colorlinks   = true, %Colours links instead of ugly boxes
-  urlcolor     = NavyBlue, %Colour for external hyperlinks
-  linkcolor    = DarkGreen, %Colour of internal links
-  citecolor   = DarkMagenta, %Colour of citations
-  frenchlinks = true,
-}
+%- \hypersetup{
+%-   colorlinks   = true, %Colours links instead of ugly boxes
+%-   urlcolor     = NavyBlue, %Colour for external hyperlinks
+%-   linkcolor    = DarkGreen, %Colour of internal links
+%-   citecolor   = DarkMagenta, %Colour of citations
+%-   frenchlinks = true,
+%- }
+
 \begin{document}
  \begin{luacode*}
    local gitpip=io.popen("git log --no-color --format=oneline -1 --abbrev=16 --abbrev-commit -q | cut -d' ' -f1")
@@ -22,16 +27,65 @@
  \end{luacode*}
  \newcommand{\mygitid}{\luadirect{tex.print(gitid)}}
 
-
  \begin{frame}
-   {motivations pour RefPerSys}
+   \titlepage
+
+   \small{(un moteur d'inférences, ``intelligence artificielle'' symbolique)}
+
+   \bigskip
 
    \begin{center}
+   \begin{relsize}{-2}
+     8 rue de la Faïencerie\\
+     92340 Bourg-la-Reine
+   \end{relsize}
+
+   \bigskip
+
+   \textbf{les opinions me sont personnelles}
+   
+   \bigskip
+   
+     \texttt{basile{@}starynkevitch.net}
+
+     \bigskip
+
+     \begin{fbox}
+       {Journées Du Logiciel Libre - Lyon - mai 2025}
+     \end{fbox}
      
-     \includegraphics[width=0.1\textwidth]{cc-by-nc-sa} Basile \textsc{Starynkévitch} - mars 2023
 
      git {\texttt \mygitid}
    \end{center}
+   
+ \end{frame}
+
+ \begin{frame}{Plan}
+   \tableofcontents
+
+   \bigskip
+
+   
+     \href{http://refpersys.org/}{\texttt{refpersys.org}}
+   
+ \end{frame}
+
+ \section{Introduction}
+ \label{sec:intro}
+ 
+ \begin{frame}{motivations pour RefPerSys}
+
+   \begin{itemize}
+   \item souveraineté numérique \small{(moins dépendre de logiciels
+     états-uniens)}
+   \item s'occuper 
+   \item experimenter un logiciel
+   \item populariser des idées méconnues (celles de Jacques Pitrat)
+   \end{itemize}
+
+   \textbf{Le code source est libre} sous licence GPLv3+/CeCILLv2
+   \textbf{sans garantie} sur \href{https://github.com/RefPerSys/RefPerSys}{\texttt{https://github.com/RefPerSys/RefPerSys}}
+     
  \end{frame}
 \end{document}
 
