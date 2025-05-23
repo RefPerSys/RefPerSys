@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -188,7 +188,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                            << "leftv:" << _f.leftv
                            << " lextokv:" << _f.lextokv
                            << " in:" << (*this) << std::endl
-                           << "... token_deq:" << toksrc_token_deq << std::endl
+                           << "… token_deq:" << toksrc_token_deq << std::endl
                            << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -211,7 +211,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                     << rps_call_frame_depth(&_)
                     << " GIVES rightv " << _f.rightv
                     << " in:" << (*this) << std::endl
-                    << "... token_deq:" << toksrc_token_deq << std::endl
+                    << "… token_deq:" << toksrc_token_deq << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -225,7 +225,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                 << rps_call_frame_depth(&_)
                 << " GIVES resexprsymv=" << _f.resexprsymv  << " token_deq:" << toksrc_token_deq
                 << " curcptr:" << curcptr() << std::endl
-                << "... token_deq:" << toksrc_token_deq);
+                << "… token_deq:" << toksrc_token_deq);
   return _f.resexprsymv;
 } // end Rps_TokenSource::parse_symmetrical_binaryop
 
@@ -511,7 +511,7 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
                     << " token_deq:" << toksrc_token_deq
                     << " curcptr:" << curcptr()
                     << std::endl
-                    << "... argvect:" << argvect);
+                    << "… argvect:" << argvect);
     };        // end while loop
   _f.resexprv = Rps_InstanceValue(_f.operob, argvect);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop¤" << callnum << " " << opername <<" END position:" << position_str()

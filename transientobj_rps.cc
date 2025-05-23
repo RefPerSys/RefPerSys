@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 - 2024 The Reflective Persistent System Team
+ *      © Copyright (C) 2023 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:

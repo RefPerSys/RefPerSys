@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -815,7 +815,7 @@ Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg) const
   else
     RPS_DEBUG_LOG(MSGSEND, "send0 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -851,7 +851,7 @@ Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send1 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -891,7 +891,7 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
     {
       RPS_DEBUG_LOG(MSGSEND, "send2 applying to selfv=" << _f.selfv
                     << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                    << "... obsel=" << _f.obsel
+                    << "… obsel=" << _f.obsel
                     << ", closv=" << _f.closv
                     << ", arg0v=" << _f.arg0v
                     << ", arg1v=" << _f.arg1v);
@@ -900,7 +900,7 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send2 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -942,7 +942,7 @@ Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send3 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -989,7 +989,7 @@ Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send4 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -1040,7 +1040,7 @@ Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send5 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -1093,7 +1093,7 @@ Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send6 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -1150,7 +1150,7 @@ Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send7 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -1207,7 +1207,7 @@ Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send8 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -1268,7 +1268,7 @@ Rps_Value::send9(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send9 applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -1308,7 +1308,7 @@ Rps_Value::send_vect(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send_vect applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
                   << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
@@ -1348,9 +1348,9 @@ Rps_Value::send_ilist(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   else
     RPS_DEBUG_LOG(MSGSEND, "send_ilist applying selfv=" << _f.selfv
                   << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _f.obsel
+                  << "… with obsel=" << _f.obsel
                   << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _f.closv);
+                  << "… non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send_ilist
 

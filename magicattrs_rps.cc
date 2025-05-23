@@ -5,13 +5,15 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *      Implementation related to magical attributes
+ *      whose operations trigger extra code using function pointers
+ *      which are dlsym-able and dladdr-able on Linux.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 The Reflective Persistent System Team
+ *      © Copyright (C) 2020 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:

@@ -6,13 +6,14 @@
  *      This file is part of the Reflective Persistent System.
  *
  *      It has some array of primes and functions to get a prime
- *      above, or less, than some given number.
+ *      above, or less, than some given number.  Some parts have been
+ *      computer generated.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      <https://refpersys.gitlab.io> and refpersys.org
  *
  * License:

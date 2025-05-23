@@ -403,7 +403,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                                + spacepath);
     }
   RPS_DEBUG_LOG(LOAD, "first_pass_space end spacepath=" << spacepath << " obcnt="<< obcnt << std::endl
-                << "... read " << obcnt
+                << "… read " << obcnt
                 << " objects while loading first pass of " << spacepath);
 } // end Rps_Loader::first_pass_space
 
@@ -539,7 +539,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                      << " objid:" << objid
                      << " bad objbuf:" << std::endl
                      << objbuf
-                     << std::endl << "... and objjson:" << objjson);
+                     << std::endl << "… and objjson:" << objjson);
     }
   catch (std::exception& exc)
     {
@@ -548,9 +548,9 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                    << " objid:" << objid
                    << " parse failure "
                    << exc.what()
-                   << "... with objbuf:" << std::endl
+                   << "… with objbuf:" << std::endl
                    << objbuf
-                   << std::endl << "... and objjson:" << objjson);
+                   << std::endl << "… and objjson:" << objjson);
     };
   //// now load the various JSON members
   Json::Value oidjson = objjson["oid"];
@@ -809,7 +809,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
                                << " prevoid:" << prevoid
                                << " line#" << prevlin
                                << std::endl
-                               << "... got exception of type "
+                               << "… got exception of type "
                                << typeid(exc).name()
                                << ":"
                                << exc.what());
@@ -839,7 +839,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
                        << " prevoid:" << prevoid
                        << " line#" << prevlin
                        << std::endl
-                       << "... got exception of type "
+                       << "… got exception of type "
                        << typeid(exc).name()
                        << ":"
                        << exc.what());
@@ -1613,7 +1613,7 @@ void rps_load_from (const std::string& dirpath)
       {
         RPS_FATALOUT("failed to load " << dirpath
                      << "," << std::endl
-                     << "... got exception of type "
+                     << "… got exception of type "
                      << typeid(exc).name()
                      << ":"
                      << exc.what());
@@ -1638,7 +1638,7 @@ void rps_load_from (const std::string& dirpath)
   snprintf(cpumicrobuf, sizeof(cpumicrobuf), "%.3f", (cput*1.0e6)/nbloaded);
   strncpy(rps_loaded_directory, dirpath.c_str(), sizeof(rps_loaded_directory)-1);
   RPS_INFORMOUT("rps_load_from completed" << std::endl
-                << "... from directory " << dirpath
+                << "… from directory " << dirpath
                 << " with RefPerSys built " << rps_timestamp << std::endl
                 << " lastgitcommit " << rps_lastgitcommit << std::endl
                 << " md5sum " << rps_md5sum << std::endl
@@ -1704,8 +1704,8 @@ rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_
                      << " has bad methodict entry#" << methix
                      << std::endl
                      << " jvcurmethent " << (jvcurmethent)
-                     << std::endl << "... needs methosel & methclos"
-                     << std::endl << "... isobject? " <<  jvcurmethent.isObject()
+                     << std::endl << "… needs methosel & methclos"
+                     << std::endl << "… isobject? " <<  jvcurmethent.isObject()
                      << " .. has-methosel?" << jvcurmethent.isMember("methosel")
                      << " .. has-methclos?" << jvcurmethent.isMember("methclos")
                     );

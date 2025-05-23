@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -321,7 +321,7 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
     struct tm nowtm = {};
     localtime_r(&nowtime, &nowtm);
     outs << linprefix
-         << "Copyright (C) "
+         << " © " "Copyright " "(C) "
          << RPS_INITIAL_COPYRIGHT_YEAR
          << " - "
          << (nowtm.tm_year + 1900) << " "
@@ -397,7 +397,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
     struct tm nowtm = {};
     localtime_r(&nowtime, &nowtm);
     outs << linprefix
-         << "Copyright (C) "
+         << "© " "Copyright" " (C) "
          << RPS_INITIAL_COPYRIGHT_YEAR
          << " - "
          << (nowtm.tm_year + 1900)
@@ -554,7 +554,7 @@ rps_print_types_info(void)
   std::cout << "@@°°@@ The tagged integer one hundred is "
             << Rps_Value::make_tagged_int(100)
             << std::endl
-            << "... and the tagged integer minus one billion is "
+            << "… and the tagged integer minus one billion is "
             <<  Rps_Value::make_tagged_int(-1000000000)
             << " !!! " << std::endl;
 } // end rps_print_types_info
@@ -1465,7 +1465,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                          << rps_test_repl_string);
           rps_test_repl_string = arg;
           RPS_INFORMOUT("will test the REPL lexer on:" << rps_test_repl_string
-                        << std::endl << "... that is the " << rps_test_repl_string.size()
+                        << std::endl << "… that is the " << rps_test_repl_string.size()
                         << " bytes string " << Rps_QuotedC_String(rps_test_repl_string));
         }
     }
@@ -1590,7 +1590,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           if (!arg || !arg[0])
             RPS_FATALOUT("program option --cplusplus-editor-after-load"
                          " without explicit editor,\n"
-                         "... and no $EDITOR environment variable");
+                         "… and no $EDITOR environment variable");
           if (!rps_cpluspluseditor_str.empty())
             RPS_FATALOUT("program option --cplusplus-editor-after-load"
                          " given twice with "
@@ -1770,12 +1770,12 @@ rps_fatal_stop_at (const char *filnam, int lin)
   snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s", filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
-         "... build %s pid %d on %s,\n"
-         "... elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
+         "… build %s pid %d on %s,\n"
+         "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
          filnam, lin, rps_shortgitid,
          rps_timestamp, (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
-         (rps_program_invocation?"... started as ":""),
+         (rps_program_invocation?"… started as ":""),
          (rps_program_invocation?:""),
          (rps_run_name.empty()?"":" run "),
          rps_run_name.c_str());
@@ -2129,16 +2129,16 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst=" << _f.obconst
                 << " of class " << _f.obconst->get_class() << " space " << _f.obconst->get_space()
                 << std::endl
-                << "... oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv << " in " << _f.obsystem
+                << "… oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv << " in " << _f.obsystem
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending"));
   RPS_POSSIBLE_BREAKPOINT();
   _f.xtrav = _f.obsystem->get_physical_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp));
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst=" << _f.obconst
                 << " of class " << _f.obconst->get_class() << " space " << _f.obconst->get_space()
                 << std::endl
-                << "... oldfsetv=" << _f.oldsetv
-                << std::endl << "... newsetv=" << _f.newsetv
-                << std::endl << "... xtrav=" << _f.xtrav << " " << ((_f.xtrav  == _f.newsetv)?"same":"different")
+                << "… oldfsetv=" << _f.oldsetv
+                << std::endl << "… newsetv=" << _f.newsetv
+                << std::endl << "… xtrav=" << _f.xtrav << " " << ((_f.xtrav  == _f.newsetv)?"same":"different")
                 << " in " << _f.obsystem
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending2"));
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="

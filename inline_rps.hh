@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1749,7 +1749,7 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
       obcurclass = curclasspayl->superclass();
       RPS_DEBUG_LOG(LOW_REPL, "!Rps_ObjectZone::is_subclass_of again call#" << curcallcnt << " this=" << Rps_ObjectRef(this)
                     << " obsuperclass=" << obsuperclass << " cnt#" << cnt << std::endl
-                    << "... obinitclass=" << obinitclass << " obthisclass=" << obthisclass
+                    << "… obinitclass=" << obinitclass << " obthisclass=" << obthisclass
                     << " obcurclass becomes " << obcurclass);
     }
 } // end Rps_ObjectZone::is_superclass_of

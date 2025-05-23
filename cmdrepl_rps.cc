@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2021 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2021 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1515,7 +1515,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
     RPS_ASSERT (tksrc != nullptr);
     showpos = tksrc->position_str();
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6 tksrc:" << *tksrc << std::endl
-                  << "... before parse_expression pos:" << showpos
+                  << "… before parse_expression pos:" << showpos
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                   << " token_deq:" << tksrc->token_dequeue());
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"
@@ -1534,14 +1534,14 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
         tksrc->append_back_new_token(&_, _f.lextokv);
         RPS_DEBUG_LOG(REPL, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show tksrc becomes " << (*tksrc)
                       << std::endl
-                      << "... curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
+                      << "… curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                       << " token_deq:" << tksrc->token_dequeue()
                       << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
       }
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/before pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob << std::endl
                   << " lextokv:" << _f.lextokv
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/before parsexp")
-                  << std::endl << ".... before parse_expression token_deq:"
+                  << std::endl << "… before parse_expression token_deq:"
                   << tksrc->token_dequeue()
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr()) << std::endl);
     bool okparsexp = false;
@@ -1551,7 +1551,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
         RPS_WARNOUT("command show°_7WsQyJK6 failed to parse expression in " << (*tksrc)
                     << std::endl
                     << " replcmdob:" << _f.replcmdob << std::endl
-                    << "... token_deq:" << tksrc->token_dequeue()
+                    << "… token_deq:" << tksrc->token_dequeue()
                     << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                     << " lextokv:" << _f.lextokv << " showv:" << _f.showv
                     << std::endl
@@ -1569,8 +1569,8 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after successful parse_expression showv=" << _f.showv);
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << std::endl
-                  << "... replcmdob:" << _f.replcmdob << std::endl
-                  << "... token_deq:" << tksrc->token_dequeue()
+                  << "… replcmdob:" << _f.replcmdob << std::endl
+                  << "… token_deq:" << tksrc->token_dequeue()
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                   << " lextokv:" << _f.lextokv << " should evaluate showv:" << _f.showv
                   << " in evalenvob:" << _f.evalenvob

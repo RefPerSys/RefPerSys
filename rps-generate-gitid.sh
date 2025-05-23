@@ -1,9 +1,9 @@
 #!/bin/sh
-
-#
-# Copyright 2020 - 2024, Basile Starynkevitch and the forum@refpersys.org
-# mailing list contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
+#
+#
+# © Copyright (C) 2020 - 2025, Basile Starynkevitch and the forum@refpersys.org
+# mailing list contributors
 #
 # This file is part of the Reflexive Persistent System (aka RefPerSys);
 # it just emits a string with the full git commit id, appending + if

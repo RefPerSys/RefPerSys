@@ -1,8 +1,10 @@
 #!/bin/bash -x
 # SPDX-License-Identifier: GPL-3.0-or-later
-# script file create-refpersys-root-class.sh in RefPerSys - see http://refpersys.org/
 #
-#      © Copyright 2023 The Reflective Persistent System Team
+# script file create-refpersys-root-class.sh in RefPerSys - see
+# http://refpersys.org/
+#
+#      © Copyright (C) 2023 - 2025 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 #
 #    This program is free software: you can redistribute it and/or modify

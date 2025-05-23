@@ -486,7 +486,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
                 << Rps_QuotedC_String(curp) << " at " << startpos << std::endl
-                << "... token_deq:" << toksrc_token_deq << " source:" << *this
+                << "… token_deq:" << toksrc_token_deq << " source:" << *this
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -557,14 +557,14 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? intval "
                         << _f.lextokv << " curpos:" << position_str()
                         << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
-                        << "... token_deq:" << toksrc_token_deq);
+                        << "… token_deq:" << toksrc_token_deq);
         }
       _f.namev = source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? namev:" << _f.namev
                     << " curpos:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
-                    << "... in:" << (*this)
+                    << "… in:" << (*this)
                     << " " << (isfloat?"floating-point":"integer") << " number");
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
@@ -575,7 +575,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       lextok->set_serial(++toksrc_counter);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
-                    << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << "… curcptr:" <<  Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << " number :-◑> " << _f.res << " @! " << position_str()
                     << std::endl
@@ -667,7 +667,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                         << " from¤ " << *this
                         << std::endl
                         << " object :-◑> " << _f.res << std::endl
-                        << "... @! " << position_str()
+                        << "… @! " << position_str()
                         << " curcptr:" <<  Rps_QuotedC_String(curcptr())
                         << std::endl
                         << Rps_Do_Output([&](std::ostream& out)
@@ -834,7 +834,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
                     << " code_chunk :-◑> " << _f.res << " @! " << position_str()  << std::endl
-                    << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << "… curcptr:" <<  Rps_QuotedC_String(curcptr())
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -888,10 +888,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     }
 #warning Rps_TokenSource::get_token incomplete
   RPS_FATALOUT("unimplemented / incomplete Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? @ " << name()
-               << std::endl << "... from " << *this << std::endl
-               << "... pos: " << position_str() << " start:" << startpos
+               << std::endl << "… from " << *this << std::endl
+               << "… pos: " << position_str() << " start:" << startpos
                << " curp:" << Rps_QuotedC_String(curp) << std::endl
-               << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
+               << "… curcptr:" <<  Rps_QuotedC_String(curcptr())
                << " token_deq:" << toksrc_token_deq << std::endl
                << Rps_Do_Output([&](std::ostream& out)
   {
@@ -971,6 +971,9 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
   while (!delimstr.empty() && loopcnt < maxloopdelim)
     {
       loopcnt ++;
+      _f.delimob = nullptr;
+      _f.delimv = nullptr;
+      RPS_POSSIBLE_BREAKPOINT();
       _f.delimv = paylstrdict->find(delimstr);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter punctuation delimv=" << _f.delimv << " for delimstr='"
                     << Rps_Cjson_String(delimstr)
@@ -983,7 +986,8 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
 	  if (_f.delimob) {
 	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimob="
 			  << RPS_OBJECT_DISPLAY(_f.delimob)
-			  << "' loopcnt#" << loopcnt
+			  << std::endl
+			  << "… loopcnt#" << loopcnt << std::endl
 			  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter/ob"));
 	  };
           _f.lextokv = _f.delimv;
@@ -997,8 +1001,8 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
           lextok->set_serial(++toksrc_counter);
           _f.res = Rps_LexTokenValue(lextok);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimiter :-◑> " << _f.res << std::endl
-                        << "... at " << position_str() << std::endl
-                        << "... from¤ " << *this
+                        << "… at " << position_str() << std::endl
+                        << "… from¤ " << *this
                         << Rps_Do_Output([&](std::ostream& out)
           {
             this->display_current_line_with_cursor(out);
@@ -1032,12 +1036,13 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
                     << " prevlen=" << prevlen << " curlen=" << curlen
                     << " loopcnt#" << loopcnt << std::endl);
       usleep (250000);
-    }
+    } // end while loop
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("Rps_TokenSource::get_delimiter failing at " << startpos
               << " for " << startp << " in " << *this << std::endl
               << " git " << rps_gitid << " timestamp " << rps_timestamp
               << " delimstr='"  << Rps_Cjson_String(delimstr)
-              << "'"
+              << "'" << " loopcnt=" << loopcnt
               << std::endl << " host:" << rps_hostname()
               << std::endl << " procversion:" << rps_get_proc_version()
               << std::endl

@@ -5,14 +5,15 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for C++ code generation.
+ *      It has some code for C++ code generation.
+ *      (using some ideas from arxiv.org/abs/1109.0779)
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net> (France)
  *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
  *      Nimesh Neema <nimeshneema@gmail.com> (India)
  *
- *      © Copyright 2023 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2023 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:

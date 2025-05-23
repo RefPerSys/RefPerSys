@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti, India    <abhishek@taranjali.org>
  *      Nimesh Neema, India            <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * You can consider RefPerSys as either GPLv3+ or LGPLv3+ licensed (at
@@ -542,7 +542,7 @@ extern "C" std::string rps_my_load_dir;
 
 
 
-/// the initial copyright year of RefPerSys
+/// the initial copy-right year of RefPerSys
 #define RPS_INITIAL_COPYRIGHT_YEAR 2019
 // the number of jobs, that is of threads, to run in parallel
 extern "C" int rps_nbjobs;

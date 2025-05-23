@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -408,7 +408,7 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
   else if (*curstr=='}' && !strncmp(curstr, chkdata->chunkdata_endstr, strlen(chkdata->chunkdata_endstr)))
     {
       RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element ending  callframe=" << Rps_ShowCallFrame(callframe)
-                    << std::endl << "... obchunk=" << _f.obchunk
+                    << std::endl << "… obchunk=" << _f.obchunk
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno
                     << " curstr:"
@@ -425,7 +425,7 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
   else
     {
       RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element INCOMPLETE  callframe=" << Rps_ShowCallFrame(callframe)
-                    << std::endl << "... obchunk=" << _f.obchunk
+                    << std::endl << "… obchunk=" << _f.obchunk
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno
                     << " curstr:"
@@ -1081,7 +1081,7 @@ rps_repl_builtin_parse_expression_command(Rps_CallFrame*callframe, Rps_ObjectRef
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_expression_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_expression_command")
@@ -1121,7 +1121,7 @@ rps_repl_builtin_parse_disjunction_command(Rps_CallFrame*callframe, Rps_ObjectRe
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_disjunction_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_disjunction_command")
@@ -1163,7 +1163,7 @@ rps_repl_builtin_parse_conjunction_command(Rps_CallFrame*callframe, Rps_ObjectRe
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_conjunction_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_conjunction_command")
@@ -1206,7 +1206,7 @@ rps_repl_builtin_parse_comparison_command(Rps_CallFrame*callframe, Rps_ObjectRef
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_comparison_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_comparison_command")
@@ -1238,7 +1238,7 @@ rps_repl_builtin_parse_comparand_command(Rps_CallFrame*callframe, Rps_ObjectRef 
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_comparand_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_comparand_command")
@@ -1272,7 +1272,7 @@ rps_repl_builtin_parse_sum_command(Rps_CallFrame*callframe, Rps_ObjectRef obenva
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_sum_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_sum_command")
@@ -1306,7 +1306,7 @@ rps_repl_builtin_parse_product_command(Rps_CallFrame*callframe, Rps_ObjectRef ob
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_product_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_product_command")
@@ -1339,7 +1339,7 @@ rps_repl_builtin_parse_factor_command(Rps_CallFrame*callframe, Rps_ObjectRef obe
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_factor_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_factor_command")
@@ -1372,7 +1372,7 @@ rps_repl_builtin_parse_term_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_term_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_term_command")
@@ -1405,7 +1405,7 @@ rps_repl_builtin_parse_primary_command(Rps_CallFrame*callframe, Rps_ObjectRef ob
   _f.obenv = obenvarg;
   bool ok= false;
   RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_primary_command " << title
-                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_primary_command")
@@ -1439,7 +1439,7 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
                 );
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
-                << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
+                << "… intoksrc:" << intoksrc << " BUILTIN " << builtincmd
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
   if (!strcmp(builtincmd, "sh"))
     {
@@ -1626,12 +1626,12 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       intoksrc.advance_cursor_bytes(strlen(builtincmd)+1);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
                     << Rps_Cjson_String(cmd)
-                    << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
+                    << "… intoksrc:" << intoksrc << " BUILTIN " << builtincmd
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       rps_do_builtin_repl_command(&_, _f.obenv, builtincmd, intoksrc, title);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
                     << Rps_Cjson_String(cmd)
-                    << "... intoksrc:" << intoksrc << " DONEBUILTIN " << builtincmd
+                    << "… intoksrc:" << intoksrc << " DONEBUILTIN " << builtincmd
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       return;
     }
@@ -1666,7 +1666,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   _f.cmdob = nullptr;
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command got lextokv=" << _f.lextokv
                 << " pos=" << intoksrc.position_str() << std::endl
-                << "... intoksrc:" << intoksrc
+                << "… intoksrc:" << intoksrc
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << " token_deq:" << intoksrc.token_dequeue());
   if (!_f.lextokv)
@@ -1689,7 +1689,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       _f.cmdob = _f.lexval.as_object();
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
                     << " at " << commandpos<< std::endl
-                    << "... intoksrc:" << intoksrc
+                    << "… intoksrc:" << intoksrc
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
     }
   else if (lextokz->lxkind()
@@ -1700,7 +1700,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command symbol token "
                     << _f.lextokv << " of value " << _f.lexval
                     << " at " << commandpos << std::endl
-                    << "... intoksrc:" << intoksrc
+                    << "… intoksrc:" << intoksrc
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                     << " token_deq:" << intoksrc.token_dequeue());
       if (_f.lexval.is_string())
@@ -1708,7 +1708,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
 #warning unimplemented symbol token rps_do_one_repl_command
       RPS_WARNOUT("unimplemented symbol token rps_do_one_repl_command lextok=" << _f.lextokv
                   << " lexval:" << _f.lexval << " cmdob=" << _f.cmdob<< std::endl
-                  << "... intoksrc:" << intoksrc
+                  << "… intoksrc:" << intoksrc
                   << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/symbol"));
@@ -1751,12 +1751,12 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
           RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command applied "
                         << _f.cmdparserv << " to cmd "
                         << title << " "<< std::endl
-                        << "... intoksrc:" << intoksrc
+                        << "… intoksrc:" << intoksrc
                         << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                         << _f.cmdob
                         << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
                         << std::endl
-                        << "... now position is " <<  intoksrc.position_str() << " curptr:" <<
+                        << "… now position is " <<  intoksrc.position_str() << " curptr:" <<
                         Rps_QuotedC_String(intoksrc.curcptr())  << std::endl
                         <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/applied"));
           if (!_f.parsmainv && !_f.parsextrav)

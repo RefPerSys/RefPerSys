@@ -4,7 +4,7 @@
 This [free software](https://en.wikipedia.org/wiki/Free_software)
 project has its source code on https://github.com/RefPerSys/RefPerSys
 with an obsolete variant on https://gitlab.com/bstarynk/refpersys/
-which is not maintained in 2024. It is its own web site on
+which might not maintained in 2024. It is its own web site on
 http://refpersys.org/ where more details are given.
 
 *RefPerSys* is aiming to become a free software symbolic artificial
@@ -196,9 +196,9 @@ from the agenda, then running that tasklet.
 
 ## License and copyright
 
-This *research* project is
+This free software project is
 [GPLv3+](https://www.gnu.org/licenses/gpl.html) licensed and
-copyrighted by the RefPerSys team, currently made of:
+© copyrighted (C) 2019 - 2025 by the RefPerSys team, currently made of:
 
  *      Basile Starynkevitch <basile@starynkevitch.net>,
         8 rue de la Faïencerie

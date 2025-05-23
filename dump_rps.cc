@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -2018,7 +2018,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
     {
       RPS_WARNOUT("failure in dump to " << dumper.get_top_dir()
                   << std::endl
-                  << "... got exception of type "
+                  << "… got exception of type "
                   << typeid(exc).name()
                   << ":"
                   << exc.what());
@@ -2069,14 +2069,14 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe, /// "generate_code°the_s
     cwds = ".";
   RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"
               << std::endl
-              << "... sysob=" << RPS_OBJECT_DISPLAY(_f.sysob) << std::endl
+              << "… sysob=" << RPS_OBJECT_DISPLAY(_f.sysob) << std::endl
               << " dumpstr=" <<  Rps_OutputValue(_f.dumpstrv,0)
               << " suffixstr=" << Rps_OutputValue(_f.suffixstrv,0)
               << std::endl
-              << "... dumpob=" << RPS_OBJECT_DISPLAY(_f.dumpob) << std::endl
+              << "… dumpob=" << RPS_OBJECT_DISPLAY(_f.dumpob) << std::endl
               << " closurev=" << Rps_OutputValue(_f.closurev,0)
               << std::endl
-              << "... cwds=" << cwds << " pid:" << (int)getpid()
+              << "… cwds=" << cwds << " pid:" << (int)getpid()
               << " from " << (rps_is_main_thread()?"main":"other")
               << " thread"
               << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));

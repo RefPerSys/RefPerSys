@@ -1,12 +1,12 @@
 #!/bin/bash
-#
-# Copyright 2020 - 2025, Basile Starynkevitch and the forum@refpersys.org
-# mailing list contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file is part of the Reflexive Persistent System (aka RefPerSys);
-# it just emits a string with the full git commit id, appending + if
-# the git status is not clean.
+# © Copyright (C) 2020 - 2025, Basile Starynkevitch and the
+# forum@refpersys.org mailing list contributors
+#
+# This file rps-generate-timestamp.sh is part of the Reflexive
+# Persistent System (aka RefPerSys); it just emits a string with the
+# full git commit id, appending + if the git status is not clean.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

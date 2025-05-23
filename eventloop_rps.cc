@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2022 - 2024 The Reflective Persistent System Team
+ *      © Copyright (C) 2022 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -716,7 +716,7 @@ rps_event_loop(void)
   /*** give output
    ***/
   RPS_INFORMOUT("starting rps_event_loop in pid " << (long)getpid() << std::endl
-                << "... on " << rps_hostname() << " thread " << rps_current_pthread_name()
+                << "… on " << rps_hostname() << " thread " << rps_current_pthread_name()
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
                );
