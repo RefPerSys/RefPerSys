@@ -214,6 +214,92 @@
 
  \end{frame}
 
+ \begin{frame}{Génération de code, une idée ancienne}
+
+  Les compilateurs traduisent un code source (compréhensible par le
+  dévelopeur) en du code machine\footnote{La notion de code objet ou
+  intermédiaire est apparue progressivement dans les années 1960;
+  certaines architectures -dont Harvard, qu'on retrouve encore dans
+  les micro-contrôleurs à l'intérieur de nos claviers et de nos
+  chaudières- séparent la mémoire du code et celles des données.} et
+  existaient déjà dans les années 1950 ou 1960 (Cobol, Fortran, PAF,
+  IPL-V, Lisp).
+
+  \bigskip
+
+  De nos jours, \textbf{les dévelopeurs utilisent des logiciels}
+  spécialisés \textbf{générateurs de code} (en C par exemple, ou en
+  Java ou Ocaml): \href{https://www.gnu.org/software/bison/}{GNU
+    bison} comme \href{https://carburetta.com/}{Carburetta} ou
+  \href{https://gallium.inria.fr/~fpottier/menhir/}{Menhir} génèrent
+  tous du code pour faciliter l'analyse lexicale ou syntaxique. La
+  théorie des languages formels est mûre (Chomsky).
+ \end{frame}
+
+ \begin{frame}{Génération de code, une idée moderne}
+
+  Des bibliothèques logicielles pour générer du code existent:
+  \href{https://www.gnu.org/software/lightning/}{GNU lightning},
+  \href{https://asmjit.com/}{AsmJit}, et le compilateur GCC fournit sa
+  \href{https://gcc.gnu.org/onlinedocs/jit/}{libgccjit}
+
+  \bigskip
+  
+  Le Common Lisp libre \href{https://sbcl.org/}{SBCL} génère du code
+  machine à chaque interaction de son utilisateur.
+
+  \bigskip
+  *
+  La plupart des implémentations de Java ont une JVM qui traduit le code-octets (java bytecode) en du code machine.
+
+ \end{frame}
+
+ \begin{frame}{Évaluation partielle: une manière d'optimiser}
+
+Beaucoup de calculs longs\footnote{La météo nationale calcule le temps
+de demain en des heures de calcul sur super-calcuteur; de même en
+astrophysique -simulation de collisions de galaxies-; ou en
+bioinformatique -simulation des mouvements moléculaires dans une
+cellule-.\\} (durant des heures ou des semaines) dépendent de plusieurs
+paramètres.
+\medskip
+
+Certains paramètres sont constants durant tout le calcul\footnote{Pour
+la météo, les mesures physiques entrées des paramètres des capteurs,
+mais les résultats internes intermediaires varient durant ce calcul
+itératif.\\}.
+\medskip
+
+Dans certains cas, il peut être utile de particulariser le code pour ces paramètres constants.
+
+Par exemple simpliste, une affectation pourrait être \texttt{u := a*x
+  + b*y + c} et si on sait que \texttt{a} et \texttt{c} sont nuls elle
+se simplifie en \texttt{u := b*y} plus rapide à calculer.
+
+
+ \end{frame}
+
+ \begin{frame}{Évaluation partielle: formalisation}
+   
+Formellement:
+
+\begin{itemize}
+\item on connait le code source $\sigma$ (millions de lignes)
+\item ce code calcule sur des paramètres fixes \textcolor{brown}{$\pi_1, \pi_2, \ldots \pi_n$}
+\item ce code calcule sur des entrées variables $v_1, v_2, \ldots v_p$
+  
+\item les résultats obtenus sont $r_1, r_2 \ldots r_q = \sigma (\textcolor{brown}{\pi_1, \pi_2, \ldots \pi_n}, v_1, v_2 \ldots v_p)$
+%\item par des algorithmes complexes on produit et génère un code
+%  dérivé $\delta$ qui dépend des paramètres $\pi_i$ tel que
+%  $\delta(v_1, v_2, \ldots v_p) = \sigma(\textcolor{brown}{$\pi_1, \pi_2, \ldots \pi_n},
+%  v_1, v_2 \ldots v_p)$
+\end{itemize}
+
+La dérivation du code $\delta$ à partir du code source $\sigma$ et des
+valeurs connues des paramètres fixes \textcolor{brown}{$\pi_i$} est compliquée (peut être indécidable). 
+ \end{frame}
+
+ 
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
