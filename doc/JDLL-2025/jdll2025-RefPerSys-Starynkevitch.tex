@@ -11,13 +11,13 @@
 \usepackage{hyperref}
 %\usepackage{newunicodechar}
 
-%- \hypersetup{
-%-   colorlinks   = true, %Colours links instead of ugly boxes
-%-   urlcolor     = NavyBlue, %Colour for external hyperlinks
-%-   linkcolor    = DarkGreen, %Colour of internal links
-%-   citecolor   = DarkMagenta, %Colour of citations
-%-   frenchlinks = true,
-%- }
+ \hypersetup{
+   colorlinks   = true, %Colours links instead of ugly boxes
+   urlcolor     = NavyBlue, %Colour for external hyperlinks
+   linkcolor    = DarkGreen, %Colour of internal links
+   citecolor   = DarkMagenta, %Colour of citations
+   frenchlinks = true,
+ }
 
 \begin{document}
  \begin{luacode*}
@@ -128,7 +128,7 @@
      \item La problèmatique de \textbf{\textcolor{red}{l'amorçage des
          compilateurs}}: tous les compilateurs se compilent
        eux-mêmes. Idéalement \textit{\textcolor{red}{RefPerSys devrait générer son
-         propre code}}.
+         propre code}} mais en génère une petite partie en mai 2025.
    \end{itemize}
 
    \bigskip
@@ -145,12 +145,14 @@
    utilisateur de nombreuses bibliothèques dynamiques
    {\relsize{-1}{(``shared objects'')}}, les fichiers
    \texttt{lib*.so}. Ce mécanisme optimise l'utilisation de la mémoire
-   RAM et il est utilisé pour les greffons
-   {\relsize{-1}{(``plugins'')}} chargés par la fonction
-   \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlopen.3.html}{dlopen(3)}}}. Le
-   programme obtient par
-   \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{dlsym(3)}}},
-   durant l'exécution, les fonctions d'un greffon à partir de leur nom.
+   RAM et il est utilisé pour les
+   \href{https://fr.wikipedia.org/wiki/Plugin}{greffons}
+        {\relsize{-1}{(``plugins'')}} chargés par la fonction
+        \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlopen.3.html}{dlopen(3)}}}. Le
+        programme obtient par
+        \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{dlsym(3)}}},
+        durant l'exécution, les fonctions d'un greffon à partir de
+        leur nom.
 
    \medskip
      
@@ -187,11 +189,17 @@
 
    Dans les années 1950 ou 1960, \textbf{les ordinateurs avaient peu
      de mémoire} {\relsize{-1.5}{(quelques kilo-octets ou un-demi
-       méga-octet)}} \textbf{et} {\relsize{-0.5}{l'IBM 1130, les
-       CAB500 et CAB2020 de la
+       méga-octet)}} \textbf{et}
+   {\relsize{-0.5}{l'\href{https://fr.wikipedia.org/wiki/IBM_1130_et_1800}{IBM
+         1130}, les
+       \href{https://fr.wikipedia.org/wiki/CAB500}{CAB500} et CAB2020
+       de la
        \href{https://fr.wikipedia.org/wiki/Soci\%C3\%A9t\%C3\%A9_d\%27\%C3\%A9lectronique_et_d\%27automatisme}{SEA},
-       l'IBM 360 et d'autres machines}}\footnote{Les µ-ordinateurs des
-   années 1970 ou 1980 aussi: PC/XT, TRS-80, Amiga 500.}
+       l'\href{https://fr.wikipedia.org/wiki/IBM_360_et_370}{IBM 360}
+       et d'autres machines}}\footnote{Les µ-ordinateurs des années
+   1970 ou 1980 aussi:
+   \href{https://fr.wikipedia.org/wiki/IBM_PC/XT}{PC/XT}, TRS-80,
+   \href{https://fr.wikipedia.org/wiki/Amiga_500}{Amiga 500}.}
    \textbf{chargeaient le code par bouts}. \textbf{Un segment de code
      devenu inutile était supprimé de la mémoire centrale}, et la
    gestion fine du chargement et déchargement de ces segments
@@ -222,8 +230,10 @@
   certaines architectures -dont Harvard, qu'on retrouve encore dans
   les micro-contrôleurs à l'intérieur de nos claviers et de nos
   chaudières- séparent la mémoire du code et celles des données.} et
-  existaient déjà dans les années 1950 ou 1960 (Cobol, Fortran, PAF,
-  IPL-V, Lisp).
+  existaient déjà dans les années 1950 ou 1960 (Cobol, Fortran,
+  \href{https://fr.wikipedia.org/wiki/Programmation_automatique_des_formules}{PAF},
+  \href{https://en.wikipedia.org/wiki/Information_Processing_Language}{IPL-V},
+  \href{https://fr.wikipedia.org/wiki/Lisp}{Lisp}).
 
   \bigskip
 
@@ -233,24 +243,30 @@
     bison} comme \href{https://carburetta.com/}{Carburetta} ou
   \href{https://gallium.inria.fr/~fpottier/menhir/}{Menhir} génèrent
   tous du code pour faciliter l'analyse lexicale ou syntaxique. La
-  théorie des languages formels est mûre (Chomsky).
+  théorie des languages formels est mûre
+  (\href{https://fr.wikipedia.org/wiki/Noam_Chomsky}{Chomsky}).
  \end{frame}
 
  \begin{frame}{Génération de code, une idée moderne}
 
   Des bibliothèques logicielles pour générer du code existent:
   \href{https://www.gnu.org/software/lightning/}{GNU lightning},
-  \href{https://asmjit.com/}{AsmJit}, et le compilateur GCC fournit sa
+  \href{https://asmjit.com/}{AsmJit}, et le compilateur
+  \href{https://gcc.gnu.org/}{GCC} fournit sa
   \href{https://gcc.gnu.org/onlinedocs/jit/}{libgccjit}
 
   \bigskip
   
   Le Common Lisp libre \href{https://sbcl.org/}{SBCL} génère du code
-  machine à chaque interaction de son utilisateur.
+  machine à chaque interaction de son utilisateur. C'est un langage \href{https://fr.wikipedia.org/wiki/Homoiconicité}{homoïconique}: le code y est manipulable comme donnée.
 
   \bigskip
   
-  La plupart des implémentations de Java ont une JVM qui traduit le code-octets (java bytecode) en du code machine.
+  La plupart des implémentations de Java (cf
+  \href{https://openjdk.org/}{OpenJDK}) ont une
+  \href{https://fr.wikipedia.org/wiki/Machine_virtuelle_Java}{JVM} qui
+  traduit petit à petit le code-octet (java bytecode) en du code
+  machine.
 
  \end{frame}
 
@@ -301,7 +317,7 @@ est compliquée (peut être indécidable).
 
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- \section{Formaliser les connaissances}
+ \section{Formaliser, représenter, traiter les connaissances}
  \label{sec:form-conn}
  
  \begin{frame}{Variété des connaissances}
@@ -364,13 +380,19 @@ est compliquée (peut être indécidable).
    \item pour formaliser des connaissances: par exemple grammaire
      formelle de C ou de la syntaxe BNF des grammaires formelles.
    \item pour utiliser des connaissances: par exemple: un compilateur
-     C\footnote{Les compilateurs C n'arrivent guère à compiler une fonction C de cent milles lignes de code dans un fichier C généré par un outil logiciel.\\}peut supposer que chaque fichier C a un nombre raisonnable de
-     définition de fonctions de taille raisonnable.
+     C\footnote{Les compilateurs C n'arrivent guère à compiler en
+     l'optimisant une fonction C de cent milles lignes de code dans un
+     fichier C généré par un logiciel.\medskip\\}peut supposer que
+     chaque fichier C a un nombre raisonnable de définition de
+     fonctions de taille raisonnable.
    \end{itemize}
 
    \bigskip
+
+   Un dévelopeur aguerri a des \href{https://theses.fr/1990PA066799}{méta-connaissances sur la programmation}.
+   \bigskip
    
-   \textbf{Le même formalisme peut être utilisé pour des
+   \textbf{Le même formalisme peut être utilisé pour représenter des
      méta-connaissances qui peuvent s'appliquer à elles-mêmes.}
      
  \end{frame}
@@ -460,6 +482,37 @@ varient selon les époques et les lieux
    \end{itemize}
    
  \end{frame}
+
+ \begin{frame}{une définition de l' ``Intelligence Artificielle''}
+
+   Enseigné par Jacques Pitrat:
+   
+   \begin{block}{définition de l'IA}
+     Un logiciel d'``intelligence artificielle'' est un programme qui peut surprendre agréablement ses utilisateurs.
+   \end{block}
+
+   \bigskip
+   
+   \textbf{Tout gros logiciel est bogué} (et son nombre de bogues reste non-nul) \textbf{donc surprend \textcolor{red}{désagréablement} ses utilisateurs}.
+
+   \bigskip
+
+   Un logiciel d'IA peut être partiellement introspectif ou
+   \href{https://fr.wikipedia.org/wiki/Réflexion_(informatique)}{reflexif}:
+   en particulier en inspectant son code, ses données et ses
+   \href{https://fr.wikipedia.org/wiki/Pile_d'exécution}{piles
+     d'exécution}.
+
+   \bigskip
+   
+\begin{quote}{\href{https://fr.wikipedia.org/wiki/Loi_de_Hofstadter}{Loi de Hofstadter}} Il faut toujours plus de temps que prévu, même en tenant compte de la loi de Hofstadter.
+\end{quote}
+
+Elle s'applique au dévelopement de RefPerSys et à l'écriture de ces
+transparents.
+   
+ \end{frame}
+
  
 \end{document}
 
