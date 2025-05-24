@@ -362,7 +362,8 @@ est compliquée (peut être indécidable).
    plusieurs façons}. Par exemple: (grammaire française)
    \textit{``l'adjectif s'accorde en genre et en nombre avec le nom
      auquel il se rapporte''}. Elle s'étend facilement (grammaire
-   latine: \textit{``\ldots\! et en cas''}).
+   latine: \textit{``\ldots\! et en cas''}). Elle peut être formalisée:
+   $\forall x \in \mathbb{R}^{*}, \hspace{1.5em} 0x = 0  \hspace{1.em} \wedge \hspace{1.em} x^0 = 1 \hspace{1.em}  \wedge \hspace{1.em} 0+x = x$
 
    \bigskip
 
@@ -372,9 +373,11 @@ est compliquée (peut être indécidable).
    complexité et le coût des microprocesseurs s'explique aussi par le
    fait que le silicium réordonne dynamiquement l'exécution des
    instructions machines (``out of order superscalar processors'').}
-   (ou C) est assez procédural.
+   est  procédural. En C
+{\relsize{-0.5}{\texttt{\textbf{while} (x>0) printf(\textquotedbl\%d\textbackslash{n}\textquotedbl,x--);}}}
 
-   \bigskip
+
+   \smallskip
 
 En fait \textbf{le distinguo est graduel} et ces définitions
 varient selon les époques et les lieux
@@ -396,12 +399,42 @@ varient selon les époques et les lieux
    cette productivité\footnote{Au détriment d'autres facteurs, y
    compris énergétiques: par exemple l'utilisation de PHP ou Python dans des
    serveurs Web consomme plus de courant et de temps que le même
-   service codé en C. Le numérique consommerait 5 à 10\% de la
+   service codé en C et compilé. Le numérique consommerait 5 à 10\% de la
    production électrique européenne.\medskip}.
 
    \bigskip
    \textbf{Les outils logiciels pour les dévelopeurs doivent favoriser
-     la déclarativité des formalismes}
+     la déclarativité des formalismes.}
+ \end{frame}
+
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \begin{frame}{Traitement en machine des connaissances plus déclaratives}
+
+   Le formalisme déclaratif est représenté pour son utilisateur par du
+   texte (ou des images) formel\footnote{La présentation de ce texte -
+   couleurs et polices de caractères - en facilite la lisibilité et sa
+   compréhension par des humains.}, et en machine par des structures
+   de données compliquées. C'est mathématiquement un graphe ou un
+   hypergraphe. On suppose qu'il tient en mémoire centrale.
+   
+   Un formalisme déclaratif peut être ``interprété'' ou ``compilé''
+   par l'outil logiciel l'acceptant.
+
+   \begin{itemize}
+   \item \textbf{interprétation}: l'outil logiciel parcourt
+     directement et itérativement, pour traiter ce formalisme,
+     l'hypergraphe de sa représentation et modifie les données
+     traitées.
+     
+   \item \textbf{compilation}: l'outil logiciel transforme cette
+     representation interne en d'autres représentations plus
+     procédurales, in fine interprétées ou transformées en du code
+     exécutable (ou plus efficace mais moins déclaratif).
+     
+   \end{itemize}
+   
  \end{frame}
  
 \end{document}
