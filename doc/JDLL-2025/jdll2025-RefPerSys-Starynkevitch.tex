@@ -609,12 +609,114 @@ transparents.
     \item \texttt{make testcarb1} (à améliorer)
    \end{itemize}
  \end{frame}
+ \begin{frame}{Données manipulées par RefPerSys}
+
+   \begin{itemize}
+   \item le pointeur \texttt{nullptr} a un status spécial (informellement une absence de valeur).
+   \item les valeurs (un mot de 64 bits souvent pointeur) peuvent être:
+     \begin{enumerate}
+     \item entiers directs (62 bits)
+     \item des valeurs scalaires immuables (chaînes, flottants emboîtés)
+     \item des valeurs composites immuables (ensembles, tuples,
+       instances, n{\oe}uds, fermetures)
+       \item des objets lourds et mutables
+     \end{enumerate}
+     \item les valeurs composites et les objets peuvent être
+       temporaires ou persistents
+       \item chaque valeur a sa classe (modèle
+         \href{https://en.wikipedia.org/wiki/ObjVlisp}{ObjVLisp})
+       \item quelques objets sont des racines préexistantes (fichier
+         C++ généré \href{https://github.com/RefPerSys/RefPerSys/blob/master/generated/rps-roots.hh}{\texttt{generated/rps-roots.hh}})
+   \end{itemize}
+
+   Beaucoup de fonctions codées en C++ renvoient une paire de valeurs
+   \texttt{Rps\_TwoValues} en C++ (dans des registres du processeur).
+
+   Le code C++ représente un cadre d'appel réifié par
+   \texttt{Rps\_CallFrame}.
+ \end{frame}
+ 
+ \begin{frame}{Les objets dans RefPerSys}
+   \textbf{Ils ont chacun un identifiant ``mondialement''
+     \textcolor{red}{unique} et aléatoire} et persistant, leur
+   \textbf{objid}. \relsize{-0.5}{En mémoire 128 bits, dans les fichiers textuels
+   (JSON) ou le C++ une séquence telle que
+   \texttt{\_1Io89yIORqn02SXx4p} à partir duquel on forme des noms de fonctions C ou C++ tels que \texttt{rpsapply\_61pgHb5KRq600RLnKD}}.
+
+   \medskip
+   
+   \begin{relsize}{-0.5}
+   De plus chaque objet contient en propre:
+   \begin{itemize}
+   \item son verrou C++ \texttt{std::recursive\_mtx}
+     \item son espace de persistance (un [pointeur d'] objet ou \texttt{nullptr} pour les objets temporaires)
+     \item sa classe, qui est un [pointeur d'] objet RefPerSys persistant.
+     \item une association d'attributs (en C++ un
+       \texttt{std::map}). Chaque attribut est un objet, sa valeur
+       quelconque (sauf \texttt{nullptr})
+     \item une séquence de composants (en C++ un \texttt{std::vector}) de valeurs (parfois \texttt{nullptr})
+       \item une charge utile optionnelle (sous classe de
+         \texttt{Rps\_Payload}) qui connait son objet propriétaire.
+       \item quelques pointeurs de fonctions C++ qui sont
+         \href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym}}-ables
+         et
+         \href{https://man7.org/linux/man-pages/man3/dladdr.3.html}{\texttt{dladdr}}-ables
+   \end{itemize}
+   \end{relsize}
+   \end{frame}
+
+ \begin{frame}{Le ramasse-miettes dans RefPerSys}
+   
+   \href{https://fr.wikipedia.org/wiki/Ramasse-miettes_(informatique)}{Il}
+   (``garbage collector'' ou glaneur de cellules) est conçu pour
+   devenir plus efficace (en C++ \texttt{class Rps\_GarbageCollector})
+   donc parfois copieur générationnel:
+
+   \begin{itemize}
+   \item les routines du R-M devraient être facilement générables.
+   \item les valeurs scalaires ou composites (toutes immuables)
+     doivent être copiables par le R-M
+   \item les objets lourds sont fixes en mémoire (contenant le verrou \texttt{std::recursive\_mutex} de chaque objet) et le R-M les marquent.
+     \item parcours de la pile d'exécution (\texttt{Rps\_CallFrame})
+   \end{itemize}
+ \end{frame}
+ 
+ \begin{frame}{La persistance dans RefPerSys}
+
+   Le code C++ de persistance ressemble par sa forme au R-M. Les deux devraient devenir générés.
+   Au démarrage:
+   \begin{itemize}
+   \item à froid préallocation statiques des zones mémoire des objets
+     racines
+   \item chargement des objets vides de chaque espace
+     \item remplissage des objets et initialisation des pointeurs de fonction conventionnels par 
+         \href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym}}
+   \end{itemize}
+ \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
  \section{Ce qui reste à faire dans RefPerSys}
  \label{sec:refpersys-a-faire}
  \begin{frame}{A faire avec votre aide}
+   \begin{itemize}
+   \item définir une syntaxe avec des exemples (cf \href{https://github.com/RefPerSys/RefPerSys/blob/master/carbrepl_rps.cbrt}{carbrepl\_rps.cbrt})
+   \item accroître le tas persistent pour décrire déclarativement dans
+     des objets RefPerSys le code C++ à générer
+   \item coder les générateurs de codes C++ et machines
+     \item générer du code C++ qui remplace le code C++ écrit à la
+       main (qu'on \texttt{git mv} dans \texttt{attic/}
+   \end{itemize}
+
+   Ce processus doit être itératif. Le tas persitant de RefPerSys doit
+   générer de plus en plus de code (qui remplacerait celui existant
+   codé\footnote{J'ai pris soin de nommer les identifiants C++ de
+   manière à espérer les générer} à la main).
+
+   \textbf{Le formalisme de RefPerSys est appelé à évoluer avec le
+     temps en des representations de plus en plus déclaratives} qui
+   requièrent votre collaboration.
  \end{frame}
+
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
