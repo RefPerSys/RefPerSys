@@ -315,7 +315,7 @@ est compliquée (peut être indécidable).
    \item des connaissances sur l'algorithmie (les tris, les automates, les arbres, \ldots)
    \item des connaissances sur les langages de programmation et les systèmes d'exploitation utilisés
    \item des connaissances sur le problème qu'il doit résoudre dans le logiciel qu'il développe.
-   \item des connaissances sur les ordinateurs\footnote{un
+   \item des connaissances sur les ordinateurs\footnote{Un
    super-calculateur est différent d'un portable, même si tous deux
    utilisent Linux!\medskip\\} sur lequel s'exécutera le logiciel.
    \item des connaissances sur les contraintes (délais, séverité des
@@ -325,7 +325,33 @@ est compliquée (peut être indécidable).
    \end{itemize}
    \end{relsize}
  \end{frame}
- 
+
+
+ \begin{frame}{Formaliser -ou pas- les connaissances.}
+
+   Certaines connaissances ne sont pas ou ne peuvent pas être
+   formalisées. Les legislations\footnote{Cf
+   \href{https://www.cnil.fr/fr/reglement-europeen-protection-donnees}{\it RGPD}
+   ou
+   \href{https://artificialintelligenceact.eu/high-level-summary/}{\it EU-AI
+     act}}, les habitudes, les intérêts individuels, la science et la
+   technique informatiques imposent des limitations.
+
+   \bigskip
+   
+   Le dévelopeur explicite certaines connaissances dans le code source et
+   dans sa documentation:
+   \begin{itemize}
+   \item choix du (ou des) langages (formels) utilisés
+   \item importance des noms choisis
+   \item importance des commentaires
+   \item séparer l'interface logicielle de son implantation
+   \item importance de l'historique du code source
+   \item cohérence relative et imparfaite entre le code source et sa
+     documentation\footnote{Le ``literate programming'' est difficile,
+     et souvent coûteux, peu utile ou inpraticable.\medskip\\}
+   \end{itemize}
+ \end{frame}
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
