@@ -13,7 +13,7 @@
 
  \hypersetup{
    colorlinks   = true, %Colours links instead of ugly boxes
-   urlcolor     = NavyBlue, %Colour for external hyperlinks
+   urlcolor     = DarkBlue, %Colour for external hyperlinks
    linkcolor    = DarkGreen, %Colour of internal links
    citecolor   = DarkMagenta, %Colour of citations
    frenchlinks = true,
@@ -46,7 +46,7 @@
    
    \bigskip
    
-     \texttt{basile{@}starynkevitch.net}
+     \href{mailto:basile@starynkevitch.net}{\texttt{basile{@}starynkevitch.net}}
 
      \bigskip
 
@@ -80,6 +80,8 @@
    \end{center}
  \end{frame}
 
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  \section{Introduction}
  \label{sec:intro}
  
@@ -87,7 +89,7 @@
 
    \begin{itemize}
    \item souveraineté numérique \small{(moins dépendre de logiciels
-     états-uniens)}
+     états-uniens, même libres)}
    \item s'occuper 
    \item expérimenter un logiciel
    \item populariser et affiner des idées méconnues (celles de
@@ -125,7 +127,7 @@
      de preuve \href{https://rocq-prover.org/}{\textsc{Rocq}} (ex
      \textsc{Coq})
 
-     \item La problèmatique de \textbf{\textcolor{red}{l'amorçage des
+     \item La problématique de \textbf{\textcolor{red}{l'amorçage des
          compilateurs}}: tous les compilateurs se compilent
        eux-mêmes. Idéalement \textit{\textcolor{red}{RefPerSys devrait générer son
          propre code}} mais en génère une petite partie en mai 2025.
@@ -273,7 +275,7 @@
  \begin{frame}{Évaluation partielle: une manière d'optimiser}
 
 Beaucoup de calculs longs\footnote{La météo nationale calcule le temps
-de demain en des heures de calcul sur super-calcuteur; de même en
+de demain en des heures de calcul sur super-calculateur; de même en
 astrophysique -simulation de collisions de galaxies-; ou en
 bioinformatique -simulation des mouvements moléculaires dans une
 cellule-.\\} (durant des heures ou des semaines) dépendent de plusieurs
@@ -366,8 +368,8 @@ est compliquée (peut être indécidable).
    \item importance de l'historique du code source et du projet
      logiciel et des ``normes'' ou ``standards''
    \item cohérence relative et imparfaite entre le code source et sa
-     documentation\footnote{Le ``literate programming'' est difficile,
-     et souvent coûteux, peu utile ou inpraticable.\medskip\\}
+     documentation\footnote{La \href{https://fr.wikipedia.org/wiki/Programmation_lettrée}{programmation lettrée} est difficile,
+     et souvent coûteuse, peu utile ou inpraticable.\medskip\\}
    \end{itemize}
    \end{relsize}
  \end{frame}
@@ -465,8 +467,8 @@ varient selon les époques et les lieux
    de données compliquées. C'est mathématiquement un graphe ou un
    hypergraphe. On suppose qu'il tient en mémoire centrale.
    
-   Un formalisme déclaratif peut être ``interprété'' ou ``compilé''
-   par l'outil logiciel l'acceptant.
+   Un formalisme plus ou moins déclaratif peut être ``interprété'' ou
+   ``compilé'' par l'outil logiciel l'acceptant.
 
    \begin{itemize}
    \item \textbf{interprétation}: l'outil logiciel parcourt
@@ -488,17 +490,17 @@ varient selon les époques et les lieux
    Enseigné par Jacques Pitrat:
    
    \begin{block}{définition de l'IA}
-     Un logiciel d'``intelligence artificielle'' est un programme qui peut surprendre agréablement ses utilisateurs.
+     \textbf{Un logiciel d'``intelligence artificielle'' est un programme qui peut surprendre \textcolor{red}{agréablement} ses utilisateurs}.
    \end{block}
 
    \bigskip
    
-   \textbf{Tout gros logiciel est bogué} (et son nombre de bogues reste non-nul) \textbf{donc surprend \textcolor{red}{désagréablement} ses utilisateurs}.
+   \textbf{Tout gros logiciel est bogué} {\relsize{-1}{(et son nombre de bogues reste non-nul)}} \textbf{donc surprend \textcolor{red}{désagréablement} ses utilisateurs}.
 
    \bigskip
 
    Un logiciel d'IA peut être partiellement introspectif ou
-   \href{https://fr.wikipedia.org/wiki/Réflexion_(informatique)}{reflexif}:
+   \href{https://fr.wikipedia.org/wiki/Réflexion_(informatique)}{réflexif}:
    en particulier en inspectant son code, ses données et ses
    \href{https://fr.wikipedia.org/wiki/Pile_d'exécution}{piles
      d'exécution}.
@@ -513,7 +515,106 @@ transparents.
    
  \end{frame}
 
+ \begin{frame}{Règles d'inférences  et bases de règles}
+
+   Une \textbf{règle d'inférences} comporte:
+
+   \begin{itemize}
+   \item un ensemble (\textit{non ordonné}, fini) de conditions
+     (déclanchant la règle)
+   \item une séquence d'actions (pouvant s'exécuter quand ou si les
+     conditions sont déclanchées)
+   \item des méta-informations supplémentaires
+   \end{itemize}
+
+   Exemple: Si $x$ est le père de $y$ et si $z$ est la fille de $y$
+   alors on peut en déduire que $x$ est le grand-père de $z$.
+
+   \bigskip
+   
+
+   Une \textbf{base de règles} contient un ensemble (\textit{non
+     ordonné}, fini) de règles d'inférences, et des méta-informations
+   supplémentaires
+ Une \textbf{base de faits} contient un ensemble
+ (\textit{non ordonné}, fini) de faits (expressions supposées vraies, entités, \ldots)
+
+ \bigskip
  
+   Un \textbf{système expert} comporte une ou des bases de règles et
+   des bases de faits
+ \end{frame}
+ 
+ \begin{frame}{Persistance}
+
+   Un logiciel
+   \href{https://fr.wikipedia.org/wiki/Persistance_(informatique)}{persistant}
+   sauvegarde son état sur disque et peut redémarrer (le lendemain?)
+   avec cet état.
+
+   \bigskip
+
+   \textbf{RefPerSys persiste son état dans des fichiers textuels} (JSON et
+   code C++ généré) \textbf{portables}.
+
+   \bigskip
+
+   Comment gérer la co-évolution du logiciel et des données
+   persistentes et du code?
+   
+ \end{frame}
+
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+ \section{RefPerSys en mai 2025}
+ \label{sec:refpersys-mai2025}
+ \begin{frame}{RefPerSys en mai 2025}
+   \begin{itemize}
+   \item dévelopé sous Linux (Debian ou Ubuntu ou Mint, parfois Raspbian)
+   \item c'est du logiciel libre sous licence GPL/CeCILL
+   \item historique accessible par \href{https://github.com/RefPerSys/RefPerSys/}{\texttt{github.com/RefPerSys/RefPerSys/}}
+   \item codé en C++17 et compilé par un \href{https://gcc.gnu.org/}{GCC} récent (v14 ou v15)
+   \item nombreuses dépendances (de logiciels libres) dont
+       \href{https://fltk.org}{FLTK} et
+       \href{https://github.com/ianlancetaylor/libbacktrace}{libbacktrace}
+       et \href{https://carburetta.com/}{Carburetta}
+     \item quelques contributeurs bénévoles (Suède, Inde, Egypte,
+       France, USA?)
+   \end{itemize}
+
+   \bigskip
+   
+   Pour le compiler: définir la variable d'environment
+   \texttt{REFPERSYS\_TOPDIR} au répertoire source (obtenu par
+   \texttt{git clone}) puis \texttt{make config} (logiciel interactif)
+   puis \texttt{make -j4}
+
+   Votre \texttt{\$HOME/tmp/} doit exister (votre répertoire temporaire)
+ \end{frame}
+ %
+ \begin{frame}{tester RefPerSys}
+   
+   Quelques tests:
+
+   \begin{itemize}
+     \item \texttt{make test-load} et d'autres (essayez
+      \texttt{make showtests}).
+
+      \item \texttt{make redump} ou \texttt{make
+     altredump} pour la persistance et regénération (doit être suivi
+      de \texttt{make clean} puis \texttt{make -j4})
+
+    \item \texttt{make testcarb1} (à améliorer)
+   \end{itemize}
+ \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+ \section{Ce qui reste à faire dans RefPerSys}
+ \label{sec:refpersys-a-faire}
+ \begin{frame}{A faire avec votre aide}
+ \end{frame}
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
