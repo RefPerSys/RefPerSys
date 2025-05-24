@@ -249,7 +249,7 @@
   machine à chaque interaction de son utilisateur.
 
   \bigskip
-  *
+  
   La plupart des implémentations de Java ont une JVM qui traduit le code-octets (java bytecode) en du code machine.
 
  \end{frame}
@@ -356,6 +356,25 @@ est compliquée (peut être indécidable).
    \end{relsize}
  \end{frame}
 
+ \begin{frame}{méta-connaissances}
+   Ce sont les connaissances sur les connaissances.
+
+
+   \begin{itemize}
+   \item pour formaliser des connaissances: par exemple grammaire
+     formelle de C ou de la syntaxe BNF des grammaires formelles.
+   \item pour utiliser des connaissances: par exemple: un compilateur
+     C\footnote{Les compilateurs C n'arrivent guère à compiler une fonction C de cent milles lignes de code dans un fichier C généré par un outil logiciel.\\}peut supposer que chaque fichier C a un nombre raisonnable de
+     définition de fonctions de taille raisonnable.
+   \end{itemize}
+
+   \bigskip
+   
+   \textbf{Le même formalisme peut être utilisé pour des
+     méta-connaissances qui peuvent s'appliquer à elles-mêmes.}
+     
+ \end{frame}
+
  \begin{frame}{connaissances déclaratives ou procédurales}
 
    \textbf{Une \textcolor{red}{connaissance déclarative} est un énoncé qui peut être utilisé de
@@ -403,8 +422,13 @@ varient selon les époques et les lieux
    production électrique européenne.\medskip}.
 
    \bigskip
+   
    \textbf{Les outils logiciels pour les dévelopeurs doivent favoriser
      la déclarativité des formalismes.}
+
+   \bigskip
+
+   L'ordre dans lequel sont formalisées les connaissances déclaratives n'a pas d'importance!
  \end{frame}
 
 
