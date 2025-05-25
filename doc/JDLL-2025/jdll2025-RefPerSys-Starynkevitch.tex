@@ -635,11 +635,13 @@ transparents.
  \begin{frame}{Cadres d'appel explicites}
    
    Le code C++ représente un cadre d'appel réifié par
-   \texttt{Rps\_CallFrame}. On déclare en C++ ses valeurs locales par une macro \texttt{RPS\_LOCALFRAME}, par exemple
+   \texttt{Rps\_CallFrame}. On déclare en C++ ses valeurs locales par une macro \texttt{RPS\_LOCALFRAME}, e.g.
 
    \begin{relsize}{-1}
    \begin{alltt}
-     RPS\_LOCALFRAME(RPS\_ROOT\_OB(\_1aGtWm38Vw701jDhZn), //the\_agenda,\\
+     RPS\_LOCALFRAME(RPS\_ROOT\_OB(\_1aGtWm38Vw701jDhZn)\footnote{Cet
+     objet décrit le cadre d'appel pour en faciliter la réflexion et
+     l'inspection.\medskip\\}, //the\_agenda,\\
      \hspace{8em}            RPS\_NULL\_CALL\_FRAME, // no caller frame\\
      \hspace{8em}            Rps\_ObjectRef obtasklet;\\
      \hspace{8em}            Rps\_InstanceValue descrval;\\
@@ -699,7 +701,7 @@ transparents.
    \item les valeurs scalaires ou composites (toutes immuables)
      doivent être copiables par le R-M
    \item les objets lourds sont fixes en mémoire (contenant le verrou \texttt{std::recursive\_mutex} de chaque objet) et le R-M les marquent.
-     \item parcours de la pile d'exécution (\texttt{Rps\_CallFrame})
+     \item parcours de la pile d'exécution et de ses cadres d'appels (\texttt{Rps\_CallFrame})
    \end{itemize}
  \end{frame}
  
