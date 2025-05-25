@@ -762,8 +762,25 @@ transparents.
    Inspiré par Smalltalk ou Common Lisp, il est plus souple (mais plus
    coûteux en temps) qu'un appel de méthode \texttt{virtual} de C++.
 
+   \smallskip
    On envoie à une valeur cible un message donné par un sélecteur et des arguments.
    En C++ par exemple \texttt{Rps\_TwoValues two = \_f.refpersysv.send3(\&\_, \_f.gencodselob, \_f.dumpdirnamev, \_f.tempsuffixv, \_f.genstoreob);}
+
+   \bigskip
+   \textbf{Le selecteur est un objet}
+
+   \bigskip
+   L'envoi de message est implémenté par application d'une
+   fermeture. Chaque classe RefPerSys est un objet dont la charge
+   utile contient une superclasse et un dictionnaire de méthodes
+   asssociant à un selecteur la fermeture réalisant l'envoi. Ce
+   dictionnaire peut évoluer avec le temps.
+
+   \smallskip
+   \begin{small}
+     Ce modèle ressemble à celui de JavaScript, mais s'appuie sur les
+     classes (pas de prototypes).
+   \end{small}
  \end{frame}
  
  \begin{frame}{Le ramasse-miettes dans RefPerSys}
@@ -807,30 +824,119 @@ transparents.
    pour retrouver le nom des pointeurs de fonctions.
    
  \end{frame}
+
+ \begin{frame}{Écriture du tas persistant}
+   \textbf{Le tas persistant est écrit sur disque}, avec le code C++ généré qui
+   va avec.
+
+   \bigskip
+   
+   Chaque espace de persitance correspond à un fichier JSON. On peut
+   donc distinguer le système (les objets nécessaires à la génération
+   de code C++) et plusieurs ``applications''.
+
+   \bigskip
+   
+   \textbf{On pourrait} à l'avenir \textbf{utiliser d'autres
+     représentations textuelles} (HJSON?, Yaml?) pour les données
+   persistées. \textbf{\textcolor{red}{Il faut veiller à leur
+       portabilité}}: un tas écrit sur x86-64 devrait être utilisable
+   et chargeable sur \href{https://riscv.org}{RISCV}.
+   
+ \end{frame}
+
+
+ \begin{frame}{agenda et millitâches}
+
+   \textbf{\textcolor{red}{L'agenda est un objet racine persistant}}
+   \relsize{-0.5}{\texttt{\_1aGtWm38Vw701jDhZn} nommé \texttt{the\_agenda}, unique de
+   sa classe \texttt{\_3s7ztCCoJsj04puTdQ}
+   \textit{\texttt{agenda$\in$class}}}.
+
+   \bigskip
+
+   \textbf{Cet agenda contient des millitâches} (``tasklets''), qui
+   sont des objets (persistants ou temporaires). \textbf{L'exécution
+     de chaque millitâche doit durer \textcolor{red}{quelques
+       millisecondes}}.
+
+     \textbf{Il existe plusieurs\footnote{Leur nombre est figé au
+       démarrage de RefPerSys (entre 3 et 24, selon la puissance du
+       processeur et son nombre de c{\oe}urs).} filaments d'exécution}
+     (\href{https://fr.wikipedia.org/wiki/Threads_POSIX}{POSIX
+       threads}).
+
+ \end{frame}
+
+ \begin{frame}{exécution parallèle des millitâches de l'agenda}
+
+ \textbf{Chacun des filaments d'exécution} de l'agenda
+  \textbf{boucle} sur:
+
+     \begin{enumerate}
+     \item choix\footnote{En mai 2025 l'agenda contient quelques files
+     d'attente de priorité haute, normale, ou basse de millitâches en
+     attente d'exécution.} et retrait d'une millitâche à exécuter dans
+       l'agenda
+     \item exécution de cette millitâche par envoi d'un message
+       \item cette exécution est rapide (millisecondes) et peut
+         inspecter et modifier l'agenda (peut-être s'y ajouter à nouveau)
+     \end{enumerate}
+
+     \bigskip
+     
+     Cette boucle {\relsize{-0.5}{(interrompue par le ramasse-miettes)}} s'arrête quand
+     RefPerSys termine normalement.
+
+     \bigskip
+     \textbf{Des événements extérieurs} \footnote{interaction
+     graphique ou Web avec l'utilisateur, ou
+     \href{https://www.jsonrpc.org/}{JSONRPC}, terminaison d'un
+     processus -compilation d'un greffon généré en C++?-, interruption
+     temporelle toutes les secondes?}  peuvent créer et ajouter (ou
+     ôter) des millitâches dans l'agenda.
+   
+ \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
  \section{Ce qui reste à faire dans RefPerSys}
  \label{sec:refpersys-a-faire}
  \begin{frame}{A faire avec votre aide}
    \begin{itemize}
-   \item définir une syntaxe avec des exemples (cf \href{https://github.com/RefPerSys/RefPerSys/blob/master/carbrepl_rps.cbrt}{carbrepl\_rps.cbrt})
+   \item définir une syntaxe (règles, métarègles, ...) avec des exemples (cf \href{https://github.com/RefPerSys/RefPerSys/blob/master/carbrepl_rps.cbrt}{carbrepl\_rps.cbrt})
    \item accroître le tas persistent pour décrire déclarativement dans
-     des objets RefPerSys le code C++ à générer
-   \item coder les générateurs de codes C++ et machines
+     des objets RefPerSys le code C++ à générer (en reprenant des idées de \href{https://arxiv.org/abs/1109.0779}{GCC MELT})
+     \item coder une interface graphique {\relsize{-0.5}{(esquissée avec \href{https://fltk.org}{FLTK} ou autre et son code C++ doit en partie être généré à partir d'objets RefPerSys)}}.
+   \item coder les générateurs de codes C++ et machines\footnote{Le
+   code machine généré n'est pas persisté car non-portable; il
+   pourrait être généré rapidement par du code C++ généré qui utilise \textit{GNU lightning} ou autre!\medskip\\}
      \item générer du code C++ qui remplace le code C++ écrit à la
        main (qu'on \texttt{git mv} dans \texttt{attic/}
    \end{itemize}
 
-   Ce processus doit être itératif. Le tas persitant de RefPerSys doit
-   générer de plus en plus de code (qui remplacerait celui existant
-   codé\footnote{J'ai pris soin de nommer les identifiants C++ de
-   manière à espérer les générer} à la main).
+ \end{frame}
 
+ \begin{frame}{co-dévelopement itératif de RefPerSys}
+   
+   \textbf{Ce développement de RefPerSys devrait être itératif,
+     collaboratif, et communautaire}. Le tas persistant de RefPerSys
+   doit générer de plus en plus de code (qui remplacerait celui
+   existant codé\footnote{J'ai pris soin de nommer les identifiants
+   C++ de manière à espérer les générer} à la main) à partir de
+   formalismes plus déclaratifs donc plus concis et plus
+   compréhensible.
+
+   \bigskip
+   
    \textbf{Le formalisme de RefPerSys est appelé à évoluer avec le
      temps en des representations de plus en plus déclaratives} qui
    requièrent votre collaboration.
- \end{frame}
 
+   \bigskip
+   
+   \textit{Un système d' ``intelligence artificielle'' doit expliquer
+     son comportement aux utilisateurs pour être acceptable.}
+ \end{frame}
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
