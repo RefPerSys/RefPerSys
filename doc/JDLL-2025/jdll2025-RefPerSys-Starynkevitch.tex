@@ -660,6 +660,22 @@ transparents.
  \end{frame}
 
  
+ \begin{frame}{Les valeurs scalaires dans RefPerSys}
+   En plus des entiers directs (``tagged integers'') elles peuvent être une zone mémoire copiable par le ramasse-miettes pour (au choix):
+
+   \begin{itemize}
+     \item les chaînes de caractères emboîtées UTF-8 
+     \item les flottants emboîtés
+     \item les valeurs JSON
+   \end{itemize}
+
+   \bigskip
+  
+  \textbf{On devrait pouvoir rajouter d'autres types de valeurs}
+  (images, vecteurs de nombres complexes, \ldots) \textbf{et en
+    \textcolor{red}{générer le code} C++ les gérant}.
+ \end{frame}
+ 
  \begin{frame}{Les objets dans RefPerSys}
    \textbf{Ils ont chacun un identifiant ``mondialement''
      \textcolor{red}{unique} et aléatoire} et persistant, leur
@@ -688,6 +704,22 @@ transparents.
    \end{itemize}
    \end{relsize}
    \end{frame}
+
+ \begin{frame}{Les valeurs composites dans RefPerSys}
+
+   Elles sont immuables et copiables par le ramasse-miettes. Chacune
+   peut être temporaire ou persistante.
+
+   \begin{itemize}
+     \item \textbf{ensemble} fini d'objets ordonné par leur \textit{objid}. Le
+       test d'appartenance est rapide (par dichotomie).
+     \item \textbf{tuple} (ou n-uplet) de réferences d'objets; une composante
+         de tuple peut-être absente (\texttt{nullptr}).
+       \item \textbf{fermeture}: sa routine est donnée par un objet
+           qui décrit cette routine. Les valeurs closes sont
+           immuables.
+   \end{itemize}
+ \end{frame}
 
  \begin{frame}{Le ramasse-miettes dans RefPerSys}
    
