@@ -618,7 +618,7 @@ transparents.
      \item entiers directs (62 bits)
      \item des valeurs scalaires immuables (chaînes, flottants, \ldots)
      \item des valeurs composites immuables (ensembles, tuples,
-       instances, n{\oe}uds, fermetures)
+     fermetures,  instances)
        \item des reférences (en C++ \texttt{Rps\_ObjectRef}) à des objets lourds et mutables
      \end{enumerate}
      \item les valeurs composites et les objets peuvent être
@@ -707,8 +707,9 @@ transparents.
 
  \begin{frame}{Les valeurs composites dans RefPerSys}
 
-   Elles sont immuables et copiables par le ramasse-miettes. Chacune
-   peut être temporaire ou persistante.
+   Elles sont \textbf{\textcolor{red}{immuables}} et
+   \textit{copiables} par le ramasse-miettes. Chacune peut être
+   temporaire ou persistante.
 
    \begin{itemize}
      \item \textbf{ensemble} fini d'objets ordonné par leur \textit{objid}. Le
@@ -716,9 +717,19 @@ transparents.
      \item \textbf{tuple} (ou n-uplet) de réferences d'objets; une composante
          de tuple peut-être absente (\texttt{nullptr}).
        \item \textbf{fermeture}: sa routine est donnée par un objet
-           qui décrit cette routine. Les valeurs closes sont
-           immuables.
+           qui décrit cette routine. Ses valeurs closes sont
+           immuables. De plus elles peuvent contenir un méta-descripteur (référence d'objet) et un méta-rang (nombre descriptif).
+           \item \textbf{instance}: organisée comme une fermeture,
+             elles contient une connective (objet), des fils
+             (valeurs fixes), et un méta-descripteur et un méta-rang.
    \end{itemize}
+
+   \begin{relsize}{-0.5}
+   Attention à notre terminologie: une instance n'est pas un objet
+   (car immuable) mais toutes les valeurs composites ont leur classe
+   et leur type. Les instances pourraient être utiles pour représenter
+   des n{\oe}uds d'une syntaxe ou des faits, etc...
+   \end{relsize}
  \end{frame}
 
  \begin{frame}{Le ramasse-miettes dans RefPerSys}
