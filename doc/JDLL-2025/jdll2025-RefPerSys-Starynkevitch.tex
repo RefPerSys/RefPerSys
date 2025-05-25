@@ -708,6 +708,7 @@ transparents.
  \begin{frame}{La persistance dans RefPerSys}
 
    Le code C++ de persistance ressemble par sa forme au R-M. Les deux devraient devenir générés.
+   \medskip
    Au démarrage:
    \begin{itemize}
    \item à froid préallocation statiques des zones mémoire des objets
@@ -716,6 +717,18 @@ transparents.
      \item remplissage des objets et initialisation des pointeurs de fonction conventionnels par 
          \href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym}}
    \end{itemize}
+
+   \bigskip
+   \textbf{Le tas persistant} (``persistent heap'') \textbf{est donc \textcolor{red}{chargé} à chaque
+   démarrage à partir de fichiers textuels.}
+   
+   \bigskip
+   \textbf{À la fin normale du processus} (et peut-être tous les
+   quarts d'heure) \textbf{on écrit sur disque le tas persistant mis à
+     jour et le code généré en C++}. Le code C++ utilise
+   \href{https://man7.org/linux/man-pages/man3/dladdr.3.html}{\texttt{dladdr}}
+   pour retrouver le nom des pointeurs de fonctions.
+   
  \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
