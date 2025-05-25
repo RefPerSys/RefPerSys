@@ -711,6 +711,7 @@ transparents.
    \textit{copiables} par le ramasse-miettes. Chacune peut être
    temporaire ou persistante.
 
+   \begin{relsize}{-0.5}
    \begin{itemize}
      \item \textbf{ensemble} fini d'objets ordonné par leur \textit{objid}. Le
        test d'appartenance est rapide (par dichotomie).
@@ -724,14 +725,47 @@ transparents.
              (valeurs fixes), et un méta-descripteur et un méta-rang.
    \end{itemize}
 
-   \begin{relsize}{-0.5}
-   Attention à notre terminologie: une instance n'est pas un objet
-   (car immuable) mais toutes les valeurs composites ont leur classe
-   et leur type. Les instances pourraient être utiles pour représenter
-   des n{\oe}uds d'une syntaxe ou des faits, etc...
+
+   Attention à notre terminologie: \textbf{une instance
+     \textcolor{red}{n'est pas} un objet} (car immuable) mais toutes
+   les valeurs composites ont leur classe et leur type. Les instances
+   pourraient être utiles pour représenter des n{\oe}uds d'une syntaxe
+   ou des faits, etc...
    \end{relsize}
  \end{frame}
 
+ \begin{frame}{application d'une fermeture}
+   
+   Chaque fermeture connait son code (par un objet, sa ``connective'')
+   C++ (une fonction C++ dont le nom commence par \texttt{rpsapply}).
+
+   \bigskip
+   
+   Appliquer une fermeture à des arguments (tous des valeurs), c'est
+   appeler cette fonction C++ (avec la valeur fermeture).
+
+   \bigskip
+   
+   En C++ cette application se fait par du code tel que \texttt{\_f.clostodo.apply1(\&\_, \_f.obtasklet)}
+
+   \bigskip
+
+   Cette application renvoie deux valeurs (dans un couple en C++
+   \texttt{Rps\_TwoValues}) qui par convention ne doivent pas être
+   toutes deux \texttt{nullptr}. Elle devrait être presque aussi
+   rapide qu'un appel de méthode \texttt{virtual} en C++.
+   
+ \end{frame}
+ 
+ \begin{frame}{envoi de message}
+   
+   Inspiré par Smalltalk ou Common Lisp, il est plus souple (mais plus
+   coûteux en temps) qu'un appel de méthode \texttt{virtual} de C++.
+
+   On envoie à une valeur cible un message donné par un sélecteur et des arguments.
+   En C++ par exemple \texttt{Rps\_TwoValues two = \_f.refpersysv.send3(\&\_, \_f.gencodselob, \_f.dumpdirnamev, \_f.tempsuffixv, \_f.genstoreob);}
+ \end{frame}
+ 
  \begin{frame}{Le ramasse-miettes dans RefPerSys}
    
    \href{https://fr.wikipedia.org/wiki/Ramasse-miettes_(informatique)}{Il}
