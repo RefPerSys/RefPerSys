@@ -612,29 +612,51 @@ transparents.
  \begin{frame}{Données manipulées par RefPerSys}
 
    \begin{itemize}
-   \item le pointeur \texttt{nullptr} a un status spécial (informellement une absence de valeur).
-   \item les valeurs (un mot de 64 bits souvent pointeur) peuvent être:
+   \item le pointeur \texttt{nullptr} a un status spécial (une absence de valeur).
+   \item les valeurs {\relsize{-0.5}{(un mot de 64 bits souvent pointeur, en C++ \texttt{Rps\_Value})}} peuvent être:
      \begin{enumerate}
      \item entiers directs (62 bits)
-     \item des valeurs scalaires immuables (chaînes, flottants emboîtés)
+     \item des valeurs scalaires immuables (chaînes, flottants, \ldots)
      \item des valeurs composites immuables (ensembles, tuples,
        instances, n{\oe}uds, fermetures)
-       \item des objets lourds et mutables
+       \item des reférences (en C++ \texttt{Rps\_ObjectRef}) à des objets lourds et mutables
      \end{enumerate}
      \item les valeurs composites et les objets peuvent être
        temporaires ou persistents
        \item chaque valeur a sa classe (modèle
          \href{https://en.wikipedia.org/wiki/ObjVlisp}{ObjVLisp})
+         et son type  {\relsize{-0.5}{(en C++ \texttt{enum class Rps\_Type})}}
        \item quelques objets sont des racines préexistantes (fichier
          C++ généré \href{https://github.com/RefPerSys/RefPerSys/blob/master/generated/rps-roots.hh}{\texttt{generated/rps-roots.hh}})
    \end{itemize}
 
-   Beaucoup de fonctions codées en C++ renvoient une paire de valeurs
-   \texttt{Rps\_TwoValues} en C++ (dans des registres du processeur).
-
-   Le code C++ représente un cadre d'appel réifié par
-   \texttt{Rps\_CallFrame}.
  \end{frame}
+
+ \begin{frame}{Cadres d'appel explicites}
+   
+   Le code C++ représente un cadre d'appel réifié par
+   \texttt{Rps\_CallFrame}. On déclare en C++ ses valeurs locales par une macro \texttt{RPS\_LOCALFRAME}, par exemple
+
+   \begin{relsize}{-1}
+   \begin{alltt}
+     RPS\_LOCALFRAME(RPS\_ROOT\_OB(\_1aGtWm38Vw701jDhZn), //the\_agenda,\\
+     \hspace{8em}            RPS\_NULL\_CALL\_FRAME, // no caller frame\\
+     \hspace{8em}            Rps\_ObjectRef obtasklet;\\
+     \hspace{8em}            Rps\_InstanceValue descrval;\\
+     \hspace{8em}            Rps\_ClosureValue clostodo;\\
+                );
+   \end{alltt}
+   \end{relsize}
+%   \smallskip
+   
+   En C++ le cadre d'appel courant est \texttt{\_} et (dans l'exemple ci-dessus) la référence locale à son objet \texttt{obtasklet} se note \texttt{\_f.obtasklet}, etc.
+   
+   Ces cadres d'appels RefPerSys sont parcourus par le ramasse-miettes et les routines d'introspection.
+
+   On peut en C++ ajouter des collections C++ de valeurs au cadre
+   d'appel courant en explicitant le code C++ qui les parcourt.
+ \end{frame}
+
  
  \begin{frame}{Les objets dans RefPerSys}
    \textbf{Ils ont chacun un identifiant ``mondialement''
@@ -649,8 +671,8 @@ transparents.
    De plus chaque objet contient en propre:
    \begin{itemize}
    \item son verrou C++ \texttt{std::recursive\_mtx}
-     \item son espace de persistance (un [pointeur d'] objet ou \texttt{nullptr} pour les objets temporaires)
-     \item sa classe, qui est un [pointeur d'] objet RefPerSys persistant.
+     \item son espace de persistance (une référence à un objet ou \texttt{nullptr} pour les objets temporaires)
+     \item sa classe, qui est un \texttt{Rps\_ObjectRef} RefPerSys persistant.
      \item une association d'attributs (en C++ un
        \texttt{std::map}). Chaque attribut est un objet, sa valeur
        quelconque (sauf \texttt{nullptr})
