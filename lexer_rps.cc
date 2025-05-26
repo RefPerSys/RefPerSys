@@ -1579,7 +1579,12 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
                         << "…  (get_token/fail) missing from:"
                         << std::endl
                         << "… pos:" << position_str() << std::endl
-                        << "… token_deq:" << toksrc_token_deq << std::endl << Rps_ShowCallFrame(&_));
+                        << "… token_deq:" << toksrc_token_deq
+                        << std::endl << Rps_ShowCallFrame(&_)
+                        << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token/fail")
+                        << std::endl << "… this token source=" << *this);
+          RPS_POSSIBLE_BREAKPOINT();
           return nullptr;
         }
     };               // end while rank >= toksrc_token_deq.size()
