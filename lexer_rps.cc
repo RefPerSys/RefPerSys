@@ -470,6 +470,42 @@ Rps_MemoryFileTokenSource::display(std::ostream&out) const
 
 
 
+Rps_LexTokenValue 
+Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
+{
+} // end Rps_TokenSource::get__number__token
+
+
+Rps_LexTokenValue 
+Rps_TokenSource::get__infinity__token(Rps_CallFrame*callframe, const char*curp)
+{
+} // end Rps_TokenSource::get__infinity__token
+
+
+Rps_LexTokenValue 
+Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
+{
+} // end Rps_TokenSource::get__namoid__token
+
+
+Rps_LexTokenValue 
+Rps_TokenSource::get__shortstr__token(Rps_CallFrame*callframe, const char*curp)
+{
+} // end Rps_TokenSource::get__shortstr__token
+
+
+Rps_LexTokenValue 
+Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe, const char*curp)
+{
+} // end Rps_TokenSource::get__longlitstr__token
+
+
+Rps_LexTokenValue 
+Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
+{
+} // end Rps_TokenSource::get__delim__token
+
+
 ////////////////////////////////
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
