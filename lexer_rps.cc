@@ -284,6 +284,7 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
   if (!RPS_DEBUG_ENABLED(REPL))
     RPS_DEBUG_LOG(CMD, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
                   << " from " << Rps_QuotedC_String(toksrcstr_str));
+  RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_StringTokenSource::Rps_StringTokenSource
 
 
@@ -296,12 +297,14 @@ Rps_StringTokenSource::~Rps_StringTokenSource()
   //RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
   if (!RPS_DEBUG_ENABLED(REPL))
     RPS_DEBUG_LOG(CMD, "destr StringTokenSource@ " <<(void*)this << " " << *this);
+  RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_StringTokenSource::~Rps_StringTokenSource
 
 
 bool
 Rps_StringTokenSource::get_line()
 {
+  RPS_POSSIBLE_BREAKPOINT();
   std::getline(toksrcstr_inp, toksrc_linebuf);
   if (!toksrcstr_inp && toksrc_linebuf.empty())
     return false;
