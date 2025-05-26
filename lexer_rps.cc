@@ -530,6 +530,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   if (isdigit(*curp) ||
       ((curp[0] == '+' || curp[0] == '-') && isdigit(curp[1])))
     {
+      // get__number__token
       int curlin = toksrc_line;
       int curcol = toksrc_col;
       char*endint=nullptr;
@@ -588,13 +589,14 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       })
                    );
       return _f.res;
-    } //- end lexing numbers
+    } //- end get__number__token lexing numbers
   ///
   /// lex infinities (double) - but not NAN
   else if ((!strncmp(curp, "+INF", 4)
             || !strncmp(curp, "-INF", 4))
            && !isalnum(curp[4]))
     {
+      // get__infinity__token
       int curlin = toksrc_line;
       int curcol = toksrc_col;
       RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "?"
@@ -624,11 +626,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         this->display_current_line_with_cursor(out);
       }));
       return _f.res;
-    } //- end lexing infinities
+    } //- end get__infinity__token lexing infinities
 
   /// lex names or objectids
   else if (isalpha(*curp) || *curp == '_')
     {
+      // get__namoid__token
       const char*startname = curp;
       int curlin = toksrc_line;
       int curcol = toksrc_col;
@@ -647,7 +650,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
       RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
                     << "?  oid|name '" << namestr << "' oblex="
-                    << _f.oblex);
+                    << _f.oblex << " tokensrc=" << *this
+                    <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/oidnam"));
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
                     << "?  namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
@@ -715,10 +719,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           }));
           return nullptr;
         }
-    }
+    } // end get__namoid__token
   //// literal single line strings are like in C++
   else if (*curp == '"')   /// plain literal string, on a single line
     {
+      // get__shortstr__token
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       std::string litstr = lex_quoted_literal_string(&_);
@@ -743,12 +748,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         this->display_current_line_with_cursor(out);
       }));
       return _f.res;
-    } // end single-line literal string token
+    } // end  get__shortstr__token single-line literal string token
 
   //// raw literal strings may span across several lines, like in C++
   //// see https://en.cppreference.com/w/cpp/language/string_literal
   else if (curp[0] == 'R' && curp[1] == '"' && isalpha(curp[2]))
     {
+      // get__longlitstr__token
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       std::string litstr = lex_raw_literal_string(&_);
@@ -773,7 +779,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         this->display_current_line_with_cursor(out);
       }));
       return _f.res;
-    } // end possibly multi-line raw literal strings
+    } // end  get__longlitstr__token possibly multi-line raw literal strings
 
   //// a code chunk or macro string is mixing strings and
   //// objects.... Inspired by GCC MELT see
@@ -820,6 +826,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
            )
           )
     {
+      //// get__longlitstr__token
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "?  code_chunk starting at " << position_str() << curp);
@@ -844,11 +851,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         this->display_current_line_with_cursor(out);
       }));
       return _f.res;
-    } // end lexing code chunk
+    } // end get__longlitstr__token lexing code chunk
 
   //// sequence of at most four ASCII or UTF-8 punctuation
   else if (ispunct(*curp) || uc_is_punct(curuc))
     {
+      //// get__delim__token
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1)
                     <<"? start punctuation curp='" << Rps_QuotedC_String(curp) << "' at " << position_str());
       std::string delimpos = position_str();
@@ -888,7 +896,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         this->display_current_line_with_cursor(out);
       }));
       return _f.delimv;
-    }
+    } ///// end  get__delim__token
 #warning Rps_TokenSource::get_token incomplete
   RPS_FATALOUT("incomplete Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? @ " << name()
                << std::endl << "… from " << *this << std::endl

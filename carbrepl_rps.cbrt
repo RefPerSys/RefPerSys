@@ -47,7 +47,7 @@ static void rps_carbrepl_destructor_replnt_term(Rps_Value&val, int lin);
 static void rps_carbrepl_constructor_replnt_value(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin);
 
-extern "C" int  rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin);
+extern "C" int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin);
 int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin);
 
 extern "C" struct rpscarbrepl_stack;

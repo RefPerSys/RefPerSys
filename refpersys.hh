@@ -3036,6 +3036,13 @@ public:
   };
   /// on lexical error, get_token returns null and does not change the position
   Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
+private:
+  Rps_LexTokenValue get__number__token(Rps_CallFrame*callframe, const char*curp);
+  Rps_LexTokenValue get__infinity__token(Rps_CallFrame*callframe, const char*curp);
+  Rps_LexTokenValue get__namoid__token(Rps_CallFrame*callframe, const char*curp);
+  Rps_LexTokenValue get__shortstr__token(Rps_CallFrame*callframe, const char*curp);
+  Rps_LexTokenValue get__longlitstr__token(Rps_CallFrame*callframe, const char*curp);
+  Rps_LexTokenValue get__delim__token(Rps_CallFrame*callframe, const char*curp);
 };                              // end Rps_TokenSource
 
 inline std::ostream& operator << (std::ostream&out, Rps_TokenSource& toksrc)
