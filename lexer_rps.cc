@@ -538,6 +538,7 @@ Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
     this->display_current_line_with_cursor(out);
   })
                );
+  return _f.res;
 } // end Rps_TokenSource::get__number__token
 
 
@@ -757,6 +758,7 @@ Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe, const char*curp
   {
     this->display_current_line_with_cursor(out);
   }));
+  return _f.res;
 } // end Rps_TokenSource::get__longlitstr__token
 
 
@@ -794,6 +796,7 @@ Rps_TokenSource::get__codechunk__token(Rps_CallFrame*callframe, const char*curp)
   {
     this->display_current_line_with_cursor(out);
   }));
+  return _f.res;
 } // end Rps_TokenSource::get__codechunk__token
 
 
@@ -802,11 +805,47 @@ Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
-                           Rps_Value res;
+                           Rps_Value delimv;
                            Rps_ObjectRef lexkindob;
                            Rps_Value lextokv;
                 );
-#warning empty Rps_TokenSource::get__delim__token
+  std::string delimpos = position_str();
+  //int startcol = toksrc_col;
+  _f.delimv = get_delimiter(&_);
+  std::string delimstartstr {curp};
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? after "
+                << " get_delimiter_object delimv="
+                << _f.delimv << " at " << position_str() << std::endl
+                << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
+                << Rps_QuotedC_String(curcptr()));
+  if (!_f.delimv)
+    {
+      RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos
+                  << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
+                  <<  Rps_QuotedC_String(curcptr())
+                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token")
+                  << std::endl
+                  << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+      std::string warndelimstr{"invalid delimiter "};
+      warndelimstr +=  Rps_Cjson_String(delimstartstr);
+      warndelimstr += " at ";
+      warndelimstr += delimpos;
+      throw std::runtime_error(warndelimstr);
+    }
+  RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
+                << " from¤ " << *this << std::endl
+                << " delimiter :-◑> " << _f.delimv << " at " << position_str()
+                << " curp:" << Rps_QuotedC_String(curp)
+                << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
+  return _f.delimv;
 } // end Rps_TokenSource::get__delim__token
 
 
@@ -985,8 +1024,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       //// get__codechunk__token
       int linestart = toksrc_line;
       int colstart = toksrc_col;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "?  code_chunk starting at " << position_str() << curp);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1)
+                    << "?  code_chunk starting at " << position_str() << curp);
       _f.res = get__codechunk__token(&_, curp);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1)
+                    << "?  code_chunk ending at " << position_str() << curp << " = " << _f.res);
       return _f.res;
     } // end get__codechunk__token lexing code chunk
 
@@ -996,43 +1038,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       //// get__delim__token
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1)
                     <<"? start delimiter curp='" << Rps_QuotedC_String(curp) << "' at " << position_str());
-      std::string delimpos = position_str();
-      //int startcol = toksrc_col;
-      _f.delimv = get_delimiter(&_);
-      std::string delimstartstr {curp};
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? after "
-                    << " get_delimiter_object delimv="
-                    << _f.delimv << " at " << position_str() << std::endl
-                    << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
-                    << Rps_QuotedC_String(curcptr()));
-      if (!_f.delimv)
-        {
-          RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos
-                      << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
-                      <<  Rps_QuotedC_String(curcptr())
-                      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token")
-                      << std::endl
-                      << Rps_Do_Output([&](std::ostream& out)
-          {
-            this->display_current_line_with_cursor(out);
-          }));
-          std::string warndelimstr{"invalid delimiter "};
-          warndelimstr +=  Rps_Cjson_String(delimstartstr);
-          warndelimstr += " at ";
-          warndelimstr += delimpos;
-          throw std::runtime_error(warndelimstr);
-        }
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
-                    << " from¤ " << *this << std::endl
-                    << " delimiter :-◑> " << _f.delimv << " at " << position_str()
-                    << " curp:" << Rps_QuotedC_String(curp)
-                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                    << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        this->display_current_line_with_cursor(out);
-      }));
-      return _f.delimv;
+      _f.res = get__delim__token(&_, curp);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1)
+                    << " delimiter=" << _f.res);
+      return _f.res;
     } ///// end  get__delim__token
 #warning Rps_TokenSource::get_token incomplete
   RPS_FATALOUT("incomplete Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? @ " << name()
