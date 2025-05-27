@@ -549,38 +549,38 @@ Rps_TokenSource::get__infinity__token(Rps_CallFrame*callframe, const char*curp)
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
                            Rps_Value lextokv;
-			   Rps_Value namev;
+                           Rps_Value namev;
                 );
-      // get__infinity__token
-      int curlin = toksrc_line;
-      int curcol = toksrc_col;
-      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "?"
-                    << " from¤ " << *this << " infinity " << position_str());
-      bool pos = *curp == '+';
-      double infd = (pos
-                     ?std::numeric_limits<double>::infinity()
-                     : -std::numeric_limits<double>::infinity());
-      toksrc_col += 4;
-      _f.lextokv = Rps_DoubleValue(infd);
-      _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
-      _f.namev= source_name_val(&_);
-      const Rps_String* str = _f.namev.to_string();
-      Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (this,_f.lexkindob, _f.lextokv,
-         str,
-         curlin, curcol);
-      _f.res = Rps_LexTokenValue(lextok);
-      lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__infinity__token#" << toksrc_counter
-                    << " from¤ " << *this << std::endl
-                    <<" infinity :-◑> " << _f.res << " @! " << position_str()
-                    << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        this->display_current_line_with_cursor(out);
-      }));
-      return _f.res;
+  // get__infinity__token
+  int curlin = toksrc_line;
+  int curcol = toksrc_col;
+  RPS_DEBUG_LOG(REPL, "get__infinity__token#" << (toksrc_counter+1) << "?"
+                << " from¤ " << *this << " infinity " << position_str());
+  bool pos = *curp == '+';
+  double infd = (pos
+                 ?std::numeric_limits<double>::infinity()
+                 : -std::numeric_limits<double>::infinity());
+  toksrc_col += 4;
+  _f.lextokv = Rps_DoubleValue(infd);
+  _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
+  _f.namev= source_name_val(&_);
+  const Rps_String* str = _f.namev.to_string();
+  Rps_LexTokenZone* lextok =
+    Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+    (this,_f.lexkindob, _f.lextokv,
+     str,
+     curlin, curcol);
+  _f.res = Rps_LexTokenValue(lextok);
+  lextok->set_serial(++toksrc_counter);
+  RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__infinity__token#" << toksrc_counter
+                << " from¤ " << *this << std::endl
+                <<" infinity :-◑> " << _f.res << " @! " << position_str()
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
+  return _f.res;
 } // end Rps_TokenSource::get__infinity__token
 
 
@@ -591,9 +591,98 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                            /*callerframe:*/callframe,
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
+                           Rps_ObjectRef oblex;
                            Rps_Value lextokv;
+                           Rps_Value namev;
                 );
-#warning empty Rps_TokenSource::get__namoid__token
+  const char*startname = curp;
+  int curlin = toksrc_line;
+  int curcol = toksrc_col;
+  int startcol = curcol;
+  size_t linelen = toksrc_linebuf.size();
+  while ((isalpha(*curp) || *curp == '_') && toksrc_col<(int)linelen)
+    curp++, toksrc_col++;
+  std::string namestr(startname, toksrc_col-startcol);
+  RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1) << "? namestr: '"
+                << Rps_Cjson_String(namestr) << std::endl
+                << "' tokensrc:" << *this << " startcol=" << startcol
+                << " toksrc_col:" << toksrc_col);
+  _f.namev = source_name_val(&_);
+  RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
+                << position_str(startcol) << " ... " << position_str()
+                << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
+  _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
+  RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
+                << "?  oid|name '" << namestr << "' oblex="
+                << _f.oblex << " tokensrc=" << *this
+                <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
+  const Rps_String* str = _f.namev.to_string();
+  RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
+                << "?  namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
+                << std::endl
+                << " tokensrc:" << *this
+                << " namev=" << _f.namev << ", str=" << Rps_Value(str)<< " at "
+                << position_str(startcol) << " ... " << position_str());
+  if (_f.oblex)
+    {
+      _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
+      _f.lextokv = _f.oblex;
+      Rps_LexTokenZone* lextokz =
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this, _f.lexkindob, _f.lextokv,
+         str,
+         curlin, curcol);
+      _f.res = Rps_LexTokenValue(lextokz);
+      lextokz->set_serial(++toksrc_counter);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                    << " from¤ " << *this
+                    << std::endl
+                    << " object :-◑> " << _f.res << std::endl
+                    << "… @! " << position_str()
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+      return _f.res;
+    }
+  else if (isalpha(namestr[0]))  // new symbol
+    {
+      _f.lexkindob = RPS_ROOT_OB(_36I1BY2NetN03WjrOv); //symbol∈class
+      _f.lextokv = Rps_StringValue(namestr);
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this, _f.lexkindob, _f.lextokv,
+         str,
+         curlin, curcol);
+      _f.res = Rps_LexTokenValue(lextok);
+      lextok->set_serial(++toksrc_counter);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                    << " from¤ " << *this << std::endl
+                    << " symbol :-◑> " << _f.res << " @! " << position_str()
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+      return _f.res;
+    }
+  else   // bad name
+    {
+      toksrc_col = startcol;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter << "? FAIL bad name " << _f.namev
+                    << " @! " << position_str()
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token/badname")
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+      return nullptr;
+    }
 } // end Rps_TokenSource::get__namoid__token
 
 
@@ -726,93 +815,14 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   else if (isalpha(*curp) || *curp == '_')
     {
       // get__namoid__token
-      const char*startname = curp;
-      int curlin = toksrc_line;
-      int curcol = toksrc_col;
-      int startcol = curcol;
-      while ((isalpha(*curp) || *curp == '_') && toksrc_col<(int)linelen)
-        curp++, toksrc_col++;
-      std::string namestr(startname, toksrc_col-startcol);
-      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "? namestr: '"
-                    << Rps_Cjson_String(namestr) << std::endl
-                    << "' tokensrc:" << *this << " startcol=" << startcol
-                    << " toksrc_col:" << toksrc_col);
-      _f.namev = source_name_val(&_);
-      RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
-                    << position_str(startcol) << " ... " << position_str()
-                    << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
-      _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
-      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
-                    << "?  oid|name '" << namestr << "' oblex="
-                    << _f.oblex << " tokensrc=" << *this
-                    <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/oidnam"));
-      const Rps_String* str = _f.namev.to_string();
-      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
-                    << "?  namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
-                    << std::endl
-                    << " tokensrc:" << *this
-                    << " namev=" << _f.namev << ", str=" << Rps_Value(str)<< " at "
-                    << position_str(startcol) << " ... " << position_str());
-      if (_f.oblex)
-        {
-          _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
-          _f.lextokv = _f.oblex;
-          Rps_LexTokenZone* lextokz =
-            Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-            (this, _f.lexkindob, _f.lextokv,
-             str,
-             curlin, curcol);
-          _f.res = Rps_LexTokenValue(lextokz);
-          lextokz->set_serial(++toksrc_counter);
-          RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
-                        << " from¤ " << *this
-                        << std::endl
-                        << " object :-◑> " << _f.res << std::endl
-                        << "… @! " << position_str()
-                        << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                        << std::endl
-                        << Rps_Do_Output([&](std::ostream& out)
-          {
-            this->display_current_line_with_cursor(out);
-          }));
-          return _f.res;
-        }
-      else if (isalpha(namestr[0]))  // new symbol
-        {
-          _f.lexkindob = RPS_ROOT_OB(_36I1BY2NetN03WjrOv); //symbol∈class
-          _f.lextokv = Rps_StringValue(namestr);
-          Rps_LexTokenZone* lextok =
-            Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-            (this, _f.lexkindob, _f.lextokv,
-             str,
-             curlin, curcol);
-          _f.res = Rps_LexTokenValue(lextok);
-          lextok->set_serial(++toksrc_counter);
-          RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
-                        << " from¤ " << *this << std::endl
-                        << " symbol :-◑> " << _f.res << " @! " << position_str()
-                        << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                        << std::endl
-                        << Rps_Do_Output([&](std::ostream& out)
-          {
-            this->display_current_line_with_cursor(out);
-          }));
-          return _f.res;
-        }
-      else   // bad name
-        {
-          toksrc_col = startcol;
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << toksrc_counter << "? FAIL bad name " << _f.namev
-                        << " @! " << position_str()
-                        << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/badname")
-                        << std::endl
-                        << Rps_Do_Output([&](std::ostream& out)
-          {
-            this->display_current_line_with_cursor(out);
-          }));
-          return nullptr;
-        }
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token namoid "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this);
+      _f.res = get__namoid__token(&_, curp);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token namoid "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this << " gives " << _f.res);
+
     } // end get__namoid__token
   //// literal single line strings are like in C++
   else if (*curp == '"')   /// plain literal string, on a single line
