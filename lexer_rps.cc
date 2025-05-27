@@ -694,8 +694,32 @@ Rps_TokenSource::get__shortstr__token(Rps_CallFrame*callframe, const char*curp)
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
                            Rps_Value lextokv;
+                           Rps_Value namev;
                 );
-#warning empty Rps_TokenSource::get__shortstr__token
+  int linestart = toksrc_line;
+  int colstart = toksrc_col;
+  std::string litstr = lex_quoted_literal_string(&_);
+  _f.namev= source_name_val(&_);
+  const Rps_String* str = _f.namev.to_string();
+  _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
+  _f.lextokv = Rps_String::make(litstr);
+  Rps_LexTokenZone* lextok =
+    Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+    (this,_f.lexkindob, _f.lextokv,
+     str,
+     linestart, colstart);
+  _f.res = Rps_LexTokenValue(lextok);
+  lextok->set_serial(++toksrc_counter);
+  RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__shortstr__token#" << toksrc_counter
+                << " from¤ " << *this << std::endl
+                << " single-line string :-◑> " << _f.res << " @! " << position_str()
+                << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
+  return _f.res;
 } // end Rps_TokenSource::get__shortstr__token
 
 
@@ -707,6 +731,7 @@ Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe, const char*curp
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
                            Rps_Value lextokv;
+                           Rps_Value namev;
                 );
 #warning empty Rps_TokenSource::get__longlitstr__token
 } // end Rps_TokenSource::get__longlitstr__token
@@ -822,35 +847,19 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token namoid "
                     << Rps_QuotedC_String(curp)
                     << " toksrc=" << *this << " gives " << _f.res);
-
+      return _f.res;
     } // end get__namoid__token
   //// literal single line strings are like in C++
   else if (*curp == '"')   /// plain literal string, on a single line
     {
       // get__shortstr__token
-      int linestart = toksrc_line;
-      int colstart = toksrc_col;
-      std::string litstr = lex_quoted_literal_string(&_);
-      _f.namev= source_name_val(&_);
-      const Rps_String* str = _f.namev.to_string();
-      _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
-      _f.lextokv = Rps_String::make(litstr);
-      Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (this,_f.lexkindob, _f.lextokv,
-         str,
-         linestart, colstart);
-      _f.res = Rps_LexTokenValue(lextok);
-      lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
-                    << " from¤ " << *this << std::endl
-                    << " single-line string :-◑> " << _f.res << " @! " << position_str()
-                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                    << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        this->display_current_line_with_cursor(out);
-      }));
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token shortstr "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this);
+      _f.res = get__shortstr__token(&_, curp);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token shortstr "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this << " gives " << _f.res);
       return _f.res;
     } // end  get__shortstr__token single-line literal string token
 
