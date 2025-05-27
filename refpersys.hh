@@ -3042,6 +3042,7 @@ private:
   Rps_LexTokenValue get__namoid__token(Rps_CallFrame*callframe, const char*curp);
   Rps_LexTokenValue get__shortstr__token(Rps_CallFrame*callframe, const char*curp);
   Rps_LexTokenValue get__longlitstr__token(Rps_CallFrame*callframe, const char*curp);
+  Rps_LexTokenValue get__codechunk__token(Rps_CallFrame*callframe, const char*curp);
   Rps_LexTokenValue get__delim__token(Rps_CallFrame*callframe, const char*curp);
 };                              // end Rps_TokenSource
 

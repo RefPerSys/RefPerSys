@@ -733,8 +733,66 @@ Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe, const char*curp
                            Rps_Value lextokv;
                            Rps_Value namev;
                 );
-#warning empty Rps_TokenSource::get__longlitstr__token
+      // get__longlitstr__token
+      int linestart = toksrc_line;
+      int colstart = toksrc_col;
+      std::string litstr = lex_raw_literal_string(&_);
+      _f.namev= source_name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
+      _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
+      _f.lextokv = Rps_String::make(litstr);
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
+         str,
+         linestart, colstart);
+      _f.res = Rps_LexTokenValue(lextok);
+      lextok->set_serial(++toksrc_counter);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
+                    << " from¤ " << *this << std::endl
+                    << " multi-line literal string :-◑> " << _f.res << " @! " << position_str()
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
 } // end Rps_TokenSource::get__longlitstr__token
+
+
+Rps_LexTokenValue
+Rps_TokenSource::get__codechunk__token(Rps_CallFrame*callframe, const char*curp)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
+                           /*callerframe:*/callframe,
+                           Rps_Value res;
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lextokv;
+			   Rps_Value namev;
+                );
+      RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get__codechunk__token#" << toksrc_counter
+                    << " from¤ " << *this << " start");
+      const Rps_String* str = _f.namev.to_string();
+      _f.namev= source_name_val(&_);
+      _f.lextokv = lex_code_chunk(&_);
+      _f.lexkindob = RPS_ROOT_OB(_3rXxMck40kz03RxRLM); //code_chunk∈class
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
+         str,
+         linestart, colstart);
+      _f.res = Rps_LexTokenValue(lextok);
+      lextok->set_serial(++toksrc_counter);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__codechunk__token#" << toksrc_counter
+                    << " from¤ " << *this << std::endl
+                    << " code_chunk :-◑> " << _f.res << " @! " << position_str()  << std::endl
+                    << "… curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+} // end Rps_TokenSource::get__codechunk__token
 
 
 Rps_LexTokenValue
@@ -867,30 +925,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   //// see https://en.cppreference.com/w/cpp/language/string_literal
   else if (curp[0] == 'R' && curp[1] == '"' && isalpha(curp[2]))
     {
-      // get__longlitstr__token
-      int linestart = toksrc_line;
-      int colstart = toksrc_col;
-      std::string litstr = lex_raw_literal_string(&_);
-      _f.namev= source_name_val(&_);
-      const Rps_String* str = _f.namev.to_string();
-      _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
-      _f.lextokv = Rps_String::make(litstr);
-      Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (this,_f.lexkindob, _f.lextokv,
-         str,
-         linestart, colstart);
-      _f.res = Rps_LexTokenValue(lextok);
-      lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
-                    << " from¤ " << *this << std::endl
-                    << " multi-line literal string :-◑> " << _f.res << " @! " << position_str()
-                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                    << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        this->display_current_line_with_cursor(out);
-      }));
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token longlitstr "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this);
+      _f.res = get__longlitstr__token(&_, curp);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token longlitstr "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this << " gives " << _f.res);
       return _f.res;
     } // end  get__longlitstr__token possibly multi-line raw literal strings
 
@@ -939,32 +980,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
            )
           )
     {
-      //// get__longlitstr__token
+      //// get__codechunk__token
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "?  code_chunk starting at " << position_str() << curp);
-      _f.namev= source_name_val(&_);
-      const Rps_String* str = _f.namev.to_string();
-      _f.lextokv = lex_code_chunk(&_);
-      _f.lexkindob = RPS_ROOT_OB(_3rXxMck40kz03RxRLM); //code_chunk∈class
-      Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (this,_f.lexkindob, _f.lextokv,
-         str,
-         linestart, colstart);
-      _f.res = Rps_LexTokenValue(lextok);
-      lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
-                    << " from¤ " << *this << std::endl
-                    << " code_chunk :-◑> " << _f.res << " @! " << position_str()  << std::endl
-                    << "… curcptr:" <<  Rps_QuotedC_String(curcptr())
-                    << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        this->display_current_line_with_cursor(out);
-      }));
+      _f.res = get__codechunk__token(&_, curp);
       return _f.res;
-    } // end get__longlitstr__token lexing code chunk
+    } // end get__codechunk__token lexing code chunk
 
   //// sequence of at most four ASCII or UTF-8 punctuation
   else if (ispunct(*curp) || uc_is_punct(curuc))
