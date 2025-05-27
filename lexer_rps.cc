@@ -549,7 +549,38 @@ Rps_TokenSource::get__infinity__token(Rps_CallFrame*callframe, const char*curp)
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
                            Rps_Value lextokv;
+			   Rps_Value namev;
                 );
+      // get__infinity__token
+      int curlin = toksrc_line;
+      int curcol = toksrc_col;
+      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "?"
+                    << " from¤ " << *this << " infinity " << position_str());
+      bool pos = *curp == '+';
+      double infd = (pos
+                     ?std::numeric_limits<double>::infinity()
+                     : -std::numeric_limits<double>::infinity());
+      toksrc_col += 4;
+      _f.lextokv = Rps_DoubleValue(infd);
+      _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
+      _f.namev= source_name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
+         str,
+         curlin, curcol);
+      _f.res = Rps_LexTokenValue(lextok);
+      lextok->set_serial(++toksrc_counter);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__infinity__token#" << toksrc_counter
+                    << " from¤ " << *this << std::endl
+                    <<" infinity :-◑> " << _f.res << " @! " << position_str()
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+      return _f.res;
 } // end Rps_TokenSource::get__infinity__token
 
 
@@ -681,35 +712,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
             || !strncmp(curp, "-INF", 4))
            && !isalnum(curp[4]))
     {
-      // get__infinity__token
-      int curlin = toksrc_line;
-      int curcol = toksrc_col;
-      RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1) << "?"
-                    << " from¤ " << *this << " infinity " << position_str());
-      bool pos = *curp == '+';
-      double infd = (pos
-                     ?std::numeric_limits<double>::infinity()
-                     : -std::numeric_limits<double>::infinity());
-      toksrc_col += 4;
-      _f.lextokv = Rps_DoubleValue(infd);
-      _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
-      _f.namev= source_name_val(&_);
-      const Rps_String* str = _f.namev.to_string();
-      Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (this,_f.lexkindob, _f.lextokv,
-         str,
-         curlin, curcol);
-      _f.res = Rps_LexTokenValue(lextok);
-      lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
-                    << " from¤ " << *this << std::endl
-                    <<" infinity :-◑> " << _f.res << " @! " << position_str()
-                    << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        this->display_current_line_with_cursor(out);
-      }));
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token number "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this);
+      _f.res = get__infinity__token(&_, curp);
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token number "
+                    << Rps_QuotedC_String(curp)
+                    << " toksrc=" << *this << " gives " << _f.res);
       return _f.res;
     } //- end get__infinity__token lexing infinities
 
