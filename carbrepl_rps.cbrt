@@ -545,6 +545,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc << " tokv=" << _f.tokv
+		<< " of lxkind=" << _f.tokv.as_lextoken()->lxkind()
+		<< " and lxval=" << _f.tokv.as_lextoken()->lxval()
                 << " from "
                 << __FILE__ << ":" << lin);
   _f.nextokv = tksrc->lookahead_token(&_, 1);
