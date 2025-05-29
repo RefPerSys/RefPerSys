@@ -77,7 +77,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {  _Pragma("message \"token_action for INT\""); \
   /* should assign $$ for INT */ \
   RPS_FATALOUT("INT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action INT"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action INT"));      \
  }
 
 %token DOUBLE
@@ -85,7 +85,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {  _Pragma("message \"token_action for DOUBLE\""); \
   /* should assign $$ for DOUBLE */ \
   RPS_FATALOUT("DOUBLE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action DOUBLE"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action DOUBLE"));   \
  }
 
 %token STRING
@@ -93,7 +93,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action { _Pragma("message \"token_action for STRING\""); \
   /* should assign $$ for STRING */ \
   RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action STRING"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action STRING"));   \
  }
 
 %token NAME
@@ -101,7 +101,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {  _Pragma("message \"token_action for NAME\"");  \
   /* should assign $$ for NAME */ \
   RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
 
 %token OID
@@ -109,28 +109,28 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action { _Pragma("message \"token_action for OID\"");   \
   /* should assign $$ for OID */ \
   RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
 
 %token KEYW_DISPLAY
 %token_action { _Pragma("message \"token_action for KEYW_DISPLAY\"");  \
   /* should assign $$ for KEYW_DISPLAY */ \
   RPS_FATALOUT("KEYW_DISPLAY token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_DISPLAY"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_DISPLAY"));     \
  }
 
 %token KEYW_OBJECT
 %token_action { _Pragma("message \"token_action for KEYW_OBJECT\""); \
   /* should assign $$ for KEYW_OBJECT */ \
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
  }
 
 %token KEYW_PUT
 %token_action { _Pragma("message \"token_action for KEYW_PUT\"");  \
   /* should assign $$ for KEYW_PUT */ \
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
  }
  
 
@@ -138,28 +138,28 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action { _Pragma("message \"token_action for DOT\""); \
   /* should assign $$ for DOT */ \
   RPS_FATALOUT("DOT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));      \
  }
 
 %token ASSIGN
 %token_action {_Pragma("message \"token_action for ASSIGN\""); \
   /* should assign $$ for ASSIGN */ \
   RPS_FATALOUT("ASSIGN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action ASSIGN"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action ASSIGN"));   \
  }
 
 %token LEFTPAREN
 %token_action {_Pragma("message \"token_action for LEFTPAREN\""); \
   /* should assign $$ for LEFTPAREN */ \
   RPS_FATALOUT("LEFTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action LEFTPAREN"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action LEFTPAREN"));        \
  }
 
 %token RIGHTPAREN
 %token_action {_Pragma("message \"token_action for RIGHTPAREN\""); \
   /* should assign $$ for RIGHTPAREN */ \
   RPS_FATALOUT("RIGHTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action RIGHTPAREN"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action RIGHTPAREN"));       \
  }
 //
 
@@ -167,7 +167,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {_Pragma("message \"token_action for PLUS\""); \
   /* should assign $$ PLUS */ \
   RPS_FATALOUT("PLUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action PLUS"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action PLUS"));     \
  }
 //
 
@@ -175,7 +175,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {_Pragma("message \"token_action for MINUS\""); \
   /* should assign $$ MINUS */ \
   RPS_FATALOUT("MINUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action MINUS"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action MINUS"));    \
  }
 //
 
@@ -184,7 +184,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {_Pragma("message \"token_action for ASTERISK\""); \
   /* should assign $$ ASTERISK */ \
   RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action ASTERISK"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action ASTERISK")); \
  }
 //
 
@@ -192,7 +192,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {_Pragma("message \"token_action for SLASH\""); \
   /* should assign $$ SLASH */ \
   RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action SLASH"));	\
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action SLASH"));    \
  }
 //
 
@@ -513,14 +513,14 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
                  callframe,
                  Rps_ObjectRef obenv;
-		 Rps_Value tokv;
-		 Rps_Value nextokv;
+                 Rps_Value tokv;
+                 Rps_Value nextokv;
                 );
   RPS_ASSERT(tksrc);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
-		<< __FILE__ << ":" << lin
-		<< " tksrc=" << *tksrc << std::endl
+                << __FILE__ << ":" << lin
+                << " tksrc=" << *tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
@@ -529,26 +529,45 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
       << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token+"));
   RPS_POSSIBLE_BREAKPOINT();
   _f.tokv = tksrc->lookahead_token(&_, 0);
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
+                << __FILE__ << ":" << lin
+                << " tksrc=" << *tksrc
+                << " tokv=" << _f.tokv);
+  if (!_f.tokv) {
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
+                  << __FILE__ << ":" << lin
+                  << " tksrc=" << *tksrc
+                  << " got end of file from "
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token"));
+    return RPSCARBREPL_EOF;     // should that be
+                                // _RPSCARBREPL_END_OF_INPUT?
+  };
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
+                << __FILE__ << ":" << lin
+                << " tksrc=" << *tksrc << " tokv=" << _f.tokv
+                << " from "
+                << __FILE__ << ":" << lin);
   _f.nextokv = tksrc->lookahead_token(&_, 1);
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
-		<< __FILE__ << ":" << lin
-		<< " tksrc=" << *tksrc << std::endl
+                << __FILE__ << ":" << lin
+                << " tksrc=" << *tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
   })
-		<< std::endl /// REPL debugging ⌣ rps_carbrepl_next_token
-		<< "+!tokv=" << _f.tokv << " nextokv=" << _f.nextokv
-		<< " tksrc=" << *tksrc << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/b")
-		<< " currentline=" << Rps_QuotedC_String(tksrc->current_line())
-		<< " at " << tksrc->position_str());
+                << std::endl /// REPL debugging ⌣ rps_carbrepl_next_token
+                << "+!tokv=" << _f.tokv
+                << " nextokv=" << _f.nextokv
+                << " tksrc=" << *tksrc << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/b")
+                << " currentline=" << Rps_QuotedC_String(tksrc->current_line())
+                << " at " << tksrc->position_str());
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token °gdb_do_return at "
-		<< (void*)&gdb_do_return << " is "
-		<< (gdb_do_return?"SET":"CLEARED")
-		<< " gdb_returned at " << (void*)&gdb_returned
-		<< " is " << gdb_returned);
+                << (void*)&gdb_do_return << " is "
+                << (gdb_do_return?"SET":"CLEARED")
+                << " gdb_returned at " << (void*)&gdb_returned
+                << " is " << gdb_returned);
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   //// temporary trick to help debugging with GDB
   asm volatile (".global carbrepl_rps_issue; nop; carbrepl_rps_issue: nop; nop; nop");
@@ -557,25 +576,25 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   //// for GDB
   if (gdb_do_return) {
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token- tksrc=" << *tksrc
-		  << " gdb_returned=" << gdb_returned);
+                  << " gdb_returned=" << gdb_returned);
     RPS_INFORMOUT("rps_carbrepl_next_token from- lin=" << lin
-		  << " GDB returning " << gdb_returned);
+                  << " GDB returning " << gdb_returned);
     return gdb_returned;
   }
   else {
     RPS_POSSIBLE_BREAKPOINT();
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token- tksrc=" << *tksrc
-		  << " tokv=" << _f.tokv << " nextokv=" << _f.nextokv
-		  << " no gdb_do_return" << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token-gdb"));
+                  << " tokv=" << _f.tokv << " nextokv=" << _f.nextokv
+                  << " no gdb_do_return" << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token-gdb"));
   };
   ////
   RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_carbrepl_next_token
   RPS_FATALOUT("unimplemented rps_carbrepl_next_token from "
-	       << __FILE__ << ":" << lin
-	       << std::endl << "..tksrc=" << *tksrc
-	       << std::endl
+               << __FILE__ << ":" << lin
+               << std::endl << "..tksrc=" << *tksrc
+               << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
@@ -599,10 +618,10 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   RPS_ASSERT(tksrc);
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv=" << _f.obenv
-		<< " tksrc=" << *tksrc
-		<< " from thread " << rps_current_pthread_name()
-		<< RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
-		<< std::endl);
+                << " tksrc=" << *tksrc
+                << " from thread " << rps_current_pthread_name()
+                << RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
+                << std::endl);
   RPS_POSSIBLE_BREAKPOINT();
   struct rpscarbrepl_stack carbstack;
   memset ((void*)&carbstack, 0, sizeof(carbstack));
@@ -614,13 +633,13 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc obenv=" << _f.obenv
-		<< " tksrc=" << *tksrc);
+                << " tksrc=" << *tksrc);
   RPS_POSSIBLE_BREAKPOINT();
 #warning check this
   int r = rpscarbrepl_parse(&carbstack, /*sym:*/RPSCARBREPL_REPLNT_INPUT, tksrc, &_);
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc after rpscarbrepl_parse r=" << r
-		<< " obenv=" << _f.obenv
-		<< " tksrc=" << *tksrc);
+                << " obenv=" << _f.obenv
+                << " tksrc=" << *tksrc);
 #warning unimplemented rps_do_carburetta_tokensrc
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
@@ -645,16 +664,16 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   RPS_POSSIBLE_BREAKPOINT();
   Rps_StringTokenSource tokensrc(cmd, std::string(title));
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command start tokensrc=" << tokensrc
-		<< " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command start"));
+                << " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command start"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command before rps_do_carburetta_tokensrc tokensrc="
-		<< tokensrc);
+                << tokensrc);
   RPS_POSSIBLE_BREAKPOINT();
   rps_do_carburetta_tokensrc(&_, _f.obenv, &tokensrc, title);
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command end tokensrc=" << tokensrc
-		<< " obenv=" << _f.obenv << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command end"));
+                << " obenv=" << _f.obenv << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command end"));
 }  // end rps_do_carburetta_command
 
 
@@ -663,19 +682,19 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
  rps_carbrepl_do_display_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps_Value exprarg)
  {
    RPS_LOCALFRAME(RPS_ROOT_OB(_006mAbXTG4G00QR5HS), ///display∈symbol h:2127571271
-		  callerframe,
-		  Rps_ObjectRef obenv;
-		  Rps_Value exprv;
-		 );
+                  callerframe,
+                  Rps_ObjectRef obenv;
+                  Rps_Value exprv;
+                 );
    _f.obenv = obenvarg;
    _f.exprv = exprarg;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_do_display_command starting obenv="
-		<< RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
-		<< " expr=" << _f.exprv);
+                << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
+                << " expr=" << _f.exprv);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(CMD, "carburetta display obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
-		<< "display expr=" << _f.exprv
+                << "display expr=" << _f.exprv
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "carburetta command display"));
   RPS_POSSIBLE_BREAKPOINT();
@@ -691,18 +710,18 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   RPS_ASSERT(ld);
   rpskob_7LMYzEqjeDH00ZI1CO //$at_sign∈repl_delimiter h:150658742
     ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
-	     Rps_Value::make_tagged_int(RPSCARBREPL_ATSIGN));
+             Rps_Value::make_tagged_int(RPSCARBREPL_ATSIGN));
   rpskob_4YM7mv0GrSp03OkF8T //!leftparen!delim∈repl_delimiter
     ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
-	     Rps_Value::make_tagged_int(RPSCARBREPL_LEFTPAREN));
+             Rps_Value::make_tagged_int(RPSCARBREPL_LEFTPAREN));
   rpskob_7CG9m1NXpMo01edTUl //!rightparen!delim∈repl_delimiter
     ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
-	     Rps_Value::make_tagged_int(RPSCARBREPL_RIGHTPAREN));
+             Rps_Value::make_tagged_int(RPSCARBREPL_RIGHTPAREN));
 
 #warning incomplete rps_initialize_carburetta_after_load
   RPS_WARNOUT("incomplete rps_initialize_carburetta_after_load"
-	      << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_carburetta_after_load"));
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_carburetta_after_load"));
 } // end rps_initialize_carburetta_after_load
 
 
