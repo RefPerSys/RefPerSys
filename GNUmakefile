@@ -216,7 +216,8 @@ _bispprepl_rps.cc _bispprepl_rps.hh: bispprepl_rps.yyp |GNUmakefile
 
 _carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile
 	$(RPS_CARBURETTA) --c _carbrepl_rps.cc $^
-	$(ASTYLE) $(ASTYLEFLAGS)  _carbrepl_rps.cc
+# dont indent because of #line-s
+#	$(ASTYLE) $(ASTYLEFLAGS)  _carbrepl_rps.cc
 
 clean-plugins:
 	$(RM) -v plugins_dir/*.o
