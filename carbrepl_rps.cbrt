@@ -533,6 +533,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc
                 << " tokv=" << _f.tokv);
+  RPS_POSSIBLE_BREAKPOINT();
   if (!_f.tokv) {
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token from "
                   << __FILE__ << ":" << lin
@@ -621,7 +622,8 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv=" << _f.obenv
                 << " tksrc=" << *tksrc
-                << " from thread " << rps_current_pthread_name()
+		<< " title=" << Rps_QuotedC_String(title)
+                << " FROM thread " << rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
                 << std::endl);
   RPS_POSSIBLE_BREAKPOINT();
@@ -635,7 +637,8 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc obenv=" << _f.obenv
-                << " tksrc=" << *tksrc);
+                << " tksrc=" << *tksrc
+		<< " title=" << Rps_QuotedC_String(title));
   RPS_POSSIBLE_BREAKPOINT();
 #warning check this
   int r = rpscarbrepl_parse(&carbstack, /*sym:*/RPSCARBREPL_REPLNT_INPUT, tksrc, &_);

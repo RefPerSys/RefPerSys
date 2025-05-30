@@ -518,12 +518,11 @@ Rps_DequVal::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
         }
       else // siz > 0
         {
-          if (dqu_srcfil && dqu_srcfil[0] && dqu_srclin>0)
+          if (dqu_srcfil && dqu_srclin>0 && dqu_srcfil[0])
             out << "°deqval" << "ℓ" //U+2113 SCRIPT SMALL L
                 << siz
                 << "(<@" << dqu_srcfil << ":" << dqu_srclin << "⁖";
           else
-
             out << "°deqval" << "ℓ" //U+2113 SCRIPT SMALL L
                 << siz
                 << "(<";
