@@ -1597,8 +1597,17 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   _f.tok0 = intoksrc.lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
 		<< " tok0=" << _f.tok0);
+  RPS_POSSIBLE_BREAKPOINT();
   _f.tok1 = intoksrc.lookahead_token(&_, 1);
+  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
+		<< " tok1=" << _f.tok1);
   _f.tok2 = intoksrc.lookahead_token(&_, 2);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
+		<< " tok0=" << _f.tok0
+		<< " tok1=" << _f.tok1
+		<< " tok2=" << _f.tok2
+		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
   std::string commandpos = intoksrc.position_str();
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << "'"
                 << Rps_Cjson_String(cmd) << "'" << std::endl
