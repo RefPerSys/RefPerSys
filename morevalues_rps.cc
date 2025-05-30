@@ -531,7 +531,7 @@ Rps_DequVal::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
           for (const Rps_Value& curval: *this)
             {
               if (cnt > 0)
-                out << " ";
+                out << std::endl << " ";
               {
                 char cntbuf[16];
                 memset (cntbuf, 0, sizeof(cntbuf));
