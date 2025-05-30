@@ -5,6 +5,7 @@
 ### see http://refpersys.org/ and https://github.com/RefPerSys/RefPerSys
 ### © Copyright 2019 - 2025 The Reflective Persistent System Team
 add-auto-load-safe-path ./.gdbinit
+set debuginfod enabled on
 break abort
 break rps_fatal_stop_at
 break std::terminate
