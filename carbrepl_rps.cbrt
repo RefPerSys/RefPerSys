@@ -510,7 +510,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   /// used by %on_next_token above:
   bool gdb_do_return=false; // to be set from GDB
   int gdb_returned= 0;      // to be set from GDB
-  callcnt++;
+  int callnum = ++callcnt;
   RPS_POSSIBLE_BREAKPOINT();
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
                  callframe,
@@ -522,7 +522,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
                 );
   RPS_ASSERT(tksrc);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_DEBUG_LOG(REPL, "+rps_carbrepl_next_token#" << callcnt << " from "
+  RPS_DEBUG_LOG(REPL, "+rps_carbrepl_next_token#" << callnum << " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
@@ -533,13 +533,13 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
       << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token+"));
   RPS_POSSIBLE_BREAKPOINT();
   _f.tokv = tksrc->lookahead_token(&_, 0);
-  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callcnt << " from "
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc
                 << " tokv=" << _f.tokv);
   RPS_POSSIBLE_BREAKPOINT();
   if (!_f.tokv) {
-    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callcnt << " from "
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
                   << __FILE__ << ":" << lin
                   << " tksrc=" << *tksrc
                   << " got end of file from " << std::endl
@@ -549,7 +549,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   };
   _f.kindtokob = _f.tokv.as_lextoken()->lxkind();
   _f.valtokv = _f.tokv.as_lextoken()->lxval();
-  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callcnt
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
 		<< " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc << " tokv=" << _f.tokv
@@ -558,7 +558,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
                 << " from "
                 << __FILE__ << ":" << lin);
   _f.nextokv = tksrc->lookahead_token(&_, 1);
-  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callcnt << " from "
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
@@ -573,7 +573,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
                 << " currentline=" << Rps_QuotedC_String(tksrc->current_line())
                 << " at " << tksrc->position_str());
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
-  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callcnt
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
 		<< " °gdb_do_return at "
                 << (void*)&gdb_do_return << " is "
                 << (gdb_do_return?"SET":"CLEARED")
@@ -586,17 +586,17 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   //// for GDB
   if (gdb_do_return) {
-    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callcnt
-		  << "- tksrc=" << *tksrc
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
+		  << "- tksrc=" << *tksrc << " tokv=" << _f.tokv
                   << " gdb_returned=" << gdb_returned);
-    RPS_INFORMOUT("rps_carbrepl_next_token from#" << callcnt
-		  << "- lin=" << lin
+    RPS_INFORMOUT("rps_carbrepl_next_token from#" << callnum
+		  << "- lin=" << lin << " tokv=" << _f.tokv
                   << " GDB returning " << gdb_returned);
     return gdb_returned;
   }
   else {
     RPS_POSSIBLE_BREAKPOINT();
-    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callcnt
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
 		  << "- tksrc=" << *tksrc
                   << " tokv=" << _f.tokv << " nextokv=" << _f.nextokv
                   << " no gdb_do_return" << std::endl
@@ -605,7 +605,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   ////
   RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_carbrepl_next_token
-  RPS_FATALOUT("unimplemented rps_carbrepl_next_token#" << callcnt
+  RPS_FATALOUT("unimplemented rps_carbrepl_next_token#" << callnum
 	       << " from "
                << __FILE__ << ":" << lin
                << std::endl << "..tksrc=" << *tksrc
