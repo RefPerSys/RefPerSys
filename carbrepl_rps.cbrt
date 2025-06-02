@@ -205,11 +205,13 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 // When the parser (not the scanner) needs a new input terminal symbol, the specified action code snippet is executed.
 // we probably need to use Rps_TokenSource::lookahead_token
-%on_next_token {_Pragma("message \"on_next_token code\""); \
-    RPS_POSSIBLE_BREAKPOINT(); \
-    RPS_DEBUG_LOG(REPL, "on_next_token start tksrc=" << *tksrc); \
-    int ntk = rps_carbrepl_next_token(callframe, tksrc, __LINE__); \
-    RPS_DEBUG_LOG(REPL, "on_next_token tksrc=" << *tksrc << " is " << ntk); \
+%on_next_token {_Pragma("message \"on_next_token code\"");              \
+    RPS_POSSIBLE_BREAKPOINT();                                          \
+    RPS_DEBUG_LOG(REPL, "on_next_token start tksrc=" << *tksrc);        \
+    int ntk = rps_carbrepl_next_token(callframe, tksrc, __LINE__);      \
+    RPS_DEBUG_LOG(REPL, "on_next_token tksrc=" << *tksrc << " is "      \
+                  << ntk << std::endl                                   \
+                  << RPS_FULL_BACKTRACE_HERE(1, "¤on_next_token"));     \
     return ntk; }
 
 
@@ -550,7 +552,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   _f.kindtokob = _f.tokv.as_lextoken()->lxkind();
   _f.valtokv = _f.tokv.as_lextoken()->lxval();
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		<< " from "
+                << " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc << " tokv=" << _f.tokv
                 << " of kindtokob=" << _f.kindtokob
@@ -574,7 +576,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
                 << " at " << tksrc->position_str());
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		<< " °gdb_do_return at "
+                << " °gdb_do_return at "
                 << (void*)&gdb_do_return << " is "
                 << (gdb_do_return?"SET":"CLEARED")
                 << " gdb_returned at " << (void*)&gdb_returned
@@ -587,17 +589,17 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   //// for GDB
   if (gdb_do_return) {
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		  << "- tksrc=" << *tksrc << " tokv=" << _f.tokv
+                  << "- tksrc=" << *tksrc << " tokv=" << _f.tokv
                   << " gdb_returned=" << gdb_returned);
     RPS_INFORMOUT("rps_carbrepl_next_token from#" << callnum
-		  << "- lin=" << lin << " tokv=" << _f.tokv
+                  << "- lin=" << lin << " tokv=" << _f.tokv
                   << " GDB returning " << gdb_returned);
     return gdb_returned;
   }
   else {
     RPS_POSSIBLE_BREAKPOINT();
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		  << "- tksrc=" << *tksrc
+                  << "- tksrc=" << *tksrc
                   << " tokv=" << _f.tokv << " nextokv=" << _f.nextokv
                   << " no gdb_do_return" << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token-gdb"));
@@ -606,7 +608,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
   RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_carbrepl_next_token
   RPS_FATALOUT("unimplemented rps_carbrepl_next_token#" << callnum
-	       << " from "
+               << " from "
                << __FILE__ << ":" << lin
                << std::endl << "..tksrc=" << *tksrc
                << std::endl
