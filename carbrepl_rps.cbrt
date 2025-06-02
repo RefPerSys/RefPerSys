@@ -76,6 +76,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %type INT: intptr_t
 %token_action {  _Pragma("message \"token_action for INT\""); \
   /* should assign $$ for INT */ \
+  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc); \
   RPS_FATALOUT("INT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action INT"));      \
  }
@@ -83,6 +84,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token DOUBLE
 %type DOUBLE: double
 %token_action {  _Pragma("message \"token_action for DOUBLE\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc); \
   /* should assign $$ for DOUBLE */ \
   RPS_FATALOUT("DOUBLE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOUBLE"));   \
@@ -92,6 +94,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %type STRING: std::string
 %token_action { _Pragma("message \"token_action for STRING\""); \
   /* should assign $$ for STRING */ \
+  RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc); \
   RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action STRING"));   \
  }
@@ -99,6 +102,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token NAME
 %type NAME: std::string
 %token_action {  _Pragma("message \"token_action for NAME\"");  \
+  RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc); \
   /* should assign $$ for NAME */ \
   RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
@@ -108,12 +112,14 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %type OID: Rps_Id
 %token_action { _Pragma("message \"token_action for OID\"");   \
   /* should assign $$ for OID */ \
+  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc); \
   RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
 
 %token KEYW_DISPLAY
 %token_action { _Pragma("message \"token_action for KEYW_DISPLAY\"");  \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_DISPLAY tksrc=" << *tksrc); \
   /* should assign $$ for KEYW_DISPLAY */ \
   RPS_FATALOUT("KEYW_DISPLAY token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_DISPLAY"));     \
@@ -121,6 +127,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token KEYW_OBJECT
 %token_action { _Pragma("message \"token_action for KEYW_OBJECT\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_OBJECT tksrc=" << *tksrc); \
   /* should assign $$ for KEYW_OBJECT */ \
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
@@ -128,6 +135,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token KEYW_PUT
 %token_action { _Pragma("message \"token_action for KEYW_PUT\"");  \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_PUT tksrc=" << *tksrc); \
   /* should assign $$ for KEYW_PUT */ \
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
@@ -137,6 +145,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token DOT
 %token_action { _Pragma("message \"token_action for DOT\""); \
   /* should assign $$ for DOT */ \
+  RPS_DEBUG_LOG(REPL, "token_action for DOT tksrc=" << *tksrc); \
   RPS_FATALOUT("DOT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));      \
  }
@@ -144,6 +153,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token ASSIGN
 %token_action {_Pragma("message \"token_action for ASSIGN\""); \
   /* should assign $$ for ASSIGN */ \
+  RPS_DEBUG_LOG(REPL, "token_action for ASSIGN tksrc=" << *tksrc); \
   RPS_FATALOUT("ASSIGN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action ASSIGN"));   \
  }
@@ -151,12 +161,14 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token LEFTPAREN
 %token_action {_Pragma("message \"token_action for LEFTPAREN\""); \
   /* should assign $$ for LEFTPAREN */ \
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc); \
   RPS_FATALOUT("LEFTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action LEFTPAREN"));        \
  }
 
 %token RIGHTPAREN
 %token_action {_Pragma("message \"token_action for RIGHTPAREN\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc); \
   /* should assign $$ for RIGHTPAREN */ \
   RPS_FATALOUT("RIGHTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action RIGHTPAREN"));       \
@@ -166,6 +178,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token PLUS 
 %token_action {_Pragma("message \"token_action for PLUS\""); \
   /* should assign $$ PLUS */ \
+  RPS_DEBUG_LOG(REPL, "token_action for PLUS tksrc=" << *tksrc); \
   RPS_FATALOUT("PLUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action PLUS"));     \
  }
@@ -173,6 +186,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token MINUS 
 %token_action {_Pragma("message \"token_action for MINUS\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for MINUS tksrc=" << tksrc); \
   /* should assign $$ MINUS */ \
   RPS_FATALOUT("MINUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action MINUS"));    \
@@ -182,6 +196,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token ASTERISK 
 %token_action {_Pragma("message \"token_action for ASTERISK\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for ASKTE tksrc=" << *tksrc); \
   /* should assign $$ ASTERISK */ \
   RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action ASTERISK")); \
@@ -190,6 +205,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token SLASH 
 %token_action {_Pragma("message \"token_action for SLASH\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc); \
   /* should assign $$ SLASH */ \
   RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action SLASH"));    \
@@ -261,6 +277,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 replnt_input: EOF {
   _Pragma("message \"replnt_input as EOF in carbrepl_rps.cbrt\"");
   RPS_ASSERT("empty replnt_input" && tksrc != nullptr);
+  RPS_DEBUG_LOG(REPL, "replnt_input as EOF tksrc=" << *tksrc); \
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
   $$ = 0;
 }
