@@ -27,6 +27,12 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
+constexpr unsigned rps_magic_carbrepl_data = 4696140743; // 0x117e96bc7
+struct rps_carbrepl_data_st {
+  unsigned cardata_magic;	// always  rps_magic_carbrepl_data
+  Rps_ObjectRef cardata_ob1;
+};
+
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
 static void rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin);
 static void rps_carbrepl_destructor_replnt_object(Rps_ObjectRef&obr, int lin);
@@ -55,7 +61,7 @@ extern "C" struct rpscarbrepl_stack;
 /// The following is related to the the visitor facility in carburetta 0.8.25 or newer (april 2025)
 /// See https://github.com/kingletbv/carburetta/issues/4
 extern "C" void rps_carbrepl_garbage_collect_visit_stack(struct rpscarbrepl_stack*,Rps_GarbageCollector*);
-%visit_params Rps_GarbageCollector*visitgc
+%visit_params Rps_GarbageCollector*visitgc, rps_carbrepl_data_st*carbdata
 
 
 %header%
@@ -401,6 +407,7 @@ replnt_factor: MINUS replnt_factor            {
 
 replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
   _Pragma("message \"replnt_factor as LEFTPAREN replnt_factor RIGHTPAREN in carbrepl_rps.cbrt\"");
+  RPS_DEBUG_LOG(REPL, "factor is parenthesised expr " << $1);
   // $$ = $1;
   }
 
@@ -662,11 +669,15 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                 << std::endl);
   RPS_POSSIBLE_BREAKPOINT();
   struct rpscarbrepl_stack carbstack;
+  struct rps_carbrepl_data_st carbdata;
   memset ((void*)&carbstack, 0, sizeof(carbstack));
+  memset ((void*)&carbdata, 0, sizeof(carbdata));
+  carbdata.cardata_magic = rps_magic_carbrepl_data;
   rpscarbrepl_stack_init(&carbstack);
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc) {
     RPS_ASSERT(gc != nullptr);
-    rpscarbrepl_stack_visit(&carbstack, gc);
+    rpscarbrepl_stack_visit(&carbstack, gc, &carbdata);
+    gc->mark_obj(carbdata.cardata_ob1);
     });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
