@@ -364,6 +364,7 @@ replnt_expr: replnt_term                      {
 
 replnt_expr: replnt_expr PLUS replnt_term            {            
   _Pragma("message \"replnt_expr as replnt_expr PLUS replnt_term in carbrepl_rps.cbrt\"");
+  RPS_DEBUG_LOG(REPL, "expr is sum of " << $0 << " and " << $2);
   // $$ = $0 + $2;
 }
 
@@ -389,8 +390,10 @@ replnt_term: replnt_term SLASH replnt_factor         {
   
 replnt_factor: replnt_atom                   {
   _Pragma("message \"replnt_factor as replnt_atom in carbrepl_rps.cbrt\"");
-  // $$ = $0;
+  $$ = $0;
+  RPS_DEBUG_LOG(REPL, "factor is atom " << $$);
   }
+
 replnt_factor: MINUS replnt_factor            {
   _Pragma("message \"replnt_factor as MINUS replnt_factor in carbrepl_rps.cbrt\"");
   // $$ = -$1;
