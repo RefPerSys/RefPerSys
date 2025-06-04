@@ -30,6 +30,7 @@
 constexpr unsigned rps_magic_carbrepl_data = 4696140743; // 0x117e96bc7
 struct rps_carbrepl_data_st {
   unsigned cardata_magic;	// always  rps_magic_carbrepl_data
+  void* cardata_ptr;
   Rps_ObjectRef cardata_ob1;
   Rps_ObjectRef cardata_ob2;
   Rps_ObjectRef cardata_obdelim;
@@ -38,7 +39,16 @@ struct rps_carbrepl_data_st {
   Rps_Value cardata_v2;
   Rps_Value cardata_vleft;
   Rps_Value cardata_vright;
+  Rps_InstanceValue cardata_vinst;
+  inline void reset_carbdata(void);
 };
+
+void
+rps_carbrepl_data_st::reset_carbdata(void)
+{
+  RPS_ASSERT(cardata_magic == rps_magic_carbrepl_data);
+  memset((void*)&cardata_ptr, 0, sizeof(*this)-offsetof(rps_carbrepl_data_st, cardata_ptr));
+} // end rps_carbrepl_data_st::reset_carbdata
 
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
 static void rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin);
@@ -378,6 +388,7 @@ replnt_expr: replnt_term                      {
 replnt_expr: replnt_expr PLUS replnt_term            {            
   _Pragma("message \"replnt_expr as replnt_expr PLUS replnt_term in carbrepl_rps.cbrt\"");
   RPS_DEBUG_LOG(REPL, "expr is sum of " << $0 << " and " << $2);
+  RPS_ASSERT(carbdata.cardata_magic == rps_magic_carbrepl_data);
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
     id_plus_delim = Rps_Id("_4ShDsOWk7al02eDRTM");
@@ -385,11 +396,22 @@ replnt_expr: replnt_expr PLUS replnt_term            {
   if (!id_plus_binop)
     id_plus_binop = Rps_Id("_51jvc2mFhql03qwRg6");
   carbdata.cardata_obdelim =
-    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,id_plus_delim); // "plus!delim"∈repl_delimiter
+    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
+					      id_plus_delim); // "plus!delim"∈repl_delimiter
   carbdata.cardata_obop =
-    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,id_plus_binop); // "plus!binop"∈repl_binary_operator           
-  _Pragma("message \"take inspiration from parsrepl_rps.cc function ps_TokenSource::parse_sum\"");
-  // $$ = $0 + $2;
+    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
+					      id_plus_binop); // "plus!binop"∈repl_binary_operator
+  /// for the garbage collector we need to...
+  carbdata.cardata_vleft = $0;
+  carbdata.cardata_vright = $2;
+  _Pragma("message \"take inspiration from parsrepl_rps.cc function Rps_TokenSource::parse_sum\"");
+  $$ = carbdata.cardata_vinst
+    = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
+			{carbdata.cardata_obop, $0, $2});
+  RPS_DEBUG_LOG(REPL, "replnt_expr: replnt_expr PLUS replnt_term result is " << $$
+		<< " left:" << $0 << " right:" << $2);
+  //FIXME:carbdata.cardata_vinst->put_pesistent_metadata(<some-object>,<some-integer>);
+  carbdata.reset_carbdata();
 }
 
 replnt_expr: replnt_expr MINUS replnt_term           {
@@ -703,6 +725,7 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
     gc->mark_value(carbdata.cardata_v2);
     gc->mark_value(carbdata.cardata_vleft);
     gc->mark_value(carbdata.cardata_vright);
+    gc->mark_value(carbdata.cardata_vinst);
     });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_POSSIBLE_BREAKPOINT();
