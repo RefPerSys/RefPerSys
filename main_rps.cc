@@ -94,6 +94,12 @@ rps_incremented_debug_counter(void)
   return 1+rps_debug_atomic_counter.fetch_add(1);
 } // end rps_incremented_debug_counter
 
+long
+rps_debug_counter(void)
+{
+  return rps_debug_atomic_counter.load();
+} // end rps_debug_counter
+
 static void rps_kill_wait_gui_process(void);
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
