@@ -40,14 +40,17 @@ struct rps_carbrepl_data_st {
   Rps_Value cardata_vleft;
   Rps_Value cardata_vright;
   Rps_InstanceValue cardata_vinst;
-  inline void reset_carbdata(void);
+  inline void reset_carbdata(int li=__builtin_LINE());
 };
 
 void
-rps_carbrepl_data_st::reset_carbdata(void)
+rps_carbrepl_data_st::reset_carbdata(int lin)
 {
   RPS_ASSERT(cardata_magic == rps_magic_carbrepl_data);
-  memset((void*)&cardata_ptr, 0, sizeof(*this)-offsetof(rps_carbrepl_data_st, cardata_ptr));
+  memset((void*)&cardata_ptr, 0,
+	 sizeof(*this)-offsetof(rps_carbrepl_data_st, cardata_ptr));
+  RPS_ASSERT(cardata_magic == rps_magic_carbrepl_data);
+  RPS_DEBUG_LOG(REPL, "resetting carbrepl_data@" << (void*)this << " line#" << lin);
 } // end rps_carbrepl_data_st::reset_carbdata
 
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
