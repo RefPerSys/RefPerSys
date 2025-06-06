@@ -1855,10 +1855,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
           else
             outl << ' ' << Rps_SingleQuotedC_String(curarg);
         }
-      outl << std::endl << "DGBMl#" << rps_debug_counter()
+      outl << std::endl << "DGBCNT#" << rps_debug_counter() << "(a)"
 	   << std::flush;
       syslog(LOG_EMERG, "RefPerSys fatal from %s", outl.str().c_str());
-    }
+    } // end if syslog enabled
   else
     {
       auto backt= Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},
@@ -1871,7 +1871,9 @@ rps_fatal_stop_at (const char *filnam, int lin)
       std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp;
       if (!rps_run_name.empty())
         std::clog << " run " << rps_run_name;
-      std::clog << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
+      std::clog << std::endl
+		<< "… was started on " << rps_hostname()
+		<< " pid " << (int)getpid() << " as:" << std::endl;
       for (int aix=0; aix<rps_argc; aix++)
         {
           const char*curarg = rps_argv[aix];
@@ -1885,11 +1887,11 @@ rps_fatal_stop_at (const char *filnam, int lin)
             std::clog << ' ' << curarg;
           else
             std::clog << ' ' << Rps_SingleQuotedC_String(curarg);
-	  std::clog << std::endl << "DGBMc#" << rps_debug_counter() 
-	   << std::flush;
         }
+      std::clog << std::endl << "DGBCNT#" << rps_debug_counter() << "(b)"
+		<< std::flush;
       std::clog << std::endl << std::flush;
-    }
+    } // end if syslog disabled
   fflush(nullptr);
   rps_schedule_files_postponed_removal();
   abort();
