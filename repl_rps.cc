@@ -1579,6 +1579,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl << title << " cmd='" << Rps_Cjson_String(cmd) << "'"
+		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command")
 		<< std::endl << " in thread "
 		<< rps_current_pthread_name());
