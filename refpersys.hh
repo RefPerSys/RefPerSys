@@ -643,6 +643,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 
 extern "C" long rps_incremented_debug_counter(void);
+extern "C" long rps_debug_counter(void);
 
 extern "C" void rps_debug_warn_at(const char*file, int line);
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {                   \
