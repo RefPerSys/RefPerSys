@@ -1855,7 +1855,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
           else
             outl << ' ' << Rps_SingleQuotedC_String(curarg);
         }
-      outl << std::endl << std::flush;
+      outl << std::endl << "DGBMl#" << rps_debug_counter()
+	   << std::flush;
       syslog(LOG_EMERG, "RefPerSys fatal from %s", outl.str().c_str());
     }
   else
@@ -1884,6 +1885,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
             std::clog << ' ' << curarg;
           else
             std::clog << ' ' << Rps_SingleQuotedC_String(curarg);
+	  std::clog << std::endl << "DGBMc#" << rps_debug_counter() 
+	   << std::flush;
         }
       std::clog << std::endl << std::flush;
     }
