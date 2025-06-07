@@ -258,12 +258,12 @@ extern "C" const char rps_carbrepl_shortgitid[];
 // we probably need to use Rps_TokenSource::lookahead_token
 %on_next_token {_Pragma("message \"on_next_token code\"");              \
     RPS_POSSIBLE_BREAKPOINT();                                          \
-    static_assert(&sym != nullptr);					\
-    RPS_DEBUG_LOG(REPL, "°on_next_token start tksrc=" << *tksrc         \
+    RPS_DEBUG_LOG(REPL, "°+on_next_token start tksrc=" << *tksrc        \
 		  << " sym:" << sym << std::endl                        \
                   << RPS_FULL_BACKTRACE_HERE(1, "¤+on_next_token"));    \
+    RPS_POSSIBLE_BREAKPOINT();                                          \
     int ntk = rps_carbrepl_next_token(callframe, tksrc, __LINE__);      \
-    RPS_DEBUG_LOG(REPL, "°on_next_token tksrc=" << *tksrc << " is "     \
+    RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
                   << ntk << std::endl                                   \
                   << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
     return ntk; }
