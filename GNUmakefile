@@ -215,6 +215,8 @@ _bispprepl_rps.cc _bispprepl_rps.hh: bispprepl_rps.yyp |GNUmakefile
 
 
 _carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
 	$(RPS_CARBURETTA) --c _carbrepl_rps.cc --sym-names $^
 # dont indent because of #line-s
 #	$(ASTYLE) $(ASTYLEFLAGS)  _carbrepl_rps.cc
