@@ -74,6 +74,8 @@ static void rps_carbrepl_destructor_replnt_term(Rps_Value&val, int lin);
 
 static void rps_carbrepl_constructor_replnt_value(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin);
+struct rps_carbrepl_data_st;
+
 
 /// this is used by %on_next_token
 /***
@@ -84,8 +86,8 @@ If the directive is not specified, the default behavior is to return <prefix>FEE
 A valid use-case for %on_next_token is to feed the parser with a new symbol by storing its ordinal value in sym without returning to the caller
 ****/
 
-extern "C" int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int& sym, void*ad, int lin);
-int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int& sym, void*ad, int lin);
+extern "C" int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int& sym, struct rps_carbrepl_data_st&carbdata, int lin);
+int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int& sym, struct rps_carbrepl_data_st&carbdata, int lin);
 
 extern "C" struct rpscarbrepl_stack;
 
@@ -279,14 +281,14 @@ extern "C" const char rps_carbrepl_shortgitid[];
     RPS_POSSIBLE_BREAKPOINT();                                          \
     RPS_DEBUG_LOG(REPL, "°+on_next_token start tksrc=" << *tksrc        \
                   << " sym:" << sym                                     \
-		  << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)		\
-                  << std::endl						\
+                  << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)               \
+                  << std::endl                                          \
                   << RPS_FULL_BACKTRACE_HERE(1, "¤+on_next_token"));    \
     RPS_POSSIBLE_BREAKPOINT();                                          \
     _Pragma("message \"FIXME the value of next token\"");               \
     int ntk = rps_carbrepl_next_token(callframe, tksrc, sym,            \
-				      nullptr /*temporarily wrong*/,    \
-				      __LINE__);			\
+                                      carbdata,                         \
+                                      __LINE__);                        \
     RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
                   << ntk << std::endl                                   \
                   << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
@@ -614,7 +616,7 @@ rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin)
 
 int
 rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
-			int& sym, void*ad, int lin)
+                        int& sym, struct rps_carbrepl_data_st&carbdata, int lin)
 {
   static thread_local int callcnt;
   /// used by %on_next_token above:
@@ -691,7 +693,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
       gdb_do_return = true;
       gdb_returned = RPSCARBREPL_INT;
       RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		    << " gives INT " << _f.valtokv);
+                    << " gives INT " << _f.valtokv);
       _Pragma("message \"rps_carbrepl_next_token should transmit value of INT\"");
     }
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
@@ -883,14 +885,14 @@ rps_carbrepl_symname_at(int symnum, int lin) {
   RPS_POSSIBLE_BREAKPOINT();
   if (symnum>0 && symnum<rpscarbrepl_symbol_names_length_) {
     RPS_DEBUG_LOG(REPL, "°carbrepl_symname symnum#" << symnum
-		  << " lin:" << lin
-		  << " is "
-		  << rpscarbrepl_symbol_names_[symnum]);
+                  << " lin:" << lin
+                  << " is "
+                  << rpscarbrepl_symbol_names_[symnum]);
     return rpscarbrepl_symbol_names_[symnum];
   }
   else {
     RPS_DEBUG_LOG(REPL, "°carbrepl_symname bad symnum#" << symnum
-		  << " lin:" << lin);
+                  << " lin:" << lin);
     RPS_POSSIBLE_BREAKPOINT();
     return nullptr;
   }
