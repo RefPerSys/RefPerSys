@@ -31,7 +31,7 @@ constexpr unsigned rps_magic_carbrepl_data = 696140743; // 0x297e43c7
 struct rps_carbrepl_data_st {
   unsigned cardata_magic;       // always  rps_magic_carbrepl_data
   intptr_t cardata_i;
-  double cardata_f;
+  double cardata_d;
   std::string cardata_str;
   void* cardata_ptr;
   Rps_ObjectRef cardata_ob1;
@@ -51,7 +51,7 @@ rps_carbrepl_data_st::reset_carbdata(int lin)
 {
   RPS_ASSERT(cardata_magic == rps_magic_carbrepl_data);
   cardata_i = 0;
-  cardata_f = 0.0;
+  cardata_d = 0.0;
   cardata_str.erase();
   memset((void*)&cardata_ptr, 0,
          sizeof(*this)-offsetof(rps_carbrepl_data_st, cardata_ptr));
@@ -100,2345 +100,341 @@ extern "C" struct rpscarbrepl_stack;
 /// The following is related to the the visitor facility in carburetta 0.8.25 or newer (april 2025)
 /// See https://github.com/kingletbv/carburetta/issues/4
 extern "C" void rps_carbrepl_garbage_collect_visit_stack(struct rpscarbrepl_stack*,Rps_GarbageCollector*);
+%visit_params Rps_GarbageCollector*visitgc, rps_carbrepl_data_st*carbdata
 
 
+%header%
+#pragma message "header part of carbrepl_rps.cbrt"
+extern "C" const char rps_carbrepl_gitid[];
+extern "C" const char rps_carbrepl_date[];
+extern "C" const char rps_carbrepl_shortgitid[];
+%%
 
+%prefix rpscarbrepl_
 //forbidden %token_action here since it must follow %token_type, %type, %class, %common_type or %common_class directive
+%end_token EOF
 
+%token ATSIGN
  //ATSIGN being untyped cannot have a token_action
 
-
-
-
-
-
-
-
-
- 
-
-
-
-
-//
-
-//
-
-//
-
-
-//
-
-//
-
-/* --------- START OF GENERATED CODE ------------ */
-#if defined(__clang__)
-#elif defined(__GNUC__) && defined(__cplusplus)
-/* don't warn on realloc, memcpy, memset on C++ classes */
-#pragma GCC diagnostic ignored "-Wclass-memaccess"
-#endif
-#include <stdlib.h> /* realloc(), free(), NULL, size_t */
-#include <string.h> /* memcpy() */
-#include <stddef.h> /* size_t */
-#include <stdint.h> /* SIZE_MAX */
-struct rpscarbrepl_sym_data {
-  #ifdef __cplusplus
-  // clear destructor in case C++ symbol types have non-trivial destructors
-  // (we invoke their destructors explicitly)
-  ~rpscarbrepl_sym_data() = delete;
-  #endif
-  int state_;
-  union {
-    intptr_t uv0_;
-    double uv1_;
-    std::string uv2_;
-    std::string uv3_;
-    Rps_Id uv4_;
-    Rps_ObjectRef uv5_;
-    Rps_Value uv6_;
-    Rps_Value uv7_;
-    Rps_Value uv8_;
-    Rps_Value uv9_;
-    Rps_Value uv10_;
-    int uv11_;
-    int uv12_;
-  } v_;
-};
-static const int rpscarbrepl_minimum_sym = 3;
-static const size_t rpscarbrepl_num_columns = 28;
-static const int rpscarbrepl_parse_table[] = {
-   37, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0, 38,  3, 1, 4, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0,  0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0,  0, -3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0,  0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-   37, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0, 38,  3, 2, 4, 0, 0, 0, 0, 0, 0, 0,
-   -4, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  9, 11,  0,  0, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,26,27,28,34,35, 0,15, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29, 5,20,21, 0, 0,
-   -5, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  9, 11,  0,  0, -5, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -15, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-15,-15,-15, 17, 19,-15,-15, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,26,27,28,34,35, 0, 0, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29, 0, 8,21, 0, 0,
-  -16, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-16,-16,-16, 17, 19,-16,-16, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,26,27,28,34,35, 0, 0, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29, 0,10,21, 0, 0,
-  -22, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-22,-22,-22,-22,-22,-22,-22, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0, 12,  9, 11,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -13, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-13,-13,-13,  0,  0,-13,-13, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0,34,35, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0,14, 0, 0, 0, 0, 0,
-  -18, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-18,-18,-18,-18,-18,-18,-18, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,26,27,28,34,35, 0, 0, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29, 0, 0,16, 0, 0,
-  -19, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-19,-19,-19,-19,-19,-19,-19, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,26,27,28,34,35, 0, 0, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29, 0, 0,18, 0, 0,
-  -14, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-14,-14,-14, 17, 19,-14,-14, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -17, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-17,-17,-17,-17,-17,-17,-17, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -21, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-21,-21,-21,-21,-21,-21,-21, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -20, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-20,-20,-20,-20,-20,-20,-20, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,26,27,28,34,35, 0, 0, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29, 0, 0,22, 0, 0,
-    0,26,27,28,34,35, 0,15, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29,13,20,21, 0, 0,
-   -7, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0, -7, -7, -7, -7, -7, -7, -7, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-   -8, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0, -8, -8, -8, -8, -8, -8, -8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-   -9, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0, -9, -9, -9, -9, -9, -9, -9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -10, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,-10,-10,-10,-10,-10,-10,-10, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,26,27,28,34,35, 0,15, 0,  0,  0,25,  0,  0, 24,  0,  0,  0,  0, 0, 0,23,29, 7,20,21, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 30, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0,34,35, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0,31, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 32,  0, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -11, 0, 0, 0, 0, 0, 0, 0, 0,-11,-11, 0,-11,-11,-11,-11,-11,-11,-11, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  -12, 0, 0, 0, 0, 0, 0, 0, 0,-12,-12, 0,-12,-12,-12,-12,-12,-12,-12, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0,34,35, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0,33, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 6, 0,36,  0,  0, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-   -6, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0,  0,  0,  0,  0,  0, -6, -6, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-static const size_t rpscarbrepl_production_lengths[] = {
-  1,
-  1,
-  2,
-  3,
-  7,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  2,
-  1,
-  3,
-  3,
-  1,
-  3,
-  3,
-  1,
-  2,
-  3
-};
-static const int rpscarbrepl_production_syms[] = {
-  30,
-  22,
-  22,
-  23,
-  23,
-  23,
-  24,
-  24,
-  24,
-  24,
-  25,
-  25,
-  26,
-  26,
-  26,
-  26,
-  27,
-  27,
-  27,
-  28,
-  28,
-  28
-};
-struct rpscarbrepl_stack {
-  int error_recovery_:1;
-  int pending_reset_:1;
-  int discard_remaining_actions_:1;
-  int slot_1_has_sym_data_:1;
-  int slot_1_has_common_data_:1;
-  int top_of_stack_has_sym_data_:1;
-  int top_of_stack_has_common_data_:1;
-  int newbuf_pos_has_common_data_:1;
-  int newbuf_pos_has_sym_data_:1;
-  int stack_newbuf_pos_has_common_data_:1;
-  int stack_newbuf_pos_has_sym_data_:1;
-  int action_preservation_;
-  int current_err_action_;
-  int slot_1_sym_;
-  int continue_at_;
-  int mute_error_turns_;
-  size_t pos_, num_stack_allocated_;
-  struct rpscarbrepl_sym_data *stack_;
-  struct rpscarbrepl_sym_data *sym_data_;
-  struct rpscarbrepl_sym_data *new_buf_;
-  size_t new_buf_num_allocated_;
-  size_t new_buf_sym_partial_pos_;
-  size_t current_production_length_;
-  int current_production_nonterminal_;
-  size_t sym_idx_;
-};
-#define _RPSCARBREPL_FINISH 0
-#define _RPSCARBREPL_MATCH 1
-#define _RPSCARBREPL_OVERFLOW 2
-#define _RPSCARBREPL_NO_MEMORY 3
-#define _RPSCARBREPL_FEED_ME 4
-#define _RPSCARBREPL_END_OF_INPUT 5
-#define _RPSCARBREPL_SYNTAX_ERROR 6
-#define _RPSCARBREPL_LEXICAL_ERROR 7
-#define _RPSCARBREPL_INTERNAL_ERROR 8
-
-#define RPSCARBREPL_EOF 21
-#define RPSCARBREPL_ATSIGN 3
-#define RPSCARBREPL_INT 4
-#define RPSCARBREPL_DOUBLE 5
-#define RPSCARBREPL_STRING 6
-#define RPSCARBREPL_NAME 7
-#define RPSCARBREPL_OID 8
-#define RPSCARBREPL_KEYW_DISPLAY 9
-#define RPSCARBREPL_KEYW_OBJECT 10
-#define RPSCARBREPL_KEYW_PUT 11
-#define RPSCARBREPL_DOT 12
-#define RPSCARBREPL_ASSIGN 13
-#define RPSCARBREPL_LEFTPAREN 14
-#define RPSCARBREPL_RIGHTPAREN 15
-#define RPSCARBREPL_PLUS 16
-#define RPSCARBREPL_MINUS 17
-#define RPSCARBREPL_ASTERISK 18
-#define RPSCARBREPL_SLASH 19
-#define RPSCARBREPL_ERROR 20
-
-#define RPSCARBREPL_REPLNT_INPUT 22
-#define RPSCARBREPL_REPLNT_COMMAND 23
-#define RPSCARBREPL_REPLNT_ATOM 24
-#define RPSCARBREPL_REPLNT_OBJECT 25
-#define RPSCARBREPL_REPLNT_EXPR 26
-#define RPSCARBREPL_REPLNT_TERM 27
-#define RPSCARBREPL_REPLNT_FACTOR 28
-#define RPSCARBREPL_REPLNT_VALUE 29
-
-
-const int rpscarbrepl_symbol_names_length_ = 30;
-const char * const rpscarbrepl_symbol_names_[] = {
-  NULL,
-  NULL,
-  NULL,
-  "ATSIGN",
-  "INT",
-  "DOUBLE",
-  "STRING",
-  "NAME",
-  "OID",
-  "KEYW_DISPLAY",
-  "KEYW_OBJECT",
-  "KEYW_PUT",
-  "DOT",
-  "ASSIGN",
-  "LEFTPAREN",
-  "RIGHTPAREN",
-  "PLUS",
-  "MINUS",
-  "ASTERISK",
-  "SLASH",
-  "error",
-  "EOF",
-  "replnt_input",
-  "replnt_command",
-  "replnt_atom",
-  "replnt_object",
-  "replnt_expr",
-  "replnt_term",
-  "replnt_factor",
-  "replnt_value"
-};
-
-void rpscarbrepl_stack_init(struct rpscarbrepl_stack *stack) {
-  stack->error_recovery_ = 0;
-  stack->pending_reset_ = 1;
-  stack->discard_remaining_actions_ = 0;
-  stack->slot_1_has_sym_data_ = stack->slot_1_has_common_data_ = 0;
-  stack->slot_1_sym_ = 0;
-  stack->top_of_stack_has_sym_data_ = stack->top_of_stack_has_common_data_ = 0;
-  stack->newbuf_pos_has_common_data_ = stack->newbuf_pos_has_sym_data_ = 0;
-  stack->stack_newbuf_pos_has_common_data_ = stack->stack_newbuf_pos_has_sym_data_ = 0;
-  stack->continue_at_ = 0;
-  stack->mute_error_turns_ = 0;
-  stack->pos_ = 0;
-  stack->num_stack_allocated_ = 0;
-  stack->stack_ = NULL;
-  stack->sym_data_ = NULL;
-  stack->new_buf_ = NULL;
-  stack->new_buf_num_allocated_ = 0;
-  stack->new_buf_sym_partial_pos_ = 0;
-  stack->current_production_length_ = 0;
-  stack->current_production_nonterminal_ = 0;
-  stack->sym_idx_ = 0;
-}
-
-void rpscarbrepl_stack_cleanup(struct rpscarbrepl_stack *stack) {
-  size_t n;
-  if (!stack->new_buf_) n = 0;
-  else {
-    n = stack->new_buf_sym_partial_pos_;
-  }
-  for (; n < stack->pos_; ++n) {
-    int need_state_deconstruct = 0;
-    if ((n == 0) || (n == 1)) {
-      int need_sym_deconstruct = 0;
-      int sym_to_deconstruct;
-      need_state_deconstruct = 0;
-      if (n == 0) {
-        /* slot 0 goes unused in scannerless operation */
-        need_sym_deconstruct = 0;
-      }
-      else if (n == 1) {
-        sym_to_deconstruct = stack->slot_1_sym_;
-        need_sym_deconstruct = stack->slot_1_has_sym_data_;
-      }
-      if (stack->new_buf_ && (n == stack->new_buf_sym_partial_pos_)) {
-        need_sym_deconstruct = need_sym_deconstruct && stack->stack_newbuf_pos_has_sym_data_;
-      }
-      if (need_sym_deconstruct) {
-        switch (sym_to_deconstruct) {
-          case RPSCARBREPL_INT:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_DOUBLE:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_STRING:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_NAME:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_OID:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_OBJECT:
-          {
-            {
-#line 301 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_object(((stack->stack_ + n)->v_.uv5_),__LINE__);
-#line 432 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_ATOM:
-          {
-            {
-#line 306 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_atom(((stack->stack_ + n)->v_.uv6_),__LINE__);
-#line 442 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_EXPR:
-          {
-            {
-#line 312 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_expr(((stack->stack_ + n)->v_.uv7_),__LINE__);
-#line 452 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_TERM:
-          {
-            {
-#line 319 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_term(((stack->stack_ + n)->v_.uv8_),__LINE__);
-#line 462 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_FACTOR:
-          {
-            {
-#line 326 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_factor(((stack->stack_ + n)->v_.uv9_),__LINE__);
-#line 472 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_VALUE:
-          {
-            {
-#line 332 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_value(((stack->stack_ + n)->v_.uv10_),__LINE__);
-#line 482 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_INPUT:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_COMMAND:
-          {
-            
-          }
-          break;
-        }
-      }
-    }
-    else if (n == (stack->pos_ - 1)) {
-      need_state_deconstruct = stack->top_of_stack_has_sym_data_;
-      if (n == stack->new_buf_sym_partial_pos_) {
-        need_state_deconstruct = need_state_deconstruct && stack->stack_newbuf_pos_has_sym_data_;
-      }
-    }
-    else if (stack->new_buf_ && (n == stack->new_buf_sym_partial_pos_)) {
-      need_state_deconstruct = stack->stack_newbuf_pos_has_sym_data_;
-    }
-    else {
-      need_state_deconstruct = 1;
-    }
-    if (need_state_deconstruct) {
-      switch (stack->stack_[n].state_) {
-        case 14: /* replnt_object */
-        case 29: /* replnt_object */
-        case 31: /* replnt_object */
-        case 33: /* replnt_object */
-        {
-          {
-#line 301 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_object(((stack->stack_ + n)->v_.uv5_),__LINE__);
-#line 522 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 23: /* replnt_atom */
-        {
-          {
-#line 306 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_atom(((stack->stack_ + n)->v_.uv6_),__LINE__);
-#line 532 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 5: /* replnt_expr */
-        case 7: /* replnt_expr */
-        case 13: /* replnt_expr */
-        {
-          {
-#line 312 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_expr(((stack->stack_ + n)->v_.uv7_),__LINE__);
-#line 544 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 8: /* replnt_term */
-        case 10: /* replnt_term */
-        case 20: /* replnt_term */
-        {
-          {
-#line 319 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_term(((stack->stack_ + n)->v_.uv8_),__LINE__);
-#line 556 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 16: /* replnt_factor */
-        case 18: /* replnt_factor */
-        case 21: /* replnt_factor */
-        case 22: /* replnt_factor */
-        {
-          {
-#line 326 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_factor(((stack->stack_ + n)->v_.uv9_),__LINE__);
-#line 569 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-      } /* switch */
-    }
-  }
-  if (stack->new_buf_) {
-    /* same deconstructors as above, but now for stack->new_buf_ -- stack->new_buf_ only
-    * exists for a brief period time when we resize stack->stack_, however, because
-    * constructors and moves are allowed to throw, or otherwise return and fail, it is
-    * required that we deconstruct the stack->new_buf_ elements cleanly. */
-    for (n = 0; n <= stack->new_buf_sym_partial_pos_; ++n) {
-      int need_state_deconstruct = 0;
-      if ((n == 0) || (n == 1)) {
-        int need_sym_deconstruct = 0;
-        int sym_to_deconstruct;
-        need_state_deconstruct = 0;
-        if (n == 0) {
-          /* slot 0 goes unused in scannerless operation */
-          need_sym_deconstruct = 0;
-        }
-        else if (n == 1) {
-          sym_to_deconstruct = stack->slot_1_sym_;
-          need_sym_deconstruct = stack->slot_1_has_sym_data_;
-        }
-        if (n == stack->new_buf_sym_partial_pos_) {
-          need_sym_deconstruct = need_sym_deconstruct && stack->newbuf_pos_has_sym_data_;
-        }
-        if (need_sym_deconstruct) {
-          switch (sym_to_deconstruct) {
-            case RPSCARBREPL_INT:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_DOUBLE:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_STRING:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_NAME:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_OID:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_OBJECT:
-            {
-              {
-#line 301 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_object(((stack->new_buf_ + n)->v_.uv5_),__LINE__);
-#line 631 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_ATOM:
-            {
-              {
-#line 306 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_atom(((stack->new_buf_ + n)->v_.uv6_),__LINE__);
-#line 641 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_EXPR:
-            {
-              {
-#line 312 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_expr(((stack->new_buf_ + n)->v_.uv7_),__LINE__);
-#line 651 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_TERM:
-            {
-              {
-#line 319 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_term(((stack->new_buf_ + n)->v_.uv8_),__LINE__);
-#line 661 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_FACTOR:
-            {
-              {
-#line 326 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_factor(((stack->new_buf_ + n)->v_.uv9_),__LINE__);
-#line 671 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_VALUE:
-            {
-              {
-#line 332 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_value(((stack->new_buf_ + n)->v_.uv10_),__LINE__);
-#line 681 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_INPUT:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_COMMAND:
-            {
-              
-            }
-            break;
-          }
-        }
-      }
-      else if (n == (stack->pos_ - 1)) {
-        need_state_deconstruct = stack->top_of_stack_has_sym_data_;
-        if (n == stack->new_buf_sym_partial_pos_) {
-          need_state_deconstruct = need_state_deconstruct && stack->newbuf_pos_has_sym_data_;
-        }
-      }
-      else if (n == stack->new_buf_sym_partial_pos_) {
-        need_state_deconstruct = stack->newbuf_pos_has_sym_data_;
-      }
-      else {
-        need_state_deconstruct = 1;
-      }
-      if (need_state_deconstruct) {
-        switch (stack->stack_[n].state_) {
-          case 14: /* replnt_object */
-          case 29: /* replnt_object */
-          case 31: /* replnt_object */
-          case 33: /* replnt_object */
-          {
-            {
-#line 301 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_object(((stack->new_buf_ + n)->v_.uv5_),__LINE__);
-#line 721 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 23: /* replnt_atom */
-          {
-            {
-#line 306 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_atom(((stack->new_buf_ + n)->v_.uv6_),__LINE__);
-#line 731 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 5: /* replnt_expr */
-          case 7: /* replnt_expr */
-          case 13: /* replnt_expr */
-          {
-            {
-#line 312 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_expr(((stack->new_buf_ + n)->v_.uv7_),__LINE__);
-#line 743 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 8: /* replnt_term */
-          case 10: /* replnt_term */
-          case 20: /* replnt_term */
-          {
-            {
-#line 319 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_term(((stack->new_buf_ + n)->v_.uv8_),__LINE__);
-#line 755 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 16: /* replnt_factor */
-          case 18: /* replnt_factor */
-          case 21: /* replnt_factor */
-          case 22: /* replnt_factor */
-          {
-            {
-#line 326 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_factor(((stack->new_buf_ + n)->v_.uv9_),__LINE__);
-#line 768 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-        } /* switch */
-      }
-    }
-    free(stack->new_buf_);
-    stack->new_buf_ = NULL;
-  }
-  if (stack->stack_) free(stack->stack_);
-}
-
-int rpscarbrepl_stack_reset(struct rpscarbrepl_stack *stack) {
-  stack->pending_reset_ = 0;
-  stack->discard_remaining_actions_ = 0;
-  size_t n;
-  if (!stack->new_buf_) n = 0;
-  else {
-    n = stack->new_buf_sym_partial_pos_;
-  }
-  for (; n < stack->pos_; ++n) {
-    int need_state_deconstruct = 0;
-    if ((n == 0) || (n == 1)) {
-      int need_sym_deconstruct = 0;
-      int sym_to_deconstruct;
-      need_state_deconstruct = 0;
-      if (n == 0) {
-        /* slot 0 goes unused in scannerless operation */
-        need_sym_deconstruct = 0;
-      }
-      else if (n == 1) {
-        sym_to_deconstruct = stack->slot_1_sym_;
-        need_sym_deconstruct = stack->slot_1_has_sym_data_;
-      }
-      if (stack->new_buf_ && (n == stack->new_buf_sym_partial_pos_)) {
-        need_sym_deconstruct = need_sym_deconstruct && stack->stack_newbuf_pos_has_sym_data_;
-      }
-      if (need_sym_deconstruct) {
-        switch (sym_to_deconstruct) {
-          case RPSCARBREPL_INT:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_DOUBLE:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_STRING:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_NAME:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_OID:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_OBJECT:
-          {
-            {
-#line 301 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_object(((stack->stack_ + n)->v_.uv5_),__LINE__);
-#line 839 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_ATOM:
-          {
-            {
-#line 306 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_atom(((stack->stack_ + n)->v_.uv6_),__LINE__);
-#line 849 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_EXPR:
-          {
-            {
-#line 312 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_expr(((stack->stack_ + n)->v_.uv7_),__LINE__);
-#line 859 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_TERM:
-          {
-            {
-#line 319 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_term(((stack->stack_ + n)->v_.uv8_),__LINE__);
-#line 869 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_FACTOR:
-          {
-            {
-#line 326 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_factor(((stack->stack_ + n)->v_.uv9_),__LINE__);
-#line 879 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_VALUE:
-          {
-            {
-#line 332 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_value(((stack->stack_ + n)->v_.uv10_),__LINE__);
-#line 889 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_INPUT:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_COMMAND:
-          {
-            
-          }
-          break;
-        }
-      }
-    }
-    else if (n == (stack->pos_ - 1)) {
-      need_state_deconstruct = stack->top_of_stack_has_sym_data_;
-      if (n == stack->new_buf_sym_partial_pos_) {
-        need_state_deconstruct = need_state_deconstruct && stack->stack_newbuf_pos_has_sym_data_;
-      }
-    }
-    else if (stack->new_buf_ && (n == stack->new_buf_sym_partial_pos_)) {
-      need_state_deconstruct = stack->stack_newbuf_pos_has_sym_data_;
-    }
-    else {
-      need_state_deconstruct = 1;
-    }
-    if (need_state_deconstruct) {
-      switch (stack->stack_[n].state_) {
-        case 14: /* replnt_object */
-        case 29: /* replnt_object */
-        case 31: /* replnt_object */
-        case 33: /* replnt_object */
-        {
-          {
-#line 301 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_object(((stack->stack_ + n)->v_.uv5_),__LINE__);
-#line 929 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 23: /* replnt_atom */
-        {
-          {
-#line 306 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_atom(((stack->stack_ + n)->v_.uv6_),__LINE__);
-#line 939 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 5: /* replnt_expr */
-        case 7: /* replnt_expr */
-        case 13: /* replnt_expr */
-        {
-          {
-#line 312 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_expr(((stack->stack_ + n)->v_.uv7_),__LINE__);
-#line 951 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 8: /* replnt_term */
-        case 10: /* replnt_term */
-        case 20: /* replnt_term */
-        {
-          {
-#line 319 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_term(((stack->stack_ + n)->v_.uv8_),__LINE__);
-#line 963 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 16: /* replnt_factor */
-        case 18: /* replnt_factor */
-        case 21: /* replnt_factor */
-        case 22: /* replnt_factor */
-        {
-          {
-#line 326 "carbrepl_rps.cbrt"
-            rps_carbrepl_destructor_replnt_factor(((stack->stack_ + n)->v_.uv9_),__LINE__);
-#line 976 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-      } /* switch */
-    }
-  }
-  if (stack->new_buf_) {
-    /* same deconstructors as above, but now for stack->new_buf_ -- stack->new_buf_ only
-    * exists for a brief period time when we resize stack->stack_, however, because
-    * constructors and moves are allowed to throw, or otherwise return and fail, it is
-    * required that we deconstruct the stack->new_buf_ elements cleanly. */
-    for (n = 0; n <= stack->new_buf_sym_partial_pos_; ++n) {
-      int need_state_deconstruct = 0;
-      if ((n == 0) || (n == 1)) {
-        int need_sym_deconstruct = 0;
-        int sym_to_deconstruct;
-        need_state_deconstruct = 0;
-        if (n == 0) {
-          /* slot 0 goes unused in scannerless operation */
-          need_sym_deconstruct = 0;
-        }
-        else if (n == 1) {
-          sym_to_deconstruct = stack->slot_1_sym_;
-          need_sym_deconstruct = stack->slot_1_has_sym_data_;
-        }
-        if (n == stack->new_buf_sym_partial_pos_) {
-          need_sym_deconstruct = need_sym_deconstruct && stack->newbuf_pos_has_sym_data_;
-        }
-        if (need_sym_deconstruct) {
-          switch (sym_to_deconstruct) {
-            case RPSCARBREPL_INT:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_DOUBLE:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_STRING:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_NAME:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_OID:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_OBJECT:
-            {
-              {
-#line 301 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_object(((stack->new_buf_ + n)->v_.uv5_),__LINE__);
-#line 1038 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_ATOM:
-            {
-              {
-#line 306 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_atom(((stack->new_buf_ + n)->v_.uv6_),__LINE__);
-#line 1048 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_EXPR:
-            {
-              {
-#line 312 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_expr(((stack->new_buf_ + n)->v_.uv7_),__LINE__);
-#line 1058 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_TERM:
-            {
-              {
-#line 319 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_term(((stack->new_buf_ + n)->v_.uv8_),__LINE__);
-#line 1068 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_FACTOR:
-            {
-              {
-#line 326 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_factor(((stack->new_buf_ + n)->v_.uv9_),__LINE__);
-#line 1078 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_VALUE:
-            {
-              {
-#line 332 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_value(((stack->new_buf_ + n)->v_.uv10_),__LINE__);
-#line 1088 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_INPUT:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_COMMAND:
-            {
-              
-            }
-            break;
-          }
-        }
-      }
-      else if (n == (stack->pos_ - 1)) {
-        need_state_deconstruct = stack->top_of_stack_has_sym_data_;
-        if (n == stack->new_buf_sym_partial_pos_) {
-          need_state_deconstruct = need_state_deconstruct && stack->newbuf_pos_has_sym_data_;
-        }
-      }
-      else if (n == stack->new_buf_sym_partial_pos_) {
-        need_state_deconstruct = stack->newbuf_pos_has_sym_data_;
-      }
-      else {
-        need_state_deconstruct = 1;
-      }
-      if (need_state_deconstruct) {
-        switch (stack->stack_[n].state_) {
-          case 14: /* replnt_object */
-          case 29: /* replnt_object */
-          case 31: /* replnt_object */
-          case 33: /* replnt_object */
-          {
-            {
-#line 301 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_object(((stack->new_buf_ + n)->v_.uv5_),__LINE__);
-#line 1128 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 23: /* replnt_atom */
-          {
-            {
-#line 306 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_atom(((stack->new_buf_ + n)->v_.uv6_),__LINE__);
-#line 1138 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 5: /* replnt_expr */
-          case 7: /* replnt_expr */
-          case 13: /* replnt_expr */
-          {
-            {
-#line 312 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_expr(((stack->new_buf_ + n)->v_.uv7_),__LINE__);
-#line 1150 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 8: /* replnt_term */
-          case 10: /* replnt_term */
-          case 20: /* replnt_term */
-          {
-            {
-#line 319 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_term(((stack->new_buf_ + n)->v_.uv8_),__LINE__);
-#line 1162 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 16: /* replnt_factor */
-          case 18: /* replnt_factor */
-          case 21: /* replnt_factor */
-          case 22: /* replnt_factor */
-          {
-            {
-#line 326 "carbrepl_rps.cbrt"
-              rps_carbrepl_destructor_replnt_factor(((stack->new_buf_ + n)->v_.uv9_),__LINE__);
-#line 1175 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-        } /* switch */
-      }
-    }
-    free(stack->new_buf_);
-    stack->new_buf_ = NULL;
-  }
-  stack->slot_1_has_sym_data_ = stack->slot_1_has_common_data_ = 0;
-  stack->slot_1_sym_ = 0;
-  stack->top_of_stack_has_sym_data_ = 0;
-  stack->top_of_stack_has_common_data_ = 0;
-  stack->newbuf_pos_has_common_data_ = stack->newbuf_pos_has_sym_data_ = 0;
-  stack->stack_newbuf_pos_has_common_data_ = stack->stack_newbuf_pos_has_sym_data_ = 0;
-  stack->sym_data_ = NULL;
-  stack->current_production_length_ = 0;
-  stack->current_production_nonterminal_ = 0;
-  stack->sym_idx_ = 0;
-  stack->pos_ = 0;
-  stack->error_recovery_ = 0;
-  stack->continue_at_ = 0;
-  stack->mute_error_turns_ = 0;
-  /* reserve slots [0] and [1] for temporary storage of inflight syms and tokens.
-  * note that initialization and lifetime of these slots is controlled by
-  * flags, so no sym data constructors are called here. */
-  if (stack->num_stack_allocated_ <= (stack->pos_ + 1)) {
-    size_t new_num_allocated;
-    if (stack->num_stack_allocated_) {
-      new_num_allocated = stack->num_stack_allocated_ * 2;
-      if (new_num_allocated <= stack->num_stack_allocated_) {
-        /* Overflow in allocation */
-        stack->continue_at_ = 0;
-        return _RPSCARBREPL_OVERFLOW;
-      }
-    }
-    else {
-      new_num_allocated = 16;
-    }
-    
-    if (new_num_allocated > (SIZE_MAX / sizeof(struct rpscarbrepl_sym_data))) {
-      /* Overflow in allocation */
-      stack->continue_at_ = 0;
-      return _RPSCARBREPL_OVERFLOW;
-    }
-    
-    void *p = realloc(stack->stack_, new_num_allocated * sizeof(struct rpscarbrepl_sym_data));
-    if (!p) {
-      /* Out of memory */
-      stack->continue_at_ = 0;
-      return _RPSCARBREPL_NO_MEMORY;
-    }
-    stack->stack_ = (struct rpscarbrepl_sym_data *)p;
-    stack->num_stack_allocated_ = new_num_allocated;
-  }
-  stack->stack_[0].state_ = 0;
-  stack->stack_[1].state_ = 0;
-  stack->pos_ = 2;
-  return 0;
-}
-
-int rpscarbrepl_stack_visit(struct rpscarbrepl_stack *stack, Rps_GarbageCollector*visitgc, rps_carbrepl_data_st*carbdata) {
-  size_t n;
-  if (!stack->new_buf_) n = 0;
-  else {
-    n = stack->new_buf_sym_partial_pos_;
-  }
-  for (; n < stack->pos_; ++n) {
-    int need_state_visit = 0;
-    if ((n == 0) || (n == 1)) {
-      int need_sym_visit = 0;
-      int sym_to_visit;
-      need_state_visit = 0;
-      if (n == 0) {
-        /* slot 0 goes unused in scannerless operation */
-        need_sym_visit = 0;
-      }
-      else if (n == 1) {
-        sym_to_visit = stack->slot_1_sym_;
-        need_sym_visit = stack->slot_1_has_sym_data_;
-      }
-      if (stack->new_buf_ && (n == stack->new_buf_sym_partial_pos_)) {
-        need_sym_visit = need_sym_visit && stack->stack_newbuf_pos_has_sym_data_;
-      }
-      if (need_sym_visit) {
-        switch (sym_to_visit) {
-          case RPSCARBREPL_INT:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_DOUBLE:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_STRING:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_NAME:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_OID:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_OBJECT:
-          {
-            {
-#line 302 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_object\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv5_)->gc_mark(*visitgc);}
-#line 1293 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_ATOM:
-          {
-            {
-#line 307 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_atom\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv6_).gc_mark(*visitgc);}
-#line 1303 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_EXPR:
-          {
-            {
-#line 313 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_expr\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv7_).gc_mark(*visitgc);}
-#line 1313 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_TERM:
-          {
-            {
-#line 320 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_term\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv8_).gc_mark(*visitgc);}
-#line 1323 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_FACTOR:
-          {
-            {
-#line 327 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_factor\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv9_).gc_mark(*visitgc);}
-#line 1333 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_VALUE:
-          {
-            {
-#line 333 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_value\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv10_).gc_mark(*visitgc);}
-#line 1343 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_INPUT:
-          {
-            
-          }
-          break;
-          case RPSCARBREPL_REPLNT_COMMAND:
-          {
-            
-          }
-          break;
-        }
-      }
-    }
-    else if (n == (stack->pos_ - 1)) {
-      need_state_visit = stack->top_of_stack_has_sym_data_;
-      if (n == stack->new_buf_sym_partial_pos_) {
-        need_state_visit = need_state_visit && stack->stack_newbuf_pos_has_sym_data_;
-      }
-    }
-    else if (stack->new_buf_ && (n == stack->new_buf_sym_partial_pos_)) {
-      need_state_visit = stack->stack_newbuf_pos_has_sym_data_;
-    }
-    else {
-      need_state_visit = 1;
-    }
-    if (need_state_visit) {
-      switch (stack->stack_[n].state_) {
-        case 14: /* replnt_object */
-        case 29: /* replnt_object */
-        case 31: /* replnt_object */
-        case 33: /* replnt_object */
-        {
-          {
-#line 302 "carbrepl_rps.cbrt"
-            {_Pragma("message \"visit code for replnt_object\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv5_)->gc_mark(*visitgc);}
-#line 1383 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 23: /* replnt_atom */
-        {
-          {
-#line 307 "carbrepl_rps.cbrt"
-            {_Pragma("message \"visit code for replnt_atom\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv6_).gc_mark(*visitgc);}
-#line 1393 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 5: /* replnt_expr */
-        case 7: /* replnt_expr */
-        case 13: /* replnt_expr */
-        {
-          {
-#line 313 "carbrepl_rps.cbrt"
-            {_Pragma("message \"visit code for replnt_expr\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv7_).gc_mark(*visitgc);}
-#line 1405 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 8: /* replnt_term */
-        case 10: /* replnt_term */
-        case 20: /* replnt_term */
-        {
-          {
-#line 320 "carbrepl_rps.cbrt"
-            {_Pragma("message \"visit code for replnt_term\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv8_).gc_mark(*visitgc);}
-#line 1417 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-        case 16: /* replnt_factor */
-        case 18: /* replnt_factor */
-        case 21: /* replnt_factor */
-        case 22: /* replnt_factor */
-        {
-          {
-#line 327 "carbrepl_rps.cbrt"
-            {_Pragma("message \"visit code for replnt_factor\"");RPS_ASSERT(visitgc);((stack->stack_ + n)->v_.uv9_).gc_mark(*visitgc);}
-#line 1430 "_carbrepl_rps.cc"
-          }
-          
-        }
-        break;
-      } /* switch */
-    }
-  }
-  if (stack->new_buf_) {
-    /* same visitation as above, but now for stack->new_buf_ -- stack->new_buf_ only
-    * exists for a brief period time when we resize stack->stack_ and are copying things
-    * over from the old buffer to the new buffer. */
-    for (n = 0; n <= stack->new_buf_sym_partial_pos_; ++n) {
-      int need_state_visit = 0;
-      if ((n == 0) || (n == 1)) {
-        int need_sym_visit = 0;
-        int sym_to_visit;
-        need_state_visit = 0;
-        if (n == 0) {
-          /* slot 0 goes unused in scannerless operation */
-          need_sym_visit = 0;
-        }
-        else if (n == 1) {
-          sym_to_visit = stack->slot_1_sym_;
-          need_sym_visit = stack->slot_1_has_sym_data_;
-        }
-        if (n == stack->new_buf_sym_partial_pos_) {
-          need_sym_visit = need_sym_visit && stack->newbuf_pos_has_sym_data_;
-        }
-        if (need_sym_visit) {
-          switch (sym_to_visit) {
-            case RPSCARBREPL_INT:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_DOUBLE:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_STRING:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_NAME:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_OID:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_OBJECT:
-            {
-              {
-#line 302 "carbrepl_rps.cbrt"
-                {_Pragma("message \"visit code for replnt_object\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv5_)->gc_mark(*visitgc);}
-#line 1491 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_ATOM:
-            {
-              {
-#line 307 "carbrepl_rps.cbrt"
-                {_Pragma("message \"visit code for replnt_atom\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv6_).gc_mark(*visitgc);}
-#line 1501 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_EXPR:
-            {
-              {
-#line 313 "carbrepl_rps.cbrt"
-                {_Pragma("message \"visit code for replnt_expr\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv7_).gc_mark(*visitgc);}
-#line 1511 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_TERM:
-            {
-              {
-#line 320 "carbrepl_rps.cbrt"
-                {_Pragma("message \"visit code for replnt_term\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv8_).gc_mark(*visitgc);}
-#line 1521 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_FACTOR:
-            {
-              {
-#line 327 "carbrepl_rps.cbrt"
-                {_Pragma("message \"visit code for replnt_factor\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv9_).gc_mark(*visitgc);}
-#line 1531 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_VALUE:
-            {
-              {
-#line 333 "carbrepl_rps.cbrt"
-                {_Pragma("message \"visit code for replnt_value\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv10_).gc_mark(*visitgc);}
-#line 1541 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_INPUT:
-            {
-              
-            }
-            break;
-            case RPSCARBREPL_REPLNT_COMMAND:
-            {
-              
-            }
-            break;
-          }
-        }
-      }
-      else if (n == (stack->pos_ - 1)) {
-        need_state_visit = stack->top_of_stack_has_sym_data_;
-        if (n == stack->new_buf_sym_partial_pos_) {
-          need_state_visit = need_state_visit && stack->newbuf_pos_has_sym_data_;
-        }
-      }
-      else if (n == stack->new_buf_sym_partial_pos_) {
-        need_state_visit = stack->newbuf_pos_has_sym_data_;
-      }
-      else {
-        need_state_visit = 1;
-      }
-      if (need_state_visit) {
-        switch (stack->stack_[n].state_) {
-          case 14: /* replnt_object */
-          case 29: /* replnt_object */
-          case 31: /* replnt_object */
-          case 33: /* replnt_object */
-          {
-            {
-#line 302 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_object\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv5_)->gc_mark(*visitgc);}
-#line 1581 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 23: /* replnt_atom */
-          {
-            {
-#line 307 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_atom\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv6_).gc_mark(*visitgc);}
-#line 1591 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 5: /* replnt_expr */
-          case 7: /* replnt_expr */
-          case 13: /* replnt_expr */
-          {
-            {
-#line 313 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_expr\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv7_).gc_mark(*visitgc);}
-#line 1603 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 8: /* replnt_term */
-          case 10: /* replnt_term */
-          case 20: /* replnt_term */
-          {
-            {
-#line 320 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_term\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv8_).gc_mark(*visitgc);}
-#line 1615 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-          case 16: /* replnt_factor */
-          case 18: /* replnt_factor */
-          case 21: /* replnt_factor */
-          case 22: /* replnt_factor */
-          {
-            {
-#line 327 "carbrepl_rps.cbrt"
-              {_Pragma("message \"visit code for replnt_factor\"");RPS_ASSERT(visitgc);((stack->new_buf_ + n)->v_.uv9_).gc_mark(*visitgc);}
-#line 1628 "_carbrepl_rps.cc"
-            }
-            
-          }
-          break;
-        } /* switch */
-      }
-    }
-    free(stack->new_buf_);
-    stack->new_buf_ = NULL;
-  }
-  return 0;
-}
-
-int rpscarbrepl_stack_can_recover(struct rpscarbrepl_stack *stack) {
-  return !!stack->error_recovery_;
-}
-
-int rpscarbrepl_stack_accepts(struct rpscarbrepl_stack *stack, int sym) {
-  if (!stack->pos_) return 0;
-  return 0 != rpscarbrepl_parse_table[rpscarbrepl_num_columns * stack->stack_[stack->pos_ - 1].state_ + (sym - rpscarbrepl_minimum_sym)];}
-
-int rpscarbrepl_parse(struct rpscarbrepl_stack *stack, int sym, Rps_TokenSource* tksrc, Rps_CallFrame* callframe, rps_carbrepl_data_st&carbdata) {
-  if (stack->pending_reset_) {
-    int r;
-    r = rpscarbrepl_stack_reset(stack);
-    if (r) return r;
-  }
-    switch (stack->continue_at_) {
-    case 0: break; /* fall through to regular code path */
-    case 1: goto C1;
-    case 2: goto C2;
-    case 3: goto C3;
-    case 4: goto C4;
-    case 5: goto C5;
-    case 6: goto C6;
-    case 7: goto C7;
-    case 8: goto C8;
-    case 9: goto C9;
-    case 10: goto C10;
-    case 11: goto C11;
-    case 12: goto C12;
-    case 13: goto C13;
-    case 14: goto C14;
-    case 15: goto C15;
-    case 16: goto C16;
-    case 17: goto C17;
-    case 18: goto C18;
-    case 19: goto C19;
-    case 20: goto C20;
-    case 21: goto C21;
-    case 22: goto C22;
-    case 23: goto C23;
-    case 24: goto C24;
-    case 25: goto C25;
-    case 26: goto C26;
-    case 27: goto C27;
-    case 28: goto C28;
-    case 29: goto C29;
-    case 30: goto C30;
-    case 31: goto C31;
-    case 32: goto C32;
-    case 33: goto C33;
-    case 34: goto C34;
-    case 35: goto C35;
-    case 36: goto C36;
-    case 37: goto C37;
-    case 38: goto C38;
-    case 39: goto C39;
-    case 40: goto C40;
-    case 41: goto C41;
-    case 42: goto C42;
-    case 43: goto C43;
-    case 44: goto C44;
-    case 45: goto C45;
-    case 46: goto C46;
-    case 47: goto C47;
-    case 48: goto C48;
-    case 49: goto C49;
-    case 50: goto C50;
-    case 51: goto C51;
-    case 52: goto C52;
-    case 53: goto C53;
-    case 54: goto C54;
-    case 55: goto C55;
-    case 56: goto C56;
-    case 57: goto C57;
-    case 58: goto C58;
-    case 59: goto C59;
-    case 60: goto C60;
-    case 61: goto C61;
-    case 62: goto C62;
-    case 63: goto C63;
-    case 64: goto C64;
-    case 65: goto C65;
-    case 66: goto C66;
-    case 67: goto C67;
-    case 68: goto C68;
-    case 69: goto C69;
-    case 70: goto C70;
-    case 71: goto C71;
-    case 72: goto C72;
-    case 73: goto C73;
-    case 74: goto C74;
-    case 75: goto C75;
-    case 76: goto C76;
-    case 77: goto C77;
-    case 78: goto C78;
-    case 79: goto C79;
-    case 80: goto C80;
-  } /* continuation switch */
-if (stack->mute_error_turns_) stack->mute_error_turns_--;
-  for (;;) {
-    if (!stack->error_recovery_) {
-      int action;
-      action = rpscarbrepl_parse_table[rpscarbrepl_num_columns * stack->stack_[stack->pos_ - 1].state_ + (sym - rpscarbrepl_minimum_sym)];
-      if (action > 0) {
-        if (stack->num_stack_allocated_ == stack->pos_) {
-          stack->action_preservation_ = action;
-          size_t new_num_allocated;
-          if (stack->num_stack_allocated_) {
-            new_num_allocated = stack->num_stack_allocated_ * 2;
-            if (new_num_allocated <= stack->num_stack_allocated_) {
-              /* Overflow in allocation */
-              return _RPSCARBREPL_OVERFLOW;
-            }
-          }
-          else {
-            new_num_allocated = 16;
-          }
-          
-          if (new_num_allocated > (SIZE_MAX / sizeof(struct rpscarbrepl_sym_data))) {
-            /* Overflow in allocation */
-            return _RPSCARBREPL_OVERFLOW;
-          }
-          
-          stack->new_buf_ = (struct rpscarbrepl_sym_data *)malloc(new_num_allocated * sizeof(struct rpscarbrepl_sym_data));
-          if (!stack->new_buf_) {
-            /* Out of memory */
-            return _RPSCARBREPL_NO_MEMORY;
-          }
-          stack->new_buf_num_allocated_ = new_num_allocated;
-          for (stack->new_buf_sym_partial_pos_ = 0; stack->new_buf_sym_partial_pos_ < stack->pos_; ++stack->new_buf_sym_partial_pos_) {
-            stack->new_buf_[stack->new_buf_sym_partial_pos_].state_ = stack->stack_[stack->new_buf_sym_partial_pos_].state_;
-            stack->newbuf_pos_has_common_data_ = stack->newbuf_pos_has_sym_data_ = 0;
-            stack->stack_newbuf_pos_has_common_data_ = stack->stack_newbuf_pos_has_sym_data_ = 1;
-            if ((stack->new_buf_sym_partial_pos_ == 0) || (stack->new_buf_sym_partial_pos_ == 1)) {
-              int need_sym_move;
-              int sym_to_move;
-              sym_to_move = 0; /* silence a waring with this explicit initialization */
-              need_sym_move = 0;
-              if (stack->new_buf_sym_partial_pos_ == 0) {
-                /* slot 0 goes unused in scannerless operation */
-                need_sym_move = 0;
-              }
-              else if (stack->new_buf_sym_partial_pos_ == 1) {
-                need_sym_move = stack->slot_1_has_sym_data_;
-                sym_to_move = stack->slot_1_sym_;
-              }
-              if (need_sym_move) {
-                switch (sym_to_move) {
-                  case RPSCARBREPL_INT:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_DOUBLE:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_STRING:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_NAME:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_OID:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_OBJECT:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 1;
-                  {
-#line 300 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_object(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv5_,__LINE__);
-#line 1825 "_carbrepl_rps.cc"
-                  }
-                  C1:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_ATOM:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 2;
-                  {
-#line 305 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_atom(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv6_,__LINE__);
-#line 1838 "_carbrepl_rps.cc"
-                  }
-                  C2:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_EXPR:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 3;
-                  {
-#line 311 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_expr(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv7_,__LINE__);
-#line 1851 "_carbrepl_rps.cc"
-                  }
-                  C3:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_TERM:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 4;
-                  {
-#line 318 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_term(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv8_,__LINE__);
-#line 1864 "_carbrepl_rps.cc"
-                  }
-                  C4:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_FACTOR:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 5;
-                  {
-#line 325 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_factor(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv9_,__LINE__);
-#line 1877 "_carbrepl_rps.cc"
-                  }
-                  C5:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_VALUE:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 6;
-                  {
-#line 331 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_value(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv10_,__LINE__);
-#line 1890 "_carbrepl_rps.cc"
-                  }
-                  C6:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_INPUT:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_COMMAND:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                }
-              }
-            }
-            else /* not 0 or 1, but >= 2 state derived sym */ {
-              switch (stack->stack_[stack->new_buf_sym_partial_pos_].state_) {
-                case 14: /* replnt_object */
-                case 29: /* replnt_object */
-                case 31: /* replnt_object */
-                case 33: /* replnt_object */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 7;
-                {
-#line 300 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_object(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv5_,__LINE__);
-#line 1923 "_carbrepl_rps.cc"
-                }
-                C7:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 23: /* replnt_atom */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 8;
-                {
-#line 305 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_atom(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv6_,__LINE__);
-#line 1936 "_carbrepl_rps.cc"
-                }
-                C8:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 5: /* replnt_expr */
-                case 7: /* replnt_expr */
-                case 13: /* replnt_expr */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 9;
-                {
-#line 311 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_expr(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv7_,__LINE__);
-#line 1951 "_carbrepl_rps.cc"
-                }
-                C9:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 8: /* replnt_term */
-                case 10: /* replnt_term */
-                case 20: /* replnt_term */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 10;
-                {
-#line 318 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_term(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv8_,__LINE__);
-#line 1966 "_carbrepl_rps.cc"
-                }
-                C10:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 16: /* replnt_factor */
-                case 18: /* replnt_factor */
-                case 21: /* replnt_factor */
-                case 22: /* replnt_factor */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 11;
-                {
-#line 325 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_factor(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv9_,__LINE__);
-#line 1982 "_carbrepl_rps.cc"
-                }
-                C11:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 26: /* INT */
-                case 27: /* DOUBLE */
-                case 28: /* STRING */
-                case 34: /* NAME */
-                case 35: /* OID */
-                case 1: /* replnt_input */
-                case 2: /* replnt_input */
-                case 4: /* replnt_command */
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-              } /* switch */
-            }
-          }
-          if (stack->stack_) free(stack->stack_);
-          stack->stack_ = stack->new_buf_;
-          stack->new_buf_sym_partial_pos_ = 0;
-          stack->new_buf_ = NULL;
-          stack->num_stack_allocated_ = stack->new_buf_num_allocated_;
-          action = stack->action_preservation_;
-        }
-        stack->stack_[stack->pos_++].state_ = action;
-        stack->top_of_stack_has_sym_data_ = 0;
-        stack->top_of_stack_has_common_data_ = 0;
-        
-        stack->sym_data_ = stack->stack_ + stack->pos_ - 1;
-        stack->top_of_stack_has_sym_data_ = 0;
-        switch (sym) {
-          case RPSCARBREPL_INT:
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 12;
-          {
-#line 116 "carbrepl_rps.cbrt"
-            {  _Pragma("message \"token_action for INT\""); \
+%token INT
+%type INT: intptr_t
+%token_action {  _Pragma("message \"token_action for INT\""); \
   /* should assign $$ for INT */ \
   RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc); \
   RPS_FATALOUT("INT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action INT"));      \
  }
-#line 2029 "_carbrepl_rps.cc"
-          }
-          C12:;
-          break;
-          case RPSCARBREPL_DOUBLE:
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 13;
-          {
-#line 127 "carbrepl_rps.cbrt"
-            {  _Pragma("message \"token_action for DOUBLE\""); \
+
+
+%token DOUBLE
+%type DOUBLE: double
+%token_action {  _Pragma("message \"token_action for DOUBLE\""); \
   RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc); \
   /* should assign $$ for DOUBLE */ \
   RPS_FATALOUT("DOUBLE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOUBLE"));   \
  }
-#line 2045 "_carbrepl_rps.cc"
-          }
-          C13:;
-          break;
-          case RPSCARBREPL_STRING:
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 14;
-          {
-#line 137 "carbrepl_rps.cbrt"
-            { _Pragma("message \"token_action for STRING\""); \
+
+%token STRING
+%type STRING: std::string
+%token_action { _Pragma("message \"token_action for STRING\""); \
   /* should assign $$ for STRING */ \
   RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc); \
   RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action STRING"));   \
  }
-#line 2061 "_carbrepl_rps.cc"
-          }
-          C14:;
-          break;
-          case RPSCARBREPL_NAME:
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 15;
-          {
-#line 147 "carbrepl_rps.cbrt"
-            {  _Pragma("message \"token_action for NAME\"");  \
+
+%token NAME
+%type NAME: std::string
+%token_action {  _Pragma("message \"token_action for NAME\"");  \
   RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc); \
   /* should assign $$ for NAME */ \
   RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
-#line 2077 "_carbrepl_rps.cc"
-          }
-          C15:;
-          break;
-          case RPSCARBREPL_OID:
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 16;
-          {
-#line 262 "carbrepl_rps.cbrt"
-            {_Pragma("message \"token_action for SLASH\""); \
+
+%token OID
+%type OID: Rps_Id
+%token_action { _Pragma("message \"token_action for OID\"");   \
+  /* should assign $$ for OID */ \
+  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc); \
+  RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
+ }
+
+%token KEYW_DISPLAY
+%token_action { _Pragma("message \"token_action for KEYW_DISPLAY\"");  \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_DISPLAY tksrc=" << *tksrc); \
+  /* should assign $$ for KEYW_DISPLAY */ \
+  RPS_FATALOUT("KEYW_DISPLAY token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_DISPLAY"));     \
+ }
+
+%token KEYW_OBJECT
+%token_action { _Pragma("message \"token_action for KEYW_OBJECT\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_OBJECT tksrc=" << *tksrc); \
+  /* should assign $$ for KEYW_OBJECT */ \
+  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
+ }
+
+%token KEYW_PUT
+%token_action { _Pragma("message \"token_action for KEYW_PUT\"");  \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_PUT tksrc=" << *tksrc); \
+  /* should assign $$ for KEYW_PUT */ \
+  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
+ }
+ 
+
+%token DOT
+%token_action { _Pragma("message \"token_action for DOT\""); \
+  /* should assign $$ for DOT */ \
+  RPS_DEBUG_LOG(REPL, "token_action for DOT tksrc=" << *tksrc); \
+  RPS_FATALOUT("DOT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));      \
+ }
+
+%token ASSIGN
+%token_action {_Pragma("message \"token_action for ASSIGN\""); \
+  /* should assign $$ for ASSIGN */ \
+  RPS_DEBUG_LOG(REPL, "token_action for ASSIGN tksrc=" << *tksrc); \
+  RPS_FATALOUT("ASSIGN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action ASSIGN"));   \
+ }
+
+%token LEFTPAREN
+%token_action {_Pragma("message \"token_action for LEFTPAREN\""); \
+  /* should assign $$ for LEFTPAREN */ \
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc); \
+  RPS_FATALOUT("LEFTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action LEFTPAREN"));        \
+ }
+
+%token RIGHTPAREN
+%token_action {_Pragma("message \"token_action for RIGHTPAREN\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc); \
+  /* should assign $$ for RIGHTPAREN */ \
+  RPS_FATALOUT("RIGHTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action RIGHTPAREN"));       \
+ }
+//
+
+%token PLUS 
+%token_action {_Pragma("message \"token_action for PLUS\""); \
+  /* should assign $$ PLUS */ \
+  RPS_DEBUG_LOG(REPL, "token_action for PLUS tksrc=" << *tksrc); \
+  RPS_FATALOUT("PLUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action PLUS"));     \
+ }
+//
+
+%token MINUS 
+%token_action {_Pragma("message \"token_action for MINUS\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for MINUS tksrc=" << tksrc); \
+  /* should assign $$ MINUS */ \
+  RPS_FATALOUT("MINUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action MINUS"));    \
+ }
+//
+
+
+%token ASTERISK 
+%token_action {_Pragma("message \"token_action for ASTERISK\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for ASKTE tksrc=" << *tksrc); \
+  /* should assign $$ ASTERISK */ \
+  RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action ASTERISK")); \
+ }
+//
+
+%token SLASH 
+%token_action {_Pragma("message \"token_action for SLASH\""); \
   RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc); \
   /* should assign $$ SLASH */ \
   RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action SLASH"));    \
  }
-#line 2093 "_carbrepl_rps.cc"
-          }
-          C16:;
-          break;
-        } /* switch */
-        stack->continue_at_ = 0;
-        {
-          {_Pragma("message \"on_next_token code\"");              \
-            RPS_POSSIBLE_BREAKPOINT();                                          \
-            RPS_DEBUG_LOG(REPL, "°+on_next_token start tksrc=" << *tksrc        \
-            << " sym:" << sym                                     \
-            << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)               \
-            << std::endl                                          \
-            << RPS_FULL_BACKTRACE_HERE(1, "¤+on_next_token"));    \
-            RPS_POSSIBLE_BREAKPOINT();                                          \
-            _Pragma("message \"FIXME the value of next token\"");               \
-            int ntk = rps_carbrepl_next_token(callframe, tksrc, sym,            \
-            carbdata,                         \
-            __LINE__);                        \
-            RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
-            << ntk << std::endl                                   \
-            << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
-            return ntk; }
-          
-        }
-      } /* action > 0 */
-      else if (action < 0) {
-        int production;
-        production = -action - 1;
-        stack->discard_remaining_actions_ = 0;
-        stack->current_production_length_ = rpscarbrepl_production_lengths[production];
-        stack->current_production_nonterminal_ = rpscarbrepl_production_syms[production];
-        if (0 == production) {
-          stack->pending_reset_ = 1;
-          /* Synth S we're done */
-          return _RPSCARBREPL_FINISH;
-        }
-        
-        memset(&stack->stack_[1], 0, sizeof(struct rpscarbrepl_sym_data));
-        { /* scope guard */
-          stack->sym_data_ = stack->stack_ + stack->pos_ - stack->current_production_length_;
-          switch (production) {
-            /* replnt_input: EOF */
-            case 1: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_INPUT;
-              stack->continue_at_ = 17;
-              {
-#line 341 "carbrepl_rps.cbrt"
-                {
+//
+
+%grammar%
+%params Rps_TokenSource* tksrc, Rps_CallFrame* callframe, rps_carbrepl_data_st&carbdata
+%nt replnt_input replnt_command
+%nt replnt_atom replnt_object replnt_expr replnt_term replnt_factor replnt_value
+
+
+
+// When the parser (not the scanner) needs a new input terminal symbol, the specified action code snippet is executed.
+// we probably need to use Rps_TokenSource::lookahead_token
+%on_next_token {_Pragma("message \"on_next_token code\"");              \
+    RPS_POSSIBLE_BREAKPOINT();                                          \
+    RPS_DEBUG_LOG(REPL, "°+on_next_token start tksrc=" << *tksrc        \
+                  << " sym:" << sym                                     \
+                  << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)               \
+                  << std::endl                                          \
+                  << RPS_FULL_BACKTRACE_HERE(1, "¤+on_next_token"));    \
+    RPS_POSSIBLE_BREAKPOINT();                                          \
+    _Pragma("message \"FIXME the value of next token\"");               \
+    int ntk = rps_carbrepl_next_token(callframe, tksrc, sym,            \
+                                      carbdata,                         \
+                                      __LINE__);                        \
+    RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
+                  << ntk << std::endl                                   \
+                  << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
+    return ntk; }
+
+
+
+%type replnt_object: Rps_ObjectRef
+%constructor rps_carbrepl_constructor_replnt_object($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_object($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_object\"");RPS_ASSERT(visitgc);$$->gc_mark(*visitgc);}
+
+%type replnt_atom: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_atom($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_atom($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_atom\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+%type replnt_expr: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_expr($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_expr($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_expr\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+
+%type replnt_term: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_term($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_term($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_term\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+
+%type replnt_factor: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_factor($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_factor($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_factor\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+%type replnt_value: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_value($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_value($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_value\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+%type replnt_input: int
+%type replnt_command: int
+
+
+/* the start symbol is the first non-terminal */
+replnt_input: EOF {
   _Pragma("message \"replnt_input as EOF in carbrepl_rps.cbrt\"");
   RPS_ASSERT("empty replnt_input" && tksrc != nullptr);
   RPS_DEBUG_LOG(REPL, "replnt_input as EOF tksrc=" << *tksrc); \
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
-  (stack->stack_[1].v_.uv11_) = 0;
+  $$ = 0;
 }
-#line 2149 "_carbrepl_rps.cc"
-              }
-              C17:;
-            }
-            break;
-            /* replnt_input: replnt_command replnt_input */
-            case 2: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_INPUT;
-              stack->continue_at_ = 18;
-              {
-#line 349 "carbrepl_rps.cbrt"
-                {
+
+replnt_input: replnt_command replnt_input {
    _Pragma("message \"replnt_input as replnt_command replnt_input in carbrepl_rps.cbrt\"");
    RPS_ASSERT("command replnt_input" && tksrc != nullptr);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
-   (stack->stack_[1].v_.uv11_) = (stack->sym_data_[1].v_.uv11_) + 1;
+   $$ = $1 + 1;
 }
-#line 2167 "_carbrepl_rps.cc"
-              }
-              C18:;
-            }
-            break;
-            /* replnt_command: ATSIGN KEYW_DISPLAY replnt_expr */
-            case 3: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_COMMAND;
-              stack->continue_at_ = 19;
-              {
-#line 356 "carbrepl_rps.cbrt"
-                {
+
+replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "show carburetta command:" << (stack->sym_data_[2].v_.uv7_));
+   RPS_DEBUG_LOG(REPL, "show carburetta command:" << $2);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_POSSIBLE_BREAKPOINT();
-   rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), (stack->sym_data_[2].v_.uv7_));
+   rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $2);
    RPS_POSSIBLE_BREAKPOINT();
-   (stack->stack_[1].v_.uv12_) = 1;
+   $$ = 1;
 }
-#line 2188 "_carbrepl_rps.cc"
-              }
-              C19:;
-            }
-            break;
-            /* replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr */
-            case 4: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_COMMAND;
-              stack->continue_at_ = 20;
-              {
-#line 366 "carbrepl_rps.cbrt"
-                {
+
+replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
    _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "put carburetta command:" << (stack->sym_data_[2].v_.uv5_) << " attr " << (stack->sym_data_[4].v_.uv5_) << " expr " << (stack->sym_data_[6].v_.uv7_));
+   RPS_DEBUG_LOG(REPL, "put carburetta command:" << $2 << " attr " << $4 << " expr " << $6);
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
 }
-#line 2206 "_carbrepl_rps.cc"
-              }
-              C20:;
-            }
-            break;
-            /* replnt_command: error */
-            case 5: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_COMMAND;
-              stack->continue_at_ = 21;
-              {
-#line 373 "carbrepl_rps.cbrt"
-                {
+
+replnt_command: error {
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("invalid syntax for command");
 }
-#line 2222 "_carbrepl_rps.cc"
-              }
-              C21:;
-            }
-            break;
-            /* replnt_atom: INT */
-            case 6: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_ATOM;
-              stack->continue_at_ = 22;
-              {
-#line 305 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_atom((stack->stack_[1].v_.uv6_),__LINE__);
-#line 2235 "_carbrepl_rps.cc"
-              }
-              C22:;
-              stack->continue_at_ = 23;
-              {
-#line 378 "carbrepl_rps.cbrt"
-                {
+
+replnt_atom: INT {
 _Pragma("message \"replnt_atom as INT in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
-  (stack->stack_[1].v_.uv6_) = Rps_Value::make_tagged_int((stack->sym_data_[0].v_.uv0_));
-  RPS_DEBUG_LOG(REPL, "atom is INT " << (stack->stack_[1].v_.uv6_));
+  $$ = Rps_Value::make_tagged_int($0);
+  RPS_DEBUG_LOG(REPL, "atom is INT " << $$);
 }
-#line 2247 "_carbrepl_rps.cc"
-              }
-              C23:;
-            }
-            break;
-            /* replnt_atom: DOUBLE */
-            case 7: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_ATOM;
-              stack->continue_at_ = 24;
-              {
-#line 305 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_atom((stack->stack_[1].v_.uv6_),__LINE__);
-#line 2260 "_carbrepl_rps.cc"
-              }
-              C24:;
-              stack->continue_at_ = 25;
-              {
-#line 385 "carbrepl_rps.cbrt"
-                {
+
+replnt_atom: DOUBLE {
 _Pragma("message \"replnt_atom as DOUBLE in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv6_) = Rps_DoubleValue((stack->sym_data_[0].v_.uv1_));
-  RPS_DEBUG_LOG(REPL, "atom is DOUBLE " << (stack->stack_[1].v_.uv6_));
+  $$ = Rps_DoubleValue($0);
+  RPS_DEBUG_LOG(REPL, "atom is DOUBLE " << $$);
 }
-#line 2271 "_carbrepl_rps.cc"
-              }
-              C25:;
-            }
-            break;
-            /* replnt_atom: STRING */
-            case 8: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_ATOM;
-              stack->continue_at_ = 26;
-              {
-#line 305 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_atom((stack->stack_[1].v_.uv6_),__LINE__);
-#line 2284 "_carbrepl_rps.cc"
-              }
-              C26:;
-              stack->continue_at_ = 27;
-              {
-#line 391 "carbrepl_rps.cbrt"
-                {
+
+replnt_atom: STRING {
 _Pragma("message \"replnt_atom as STRING in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv6_) = Rps_StringValue((stack->sym_data_[0].v_.uv2_));
-  RPS_DEBUG_LOG(REPL, "atom is STRING " << (stack->stack_[1].v_.uv6_));
+  $$ = Rps_StringValue($0);
+  RPS_DEBUG_LOG(REPL, "atom is STRING " << $$);
 }
-#line 2295 "_carbrepl_rps.cc"
-              }
-              C27:;
-            }
-            break;
-            /* replnt_atom: replnt_object */
-            case 9: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_ATOM;
-              stack->continue_at_ = 28;
-              {
-#line 305 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_atom((stack->stack_[1].v_.uv6_),__LINE__);
-#line 2308 "_carbrepl_rps.cc"
-              }
-              C28:;
-              stack->continue_at_ = 29;
-              {
-#line 397 "carbrepl_rps.cbrt"
-                {
+
+replnt_atom: replnt_object {
   _Pragma("message \"replnt_atom as replnt_object in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv6_) = Rps_ObjectValue((stack->sym_data_[0].v_.uv5_));
-  RPS_DEBUG_LOG(REPL, "atom is object " << (stack->stack_[1].v_.uv6_));
+  $$ = Rps_ObjectValue($0);
+  RPS_DEBUG_LOG(REPL, "atom is object " << $$);
 }
-#line 2319 "_carbrepl_rps.cc"
-              }
-              C29:;
-            }
-            break;
-            /* replnt_object: NAME */
-            case 10: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_OBJECT;
-              stack->continue_at_ = 30;
-              {
-#line 300 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_object((stack->stack_[1].v_.uv5_),__LINE__);
-#line 2332 "_carbrepl_rps.cc"
-              }
-              C30:;
-              stack->continue_at_ = 31;
-              {
-#line 403 "carbrepl_rps.cbrt"
-                {
+
+replnt_object: NAME {
   _Pragma("message \"replnt_object as NAME in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv5_) = Rps_PayloadSymbol::find_named_object((stack->sym_data_[0].v_.uv3_));
-  RPS_DEBUG_LOG(REPL, "object is name " << (stack->stack_[1].v_.uv5_));
+  $$ = Rps_PayloadSymbol::find_named_object($0);
+  RPS_DEBUG_LOG(REPL, "object is name " << $$);
 }
-#line 2343 "_carbrepl_rps.cc"
-              }
-              C31:;
-            }
-            break;
-            /* replnt_object: OID */
-            case 11: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_OBJECT;
-              stack->continue_at_ = 32;
-              {
-#line 300 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_object((stack->stack_[1].v_.uv5_),__LINE__);
-#line 2356 "_carbrepl_rps.cc"
-              }
-              C32:;
-              stack->continue_at_ = 33;
-              {
-#line 409 "carbrepl_rps.cbrt"
-                {
+
+replnt_object: OID {
   _Pragma("message \"replnt_object as OID in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv5_) = Rps_ObjectRef::really_find_object_by_oid((stack->sym_data_[0].v_.uv4_));
-  RPS_DEBUG_LOG(REPL, "object is oid " << (stack->stack_[1].v_.uv5_));
+  $$ = Rps_ObjectRef::really_find_object_by_oid($0);
+  RPS_DEBUG_LOG(REPL, "object is oid " << $$);
 }
-#line 2367 "_carbrepl_rps.cc"
-              }
-              C33:;
-            }
-            break;
-            /* replnt_expr: KEYW_OBJECT replnt_object */
-            case 12: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_EXPR;
-              stack->continue_at_ = 34;
-              {
-#line 311 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_expr((stack->stack_[1].v_.uv7_),__LINE__);
-#line 2380 "_carbrepl_rps.cc"
-              }
-              C34:;
-              stack->continue_at_ = 35;
-              {
-#line 416 "carbrepl_rps.cbrt"
-                {
+
+
+replnt_expr: KEYW_OBJECT replnt_object {
   _Pragma("message \"replnt_expr as KEYW_OBJECT replnt_object in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv7_) = Rps_ObjectValue((stack->sym_data_[1].v_.uv5_));
-  RPS_DEBUG_LOG(REPL, "expr is object " << (stack->stack_[1].v_.uv7_));
+  $$ = Rps_ObjectValue($1);
+  RPS_DEBUG_LOG(REPL, "expr is object " << $$);
 }
-#line 2391 "_carbrepl_rps.cc"
-              }
-              C35:;
-            }
-            break;
-            /* replnt_expr: replnt_term */
-            case 13: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_EXPR;
-              stack->continue_at_ = 36;
-              {
-#line 311 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_expr((stack->stack_[1].v_.uv7_),__LINE__);
-#line 2404 "_carbrepl_rps.cc"
-              }
-              C36:;
-              stack->continue_at_ = 37;
-              {
-#line 423 "carbrepl_rps.cbrt"
-                {
+
+
+replnt_expr: replnt_term                      {
   _Pragma("message \"replnt_expr as replnt_term in carbrepl_rps.cbrt\"");
-  RPS_DEBUG_LOG(REPL, "expr is term " << (stack->stack_[1].v_.uv7_));
-  (stack->stack_[1].v_.uv7_) = (stack->sym_data_[0].v_.uv8_);
+  RPS_DEBUG_LOG(REPL, "expr is term " << $$);
+  $$ = $0;
 }
-#line 2415 "_carbrepl_rps.cc"
-              }
-              C37:;
-            }
-            break;
-            /* replnt_expr: replnt_expr PLUS replnt_term */
-            case 14: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_EXPR;
-              stack->continue_at_ = 38;
-              {
-#line 311 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_expr((stack->stack_[1].v_.uv7_),__LINE__);
-#line 2428 "_carbrepl_rps.cc"
-              }
-              C38:;
-              stack->continue_at_ = 39;
-              {
-#line 429 "carbrepl_rps.cbrt"
-                {            
+
+replnt_expr: replnt_expr PLUS replnt_term            {            
   _Pragma("message \"replnt_expr as replnt_expr PLUS replnt_term in carbrepl_rps.cbrt\"");
-  RPS_DEBUG_LOG(REPL, "expr is sum of " << (stack->sym_data_[0].v_.uv7_) << " and " << (stack->sym_data_[2].v_.uv8_));
+  RPS_DEBUG_LOG(REPL, "expr is sum of " << $0 << " and " << $2);
   RPS_ASSERT(carbdata.cardata_magic == rps_magic_carbrepl_data);
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
@@ -2453,1046 +449,58 @@ _Pragma("message \"replnt_atom as STRING in carbrepl_rps.cbrt\"");
     Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
                                               id_plus_binop); // "plus!binop"∈repl_binary_operator
   /// for the garbage collector we need to...
-  carbdata.cardata_vleft = (stack->sym_data_[0].v_.uv7_);
-  carbdata.cardata_vright = (stack->sym_data_[2].v_.uv8_);
+  carbdata.cardata_vleft = $0;
+  carbdata.cardata_vright = $2;
   _Pragma("message \"take inspiration from parsrepl_rps.cc function Rps_TokenSource::parse_sum\"");
-  (stack->stack_[1].v_.uv7_) = carbdata.cardata_vinst
+  $$ = carbdata.cardata_vinst
     = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
-                        {carbdata.cardata_obop, (stack->sym_data_[0].v_.uv7_), (stack->sym_data_[2].v_.uv8_)});
-  RPS_DEBUG_LOG(REPL, "replnt_expr: replnt_expr PLUS replnt_term result is " << (stack->stack_[1].v_.uv7_)
-                << " left:" << (stack->sym_data_[0].v_.uv7_) << " right:" << (stack->sym_data_[2].v_.uv8_) << std::endl
+                        {carbdata.cardata_obop, $0, $2});
+  RPS_DEBUG_LOG(REPL, "replnt_expr: replnt_expr PLUS replnt_term result is " << $$
+                << " left:" << $0 << " right:" << $2 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "replnt_expr: replnt_expr PLUS replnt_term"));
   //FIXME:carbdata.cardata_vinst->put_pesistent_metadata(<some-object>,<some-integer>);
   carbdata.reset_carbdata();
 }
-#line 2463 "_carbrepl_rps.cc"
-              }
-              C39:;
-            }
-            break;
-            /* replnt_expr: replnt_expr MINUS replnt_term */
-            case 15: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_EXPR;
-              stack->continue_at_ = 40;
-              {
-#line 311 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_expr((stack->stack_[1].v_.uv7_),__LINE__);
-#line 2476 "_carbrepl_rps.cc"
-              }
-              C40:;
-              stack->continue_at_ = 41;
-              {
-#line 459 "carbrepl_rps.cbrt"
-                {
+
+replnt_expr: replnt_expr MINUS replnt_term           {
   _Pragma("message \"replnt_expr as replnt_expr MINUS replnt_term in carbrepl_rps.cbrt\"");
   // $$ = $0 - $2;
 }
-#line 2486 "_carbrepl_rps.cc"
-              }
-              C41:;
-            }
-            break;
-            /* replnt_term: replnt_factor */
-            case 16: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_TERM;
-              stack->continue_at_ = 42;
-              {
-#line 318 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_term((stack->stack_[1].v_.uv8_),__LINE__);
-#line 2499 "_carbrepl_rps.cc"
-              }
-              C42:;
-              stack->continue_at_ = 43;
-              {
-#line 464 "carbrepl_rps.cbrt"
-                {
+  
+replnt_term: replnt_factor                    {
   _Pragma("message \"replnt_term as replnt_factor in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv8_) = (stack->sym_data_[0].v_.uv9_);
+  $$ = $0;
 }
-#line 2509 "_carbrepl_rps.cc"
-              }
-              C43:;
-            }
-            break;
-            /* replnt_term: replnt_term ASTERISK replnt_factor */
-            case 17: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_TERM;
-              stack->continue_at_ = 44;
-              {
-#line 318 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_term((stack->stack_[1].v_.uv8_),__LINE__);
-#line 2522 "_carbrepl_rps.cc"
-              }
-              C44:;
-              stack->continue_at_ = 45;
-              {
-#line 469 "carbrepl_rps.cbrt"
-                {
+
+replnt_term: replnt_term ASTERISK replnt_factor      {
   _Pragma("message \"replnt_term as replnt_term ASTERISK replnt_factor in carbrepl_rps.cbrt\"");
   //  $$ = $0 * $2;
   }
-#line 2532 "_carbrepl_rps.cc"
-              }
-              C45:;
-            }
-            break;
-            /* replnt_term: replnt_term SLASH replnt_factor */
-            case 18: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_TERM;
-              stack->continue_at_ = 46;
-              {
-#line 318 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_term((stack->stack_[1].v_.uv8_),__LINE__);
-#line 2545 "_carbrepl_rps.cc"
-              }
-              C46:;
-              stack->continue_at_ = 47;
-              {
-#line 474 "carbrepl_rps.cbrt"
-                {
+
+replnt_term: replnt_term SLASH replnt_factor         {
   _Pragma("message \"replnt_term as replnt_term SLASH replnt_factor in carbrepl_rps.cbrt\"");
   //  $$ = $0 / $2;
   }
-#line 2555 "_carbrepl_rps.cc"
-              }
-              C47:;
-            }
-            break;
-            /* replnt_factor: replnt_atom */
-            case 19: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_FACTOR;
-              stack->continue_at_ = 48;
-              {
-#line 325 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_factor((stack->stack_[1].v_.uv9_),__LINE__);
-#line 2568 "_carbrepl_rps.cc"
-              }
-              C48:;
-              stack->continue_at_ = 49;
-              {
-#line 479 "carbrepl_rps.cbrt"
-                {
+  
+replnt_factor: replnt_atom                   {
   _Pragma("message \"replnt_factor as replnt_atom in carbrepl_rps.cbrt\"");
-  (stack->stack_[1].v_.uv9_) = (stack->sym_data_[0].v_.uv6_);
-  RPS_DEBUG_LOG(REPL, "factor is atom " << (stack->stack_[1].v_.uv9_));
+  $$ = $0;
+  RPS_DEBUG_LOG(REPL, "factor is atom " << $$);
   }
-#line 2579 "_carbrepl_rps.cc"
-              }
-              C49:;
-            }
-            break;
-            /* replnt_factor: MINUS replnt_factor */
-            case 20: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_FACTOR;
-              stack->continue_at_ = 50;
-              {
-#line 325 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_factor((stack->stack_[1].v_.uv9_),__LINE__);
-#line 2592 "_carbrepl_rps.cc"
-              }
-              C50:;
-              stack->continue_at_ = 51;
-              {
-#line 485 "carbrepl_rps.cbrt"
-                {
+
+replnt_factor: MINUS replnt_factor            {
   _Pragma("message \"replnt_factor as MINUS replnt_factor in carbrepl_rps.cbrt\"");
   // $$ = -$1;
   }
-#line 2602 "_carbrepl_rps.cc"
-              }
-              C51:;
-            }
-            break;
-            /* replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN */
-            case 21: {
-              stack->slot_1_has_sym_data_ = 1;
-              stack->slot_1_sym_ = RPSCARBREPL_REPLNT_FACTOR;
-              stack->continue_at_ = 52;
-              {
-#line 325 "carbrepl_rps.cbrt"
-                rps_carbrepl_constructor_replnt_factor((stack->stack_[1].v_.uv9_),__LINE__);
-#line 2615 "_carbrepl_rps.cc"
-              }
-              C52:;
-              stack->continue_at_ = 53;
-              {
-#line 490 "carbrepl_rps.cbrt"
-                {
+
+replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
   _Pragma("message \"replnt_factor as LEFTPAREN replnt_factor RIGHTPAREN in carbrepl_rps.cbrt\"");
-  RPS_DEBUG_LOG(REPL, "factor is parenthesised expr " << (stack->sym_data_[1].v_.uv7_));
+  RPS_DEBUG_LOG(REPL, "factor is parenthesised expr " << $1);
   // $$ = $1;
   }
-#line 2626 "_carbrepl_rps.cc"
-              }
-              C53:;
-            }
-            break;
-          } /* switch */
-        } /* scope guard */
-        
-        /* Free symdata for every symbol in the production, including the first slot where we will soon
-        * push nonterminal_data_reduced_to */
-        for (stack->sym_idx_ = stack->pos_ - stack->current_production_length_; stack->sym_idx_ < stack->pos_; ++stack->sym_idx_) {
-          switch (stack->stack_[stack->sym_idx_].state_) {
-            case 14: /* replnt_object */
-            case 29: /* replnt_object */
-            case 31: /* replnt_object */
-            case 33: /* replnt_object */
-            {
-              {
-#line 301 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_object(((stack->stack_ + stack->sym_idx_)->v_.uv5_),__LINE__);
-#line 2646 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case 23: /* replnt_atom */
-            {
-              {
-#line 306 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_atom(((stack->stack_ + stack->sym_idx_)->v_.uv6_),__LINE__);
-#line 2656 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case 5: /* replnt_expr */
-            case 7: /* replnt_expr */
-            case 13: /* replnt_expr */
-            {
-              {
-#line 312 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_expr(((stack->stack_ + stack->sym_idx_)->v_.uv7_),__LINE__);
-#line 2668 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case 8: /* replnt_term */
-            case 10: /* replnt_term */
-            case 20: /* replnt_term */
-            {
-              {
-#line 319 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_term(((stack->stack_ + stack->sym_idx_)->v_.uv8_),__LINE__);
-#line 2680 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-            case 16: /* replnt_factor */
-            case 18: /* replnt_factor */
-            case 21: /* replnt_factor */
-            case 22: /* replnt_factor */
-            {
-              {
-#line 326 "carbrepl_rps.cbrt"
-                rps_carbrepl_destructor_replnt_factor(((stack->stack_ + stack->sym_idx_)->v_.uv9_),__LINE__);
-#line 2693 "_carbrepl_rps.cc"
-              }
-              
-            }
-            break;
-          } /* switch */
-        } /* for */
-        stack->pos_ -= stack->current_production_length_;
-        stack->top_of_stack_has_sym_data_ = stack->top_of_stack_has_common_data_ = 1;
-        action = rpscarbrepl_parse_table[rpscarbrepl_num_columns * stack->stack_[stack->pos_ - 1].state_ + (stack->current_production_nonterminal_ - rpscarbrepl_minimum_sym)];
-        if (action <= 0) {
-          stack->continue_at_ = 0;
-          /* Internal error */
-          return _RPSCARBREPL_INTERNAL_ERROR;
-        }
-        if (stack->num_stack_allocated_ == stack->pos_) {
-          stack->action_preservation_ = action /* action for a "goto" shift is the ordinal */;
-          size_t new_num_allocated;
-          if (stack->num_stack_allocated_) {
-            new_num_allocated = stack->num_stack_allocated_ * 2;
-            if (new_num_allocated <= stack->num_stack_allocated_) {
-              /* Overflow in allocation */
-              return _RPSCARBREPL_OVERFLOW;
-            }
-          }
-          else {
-            new_num_allocated = 16;
-          }
-          
-          if (new_num_allocated > (SIZE_MAX / sizeof(struct rpscarbrepl_sym_data))) {
-            /* Overflow in allocation */
-            return _RPSCARBREPL_OVERFLOW;
-          }
-          
-          stack->new_buf_ = (struct rpscarbrepl_sym_data *)malloc(new_num_allocated * sizeof(struct rpscarbrepl_sym_data));
-          if (!stack->new_buf_) {
-            /* Out of memory */
-            return _RPSCARBREPL_NO_MEMORY;
-          }
-          stack->new_buf_num_allocated_ = new_num_allocated;
-          for (stack->new_buf_sym_partial_pos_ = 0; stack->new_buf_sym_partial_pos_ < stack->pos_; ++stack->new_buf_sym_partial_pos_) {
-            stack->new_buf_[stack->new_buf_sym_partial_pos_].state_ = stack->stack_[stack->new_buf_sym_partial_pos_].state_;
-            stack->newbuf_pos_has_common_data_ = stack->newbuf_pos_has_sym_data_ = 0;
-            stack->stack_newbuf_pos_has_common_data_ = stack->stack_newbuf_pos_has_sym_data_ = 1;
-            if ((stack->new_buf_sym_partial_pos_ == 0) || (stack->new_buf_sym_partial_pos_ == 1)) {
-              int need_sym_move;
-              int sym_to_move;
-              sym_to_move = 0; /* silence a waring with this explicit initialization */
-              need_sym_move = 0;
-              if (stack->new_buf_sym_partial_pos_ == 0) {
-                /* slot 0 goes unused in scannerless operation */
-                need_sym_move = 0;
-              }
-              else if (stack->new_buf_sym_partial_pos_ == 1) {
-                need_sym_move = stack->slot_1_has_sym_data_;
-                sym_to_move = stack->slot_1_sym_;
-              }
-              if (need_sym_move) {
-                switch (sym_to_move) {
-                  case RPSCARBREPL_INT:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_DOUBLE:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_STRING:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_NAME:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_OID:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_OBJECT:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 54;
-                  {
-#line 300 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_object(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv5_,__LINE__);
-#line 2788 "_carbrepl_rps.cc"
-                  }
-                  C54:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_ATOM:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 55;
-                  {
-#line 305 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_atom(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv6_,__LINE__);
-#line 2801 "_carbrepl_rps.cc"
-                  }
-                  C55:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_EXPR:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 56;
-                  {
-#line 311 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_expr(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv7_,__LINE__);
-#line 2814 "_carbrepl_rps.cc"
-                  }
-                  C56:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_TERM:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 57;
-                  {
-#line 318 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_term(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv8_,__LINE__);
-#line 2827 "_carbrepl_rps.cc"
-                  }
-                  C57:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_FACTOR:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 58;
-                  {
-#line 325 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_factor(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv9_,__LINE__);
-#line 2840 "_carbrepl_rps.cc"
-                  }
-                  C58:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_VALUE:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  stack->continue_at_ = 59;
-                  {
-#line 331 "carbrepl_rps.cbrt"
-                    rps_carbrepl_constructor_replnt_value(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv10_,__LINE__);
-#line 2853 "_carbrepl_rps.cc"
-                  }
-                  C59:;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_INPUT:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                  case RPSCARBREPL_REPLNT_COMMAND:
-                  stack->newbuf_pos_has_sym_data_ = 1;
-                  memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                  stack->stack_newbuf_pos_has_sym_data_ = 0;
-                  
-                  break;
-                }
-              }
-            }
-            else /* not 0 or 1, but >= 2 state derived sym */ {
-              switch (stack->stack_[stack->new_buf_sym_partial_pos_].state_) {
-                case 14: /* replnt_object */
-                case 29: /* replnt_object */
-                case 31: /* replnt_object */
-                case 33: /* replnt_object */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 60;
-                {
-#line 300 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_object(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv5_,__LINE__);
-#line 2886 "_carbrepl_rps.cc"
-                }
-                C60:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 23: /* replnt_atom */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 61;
-                {
-#line 305 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_atom(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv6_,__LINE__);
-#line 2899 "_carbrepl_rps.cc"
-                }
-                C61:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 5: /* replnt_expr */
-                case 7: /* replnt_expr */
-                case 13: /* replnt_expr */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 62;
-                {
-#line 311 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_expr(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv7_,__LINE__);
-#line 2914 "_carbrepl_rps.cc"
-                }
-                C62:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 8: /* replnt_term */
-                case 10: /* replnt_term */
-                case 20: /* replnt_term */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 63;
-                {
-#line 318 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_term(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv8_,__LINE__);
-#line 2929 "_carbrepl_rps.cc"
-                }
-                C63:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 16: /* replnt_factor */
-                case 18: /* replnt_factor */
-                case 21: /* replnt_factor */
-                case 22: /* replnt_factor */
-                stack->newbuf_pos_has_sym_data_ = 1;
-                stack->continue_at_ = 64;
-                {
-#line 325 "carbrepl_rps.cbrt"
-                  rps_carbrepl_constructor_replnt_factor(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv9_,__LINE__);
-#line 2945 "_carbrepl_rps.cc"
-                }
-                C64:;
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-                
-                case 26: /* INT */
-                case 27: /* DOUBLE */
-                case 28: /* STRING */
-                case 34: /* NAME */
-                case 35: /* OID */
-                case 1: /* replnt_input */
-                case 2: /* replnt_input */
-                case 4: /* replnt_command */
-                memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                stack->stack_newbuf_pos_has_sym_data_ = 0;
-                break;
-              } /* switch */
-            }
-          }
-          if (stack->stack_) free(stack->stack_);
-          stack->stack_ = stack->new_buf_;
-          stack->new_buf_sym_partial_pos_ = 0;
-          stack->new_buf_ = NULL;
-          stack->num_stack_allocated_ = stack->new_buf_num_allocated_;
-          action /* action for a "goto" shift is the ordinal */ = stack->action_preservation_;
-        }
-        stack->stack_[stack->pos_++].state_ = action /* action for a "goto" shift is the ordinal */;
-        stack->top_of_stack_has_sym_data_ = 0;
-        stack->top_of_stack_has_common_data_ = 0;
-        switch(stack->stack_[stack->pos_ - 1].state_) {
-          case 26: /* INT */
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 27: /* DOUBLE */
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 28: /* STRING */
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 34: /* NAME */
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 35: /* OID */
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 14: /* replnt_object */
-          case 29: /* replnt_object */
-          case 31: /* replnt_object */
-          case 33: /* replnt_object */
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 65;
-          {
-#line 300 "carbrepl_rps.cbrt"
-            rps_carbrepl_constructor_replnt_object(((stack->stack_ + stack->pos_ - 1)->v_.uv5_),__LINE__);
-#line 3001 "_carbrepl_rps.cc"
-          }
-          C65:;
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 23: /* replnt_atom */
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 66;
-          {
-#line 305 "carbrepl_rps.cbrt"
-            rps_carbrepl_constructor_replnt_atom(((stack->stack_ + stack->pos_ - 1)->v_.uv6_),__LINE__);
-#line 3012 "_carbrepl_rps.cc"
-          }
-          C66:;
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 5: /* replnt_expr */
-          case 7: /* replnt_expr */
-          case 13: /* replnt_expr */
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 67;
-          {
-#line 311 "carbrepl_rps.cbrt"
-            rps_carbrepl_constructor_replnt_expr(((stack->stack_ + stack->pos_ - 1)->v_.uv7_),__LINE__);
-#line 3025 "_carbrepl_rps.cc"
-          }
-          C67:;
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 8: /* replnt_term */
-          case 10: /* replnt_term */
-          case 20: /* replnt_term */
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 68;
-          {
-#line 318 "carbrepl_rps.cbrt"
-            rps_carbrepl_constructor_replnt_term(((stack->stack_ + stack->pos_ - 1)->v_.uv8_),__LINE__);
-#line 3038 "_carbrepl_rps.cc"
-          }
-          C68:;
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 16: /* replnt_factor */
-          case 18: /* replnt_factor */
-          case 21: /* replnt_factor */
-          case 22: /* replnt_factor */
-          stack->top_of_stack_has_sym_data_ = 1;
-          stack->continue_at_ = 69;
-          {
-#line 325 "carbrepl_rps.cbrt"
-            rps_carbrepl_constructor_replnt_factor(((stack->stack_ + stack->pos_ - 1)->v_.uv9_),__LINE__);
-#line 3052 "_carbrepl_rps.cc"
-          }
-          C69:;
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 1: /* replnt_input */
-          case 2: /* replnt_input */
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-          case 4: /* replnt_command */
-          memcpy(&stack->stack_[stack->pos_ - 1].v_, &stack->stack_[1].v_, sizeof(stack->stack_->v_));
-          break;
-        } /* switch (top of stack state) */
-        stack->slot_1_has_sym_data_ = 0;
-      } /* action < 0 */
-      else /* action == 0 */ {
-        /* check if we can recover using an error token. */
-        size_t n;
-        for (n = 0; n < stack->pos_; ++n) {
-          stack->current_err_action_ = rpscarbrepl_parse_table[rpscarbrepl_num_columns * stack->stack_[n].state_ + (20 /* error token */ - rpscarbrepl_minimum_sym)];
-          if (stack->current_err_action_ > 0) {
-            /* we can transition on the error token somewhere on the stack */
-            break;
-          }
-        }
-        /* Enter error-token recovery mode given that such a recovery is possible */
-        stack->error_recovery_ = (n != stack->pos_);
-        /* Issue the error here */
-        if (!stack->mute_error_turns_) {
-          stack->mute_error_turns_ = 3;
-          stack->continue_at_ = 0;
-          /* Syntax error */
-          return _RPSCARBREPL_SYNTAX_ERROR;
-        }
-        else {
-          stack->mute_error_turns_--;
-          if (sym == RPSCARBREPL_EOF) {
-            /* EOF means we cannot shift to recover, and errors are muted, so return completion */
-            stack->pending_reset_ = 1;
-            return _RPSCARBREPL_FINISH;
-          }
-          /* Retain EOF but discard any other sym so we make progress */
-          stack->continue_at_ = 0;
-          {
-            {_Pragma("message \"on_next_token code\"");              \
-              RPS_POSSIBLE_BREAKPOINT();                                          \
-              RPS_DEBUG_LOG(REPL, "°+on_next_token start tksrc=" << *tksrc        \
-              << " sym:" << sym                                     \
-              << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)               \
-              << std::endl                                          \
-              << RPS_FULL_BACKTRACE_HERE(1, "¤+on_next_token"));    \
-              RPS_POSSIBLE_BREAKPOINT();                                          \
-              _Pragma("message \"FIXME the value of next token\"");               \
-              int ntk = rps_carbrepl_next_token(callframe, tksrc, sym,            \
-              carbdata,                         \
-              __LINE__);                        \
-              RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
-              << ntk << std::endl                                   \
-              << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
-              return ntk; }
-            
-          }
-        }
-      }
-    } /* !stack->error_recovery_ */
-    if (stack->error_recovery_) {
-      size_t n;
-      n = stack->pos_;
-      if (n) {
-        do {
-          --n;
-          /* Can we shift an error token? */
-          stack->current_err_action_ = rpscarbrepl_parse_table[rpscarbrepl_num_columns * stack->stack_[n].state_ + (20 /* error token */ - rpscarbrepl_minimum_sym)];
-          if (stack->current_err_action_ > 0) {
-            /* Does the resulting state accept the current symbol? */
-            int err_sym_action;
-            err_sym_action = rpscarbrepl_parse_table[rpscarbrepl_num_columns * stack->current_err_action_ + (sym - rpscarbrepl_minimum_sym)];
-            if (err_sym_action) {
-              /* Current symbol is accepted, recover error condition by shifting the error token and then process the symbol as usual */
-              /* Free symdata for every symbol up to the state where we will shift the error token */
-              for (stack->sym_idx_ = n + 1; stack->sym_idx_ < stack->pos_; ++stack->sym_idx_) {
-                switch (stack->stack_[stack->sym_idx_].state_) {
-                  case 14: /* replnt_object */
-                  case 29: /* replnt_object */
-                  case 31: /* replnt_object */
-                  case 33: /* replnt_object */
-                  {
-#line 301 "carbrepl_rps.cbrt"
-                    rps_carbrepl_destructor_replnt_object(((stack->stack_ + stack->sym_idx_)->v_.uv5_),__LINE__);
-#line 3141 "_carbrepl_rps.cc"
-                  }
-                  break;
-                  case 23: /* replnt_atom */
-                  {
-#line 306 "carbrepl_rps.cbrt"
-                    rps_carbrepl_destructor_replnt_atom(((stack->stack_ + stack->sym_idx_)->v_.uv6_),__LINE__);
-#line 3148 "_carbrepl_rps.cc"
-                  }
-                  break;
-                  case 5: /* replnt_expr */
-                  case 7: /* replnt_expr */
-                  case 13: /* replnt_expr */
-                  {
-#line 312 "carbrepl_rps.cbrt"
-                    rps_carbrepl_destructor_replnt_expr(((stack->stack_ + stack->sym_idx_)->v_.uv7_),__LINE__);
-#line 3157 "_carbrepl_rps.cc"
-                  }
-                  break;
-                  case 8: /* replnt_term */
-                  case 10: /* replnt_term */
-                  case 20: /* replnt_term */
-                  {
-#line 319 "carbrepl_rps.cbrt"
-                    rps_carbrepl_destructor_replnt_term(((stack->stack_ + stack->sym_idx_)->v_.uv8_),__LINE__);
-#line 3166 "_carbrepl_rps.cc"
-                  }
-                  break;
-                  case 16: /* replnt_factor */
-                  case 18: /* replnt_factor */
-                  case 21: /* replnt_factor */
-                  case 22: /* replnt_factor */
-                  {
-#line 326 "carbrepl_rps.cbrt"
-                    rps_carbrepl_destructor_replnt_factor(((stack->stack_ + stack->sym_idx_)->v_.uv9_),__LINE__);
-#line 3176 "_carbrepl_rps.cc"
-                  }
-                  break;
-                } /* switch */
-              } /* for */
-              stack->pos_ = n + 1;
-              stack->top_of_stack_has_sym_data_ = stack->top_of_stack_has_common_data_ = 1;
-              /* Push the state of the error transition */
-              if (stack->num_stack_allocated_ == stack->pos_) {
-                stack->action_preservation_ = stack->current_err_action_;
-                size_t new_num_allocated;
-                if (stack->num_stack_allocated_) {
-                  new_num_allocated = stack->num_stack_allocated_ * 2;
-                  if (new_num_allocated <= stack->num_stack_allocated_) {
-                    /* Overflow in allocation */
-                    return _RPSCARBREPL_OVERFLOW;
-                  }
-                }
-                else {
-                  new_num_allocated = 16;
-                }
-                
-                if (new_num_allocated > (SIZE_MAX / sizeof(struct rpscarbrepl_sym_data))) {
-                  /* Overflow in allocation */
-                  return _RPSCARBREPL_OVERFLOW;
-                }
-                
-                stack->new_buf_ = (struct rpscarbrepl_sym_data *)malloc(new_num_allocated * sizeof(struct rpscarbrepl_sym_data));
-                if (!stack->new_buf_) {
-                  /* Out of memory */
-                  return _RPSCARBREPL_NO_MEMORY;
-                }
-                stack->new_buf_num_allocated_ = new_num_allocated;
-                for (stack->new_buf_sym_partial_pos_ = 0; stack->new_buf_sym_partial_pos_ < stack->pos_; ++stack->new_buf_sym_partial_pos_) {
-                  stack->new_buf_[stack->new_buf_sym_partial_pos_].state_ = stack->stack_[stack->new_buf_sym_partial_pos_].state_;
-                  stack->newbuf_pos_has_common_data_ = stack->newbuf_pos_has_sym_data_ = 0;
-                  stack->stack_newbuf_pos_has_common_data_ = stack->stack_newbuf_pos_has_sym_data_ = 1;
-                  if ((stack->new_buf_sym_partial_pos_ == 0) || (stack->new_buf_sym_partial_pos_ == 1)) {
-                    int need_sym_move;
-                    int sym_to_move;
-                    sym_to_move = 0; /* silence a waring with this explicit initialization */
-                    need_sym_move = 0;
-                    if (stack->new_buf_sym_partial_pos_ == 0) {
-                      /* slot 0 goes unused in scannerless operation */
-                      need_sym_move = 0;
-                    }
-                    else if (stack->new_buf_sym_partial_pos_ == 1) {
-                      need_sym_move = stack->slot_1_has_sym_data_;
-                      sym_to_move = stack->slot_1_sym_;
-                    }
-                    if (need_sym_move) {
-                      switch (sym_to_move) {
-                        case RPSCARBREPL_INT:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_DOUBLE:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_STRING:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_NAME:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_OID:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_OBJECT:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        stack->continue_at_ = 70;
-                        {
-#line 300 "carbrepl_rps.cbrt"
-                          rps_carbrepl_constructor_replnt_object(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv5_,__LINE__);
-#line 3264 "_carbrepl_rps.cc"
-                        }
-                        C70:;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_ATOM:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        stack->continue_at_ = 71;
-                        {
-#line 305 "carbrepl_rps.cbrt"
-                          rps_carbrepl_constructor_replnt_atom(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv6_,__LINE__);
-#line 3277 "_carbrepl_rps.cc"
-                        }
-                        C71:;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_EXPR:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        stack->continue_at_ = 72;
-                        {
-#line 311 "carbrepl_rps.cbrt"
-                          rps_carbrepl_constructor_replnt_expr(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv7_,__LINE__);
-#line 3290 "_carbrepl_rps.cc"
-                        }
-                        C72:;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_TERM:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        stack->continue_at_ = 73;
-                        {
-#line 318 "carbrepl_rps.cbrt"
-                          rps_carbrepl_constructor_replnt_term(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv8_,__LINE__);
-#line 3303 "_carbrepl_rps.cc"
-                        }
-                        C73:;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_FACTOR:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        stack->continue_at_ = 74;
-                        {
-#line 325 "carbrepl_rps.cbrt"
-                          rps_carbrepl_constructor_replnt_factor(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv9_,__LINE__);
-#line 3316 "_carbrepl_rps.cc"
-                        }
-                        C74:;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_VALUE:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        stack->continue_at_ = 75;
-                        {
-#line 331 "carbrepl_rps.cbrt"
-                          rps_carbrepl_constructor_replnt_value(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv10_,__LINE__);
-#line 3329 "_carbrepl_rps.cc"
-                        }
-                        C75:;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_INPUT:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                        case RPSCARBREPL_REPLNT_COMMAND:
-                        stack->newbuf_pos_has_sym_data_ = 1;
-                        memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                        stack->stack_newbuf_pos_has_sym_data_ = 0;
-                        
-                        break;
-                      }
-                    }
-                  }
-                  else /* not 0 or 1, but >= 2 state derived sym */ {
-                    switch (stack->stack_[stack->new_buf_sym_partial_pos_].state_) {
-                      case 14: /* replnt_object */
-                      case 29: /* replnt_object */
-                      case 31: /* replnt_object */
-                      case 33: /* replnt_object */
-                      stack->newbuf_pos_has_sym_data_ = 1;
-                      stack->continue_at_ = 76;
-                      {
-#line 300 "carbrepl_rps.cbrt"
-                        rps_carbrepl_constructor_replnt_object(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv5_,__LINE__);
-#line 3362 "_carbrepl_rps.cc"
-                      }
-                      C76:;
-                      memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                      stack->stack_newbuf_pos_has_sym_data_ = 0;
-                      break;
-                      
-                      case 23: /* replnt_atom */
-                      stack->newbuf_pos_has_sym_data_ = 1;
-                      stack->continue_at_ = 77;
-                      {
-#line 305 "carbrepl_rps.cbrt"
-                        rps_carbrepl_constructor_replnt_atom(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv6_,__LINE__);
-#line 3375 "_carbrepl_rps.cc"
-                      }
-                      C77:;
-                      memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                      stack->stack_newbuf_pos_has_sym_data_ = 0;
-                      break;
-                      
-                      case 5: /* replnt_expr */
-                      case 7: /* replnt_expr */
-                      case 13: /* replnt_expr */
-                      stack->newbuf_pos_has_sym_data_ = 1;
-                      stack->continue_at_ = 78;
-                      {
-#line 311 "carbrepl_rps.cbrt"
-                        rps_carbrepl_constructor_replnt_expr(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv7_,__LINE__);
-#line 3390 "_carbrepl_rps.cc"
-                      }
-                      C78:;
-                      memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                      stack->stack_newbuf_pos_has_sym_data_ = 0;
-                      break;
-                      
-                      case 8: /* replnt_term */
-                      case 10: /* replnt_term */
-                      case 20: /* replnt_term */
-                      stack->newbuf_pos_has_sym_data_ = 1;
-                      stack->continue_at_ = 79;
-                      {
-#line 318 "carbrepl_rps.cbrt"
-                        rps_carbrepl_constructor_replnt_term(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv8_,__LINE__);
-#line 3405 "_carbrepl_rps.cc"
-                      }
-                      C79:;
-                      memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                      stack->stack_newbuf_pos_has_sym_data_ = 0;
-                      break;
-                      
-                      case 16: /* replnt_factor */
-                      case 18: /* replnt_factor */
-                      case 21: /* replnt_factor */
-                      case 22: /* replnt_factor */
-                      stack->newbuf_pos_has_sym_data_ = 1;
-                      stack->continue_at_ = 80;
-                      {
-#line 325 "carbrepl_rps.cbrt"
-                        rps_carbrepl_constructor_replnt_factor(stack->new_buf_[stack->new_buf_sym_partial_pos_].v_.uv9_,__LINE__);
-#line 3421 "_carbrepl_rps.cc"
-                      }
-                      C80:;
-                      memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                      stack->stack_newbuf_pos_has_sym_data_ = 0;
-                      break;
-                      
-                      case 26: /* INT */
-                      case 27: /* DOUBLE */
-                      case 28: /* STRING */
-                      case 34: /* NAME */
-                      case 35: /* OID */
-                      case 1: /* replnt_input */
-                      case 2: /* replnt_input */
-                      case 4: /* replnt_command */
-                      memcpy(&stack->new_buf_[stack->new_buf_sym_partial_pos_].v_, &stack->stack_[stack->new_buf_sym_partial_pos_].v_, sizeof(stack->stack_->v_));
-                      stack->stack_newbuf_pos_has_sym_data_ = 0;
-                      break;
-                    } /* switch */
-                  }
-                }
-                if (stack->stack_) free(stack->stack_);
-                stack->stack_ = stack->new_buf_;
-                stack->new_buf_sym_partial_pos_ = 0;
-                stack->new_buf_ = NULL;
-                stack->num_stack_allocated_ = stack->new_buf_num_allocated_;
-                stack->current_err_action_ = stack->action_preservation_;
-              }
-              stack->stack_[stack->pos_++].state_ = stack->current_err_action_;
-              stack->top_of_stack_has_sym_data_ = 0;
-              stack->top_of_stack_has_common_data_ = 0;
-              stack->error_recovery_ = 0;
-              /* Break out of do { .. } while loop, we've recovered */
-              break;
-            } /* if (err_sym_action) (if the current sym can continue after an error transition) */
-          } /* if (stack->current_err_action_) (if the state at position 'n' can accept an error transition) */
-        } while (n);
-      }
-      if (stack->error_recovery_) {
-        /* Did not yet recover, discard current sym and get next */
-        if (sym == RPSCARBREPL_EOF) {
-          /* EOF means we cannot shift to recover, so return completion */
-          stack->pending_reset_ = 1;
-          return _RPSCARBREPL_FINISH;
-        }
-        stack->continue_at_ = 0;
-        {
-          {_Pragma("message \"on_next_token code\"");              \
-            RPS_POSSIBLE_BREAKPOINT();                                          \
-            RPS_DEBUG_LOG(REPL, "°+on_next_token start tksrc=" << *tksrc        \
-            << " sym:" << sym                                     \
-            << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)               \
-            << std::endl                                          \
-            << RPS_FULL_BACKTRACE_HERE(1, "¤+on_next_token"));    \
-            RPS_POSSIBLE_BREAKPOINT();                                          \
-            _Pragma("message \"FIXME the value of next token\"");               \
-            int ntk = rps_carbrepl_next_token(callframe, tksrc, sym,            \
-            carbdata,                         \
-            __LINE__);                        \
-            RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
-            << ntk << std::endl                                   \
-            << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
-            return ntk; }
-          
-        }
-      }
-    } /* stack->error_recovery_ */
-  } /* for (;;) */
-}
-/* --------- END OF GENERATED CODE ------------ */
+
+ 
+%%
 
 
 #pragma message "trailer of carbrepl_rps.cbrt"
