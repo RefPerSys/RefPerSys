@@ -312,7 +312,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
                                       carbdata,                         \
                                       __LINE__);                        \
     RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
-                  << ntk << std::endl                                   \
+                  << ntk << "::" << RPS_CARBREPL_SYMBOL_NAME(ntk)       \
+		  << std::endl						\
                   << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
     return ntk; }
 
@@ -658,7 +659,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "+rps_carbrepl_next_token#" << callnum << " from "
                 << __FILE__ << ":" << lin
-                << " tksrc=" << *tksrc << std::endl
+                << " tksrc=" << *tksrc << "@" << (void*)tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     tksrc->display_current_line_with_cursor(out);
@@ -779,7 +780,7 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   RPS_ASSERT(tksrc);
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv=" << _f.obenv
-                << " tksrc=" << *tksrc
+                << " tksrc=" << *tksrc << "@" << (void*)tksrc
                 << " title=" << Rps_QuotedC_String(title)
                 << " FROM thread " << rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
@@ -905,7 +906,8 @@ const char*
 rps_carbrepl_symname_at(int symnum, int lin) {
 //// https://github.com/kingletbv/carburetta/issues/9
   RPS_POSSIBLE_BREAKPOINT();
-  if (symnum>0 && symnum<rpscarbrepl_symbol_names_length_) {
+  if (symnum>0 && symnum<rpscarbrepl_symbol_names_length_
+      && rpscarbrepl_symbol_names_[symnum]) {
     RPS_DEBUG_LOG(REPL, "°carbrepl_symname symnum#" << symnum
                   << " lin:" << lin
                   << " is "
@@ -913,10 +915,14 @@ rps_carbrepl_symname_at(int symnum, int lin) {
     return rpscarbrepl_symbol_names_[symnum];
   }
   else {
-    RPS_DEBUG_LOG(REPL, "°carbrepl_symname bad symnum#" << symnum
-                  << " lin:" << lin);
+    RPS_WARNOUT("°carbrepl_symname bad symnum#" << symnum
+                  << " lin:" << lin
+		<< RPS_FULL_BACKTRACE_HERE(1, "carbrepl_symname/BAD"));
     RPS_POSSIBLE_BREAKPOINT();
-    return nullptr;
+    static char buf[32];
+    memset (buf, 0, sizeof(buf));
+    snprintf(buf, sizeof(buf), "*BADSYM%d@%d*", symnum, lin);
+    return buf;
   }
 } // end rps_carbrepl_symname_at
 
