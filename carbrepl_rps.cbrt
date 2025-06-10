@@ -84,8 +84,8 @@ If the directive is not specified, the default behavior is to return <prefix>FEE
 A valid use-case for %on_next_token is to feed the parser with a new symbol by storing its ordinal value in sym without returning to the caller
 ****/
 
-extern "C" int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin);
-int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin);
+extern "C" int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int& sym, void*ad, int lin);
+int rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int& sym, void*ad, int lin);
 
 extern "C" struct rpscarbrepl_stack;
 
@@ -283,7 +283,10 @@ extern "C" const char rps_carbrepl_shortgitid[];
                   << std::endl						\
                   << RPS_FULL_BACKTRACE_HERE(1, "¤+on_next_token"));    \
     RPS_POSSIBLE_BREAKPOINT();                                          \
-    int ntk = rps_carbrepl_next_token(callframe, tksrc, __LINE__);      \
+    _Pragma("message \"FIXME the value of next token\"");               \
+    int ntk = rps_carbrepl_next_token(callframe, tksrc, sym,            \
+				      nullptr /*temporarily wrong*/,    \
+				      __LINE__);			\
     RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
                   << ntk << std::endl                                   \
                   << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
@@ -610,7 +613,8 @@ rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin)
 } // end rps_carbrepl_replnt_destructor_replnt_value
 
 int
-rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc, int lin)
+rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
+			int& sym, void*ad, int lin)
 {
   static thread_local int callcnt;
   /// used by %on_next_token above:
