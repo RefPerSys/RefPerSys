@@ -119,52 +119,68 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token INT
 %type INT: intptr_t
-%token_action {  _Pragma("message \"token_action for INT\""); \
-  /* should assign $$ for INT */ \
-  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc); \
-  RPS_FATALOUT("INT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+%token_action {  _Pragma("message \"token_action for INT\"");		\
+  $$ = carbdata.cardata_i;						\
+  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc		\
+		<< " cardata_i=" << carbdata.cardata_i);		\
+  RPS_FATALOUT("INT token_action is incomplete tksrc="                  \
+	       << tksrc << " sym=" << sym				\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
                << RPS_FULL_BACKTRACE_HERE(1, "token_action INT"));      \
  }
 
 
 %token DOUBLE
 %type DOUBLE: double
-%token_action {  _Pragma("message \"token_action for DOUBLE\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc); \
-  /* should assign $$ for DOUBLE */ \
-  RPS_FATALOUT("DOUBLE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+%token_action {  _Pragma("message \"token_action for DOUBLE\"");	\
+  RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc	\
+		<< " cardata_d=" << carbdata.cardata_d);		\
+  /* should assign $$ for DOUBLE */					\
+  $$ = carbdata.cardata_d;						\
+  RPS_FATALOUT("DOUBLE token_action is incomplete tksrc="		\
+	       << tksrc << " sym=" << sym 				\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+	       << " cardata_d="	  << carbdata.cardata_d			\
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOUBLE"));   \
  }
 
 %token STRING
 %type STRING: std::string
-%token_action { _Pragma("message \"token_action for STRING\""); \
-  /* should assign $$ for STRING */ \
-  RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc); \
-  RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+%token_action { _Pragma("message \"token_action for STRING\"");		\
+  /*  assign $$ for STRING */					\
+  RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc	\
+		<< " cardata_str="					\
+		<< Rps_QuotedC_String(carbdata.cardata_str));		\
+  $$ = carbdata.cardata_str; 						\
+  RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc	\
+	       << " sym=" << sym					\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
                << RPS_FULL_BACKTRACE_HERE(1, "token_action STRING"));   \
  }
 
 %token NAME
 %type NAME: std::string
-%token_action {  _Pragma("message \"token_action for NAME\"");  \
-  RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc); \
-  /* should assign $$ for NAME */ \
-  RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
+%token_action {  _Pragma("message \"token_action for NAME\"");		\
+  RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc		\
+		<< " cardata_str=" << carbdata.cardata_str);		\
+  /* should assign $$ for NAME using cardata_str */			\
+  RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc	\
+	       << " sym=" << sym					\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+		<< " cardata_str=" << carbdata.cardata_str		\
+               << std::endl						\
+	       << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));	\
  }
 
 %token OID
 %type OID: Rps_Id
-%token_action { _Pragma("message \"token_action for OID\"");   \
-  /* should assign $$ for OID */ \
-  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc); \
-  RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+%token_action { _Pragma("message \"token_action for OID\"");		\
+  /* should assign $$ for OID */					\
+  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc		\
+		<< " cardata_str=" << carbdata.cardata_str);		\
+  RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc		\
+	       << " sym=" << sym					\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
                << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
 
