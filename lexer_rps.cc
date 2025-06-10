@@ -62,9 +62,9 @@ Rps_TokenSource::Rps_TokenSource(std::string name)
     toksrc_token_deq(),
     toksrc_ptrnameval(nullptr)
 {
-  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource @" << this << " named " << name
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource constr"));
+  RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_TokenSource::Rps_TokenSource
 
 void
