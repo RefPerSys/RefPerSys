@@ -752,11 +752,11 @@ testcarb1: refpersys
 
 testcarb2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "@display 1+2*3" -B --run-name=testcarb2
+	./refpersys  -AREPL,CMD -c "@display 1 + 2 * 3" -B --run-name=testcarb2
 
 testcarb3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "@display 1+2" -B --run-name=testcarb3
+	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb3
 
 ## testing the FLTK graphical interface
 testfltk1: refpersys
