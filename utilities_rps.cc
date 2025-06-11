@@ -947,20 +947,23 @@ rps_check_mtime_files(void)
     RPS_ASSERT(strlen(tempmakefileout) < sizeof(tempmakefileout)-4);
     {
       FILE* ftemp = fopen(tempmakefileout, "w");
-      if (ftemp)
-        {
-          fprintf(ftemp, "# postponed temporary make output %s for..."
-                  "#... refpersys run %s from %s:%d\n",
-                  tempmakefileout, rps_run_name.c_str(), __FILE__, __LINE__);
-          fclose(ftemp);
-        }
-      else
+      if (!ftemp)
         RPS_FATALOUT("failed to open temporary make output " << tempmakefileout);
+      fprintf(ftemp, "# postponed temporary make output %s for...\n"
+              "#... refpersys run %s from %s:%d\n",
+              tempmakefileout, rps_run_name.c_str(), __FILE__, __LINE__);
       rps_postponed_remove_file(std::string{tempmakefileout});
+      {
+        char cwdbuf[256];
+        memset (cwdbuf, 0, sizeof(cwdbuf));
+        char*pwd = getcwd(cwdbuf, sizeof(cwdbuf));
+        if (pwd)
+          fprintf (ftemp, "# running in %s\n", pwd);
+      }
       char makecmd [256];
       memset (makecmd, 0, sizeof(makecmd));
       if (snprintf(makecmd, sizeof(makecmd),
-                   "%s -C %s -q objects 2>&1 > %s",
+                   "%s -C %s -q objects 2>&1 >> %s",
                    rps_gnu_make, rps_topdirectory,
                    tempmakefileout)
           < (int)sizeof(makecmd)-1)
@@ -975,6 +978,9 @@ rps_check_mtime_files(void)
       else        // makecmd too big
         RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
                   rps_topdirectory);
+      fprintf (ftemp, "#end of %s from %s:%d (%s)\n",
+               tempmakefileout, __FILE__, __LINE__, __FUNCTION__);
+      fclose (ftemp);
     }
   } // end running make -t command
 } // end rps_check_mtime_files
