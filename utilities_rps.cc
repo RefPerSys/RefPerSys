@@ -978,6 +978,7 @@ rps_check_mtime_files(void)
       else        // makecmd too big
         RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
                   rps_topdirectory);
+      fprintf (ftemp, "successful %s\n", makecmd);
       fprintf (ftemp, "#end of %s from %s:%d (%s)\n",
                tempmakefileout, __FILE__, __LINE__, __FUNCTION__);
       fclose (ftemp);
