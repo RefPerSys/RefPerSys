@@ -935,20 +935,48 @@ rps_check_mtime_files(void)
                     << " seconds than current executable " << exebuf
                     << ", so consider rebuilding with make");
     }
-  char makecmd [128];
-  memset (makecmd, 0, sizeof(makecmd));
-  if (snprintf(makecmd, sizeof(makecmd), "make -t -C %s -q objects", rps_topdirectory) < (int)sizeof(makecmd)-1)
+  //// run a make -t command to check that objects are up to date
+  {
+    char tempmakefileout[128];
+    memset (tempmakefileout, 0, sizeof(tempmakefileout));
+    snprintf(tempmakefileout, sizeof(tempmakefileout),
+             "/var/tmp/rpsmkchkmtim-%s-r%u-p%u",
+             rps_shortgitid,
+             (unsigned) Rps_Random::random_32u(),
+             (unsigned) getpid());
+    RPS_ASSERT(strlen(tempmakefileout) < sizeof(tempmakefileout)-4);
     {
-      int bad = system(makecmd);
-      if (bad)
-        RPS_WARNOUT("rps_check_mtime_files: " << makecmd
-                    << " failed with status# " << bad);
+      FILE* ftemp = fopen(tempmakefileout, "w");
+      if (ftemp)
+        {
+          fprintf(ftemp, "# postponed temporary make output %s for..."
+                  "#... refpersys run %s from %s:%d\n",
+                  tempmakefileout, rps_run_name.c_str(), __FILE__, __LINE__);
+          fclose(ftemp);
+        }
       else
-        RPS_INFORMOUT("rps_check_mtime_files: did " << std::string(makecmd) << " successfully");
+        RPS_FATALOUT("failed to open temporary make output " << tempmakefileout);
+      rps_postponed_remove_file(std::string{tempmakefileout});
+      char makecmd [256];
+      memset (makecmd, 0, sizeof(makecmd));
+      if (snprintf(makecmd, sizeof(makecmd),
+                   "%s -C %s -q objects 2>&1 > %s",
+                   rps_gnu_make, rps_topdirectory,
+                   tempmakefileout)
+          < (int)sizeof(makecmd)-1)
+        {
+          int bad = system(makecmd);
+          if (bad)
+            RPS_WARNOUT("rps_check_mtime_files: " << makecmd
+                        << " failed with status# " << bad);
+          else
+            RPS_INFORMOUT("rps_check_mtime_files: did " << std::string(makecmd) << " successfully");
+        }
+      else        // makecmd too big
+        RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
+                  rps_topdirectory);
     }
-  else
-    RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
-              rps_topdirectory);
+  } // end running make -t command
 } // end rps_check_mtime_files
 
 
@@ -1856,7 +1884,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
             outl << ' ' << Rps_SingleQuotedC_String(curarg);
         }
       outl << std::endl << "DGBCNT#" << rps_debug_counter() << "(a)"
-	   << std::flush;
+           << std::flush;
       syslog(LOG_EMERG, "RefPerSys fatal from %s", outl.str().c_str());
     } // end if syslog enabled
   else
@@ -1872,8 +1900,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
       if (!rps_run_name.empty())
         std::clog << " run " << rps_run_name;
       std::clog << std::endl
-		<< "… was started on " << rps_hostname()
-		<< " pid " << (int)getpid() << " as:" << std::endl;
+                << "… was started on " << rps_hostname()
+                << " pid " << (int)getpid() << " as:" << std::endl;
       for (int aix=0; aix<rps_argc; aix++)
         {
           const char*curarg = rps_argv[aix];
@@ -1889,7 +1917,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
             std::clog << ' ' << Rps_SingleQuotedC_String(curarg);
         }
       std::clog << std::endl << "DGBCNT#" << rps_debug_counter() << "(b)"
-		<< std::flush;
+                << std::flush;
       std::clog << std::endl << std::flush;
     } // end if syslog disabled
   fflush(nullptr);
