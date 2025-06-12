@@ -1929,6 +1929,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
     } // end if syslog disabled
   fflush(nullptr);
   rps_schedule_files_postponed_removal();
+  fprintf(stderr, "RefPerSys (git %s run %s) fatal stop\n"
+	  "... aborting at %s:%d\n",
+	  rps_shortgitid, rps_run_name.c_str(), filnam, lin);
+  fflush(stderr);
   abort();
 } // end rps_fatal_stop_at
 
