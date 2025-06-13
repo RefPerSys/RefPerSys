@@ -1610,9 +1610,10 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
 		<< " tok2=" << _f.tok2
 		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
   std::string commandpos = intoksrc.position_str();
-  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << "'"
-                << Rps_Cjson_String(cmd) << "'" << std::endl
-                << "… intoksrc:" << intoksrc
+  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command "
+//<< title << "'"
+//<< Rps_Cjson_String(cmd) << "'" << std::endl << "… "
+                << "intoksrc:" << intoksrc
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << " tok0=" << _f.tok0 << " tok1=" << _f.tok1
                 << " tok2=" << _f.tok2);

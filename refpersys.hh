@@ -2874,9 +2874,11 @@ class Rps_TokenSource           // this is *not* a value .....
                           Rps_ObjectRef obenvarg,
                           const std::string&cmd,
                           const char*title);
-  std::string toksrc_name;
-  int toksrc_line, toksrc_col;
-  int toksrc_counter;
+  std::string toksrc_name;	// displayable name
+  int toksrc_line, toksrc_col;	// current position
+  int toksrc_counter;		// count the number of lexed token
+  const unsigned toksrc_number;	// unique number
+  static std::atomic<unsigned> toksrc_instance_count_;
 protected:
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
@@ -2920,6 +2922,10 @@ public:
   {
     return toksrc_linebuf;
   };
+  const unsigned unique_number(void) const
+  {
+    return toksrc_number;
+  }
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
                                      Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
@@ -3061,7 +3067,8 @@ public:
     if (depth > maxdepth && &out != &std::cout && &out != &std::cerr && &out != &std::clog)
       RPS_WARNOUT("Rps_CinTokenSource " << name()
                   << " depth=" << depth << " greater than maxdepth=" << maxdepth);
-    out << "CinTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
+    out << "CinTokenSource:" << name() << ".S#" << unique_number()
+	<< '@' << position_str() << " tok.cnt:" << token_count();
   };
   Rps_CinTokenSource();
   virtual ~Rps_CinTokenSource();

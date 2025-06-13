@@ -54,15 +54,17 @@ const char rps_lexer_shortgitid[]= RPS_SHORTGITID;
 extern "C" Rps_StringValue rps_lexer_token_name_str_val;
 Rps_StringValue rps_lexer_token_name_str_val(nullptr);
 
-
+std::atomic<unsigned> Rps_TokenSource::toksrc_instance_count_;
 
 Rps_TokenSource::Rps_TokenSource(std::string name)
   : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_counter(0),
+    toksrc_number(1+toksrc_instance_count_.fetch_add(1)),
     toksrc_linebuf{},
     toksrc_token_deq(),
     toksrc_ptrnameval(nullptr)
 {
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource @" << this << " named " << name
+		<< " is " << *this
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource constr"));
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_TokenSource::Rps_TokenSource
@@ -139,7 +141,7 @@ Rps_TokenSource::position_str(int col) const
 {
   if (col<0) col = toksrc_col;
   std::ostringstream outs;
-  outs << toksrc_name << ":L" << toksrc_line << ",C"  << col << std::flush;
+  outs << "S" << unique_number() << ":L" << toksrc_line << ",C"  << col << std::flush;
   return outs.str();
 } // end Rps_TokenSource::position_str
 
@@ -345,7 +347,7 @@ Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdep
             }
         }
     }
-  out << "StriTokSrc°" << name();
+  out << "StriTokSrc#S" << unique_number() << "°" << name();
   if (abbrev.length() < toksrcstr_str.length())
     out << Rps_QuotedC_String(abbrev) << "⋯" // U+22EF MIDLINE HORIZONTAL ELLIPSIS;
         << "l" << toksrcstr_str.length();
@@ -453,7 +455,7 @@ void
 Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
 #warning incomplete Rps_MemoryFileTokenSource::output
-  out << "Rps_MemoryFileTokenSource@" << (void*)this
+  out << "Rps_MemoryFileTokenSource#S" << unique_number()
       << "(" << Rps_Cjson_String(name()) << ")"
       << " path:" << Rps_Cjson_String(toksrcmfil_path)
       // << " offset:" <<
