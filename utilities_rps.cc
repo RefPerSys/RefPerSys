@@ -1928,6 +1928,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
       std::clog << std::endl << std::flush;
     } // end if syslog disabled
   fflush(nullptr);
+  RPS_POSSIBLE_BREAKPOINT();
   rps_schedule_files_postponed_removal();
   fprintf(stderr, "RefPerSys (git %s run %s) fatal stop\n"
 	  "... aborting at %s:%d\n",
