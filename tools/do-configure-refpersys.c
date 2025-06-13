@@ -1282,9 +1282,11 @@ rpsconf_emit_configure_refpersys_mk (void)
       /// compiler might reject -Wextra)
       ///
       /// see https://stackoverflow.com/q/2224334/841108
-#ifdef __GNUC__
+      /// and https://stackoverflow.com/a/5827685/841108
+#if defined(__GNUC__) || defined (__clang__)
       fprintf (f, "## see stackoverflow.com/q/2224334/841108\n");
       fprintf (f, "\n## optimization and code generation flags\n");
+      fprintf (f, "\n## with GNU c++ or clang++ detected\n");
       fprintf (f, "ifndef REFPERSYS_CODEGEN_FLAGS\n");
       fprintf (f, "REFPERSYS_CODEGEN_FLAGS= -O1 -fPIC\n");
       fprintf (f, "endif #REFPERSYS_CODEGEN_FLAGS\n");
@@ -1293,6 +1295,8 @@ rpsconf_emit_configure_refpersys_mk (void)
       fprintf (f, "endif #REFPERSYS_DEBUG_FLAGS\n");
       fprintf (f, "ifndef REFPERSYS_WARNING_FLAGS\n");
       fprintf (f, "REFPERSYS_WARNING_FLAGS= -Wall -Wextra\n");
+      fprintf (f, "# https://stackoverflow.com/a/79663272/841108\n");
+      fprintf (f, "REFPERSYS_WARNING_FLAGS+= -Wnull-dereference\n");
       fprintf (f, "endif #REFPERSYS_WARNING_FLAGS\n");
       fprintf (f, "#GNU compiler from %s:%d\n"
                "REFPERSYS_COMPILER_FLAGS= $(REFPERSYS_CODEGEN_FLAGS)"
