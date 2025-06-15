@@ -1704,6 +1704,8 @@ main (int argc, char **argv)
   char*optimflags= getenv("CXXFLAGS");
   if (!optimflags)
     {
+      printf("## optimization flags should contain -fPIC and usually -g !\n");
+      fflush(NULL);
       optimflags =
         rpsconf_defaulted_readline ("C++ optimization and code generation flags:",
                                     "-O1 -g -fPIC");
