@@ -2922,7 +2922,7 @@ public:
   {
     return toksrc_linebuf;
   };
-  const unsigned unique_number(void) const
+  unsigned unique_number(void) const
   {
     return toksrc_number;
   }
