@@ -1705,7 +1705,7 @@ main (int argc, char **argv)
   if (!optimflags)
     {
       optimflags =
-        rpsconf_defaulted_readline ("C++ optimization and code generation flags",
+        rpsconf_defaulted_readline ("C++ optimization and code generation flags:",
                                     "-O1 -g -fPIC");
       rpsconf_codegen_flags = strdup(optimflags);
     }
