@@ -140,7 +140,8 @@ const char *rpsconf_builder_email;
 /* absolute path to fltk-config utility */
 const char *rpsconf_fltk_config;
 
-
+/* code generation flags */
+const char* rpsconf_codegen_flags;
 
 
 #ifndef MAX_REMOVED_FILES
@@ -1288,7 +1289,13 @@ rpsconf_emit_configure_refpersys_mk (void)
       fprintf (f, "\n## optimization and code generation flags\n");
       fprintf (f, "\n## with GNU c++ or clang++ detected\n");
       fprintf (f, "ifndef REFPERSYS_CODEGEN_FLAGS\n");
-      fprintf (f, "REFPERSYS_CODEGEN_FLAGS= -O1 -fPIC\n");
+      if (rpsconf_codegen_flags)
+        fprintf(f, "REFPERSYS_CODEGEN_FLAGS= %s\n", rpsconf_codegen_flags);
+      else
+        {
+          fprintf(f, "##hardwired code generation flags from %s:%d\n", __FILE__, __LINE__);
+          fprintf (f, "REFPERSYS_CODEGEN_FLAGS= -O1 -fPIC\n");
+        };
       fprintf (f, "endif #REFPERSYS_CODEGEN_FLAGS\n");
       fprintf (f, "ifndef REFPERSYS_DEBUG_FLAGS\n");
       fprintf (f, "REFPERSYS_DEBUG_FLAGS= -g2\n");
@@ -1694,6 +1701,14 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = "/usr/bin/g++";
 
+  char*optimflags= getenv("CXXFLAGS");
+  if (!optimflags)
+    {
+      optimflags =
+        rpsconf_defaulted_readline ("C++ optimization and code generation flags",
+                                    "-O1 -g -fPIC");
+      rpsconf_codegen_flags = strdup(optimflags);
+    }
   rpsconf_try_then_set_cxx_compiler (cxx);
   rpsconf_try_cxx_compiler_for_libgccjit (cc);
   rpsconf_test_libgccjit_compilation (cc);
