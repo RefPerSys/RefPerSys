@@ -648,88 +648,88 @@ altredump:  ./refpersys
 #### simple tests; the --run-name should start with test and not use $@ because of showtests target
 test00: refpersys
 	@printf '\f\n\n\n\n////test00 first *****\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=test00.1
+	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=test00.1 || (echo test00.1 failed; exit 1)
 	@printf '\f\n\n\n\n////test00 second *****\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=test00.2
+	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=test00.2 || (echo test00.2 failed; exit 1)
 	@printf '\f\n\n\n////test00 third *****\n'
-	./refpersys  -AREPL  --test-repl-lexer '@show put' -B --run-name=test00.3
+	./refpersys  -AREPL  --test-repl-lexer '@show put' -B --run-name=test00.3 || (echo test00.3 failed; exit 1)
 	@printf '\f\n\n\n////test00 fourth *****\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=test00.4
+	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=test00.4 || (echo test00.4 failed; exit 1)
 	@printf '\f\n\n\n////test00 help REPL command (fifth) ****\n'
-	./refpersys -AREPL -c help -B --run-name=test00.5
+	./refpersys -AREPL -c help -B --run-name=test00.5 || (echo test00.5 failed; exit 1)
 	@printf '\n\n\n////test00 FINISHED¤\n\n'
 
 test01: refpersys
 	@echo test01 testing simple show help with a lot of debug
-	./refpersys -AREPL,CMD -c 'show help' -B --run-name=test01
+	./refpersys -AREPL,CMD -c 'show help' -B --run-name=test01 || (echo test01 failed; exit 1)
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
 test01a:  refpersys
 	@echo test01a testing simple show class with a lot of debug
-	./refpersys -AREPL -c 'show class' -B --run-name=test01a
+	./refpersys -AREPL -c 'show class' -B --run-name=test01a || (echo test01a failed; exit 1)
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
 test01b: refpersys
-	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=test01b
+	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=test01b || (echo test01b failed; exit 1)
 	@printf '\n\n\n////test01b FINISHED¤\n'
 
 test01c: refpersys
-	@printf '\n\n\n//+ test01c !parse_sum 1 + 2\n'
+	@printf '\n\n\n//+ test01c !parse_sum 1 + 2\n' || (echo test01c failed; exit 1)
 	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B --run-name=test01c
 	@printf '\n\n\n////test01c FINISHED¤\n'
 
 test01d: refpersys
 	@printf '\n\n\n//+ test01d !parse_sum 1 + 2 + 3\n'
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 + 3' -B --run-name=test01d
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 + 3' -B --run-name=test01d || (echo test01d failed; exit 1)
 	@printf '\n\n\n////test01d FINISHED¤\n'
 
 test01e: refpersys
 	@printf '\n\n\n//+ test01e !parse_sum 1 + 2 * 3\n'
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=test01e
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=test01e || (echo test01e failed; exit 1)
 	@printf '\n\n\n////test01e FINISHED¤\n'
 
 ### notice the space after the 3 below
 test01f: refpersys
-	./refpersys -AREPL,LOW_REPL  -c '!parse_primary 3 ' -B --run-name=test01f
+	./refpersys -AREPL,LOW_REPL  -c '!parse_primary 3 ' -B --run-name=test01f || (echo test01f failed; exit 1)
 	@printf '\n\n\n////test01f FINISHED¤\n'
 
 
 test02: refpersys
-	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=test02
+	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=test02 || (echo test02 failed; exit 1)
 	@printf '\n\n\n////test02 FINISHED¤\n'
 
 test03: refpersys
-	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=test03
+	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=test03 || (echo test03 failed; exit 1)
 	@printf '\n\n\n////test03 FINISHED¤\n'
 
 ## test03 no tty
 test03nt: refpersys
-	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03nt
+	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03nt || (echo test03nt failed; exit 1)
 	@printf '\n\n\n////test03nt FINISHED¤\n'
 
 test03bis: refpersys
-	./refpersys -AREPL  -c 'show 1 + 2 + 3' -B --run-name=test03bis
+	./refpersys -AREPL  -c 'show 1 + 2 + 3' -B --run-name=test03bis || (echo test03bis failed; exit 1)
 	@printf '\n\n\n////test03bis FINISHED¤\n'
 
 test04: refpersys
-	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=test04
+	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=test04 || (echo test04 failed; exit 1)
 	@printf '\n\n\n////test04 FINISHED¤\n'
 
 test05: refpersys
-	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=test05
+	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=test05 || (echo test05 failed; exit 1)
 	@printf '\n\n\n////test05 FINISHED¤\n'
 
 test06: refpersys
-	./refpersys -AREPL  -c 'show 1' -B --run-name=test06
+	./refpersys -AREPL  -c 'show 1' -B --run-name=test06 || (echo test06 failed; exit 1)
 	@printf '\n\n\n////test06 FINISHED¤\n'
 
 test07: refpersys
-	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07.1
-	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=test07.2
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07.1 || (echo test07.1 failed; exit 1)
+	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=test07.2 || (echo test07.2 failed; exit 1)
 	@printf '\n\n\n////test07 FINISHED¤\n'
 
 test07a: refpersys
-	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@ || (echo test07a failed; exit 1)
 	@printf '\n\n\n////test07a FINISHED¤\n'
 
 test08: refpersys
@@ -739,47 +739,50 @@ test09: refpersys
 	@echo missing test09 ; exit 1
 
 test10: refpersys 
-	./refpersys -AREPL --run-name=test10 --run-delay=6s
+	./refpersys -AREPL --run-name=test10 --run-delay=6s || (echo test10 failed; exit 1)
 	@printf '\n\n\n////test10 FINISHED¤\n'
+
 test-load: refpersys
-	./refpersys --batch --run-name=test-load
+	./refpersys --batch --run-name=test-load || (echo test-load failed; exit 1)
 	@printf '\n\n\n////test-load FINISHED¤\n'
 
 ## testing the carburetta-based command
 testcarb1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "@display help" -B --run-name=testcarb1
+	./refpersys  -AREPL,CMD -c "@display help" -B --run-name=testcarb1 || (echo testcarb1 failed; exit 1)
 
 testcarb2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "@display 1 + 2 * 3" -B --run-name=testcarb2
+	./refpersys  -AREPL,CMD -c "@display 1 + 2 * 3" -B --run-name=testcarb2 || (echo testcarb2 failed; exit 1)
 
 testcarb3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb3
+	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
 
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -AREPL --run-name=$@ --run-delay=29s  \
                     --fltk=$$HOME/fltk1-refpersys-pref \
-                    --pid-file=$(RPS_HOMETMP)/refpersys.pid
+                    --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk1 failed; exit 1)
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory \
-                    --run-name=$@ --pid-file=$(RPS_HOMETMP)/refpersys.pid
+                    --run-name=$@ --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk2 failed; exit 1)
 	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink --pid-file=$(RPS_HOMETMP)/refpersys.pid
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink \
+                    --pid-file=$(RPS_HOMETMP)/refpersys.pid || (echo testfltk3 failed; exit 1)
 	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk4: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=15m  --fltk -bg peachpuff --echo="hello from $@"
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=15m  --fltk -bg peachpuff \
+                     --echo="hello from $@" || (echo testfltk4 failed; exit 1)
 	@printf '\n\n\n////testfltk4 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 ########### show the testing commands
