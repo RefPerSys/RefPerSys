@@ -96,12 +96,20 @@ REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_
 ## altredump is dumping into....
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
+
+## Ian Lance Taylor libbacktrace is often in GCC
+ifndef RPS_LIBBACKTRACE
+RPS_LIBBACKTRACE := (shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a)
+else
+RPS_LIBBACKTRACE := -lbacktrace
+endif
+
 ### required libraries not being known to pkg-config
 ## unistring is https://www.gnu.org/software/libunistring/
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
 ## libgccjit is from https://gcc.gnu.org/onlinedocs/jit/
 ## try using GNU lightning is from https://www.gnu.org/software/lightning/ (for machine code generation)
-REFPERSYS_NEEDED_LIBRARIES= -llightning -lunistring -lbacktrace -lgmp
+REFPERSYS_NEEDED_LIBRARIES= -llightning -lunistring -lgmp
 ## TODO after june 2024, add the libgccjit...
 
 ### desired plugins (their basename under plugins_dir/)
@@ -154,7 +162,7 @@ lto-refpersys:
              -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
-	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
+	      $(RPS_LIBBACKTRACE) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
                $(REFPERSYS_LINKER_FLAGS) \
@@ -283,7 +291,7 @@ refpersys: objects |  GNUmakefile _config-refpersys.mk
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
              __timestamp.o \
-	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
+              $(RPS_LIBBACKTRACE) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(REFPERSYS_LINKER_FLAGS) \
@@ -316,7 +324,7 @@ $(guile $(RPS_GUILE_SCRIPT))
 
 one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
 	$(guile rpsguilemk-compile-plugin $(REFPERSYS_PLUGIN_SOURCE) $(REFPERSYS_PLUGIN_SHARED_OBJECT))
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -328,7 +336,7 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
 
 plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -340,7 +348,7 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
 
 plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -352,7 +360,7 @@ plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  r
 
 plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -364,7 +372,7 @@ plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedsele
 
 plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -376,7 +384,7 @@ plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedatt
 
 plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -389,7 +397,7 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
 
 plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_create_cplusplus_primitive_type.cc  refpersys.hh  |GNUmakefile refpersys
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -402,7 +410,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_cre
 
 #- plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc refpersys.hh  |GNUmakefile refpersys
 #- 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-#- 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+#- 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
 #-              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
 #-             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
 #-             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
@@ -420,7 +428,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 #	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) /usr/bin/printenv
 #	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v $< -o $@
 	/usr/bin/printenv
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared -O1 -g \
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared  $(REFPERSYS_CODEGEN_FLAGS) \
 	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
 	       -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
                -DRPS_GITID=\"$(RPS_GIT_ID)\" \
