@@ -99,7 +99,7 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 ## Ian Lance Taylor libbacktrace is often in GCC
 ifndef RPS_LIBBACKTRACE
-RPS_LIBBACKTRACE := (shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a)
+RPS_LIBBACKTRACE := $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a)
 else
 RPS_LIBBACKTRACE := -lbacktrace
 endif
