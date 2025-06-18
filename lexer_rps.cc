@@ -239,23 +239,30 @@ Rps_StreamTokenSource::get_line(void)
 Rps_CinTokenSource::Rps_CinTokenSource()
   : Rps_TokenSource("-")
 {
-  RPS_DEBUG_LOG(REPL, "constr CinTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "constr CinTokenSource@ " <<(void*)this
+		<< " " << *this << " p." << position_str());
   RPS_DEBUG_LOG(LOWREP, "constr CinTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(CMD, "constr CinTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "constr CinTokenSource@ " <<(void*)this
+		<< " " << *this);
+  RPS_POSSIBLE_BREAKPOINT();
 };                              // end Rps_CinTokenSource::Rps_CinTokenSource
 
 Rps_CinTokenSource::~Rps_CinTokenSource()
 {
-  RPS_DEBUG_LOG(REPL, "destr CinTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(LOWREP, "destr CinTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(CMD, "destr CinTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "destr CinTokenSource@ " <<(void*)this
+		<< " " << *this << " p." << position_str());
+  RPS_DEBUG_LOG(LOWREP, "destr CinTokenSource@ " <<(void*)this
+		<< " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr CinTokenSource@ " <<(void*)this
+		<< " " << *this);
 };      // end Rps_CinTokenSource::~Rps_CinTokenSource
 
 bool
 Rps_CinTokenSource::get_line(void)
 {
   std::getline(std::cin, toksrc_linebuf);
-  if (!std::cin && toksrc_linebuf.empty()) return false;
+  if (!std::cin && toksrc_linebuf.empty())
+    return false;
   starting_new_input_line();
   return true;
 } // end Rps_CinTokenSource::get_line
@@ -277,9 +284,12 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this
                 << " from " << Rps_QuotedC_String(toksrcstr_str)
-                << " of " << toksrcstr_str.size() << " bytes, named " << name
+                << " of " << toksrcstr_str.size()
+		<< " bytes, named " << name
                 << std::endl << " " << (*this)
-                << RPS_FULL_BACKTRACE_HERE(1, "const StringTokenSource"));
+		<< " p." << position_str()
+		<< std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "constr StringTokenSource"));
   //RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
   //              << " from " << Rps_QuotedC_String(toksrcstr_str));
   if (!RPS_DEBUG_ENABLED(REPL))
@@ -294,6 +304,7 @@ Rps_StringTokenSource::~Rps_StringTokenSource()
   RPS_DEBUG_LOG(REPL, "destr ~StringTokenSource " << *this
                 << " with "  << Rps_QuotedC_String(toksrcstr_str)
                 << std::endl
+		<< " p." << position_str() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "destr StringTokenSource"));
   //RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
   if (!RPS_DEBUG_ENABLED(REPL))
@@ -414,14 +425,17 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   toksrcmfil_nextpage = (char*)ad + mappedsize;
   toksrcmfil_end = (char*)ad + fsiz;
   close(fd);
-  RPS_DEBUG_LOG(REPL, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this
+		<< " p." << position_str()
+		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "constr MemoryFileTokenSource"));
   RPS_DEBUG_LOG(LOWREP, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
 };                              // end Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource
 
 Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
 {
-  RPS_DEBUG_LOG(REPL, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this
+		<< " p." << position_str());
   RPS_DEBUG_LOG(LOWREP, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_ASSERT(toksrcmfil_start != nullptr && toksrcmfil_end != nullptr);
