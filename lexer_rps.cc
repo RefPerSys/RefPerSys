@@ -169,7 +169,9 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
 Rps_TokenSource::~Rps_TokenSource()
 {
   RPS_DEBUG_LOG(REPL, "~Rps_TokenSource " << toksrc_name << " @" << this
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "~Rps_TokenSource"));
+		<< " p." << position_str()
+                << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "~Rps_TokenSource"));
   toksrc_name.clear();
   toksrc_line= -1;
   toksrc_col= -1;
@@ -1885,7 +1887,7 @@ rps_run_test_repl_lexer(const std::string& teststr)
   RPS_ASSERT(rps_is_main_thread());
 
   RPS_TIMER_START();
-  Rps_StringTokenSource toktestsrc(teststr, "*test-repl-lexer*");
+  Rps_StringTokenSource toktestsrc(teststr, "*test-repl-lexer*°lex");
   bool gotl = toktestsrc.get_line();
   RPS_DEBUG_LOG(REPL, "start rps_run_test_repl_lexer gitid " << rps_gitid
                 << " teststr: " << Rps_QuotedC_String(teststr)

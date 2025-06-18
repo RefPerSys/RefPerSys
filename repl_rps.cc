@@ -1584,7 +1584,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
 		<< std::endl << " in thread "
 		<< rps_current_pthread_name());
   RPS_POSSIBLE_BREAKPOINT();
-  Rps_StringTokenSource intoksrc(cmd, std::string(title));
+  Rps_StringTokenSource intoksrc(cmd, std::string(title) + "°repl");
   if (!intoksrc.get_line())
     {
       RPS_WARNOUT("rps_do_one_repl_command " << title << " no line from "
@@ -1593,6 +1593,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       return;
     }
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
+		<< " p." << intoksrc.position_str()
 		<< " obenv=" << _f.obenv);
   RPS_POSSIBLE_BREAKPOINT();
   _f.tok0 = intoksrc.lookahead_token(&_, 0);
