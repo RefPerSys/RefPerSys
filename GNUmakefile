@@ -260,7 +260,7 @@ __timestamp.c: rps-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh genera
 	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
-	$(CC) -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
+	$(CC) -std=gnu23 -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
 
 
 #was
@@ -286,7 +286,7 @@ refpersys: objects |  GNUmakefile _config-refpersys.mk
 	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
-	@echo Linking $@
+	-@echo Linking $@
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
@@ -296,7 +296,7 @@ refpersys: objects |  GNUmakefile _config-refpersys.mk
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
-
+	-@echo Linked $@
 
 
 %.ii: %.cc | refpersys.hh GNUmakefile _config-refpersys.mk
