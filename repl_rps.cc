@@ -1572,8 +1572,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                  Rps_Value tok0, tok1, tok2;
                 );
   _f.obenv = obenvarg;
-  if (!title)
-    title="?";
+  RPS_ASSERT(title != nullptr && title[0]);
   RPS_ASSERT(!_f.obenv || (Rps_Value(_f.obenv)).is_object());
 #warning rps_do_one_repl_command unimplemented
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
