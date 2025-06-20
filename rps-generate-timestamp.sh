@@ -152,6 +152,9 @@ printf "const char rps_gpp_preprocessor_realpath[]=\"%s\";\n" $(realpath $GPP)
 
 printf "const char rps_gpp_preprocessor_version[]=\"%s\";\n" "$($GPP --version | /bin/head -1)"
 
+printf "const char rps_linking_command[]={\n"
+make -n refpersys | awk '/Linking RefPerSys/{doecho=1;}/Linked RefPerSys/{doecho=0;}{if (doecho) print;}' -;
+printf "0}; // end rps_linking_command\n"
 
 printf "/// see also GNUmakefile in %s for refpersys.org;\n" $PWD
 
