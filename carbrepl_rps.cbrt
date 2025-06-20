@@ -4,7 +4,7 @@
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
- *      It is almost its Carburetta grammar
+ *      It is its Carburetta grammar and parser
  *      see https://carburetta.com/
  *
  * Author(s):
@@ -516,8 +516,14 @@ replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
   // $$ = $1;
   }
 
- 
+
+
 %%
+
+
+/// temporary workaround github.com/kingletbv/carburetta/issues/10
+#line 525 "carbrepl_rps.cbrt"
+
 
 
 #pragma message "trailer of carbrepl_rps.cbrt"
