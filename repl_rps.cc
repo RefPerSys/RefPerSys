@@ -1666,9 +1666,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
          command from a Rps_TokenSource.... */
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " before calling rps_do_carburetta_command intoksrc=" << intoksrc);
       RPS_POSSIBLE_BREAKPOINT();
-      rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv,
-                                /*cmd:*/ std::string(intoksrc.curcptr()?:"?"),
-                                title);
+      rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv, &intoksrc);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " after calling rps_do_carburetta_command");
       RPS_POSSIBLE_BREAKPOINT();
     } // end of carburetta handled commands
