@@ -292,6 +292,7 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
 		<< " p." << position_str()
 		<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "constr StringTokenSource"));
+  RPS_POSSIBLE_BREAKPOINT();
   //RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
   //              << " from " << Rps_QuotedC_String(toksrcstr_str));
   if (!RPS_DEBUG_ENABLED(REPL))
@@ -303,11 +304,13 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
 
 Rps_StringTokenSource::~Rps_StringTokenSource()
 {
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "destr ~StringTokenSource " << *this
                 << " with "  << Rps_QuotedC_String(toksrcstr_str)
                 << std::endl
 		<< " p." << position_str() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "destr StringTokenSource"));
+  RPS_POSSIBLE_BREAKPOINT();
   //RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
   if (!RPS_DEBUG_ENABLED(REPL))
     RPS_DEBUG_LOG(CMD, "destr StringTokenSource@ " <<(void*)this << " " << *this);
