@@ -695,8 +695,9 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc << " tokv=" << _f.tokv
-                << " of kindtokob=" << _f.kindtokob
+                << " of °kindtokob=" << _f.kindtokob
                 << " and valtokv=" << _f.valtokv
+		<< std::endl 
                 << " from "
                 << __FILE__ << ":" << lin);
   RPS_POSSIBLE_BREAKPOINT();
@@ -751,7 +752,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
     RPS_POSSIBLE_BREAKPOINT();
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
                   << "- tksrc=" << *tksrc << std::endl
-                  << "… tokv=" << _f.tokv << " nextokv=" << _f.nextokv << std::endl
+                  << "… tokv=" << _f.tokv
+		  << " nextokv=" << _f.nextokv << std::endl
                   << "… no°gdb_do_return" << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token-gdb"));
   };
@@ -784,7 +786,8 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   _Pragma("message \"rps_do_carburetta_tokensrc\"");
   RPS_ASSERT(tksrc);
   _f.obenv = obenvarg;
-  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv=" << _f.obenv
+  RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv="
+		<< _f.obenv
                 << " tksrc=" << *tksrc << "@" << (void*)tksrc
                 << " FROM thread " << rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
@@ -886,6 +889,10 @@ void
 rps_initialize_carburetta_after_load(Rps_Loader*ld)
 {
   RPS_ASSERT(ld);
+  bool dbgrepl = RPS_DEBUG_ENABLED(REPL);
+  //// we could force the debug flags to contain REPL temporarily
+  if (!dbgrepl)
+    rps_debug_flags |= (1<<RPS_DEBUG_REPL);
   rpskob_7LMYzEqjeDH00ZI1CO //$at_sign∈repl_delimiter h:150658742
     ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
              Rps_Value::make_tagged_int(RPSCARBREPL_ATSIGN));
@@ -895,11 +902,13 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   rpskob_7CG9m1NXpMo01edTUl //!rightparen!delim∈repl_delimiter
     ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
              Rps_Value::make_tagged_int(RPSCARBREPL_RIGHTPAREN));
-
+  RPS_DEBUG_LOG(REPL, "initialize°carburetta done");
 #warning incomplete rps_initialize_carburetta_after_load
   RPS_WARNOUT("incomplete rps_initialize_carburetta_after_load"
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_carburetta_after_load"));
+  if (!dbgrepl)
+    rps_debug_flags &= ~(1<<RPS_DEBUG_REPL);
 } // end rps_initialize_carburetta_after_load
 
 
