@@ -737,7 +737,7 @@ test07: refpersys
 	@printf '\n\n\n////test07 FINISHED¤\n'
 
 test07a: refpersys
-	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@ || (echo test07a failed; exit 1)
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07a || (echo test07a failed; exit 1)
 	@printf '\n\n\n////test07a FINISHED¤\n'
 
 test08: refpersys
@@ -770,7 +770,7 @@ testcarb3: refpersys
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=$@ --run-delay=29s  \
+	./refpersys -AREPL --run-name=testfltk1 --run-delay=29s  \
                     --fltk=$$HOME/fltk1-refpersys-pref \
                     --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk1 failed; exit 1)
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
@@ -778,25 +778,26 @@ testfltk1: refpersys
 testfltk2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory \
-                    --run-name=$@ --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk2 failed; exit 1)
+                    --run-name=testfltk2 --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk2 failed; exit 1)
 	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink \
+	./refpersys -dPROGARG -AREPL --run-name=testfltk3 --run-delay=29s  --fltk -bg lightpink \
                     --pid-file=$(RPS_HOMETMP)/refpersys.pid || (echo testfltk3 failed; exit 1)
 	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk4: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=15m  --fltk -bg peachpuff \
+	./refpersys -dPROGARG -AREPL --run-name=testfltk4 --run-delay=15m  --fltk -bg peachpuff \
                      --echo="hello from $@" || (echo testfltk4 failed; exit 1)
 	@printf '\n\n\n////testfltk4 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 ########### show the testing commands
 showtests:
 	@printf '\nRefPerSys has %d testing commands\n' $(shell /bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/wc -l)
-	@/bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/tr -d '\t'
+	@/bin/grep -v '@' GNUmakefile | /bin/grep --color 'run-name=test' GNUmakefile
+#	@/bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/tr -d '\t'
 	@printf 'showtests¤ done git %s in %s\n\n' $(RPS_SHORTGIT_ID) $(shell /bin/pwd)
 ## eof GNUmakefile
 
