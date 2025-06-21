@@ -1592,20 +1592,24 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       return;
     }
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< " p." << intoksrc.position_str()
+		<< std::endl
+		<< "… p." << intoksrc.position_str()
 		<< " obenv=" << _f.obenv);
   RPS_POSSIBLE_BREAKPOINT();
   _f.tok0 = intoksrc.lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< " tok0=" << _f.tok0);
+		<< std::endl
+		<< "… tok0=" << _f.tok0);
   RPS_POSSIBLE_BREAKPOINT();
   _f.tok1 = intoksrc.lookahead_token(&_, 1);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< " tok1=" << _f.tok1);
+		<< std::endl
+		<< "… tok1=" << _f.tok1);
   _f.tok2 = intoksrc.lookahead_token(&_, 2);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< " tok0=" << _f.tok0
+		<< std::endl
+		<< "… tok0=" << _f.tok0
 		<< " tok1=" << _f.tok1
 		<< " tok2=" << _f.tok2
 		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
@@ -1614,7 +1618,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
 //<< title << "'"
 //<< Rps_Cjson_String(cmd) << "'" << std::endl << "… "
                 << "intoksrc:" << intoksrc
-                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+		<< std::endl
+                << "… curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << " tok0=" << _f.tok0 << " tok1=" << _f.tok1
                 << " tok2=" << _f.tok2);
   /*** TODO:
@@ -1636,7 +1641,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                      << " too long builtin command " << builtincmd);
       intoksrc.advance_cursor_bytes(strlen(builtincmd)+1);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
-                    << Rps_Cjson_String(cmd)
+                    << Rps_Cjson_String(cmd) << std::endl
                     << "… intoksrc:" << intoksrc << " BUILTIN " << builtincmd
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       rps_do_builtin_repl_command(&_, _f.obenv, builtincmd, intoksrc, title);
