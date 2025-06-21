@@ -1931,8 +1931,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   RPS_POSSIBLE_BREAKPOINT();
   rps_schedule_files_postponed_removal();
   fprintf(stderr, "RefPerSys (git %s run %s) fatal stop\n"
-	  "... aborting at %s:%d\n",
-	  rps_shortgitid, rps_run_name.c_str(), filnam, lin);
+          "… °aborting at %s:%d\n",
+          rps_shortgitid, rps_run_name.c_str(), filnam, lin);
   fflush(stderr);
   abort();
 } // end rps_fatal_stop_at
@@ -2308,13 +2308,15 @@ rps_set_debug_flag(const std::string &curlev)
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
-#define Rps_SET_DEBUG(Opt)            \
-  else if (curlev == #Opt) {            \
-    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt); \
+#define Rps_SET_DEBUG(Opt)                            \
+  else if (curlev == #Opt) {                          \
+    bool alreadygiven = rps_debug_flags               \
+      & (1 << RPS_DEBUG_##Opt);                       \
     rps_debug_flags |= (1 << RPS_DEBUG_##Opt);        \
-    goodflag = true;              \
-    if (!alreadygiven)              \
-      RPS_INFORMOUT("setting debugging flag " << #Opt);  }
+    goodflag = true;                                  \
+    if (!alreadygiven)                                \
+      RPS_INFORMOUT("setting debugging flag "         \
+                    << #Opt);  }
   ///
   RPS_DEBUG_OPTIONS(Rps_SET_DEBUG);
 #undef Rps_SET_DEBUG
