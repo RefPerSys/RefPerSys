@@ -221,6 +221,15 @@ extern "C" const char rps_carbrepl_shortgitid[];
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));      \
  }
 
+%token COMMA
+%token_action { _Pragma("message \"token_action for COMMA\""); \
+  /* should assign $$ for COMMA */ \
+  RPS_DEBUG_LOG(REPL, "token_action for COMMA tksrc=" << *tksrc); \
+  RPS_FATALOUT("COMMA token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action COMMA"));      \
+ }
+
 %token ASSIGN
 %token_action {_Pragma("message \"token_action for ASSIGN\""); \
   /* should assign $$ for ASSIGN */ \
@@ -522,7 +531,7 @@ replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
 
 
 /// temporary workaround github.com/kingletbv/carburetta/issues/10
-#line 526 "carbrepl_rps.cbrt"
+#line 534 "carbrepl_rps.cbrt"
 
 
 
