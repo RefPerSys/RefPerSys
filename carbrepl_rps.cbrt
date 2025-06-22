@@ -69,6 +69,9 @@ static const char* rps_carbrepl_symname_at(int symnum, int lin);
 static void rps_carbrepl_constructor_replnt_atom(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_atom(Rps_Value&val, int lin);
 
+static void rps_carbrepl_constructor_replnt_set(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_replnt_set(Rps_Value&val, int lin);
+
 static void rps_carbrepl_constructor_replnt_expr(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin);
 
@@ -531,7 +534,7 @@ replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
 
 
 /// temporary workaround github.com/kingletbv/carburetta/issues/10
-#line 534 "carbrepl_rps.cbrt"
+#line 537 "carbrepl_rps.cbrt"
 
 
 
@@ -576,6 +579,27 @@ rps_carbrepl_destructor_replnt_atom(Rps_Value&val, int lin)
   val = nullptr;
   _Pragma("message \"rps_carbrepl_destructor_replnt_atom\"");
 } // end rps_carbrepl_replnt_object_destructor_replnt_atom
+
+
+//// for sets in REPL
+void
+rps_carbrepl_constructor_replnt_set(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_constructor_replnt_set\"");
+} // end rps_carbrepl_constructor_replnt_atom
+
+void
+rps_carbrepl_destructor_replnt_set(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_destructor_replnt_set\"");
+} // end rps_carbrepl_replnt_object_destructor_replnt_set
+
 
 
 
