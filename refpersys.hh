@@ -1539,6 +1539,7 @@ static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
 static_assert(alignof(Rps_ObjectRef) == alignof(void*),
               "Rps_ObjectRef should have the alignment of a word");
 
+typedef std::vector<Rps_ObjectRef>  Rps_ObjectVector;
 
 class Rps_Object_Display /// use it only with RPS_OBJECT_DISPLAY.... macros
 {
