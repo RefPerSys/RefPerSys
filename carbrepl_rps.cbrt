@@ -325,8 +325,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %grammar%
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe, rps_carbrepl_data_st&carbdata
 %nt replnt_input replnt_command
-%nt replnt_atom replnt_object replnt_expr replnt_term replnt_factor replnt_value
+%nt replnt_atom replnt_object replnt_expr replnt_term replnt_factor
+%nt replnt_value replnt_set replnt_objectseq
 
+
+%type replnt_objectseq: Rps_ObjectVector
 
 
 // When the parser (not the scanner) needs a new input terminal symbol, the specified action code snippet is executed.
@@ -455,6 +458,28 @@ replnt_atom: replnt_object {
   RPS_DEBUG_LOG(REPL, "atom is object " << $$);
 }
 
+replnt_atom: replnt_set {
+_Pragma("message \"replnt_atom as replnt_set in carbrepl_rps.cbrt\"");
+ RPS_POSSIBLE_BREAKPOINT();
+ $$ = Rps_SetValue($0);
+ RPS_DEBUG_LOG(REPL, "atom is set " << $$);
+}
+
+%type replnt_set: Rps_SetValue
+
+replnt_set: LEFTBRACE replnt_objectseq RIGHTBRACE {
+_Pragma("message \"replnt_set in carbrepl_rps.cbrt\"");
+ RPS_POSSIBLE_BREAKPOINT();
+ $$ = Rps_SetValue($1);
+  RPS_DEBUG_LOG(REPL, "set " << $$);
+}
+
+replnt_objectseq: /*empty*/ {
+_Pragma("message \"replnt_objectseq empty in carbrepl_rps.cbrt\"");
+ RPS_POSSIBLE_BREAKPOINT();
+ $$ = Rps_ObjectVector();
+ RPS_DEBUG_LOG(REPL, "empty objectseq " << $$);
+}
 replnt_object: NAME {
   _Pragma("message \"replnt_object as NAME in carbrepl_rps.cbrt\"");
   $$ = Rps_PayloadSymbol::find_named_object($0);
