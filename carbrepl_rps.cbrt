@@ -579,7 +579,7 @@ replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
 
 
 /// temporary workaround github.com/kingletbv/carburetta/issues/10
-#line 537 "carbrepl_rps.cbrt"
+#line 582 "carbrepl_rps.cbrt"
 
 
 
