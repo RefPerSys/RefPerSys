@@ -261,6 +261,26 @@ extern "C" const char rps_carbrepl_shortgitid[];
  }
 //
 
+
+%token LEFTBRACE
+%token_action {_Pragma("message \"token_action for LEFTBRACE\""); \
+  /* should assign $$ for LEFTBRACE */ \
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTBRACE tksrc=" << *tksrc); \
+  RPS_FATALOUT("LEFTBRACE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action LEFBRACE"));        \
+ }
+
+%token RIGHTBRACE
+%token_action {_Pragma("message \"token_action for RIGHTBRACE\""); \
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTBRACE tksrc=" << *tksrc); \
+  /* should assign $$ for RIGHTBRACE */ \
+  RPS_FATALOUT("RIGHTBRACE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action RIGHTBRACE"));       \
+ }
+//
+
 %token PLUS 
 %token_action {_Pragma("message \"token_action for PLUS\""); \
   /* should assign $$ PLUS */ \
