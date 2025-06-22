@@ -899,7 +899,10 @@ rps_carburetta_fill_delimiter(Rps_ObjectRef obdelim, int num, int line)
 		  << __FILE__ << ":" << line
 		  << " delimiter " << std::endl
 		  << RPS_OBJECT_DISPLAY(obdelim));
-  };
+  }
+  else
+    RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter good " << obdelim
+		  << __FILE__ << ":" << line);
 } // end rps_carburetta_fill_delimiter
 
 void
@@ -917,6 +920,11 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   RPS_CARBURETTA_DELIM
     (rpskob_7CG9m1NXpMo01edTUl, //!rightparen!delim∈repl_delimiter
      RPSCARBREPL_RIGHTPAREN);
+#if 0
+  RPS_CARBURETTA_DELIM
+    (rpskob_78wsBiJhJj1025DIs1, //!!dot!delim∈repl_delimiter 
+     RPSCARBREPL_DOT);
+#endif
 #undef RPS_CARBURETTA_DELIM
   RPS_DEBUG_LOG(REPL, "initialize°carburetta done");
 #warning incomplete rps_initialize_carburetta_after_load
