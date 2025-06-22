@@ -122,6 +122,18 @@ std::ostream& operator << (std::ostream& out, const Rps_Id id)
 } // end output of Rps_Id
 
 
+static inline
+std::ostream& operator << (std::ostream& out, const Rps_ObjectVector vec)
+{
+  out << "vectob.l"<< vec.size() << "(";
+  size_t sz = (unsigned)vec.size();
+  for (std::size_t ix=0; ix<sz; ix++) {
+    if (ix>0) out << ", ";
+    out << vec[ix];
+  }
+  out << ")";
+  return out;
+}
 
 //////////////////////////////////////////////////////////// values
 Rps_Value::Rps_Value() : _wptr(nullptr) {};
