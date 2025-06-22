@@ -885,30 +885,44 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
  } // end rps_carbrepl_do_display_command
 
 
+static void
+rps_carburetta_fill_delimiter(Rps_ObjectRef obdelim, int num, int line)
+{
+  RPS_ASSERT(obdelim);
+  RPS_ASSERT(line > __LINE__);
+  Rps_ObjectRef obcarbterm = rpskob_1cUbHIFNNXi00HOCWM /*carburetta_terminal*/;
+  Rps_Value atv = obdelim->get_physical_attr(obcarbterm/*carburetta_terminal*/);
+  if (atv != Rps_Value::make_tagged_int(num)) {
+    obdelim->put_attr(obcarbterm,
+		      Rps_Value::make_tagged_int(num));
+    RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter filled from "
+		  << __FILE__ << ":" << line
+		  << " delimiter " << std::endl
+		  << RPS_OBJECT_DISPLAY(obdelim));
+  };
+} // end rps_carburetta_fill_delimiter
+
 void
 rps_initialize_carburetta_after_load(Rps_Loader*ld)
 {
   RPS_ASSERT(ld);
-  bool dbgrepl = RPS_DEBUG_ENABLED(REPL);
-  //// we could force the debug flags to contain REPL temporarily
-  if (!dbgrepl)
-    rps_debug_flags |= (1<<RPS_DEBUG_REPL);
-  rpskob_7LMYzEqjeDH00ZI1CO //$at_sign∈repl_delimiter h:150658742
-    ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
-             Rps_Value::make_tagged_int(RPSCARBREPL_ATSIGN));
-  rpskob_4YM7mv0GrSp03OkF8T //!leftparen!delim∈repl_delimiter
-    ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
-             Rps_Value::make_tagged_int(RPSCARBREPL_LEFTPAREN));
-  rpskob_7CG9m1NXpMo01edTUl //!rightparen!delim∈repl_delimiter
-    ->put_attr(rpskob_1cUbHIFNNXi00HOCWM/*carburetta_terminal*/,
-             Rps_Value::make_tagged_int(RPSCARBREPL_RIGHTPAREN));
+#define RPS_CARBURETTA_DELIM(Ob,Num) \
+  rps_carburetta_fill_delimiter((Ob),(Num),__LINE__)
+  RPS_CARBURETTA_DELIM
+    (rpskob_7LMYzEqjeDH00ZI1CO,//$at_sign∈repl_delimiter h:150658742
+     RPSCARBREPL_ATSIGN);
+  RPS_CARBURETTA_DELIM
+  (rpskob_4YM7mv0GrSp03OkF8T, //!leftparen!delim∈repl_delimiter
+   RPSCARBREPL_LEFTPAREN);
+  RPS_CARBURETTA_DELIM
+    (rpskob_7CG9m1NXpMo01edTUl, //!rightparen!delim∈repl_delimiter
+     RPSCARBREPL_RIGHTPAREN);
+#undef RPS_CARBURETTA_DELIM
   RPS_DEBUG_LOG(REPL, "initialize°carburetta done");
 #warning incomplete rps_initialize_carburetta_after_load
   RPS_WARNOUT("incomplete rps_initialize_carburetta_after_load"
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_carburetta_after_load"));
-  if (!dbgrepl)
-    rps_debug_flags &= ~(1<<RPS_DEBUG_REPL);
 } // end rps_initialize_carburetta_after_load
 
 
