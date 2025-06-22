@@ -929,6 +929,14 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   RPS_CARBURETTA_DELIM
     (rpskob_7CG9m1NXpMo01edTUl, //!!rightparen!delim∈repl_delimiter
      RPSCARBREPL_RIGHTPAREN);
+#if 0
+  RPS_CARBURETTA_DELIM
+    (rpskob_6kHcxtGAtWW03dZ14O, //!!$leftbrace!delim∈repl_delimiter 
+     RPSCARBREPL_LEFTBRACE);
+  RPS_CARBURETTA_DELIM
+    (rpskob_68wsAiJhJj1025DIs1, //!!$rightbrace!delim∈repl_delimiter 
+     RPSCARBREPL_RIGHTBRACE);
+#endif
 #undef RPS_CARBURETTA_DELIM
   RPS_DEBUG_LOG(REPL, "initialize°carburetta done");
 #warning incomplete rps_initialize_carburetta_after_load
