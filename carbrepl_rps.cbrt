@@ -763,6 +763,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                  Rps_Value tokv;
                  Rps_ObjectRef kindtokob;
                  Rps_Value valtokv;
+		 Rps_ObjectRef valtokob;
                  Rps_Value nextokv;
                 );
   RPS_ASSERT(tksrc);
@@ -830,6 +831,20 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                     << " gives INT " << _f.valtokv);
       _Pragma("message \"rps_carbrepl_next_token should transmit value of INT\"");
     }
+  else if (_f.kindtokob == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+	  ) {
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
+		  << "°delim kindtokob=" << _f.kindtokob
+		  << " valtokv=" << _f.valtokv);
+    if (_f.valtokv.is_object()) {
+      _f.valtokob = _f.valtokv.as_object();
+      RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
+		    << "°delim kindtokob=" << _f.kindtokob
+		    << std::endl
+		    << " valtokob=" << _f.valtokob);
+    }
+    RPS_POSSIBLE_BREAKPOINT();
+  }
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
 		<< " kindtokob=" << _f.kindtokob
