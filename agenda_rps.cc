@@ -79,10 +79,9 @@ Rps_Agenda::initialize(void)
   else
     agenda_timeout = 0.0;
   RPS_POSSIBLE_BREAKPOINT();
+  /// we cannot use RPS_FULL_BACKTRACE here
   RPS_DEBUG_LOG(REPL, "Rps_Agenda::initialize agenda_timeout=" << agenda_timeout
-                << " curthr:" << rps_current_pthread_name()
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Agenda::initialize"));
+                << " curthr:" << rps_current_pthread_name());
 } // end Rps_Agenda::initialize
 
 void
