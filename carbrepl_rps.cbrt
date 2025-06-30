@@ -832,6 +832,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
     }
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
+		<< " kindtokob=" << _f.kindtokob
+		<< " valtokv=" << _f.valtokv
                 << " °gdb_do_return at "
                 << (void*)&gdb_do_return << " is "
                 << (gdb_do_return?"SET":"CLEARED")
