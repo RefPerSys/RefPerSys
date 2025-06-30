@@ -841,7 +841,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
       RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
 		    << "°delim kindtokob=" << _f.kindtokob
 		    << std::endl
-		    << " valtokob=" << _f.valtokob);
+		    << " valtokob=" << RPS_OBJECT_DISPLAY(_f.valtokob));
     }
     RPS_POSSIBLE_BREAKPOINT();
   }
