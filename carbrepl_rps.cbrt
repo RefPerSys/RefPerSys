@@ -987,7 +987,8 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
   RPS_ASSERT(ptoksrc != nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command start *ptoksrc=" << *ptoksrc
-                << " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
+		<< std::endl
+                << "… obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command start"));
   bool gotlin = ptoksrc->get_line();
   RPS_POSSIBLE_BREAKPOINT();
@@ -996,7 +997,8 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
   RPS_POSSIBLE_BREAKPOINT();
   rps_do_carburetta_tokensrc(&_, _f.obenv, ptoksrc);
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command end *ptoksrc=" << *ptoksrc
-                << " obenv=" << _f.obenv << std::endl
+		<< std::endl
+                << "… obenv=" << _f.obenv << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command end"));
 }  // end rps_do_carburetta_command
 
