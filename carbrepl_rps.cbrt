@@ -995,7 +995,7 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
 		<< std::endl
                 << "… "
 		<< std::endl
-                << "… __GNUC__=" << __GNUC__
+                << "… °%° __GNUC__=" << __GNUC__
 		<< " __VERSION__=" << __VERSION__
 		<< " __TIMESTAMP__=" << __TIMESTAMP__
 		<< " __FUNCTION__=" << __FUNCTION__
