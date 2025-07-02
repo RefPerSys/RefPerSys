@@ -888,7 +888,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
                 << Rps_QuotedC_String(curp) << " at " << startpos << std::endl
-                << "… token_deq:" << toksrc_token_deq << " source:" << *this
+                << "… token_deq:" << toksrc_token_deq 
+                << std::endl << "… source:" << *this
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
