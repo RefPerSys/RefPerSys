@@ -802,7 +802,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
                 << " from "
                 << __FILE__ << ":" << lin
-                << " tksrc=" << *tksrc << " tokv=" << _f.tokv
+                << " tksrc=" << *tksrc
+		<< std::endl  << "… tokv=" << _f.tokv
                 << " of °kindtokob=" << _f.kindtokob
                 << " and valtokv=" << _f.valtokv
 		<< std::endl 
@@ -822,7 +823,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << " nextokv=" << _f.nextokv
                 << " tksrc=" << *tksrc << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/b")
-                << " currentline=" << Rps_QuotedC_String(tksrc->current_line())
+                << "… currentline=" << Rps_QuotedC_String(tksrc->current_line())
                 << " at " << tksrc->position_str());
   if (_f.kindtokob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b)) //int∈class
     {
