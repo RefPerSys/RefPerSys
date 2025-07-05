@@ -306,20 +306,29 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsign
       << NORM_esc << " " << data_size() << " data"
       << BOLD_esc << "*" << NORM_esc
       << std::endl;
-  if (depth == 0) {
-    // when depth is 0 show the generated C++ code buffer
+  {
     const std::string& outcod = cppgen_outcod.str();
-    int outnblin = 0;
-    for (const char c: outcod) {
-      if (c=='\n') outnblin++;
-    };
-    out << BOLD_esc << "C++ code buffer of " << outcod.size()
-	<< " bytes and " << outnblin << " lines:" << NORM_esc << std::endl;
-    out << outcod;
-    if (outcod.size() > 0 && outcod.at(outcod.size()-1) != '\n')
-      out << std::endl;
-    out << BOLD_esc << "///°*end of C++ code buffer in " << owner() << NORM_esc << std::endl;
-  };
+    if (depth == 0)
+      {
+        // when depth is 0 show the generated C++ code buffer
+        int outnblin = 0;
+        for (const char c: outcod)
+          {
+            if (c=='\n') outnblin++;
+          };
+        out << BOLD_esc << "C++ code buffer of " << outcod.size()
+            << " bytes and " << outnblin << " lines:" << NORM_esc << std::endl;
+        out << outcod;
+        if (outcod.size() > 0 && outcod.at(outcod.size()-1) != '\n')
+          out << std::endl;
+        out << BOLD_esc << "///°*end of C++ code buffer in " << owner() << NORM_esc << std::endl;
+      }
+    else
+      {
+        out << BOLD_esc << "C++ code buffer of " << outcod.size()
+            << " bytes." << NORM_esc << std::endl;
+      };
+  }
 #warning Rps_PayloadCplusplusGen::output_payload incomplete
   // TODO: when depth is not too big show the internal data
 } // end of Rps_PayloadCplusplusGen::output_payload
