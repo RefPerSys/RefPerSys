@@ -224,7 +224,7 @@ Rps_PayloadCplusplusGen::checked_nth_const_data(int n) const
     n += (int)cppgen_datavect.size();
   if (RPS_UNLIKELY(n<0 || n>=(int)cppgen_datavect.size()))
     {
-      RPS_WARNOUT("out of index  access #" << orign << " of data size "<< data_size()
+      RPS_WARNOUT("out of index access #" << orign << " of data size "<< data_size()
                   << " in C++ generator " << owner()
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1,
@@ -243,7 +243,7 @@ Rps_PayloadCplusplusGen::checked_nth_data(int n)
     n += (int)cppgen_datavect.size();
   if (RPS_UNLIKELY(n<0 || n>=(int)cppgen_datavect.size()))
     {
-      RPS_WARNOUT("out of index  access #" << orign << " of data size "<< data_size()
+      RPS_WARNOUT("out of index access #" << orign << " of data size "<< data_size()
                   << " in C++ generator " << owner()
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1,
@@ -306,9 +306,22 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsign
       << NORM_esc << " " << data_size() << " data"
       << BOLD_esc << "*" << NORM_esc
       << std::endl;
+  if (depth == 0) {
+    // when depth is 0 show the generated C++ code buffer
+    const std::string& outcod = cppgen_outcod.str();
+    int outnblin = 0;
+    for (const char c: outcod) {
+      if (c=='\n') outnblin++;
+    };
+    out << BOLD_esc << "C++ code buffer of " << outcod.size()
+	<< " bytes and " << outnblin << " lines:" << NORM_esc << std::endl;
+    out << outcod;
+    if (outcod.size() > 0 && outcod.at(outcod.size()-1) != '\n')
+      out << std::endl;
+    out << BOLD_esc << "///°*end of C++ code buffer in " << owner() << NORM_esc << std::endl;
+  };
 #warning Rps_PayloadCplusplusGen::output_payload incomplete
-  // TODO: when depth is 0 show the generated C++ code buffer
-  // when depth is not too big show the internal data
+  // TODO: when depth is not too big show the internal data
 } // end of Rps_PayloadCplusplusGen::output_payload
 
 void
