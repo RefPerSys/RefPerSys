@@ -43,6 +43,9 @@ const char rps_strbufdict_date[]= __DATE__;
 extern "C" const char rps_strbufdict_shortgitid[];
 const char rps_strbufdict_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_strbufdict_timestamp[];
+const char rps_strbufdict_timestamp[]= __TIMESTAMP__;
+
 
 Rps_PayloadStrBuf::Rps_PayloadStrBuf(Rps_ObjectZone*obz)
   : Rps_Payload(Rps_Type::PaylStrBuf, obz),

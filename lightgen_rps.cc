@@ -61,6 +61,10 @@ extern "C" const char rps_lightgen_shortgitid[];
 const char rps_lightgen_shortgitid[]= RPS_SHORTGITID;
 
 
+extern "C" const char rps_lightgen_timestamp[];
+const char rps_lightgen_timestamp[]= __TIMESTAMP__;
+
+
 
 
 /// According to www.gnu.org/software/lightning/manual/lightning.html

@@ -51,6 +51,10 @@ extern "C" const char rps_cppgen_shortgitid[];
 const char rps_cppgen_shortgitid[]= RPS_SHORTGITID;
 
 
+extern "C" const char rps_cppgen_timestamp[];
+const char rps_cppgen_timestamp[]= __TIMESTAMP__;
+
+
 class Rps_PayloadCplusplusGen : public Rps_Payload
 {
 public:

@@ -51,6 +51,9 @@ const char rps_userpref_date[]= __DATE__;
 extern "C" const char rps_userpref_shortgitid[];
 const char rps_userpref_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_userpref_timestamp[];
+const char rps_userpref_timestamp[]= __TIMESTAMP__;
+
 static INIReader* rps_userpref_ird;
 static std::atomic_bool rps_userpref_is_parsed;
 

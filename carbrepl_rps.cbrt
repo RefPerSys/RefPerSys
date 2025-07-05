@@ -27,6 +27,16 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
+extern "C" const char rps_carbrepl_gitid[];
+const char rps_carbrepl_gitid[]= RPS_GITID;
+
+extern "C" const char rps_carbrepl_date[];
+const char rps_carbrepl_date[]= __DATE__;
+
+extern "C" const char rps_carbrepl_shortgitid[];
+const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
+
+extern "C" const char rps_carbrepl_timestamp[];
 const char rps_carbrepl_timestamp[]= __TIMESTAMP__;
 
 constexpr unsigned rps_magic_carbrepl_data = 696140743; // 0x297e43c7
@@ -607,7 +617,7 @@ replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
 
 
 /// temporary workaround github.com/kingletbv/carburetta/issues/10
-#line 608 "carbrepl_rps.cbrt"
+#line 620 "carbrepl_rps.cbrt"
 
 
 
@@ -1130,14 +1140,6 @@ rps_carbrepl_symname_at(int symnum, int lin) {
 } // end rps_carbrepl_symname_at
 
 ////////////////////////////////////////////////////////////////
-extern "C" const char rps_carbrepl_gitid[];
-const char rps_carbrepl_gitid[]= RPS_GITID;
-
-extern "C" const char rps_carbrepl_date[];
-const char rps_carbrepl_date[]= __DATE__;
-
-extern "C" const char rps_carbrepl_shortgitid[];
-const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" const size_t rpscarbrepl_stack_size;
 extern "C" const size_t rpscarbrepl_stack_align;

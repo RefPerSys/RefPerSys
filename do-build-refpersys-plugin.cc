@@ -77,6 +77,7 @@
 extern "C" {
 #include "__timestamp.c"
   const char bp_git_id[]=GIT_ID;
+  const char bp_timestamp[]= __TIMESTAMP__;
   char bp_hostname[128];
   const char* bp_progname;
   int bp_argc_prog;

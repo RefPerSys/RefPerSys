@@ -42,6 +42,9 @@ const char rps_parsrepl_date[]= __DATE__;
 extern "C" const char rps_parsrepl_shortgitid[];
 const char rps_parsrepl_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_parsrepl_timestamp[];
+const char rps_parsrepl_timestamp[] = __TIMESTAMP__;
+
 /// useful only for debugging
 static bool
 rps_parsrepl_termvect_stammering(std::vector<Rps_Value>& termvect, int line)

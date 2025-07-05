@@ -42,6 +42,9 @@ const char rps_agenda_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_agenda_date[];
 const char rps_agenda_date[]= __DATE__;
 
+extern "C" const char rps_agenda_timestamp[];
+const char rps_agenda_timestamp[]= __TIMESTAMP__;
+
 unsigned long rps_run_delay;
 
 double Rps_Agenda::agenda_timeout;

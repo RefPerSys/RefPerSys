@@ -44,6 +44,9 @@ const char rps_main_date[]= __DATE__;
 extern "C" const char rps_main_shortgitid[];
 const char rps_main_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_main_timestamp[];
+const char rps_main_timestamp[]= __TIMESTAMP__;
+
 extern "C" char rps_buffer_proc_version[];
 char rps_buffer_proc_version[rps_path_byte_size];
 

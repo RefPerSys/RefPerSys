@@ -42,6 +42,9 @@ const char rps_transientobj_date[]= __DATE__;
 extern "C" const char rps_transientobj_shortgitid[];
 const char rps_transientobj_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_transientobj_timestamp[];
+const char rps_transientobj_timestamp[]= __TIMESTAMP__;
+
 ////////////////////////////////////////////////////////////////
 ////// trensient unix process payload
 Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See PaylUnixProcess

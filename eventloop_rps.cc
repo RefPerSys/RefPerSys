@@ -44,6 +44,9 @@ const char rps_eventloop_date[]= __DATE__;
 extern "C" const char rps_eventloop_shortgitid[];
 const char rps_eventloop_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_eventloop_timestamp[];
+const char rps_eventloop_timestamp[]= __TIMESTAMP__;
+
 // default or initial delay to poll(2) in milliseconds.
 #define RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC 1600
 

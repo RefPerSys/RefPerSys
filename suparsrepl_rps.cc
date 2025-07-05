@@ -43,6 +43,9 @@ const char rps_suparsrepl_date[]= __DATE__;
 extern "C" const char rps_suparsrepl_shortgitid[];
 const char rps_suparsrepl_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_suparsrepl_timestamp[];
+const char rps_suparsrepl_timestamp[]= __TIMESTAMP__;
+
 void
 rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr)
 {

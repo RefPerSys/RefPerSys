@@ -105,6 +105,9 @@ const char rps_fltk_date[]= __DATE__;
 extern "C" const char rps_fltk_shortgitid[];
 const char rps_fltk_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_fltk_timestamp[];
+const char rps_fltk_timestamp[]= __TIMESTAMP__;
+
 extern "C" const int rps_fltk_api_version;
 const int rps_fltk_api_version = FL_API_VERSION;
 

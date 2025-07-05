@@ -42,6 +42,9 @@ const char rps_magicattrs_date[]= __DATE__;
 extern "C" const char rps_magicattrs_shortgitid[];
 const char rps_magicattrs_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_magicattrs_timestamp[];
+const char rps_magicattrs_timestamp[]= __TIMESTAMP__;
+
 
 /// the `class` magic attribute and class _41OFI3r0S1t03qdB2E
 extern "C" Rps_Value

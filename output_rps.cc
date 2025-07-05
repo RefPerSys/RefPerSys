@@ -40,6 +40,9 @@ const char rps_output_date[]= __DATE__;
 extern "C" const char rps_output_shortgitid[];
 const char rps_output_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_output_timestamp[];
+const char rps_output_timestamp[]= __TIMESTAMP__;
+
 ////////////////
 
 

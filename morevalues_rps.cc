@@ -41,6 +41,9 @@ const char rps_morevalues_date[]= __DATE__;
 extern "C" const char rps_morevalues_shortgitid[];
 const char rps_morevalues_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_morevalues_timestamp[];
+const char rps_morevalues_timestamp[]= __TIMESTAMP__;
+
 /////////////////////////////////////////////////////// instances
 Rps_InstanceZone*
 Rps_InstanceZone::make_from_components(Rps_ObjectRef classob, const std::initializer_list<Rps_Value>& valil)

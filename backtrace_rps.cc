@@ -43,6 +43,9 @@ const char rps_backtrace_date[]= __DATE__;
 extern "C" const char rps_backtrace_shortgitid[];
 const char rps_backtrace_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_backtrace_timestamp[];
+const char rps_backtrace_timestamp[]= __TIMESTAMP__;
+
 #define RPS_FASTABORT(Msg) do {                                 \
     std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'    \
               << __LINE__  << std::endl                         \

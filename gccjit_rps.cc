@@ -52,6 +52,9 @@ const char rps_gccjit_date[]= __DATE__;
 extern "C" const char rps_gccjit_shortgitid[];
 const char rps_gccjit_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_gccjit_timestamp[];
+const char rps_gccjit_timestamp[]= __TIMESTAMP__;
+
 /// We use the C API to GCCJIT and conventionally explicit with struct
 /// keyword all the opaque structures in it.
 extern "C" struct gcc_jit_context* rps_gccjit_top_ctxt;

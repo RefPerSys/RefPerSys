@@ -60,6 +60,9 @@ const char rps_dump_date[]= __DATE__;
 extern "C" const char rps_dump_shortgitid[];
 const char rps_dump_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_dump_timestamp[];
+const char rps_dump_timestamp[]= __TIMESTAMP__;
+
 
 // comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp

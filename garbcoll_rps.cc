@@ -42,6 +42,9 @@ const char rps_garbcoll_date[]= __DATE__;
 extern "C" const char rps_garbcoll_shortgitid[];
 const char rps_garbcoll_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_garbcoll_timestamp[];
+const char rps_garbcoll_timestamp[]= __TIMESTAMP__;
+
 
 std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this_;
 std::atomic<uint64_t> Rps_GarbageCollector::gc_count_;

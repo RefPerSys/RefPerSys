@@ -40,6 +40,9 @@ const char rps_scalar_date[]= __DATE__;
 extern "C" const char rps_scalar_shortgitid[];
 const char rps_scalar_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_scalar_timestamp[];
+const char rps_scalar_timestamp[]= __TIMESTAMP__;
+
 /** important NOTICE
  *
  * Don't change the code of the below function

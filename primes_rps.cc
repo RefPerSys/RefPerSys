@@ -42,6 +42,9 @@ const char rps_primes_date[]= __DATE__;
 extern "C" const char rps_primes_shortgitid[];
 const char rps_primes_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_primes_timestamp[];
+const char rps_primes_timestamp[]= __TIMESTAMP__;
+
 extern "C" int64_t rps_prime_above (int64_t n);
 extern "C" int64_t rps_prime_below (int64_t n);
 

@@ -41,6 +41,9 @@ const char rps_values_date[]= __DATE__;
 extern "C" const char rps_values_shortgitid[];
 const char rps_values_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_values_timestamp[];
+const char rps_values_timestamp[]= __TIMESTAMP__;
+
 void
 Rps_Id::to_cbuf24(char cbuf[]) const
 {
