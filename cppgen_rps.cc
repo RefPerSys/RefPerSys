@@ -81,6 +81,7 @@ protected:
   std::map<Rps_ObjectRef,long> cppgen_includepriomap;
   std::vector<struct cppgen_data_st> cppgen_datavect;
   static constexpr int cppgen_maxdatalen = 1<<18;
+  static constexpr int cppgen_depth_threshold = 3;
   virtual ~Rps_PayloadCplusplusGen()
   {
     cppgen_outcod.clear();
@@ -304,8 +305,9 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsign
   std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
   out << std::endl << BOLD_esc << "*C++ generator payload with"
       << NORM_esc << " " << data_size() << " data"
-      << BOLD_esc << "*" << NORM_esc
+      << BOLD_esc << "*" << NORM_esc << " indent:" << cppgen_indentation
       << std::endl;
+  out << BOLD_esc << "*C++ generator path:" << NORM_esc << cppgen_path << std::endl;
   {
     const std::string& outcod = cppgen_outcod.str();
     if (depth == 0)
@@ -325,12 +327,35 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsign
       }
     else
       {
+        // depth > 0
         out << BOLD_esc << "C++ code buffer of " << outcod.size()
             << " bytes." << NORM_esc << std::endl;
       };
   }
-#warning Rps_PayloadCplusplusGen::output_payload incomplete
-  // TODO: when depth is not too big show the internal data
+  {
+    size_t nbdata = cppgen_datavect.size();
+    if (depth < cppgen_depth_threshold)
+      {
+        out << BOLD_esc << "C++ data vector of " << nbdata << " elements:"
+            << NORM_esc << std::endl;
+        for (int i=0; i<(int)nbdata; i++)
+          {
+            const struct cppgen_data_st &curdata=cppgen_datavect[i];
+            out << BOLD_esc << "[" << i << "]:" << NORM_esc
+                << " {obj:" << curdata.cppg_object
+                << ", data:" << curdata.cppg_data
+                << ", num:" << curdata.cppg_num
+                << "}" << std::endl;
+          }
+      }
+    else
+      {
+        out << BOLD_esc << "C++ data vector has " <<  nbdata << " elements."
+            << NORM_esc << std::endl;
+      }
+  }
+#warning incomplete Rps_PayloadCplusplusGen::output_payload
+  ///TODO: output the included things: cppgen_includeset, cppgen_includepriomap
 } // end of Rps_PayloadCplusplusGen::output_payload
 
 void
