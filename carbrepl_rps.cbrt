@@ -1061,18 +1061,30 @@ rps_carburetta_fill_delimiter(Rps_ObjectRef obdelim, int num, int line)
   RPS_ASSERT(line > __LINE__);
   Rps_ObjectRef obcarbterm = rpskob_1cUbHIFNNXi00HOCWM /*carburetta_terminal*/;
   Rps_Value atv = obdelim->get_physical_attr(obcarbterm/*carburetta_terminal*/);
+  RPS_ASSERT(num>0 && num<rpscarbrepl_symbol_names_length_
+	    && rpscarbrepl_symbol_names_[num] != nullptr);
   if (atv != Rps_Value::make_tagged_int(num)) {
     obdelim->put_attr(obcarbterm,
 		      Rps_Value::make_tagged_int(num));
     RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter filled from "
 		  << __FILE__ << ":" << line
-		  << " delimiter " << std::endl
+		  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num] << std::endl
 		  << RPS_OBJECT_DISPLAY(obdelim));
   }
   else
-    RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter good " << obdelim
-		  << __FILE__ << ":" << line);
+    RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter good delimiter "
+		  << obdelim
+		  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num]
+		  << " from " << __FILE__ << ":" << line);
 } // end rps_carburetta_fill_delimiter
+
+static void
+rps_carburetta_fill_keyword(Rps_ObjectRef obkeyw, int num, int line)
+{
+  RPS_ASSERT(obkeyw);
+  RPS_ASSERT(line > __LINE__);
+#warning rps_carburetta_fill_keyword incomplete
+} // end rps_carburetta_fill_keyword
 
 void
 rps_initialize_carburetta_after_load(Rps_Loader*ld)
