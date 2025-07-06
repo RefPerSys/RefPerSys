@@ -638,7 +638,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
                 << "?  oid|name '" << namestr << "'" << std::endl
-		<< "… oblex=" << _f.oblex << " tokensrc=" << *this
+		<< "… oblex=" << RPS_OBJECT_DISPLAY(_f.oblex) << " tokensrc=" << *this
                 <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
   const Rps_String* str = _f.namev.to_string();
   RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
