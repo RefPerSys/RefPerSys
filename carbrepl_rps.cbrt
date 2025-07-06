@@ -1083,6 +1083,9 @@ rps_carburetta_fill_keyword(Rps_ObjectRef obkeyw, int num, int line)
 {
   RPS_ASSERT(obkeyw);
   RPS_ASSERT(line > __LINE__);
+  RPS_ASSERT(num>0 && num<rpscarbrepl_symbol_names_length_
+	     && rpscarbrepl_symbol_names_[num] != nullptr
+	     && strncmp(rpscarbrepl_symbol_names_[num], "KEYW_", sizeof("KEYW_")-1)==0);
 #warning rps_carburetta_fill_keyword incomplete
 } // end rps_carburetta_fill_keyword
 
