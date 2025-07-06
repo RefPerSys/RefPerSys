@@ -223,7 +223,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   /* should assign $$ for KEYW_PUT */ \
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_PUT"));      \
  }
  
 
@@ -316,7 +316,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token ASTERISK 
 %token_action {_Pragma("message \"token_action for ASTERISK\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for ASKTE tksrc=" << *tksrc); \
+  RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc); \
   /* should assign $$ ASTERISK */ \
   RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
