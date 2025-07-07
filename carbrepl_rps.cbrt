@@ -199,6 +199,19 @@ extern "C" const char rps_carbrepl_shortgitid[];
                << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
 
+
+
+
+//// Adding new KEYW_ keywords could require to create a symbol for them using
+/***
+ ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
+ --plugin-arg=rpsplug_createsymbol:<SYMBOL> \
+ --extra=comment='<SYMBOL> symbol for carburetta keyword' \
+ --extra=rooted=0 \
+ --extra=constant=1 \
+ --batch --dump=.
+***/
+////
 %token KEYW_DISPLAY
 %token_action { _Pragma("message \"token_action for KEYW_DISPLAY\"");  \
   RPS_DEBUG_LOG(REPL, "token_action for KEYW_DISPLAY tksrc=" << *tksrc); \
@@ -1126,11 +1139,13 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   ///// fill the keywords constants
 #define RPS_CARBURETTA_KEYWORD(Ob,Num) \
   rps_carburetta_fill_keyword((Ob),(Num),__LINE__)
-  /// keyword DISPLAY
+  /// keyword `display`
   RPS_CARBURETTA_KEYWORD(RPS_ROOT_OB(_006mAbXTG4G00QR5HS), RPSCARBREPL_KEYW_DISPLAY); //display∈symbol
-  /// keyword OBJECT
-  /// RPS_CARBURETTA_KEYWORD(rpskob_7X9eGs8601M021nMue, RPSCARBREPL_KEYW_OBJECT); //$object∈symbol
-  /// TODO: for keyword PUT we need a symbol
+  /// keyword `object`
+  RPS_CARBURETTA_KEYWORD(rpskob_7X9eGs8601M021nMue, RPSCARBREPL_KEYW_OBJECT); //$object∈symbol
+  /// keyword `put`
+  RPS_CARBURETTA_KEYWORD(rpskob_7oLVM0fd4a5020iEEM, RPSCARBREPL_KEYW_PUT); //$put∈symbol
+  /// 
 #undef RPS_CARBURETTA_KEYWORD
   ///////////////////////////////////
   RPS_DEBUG_LOG(REPL, "initialize°carburetta done");
