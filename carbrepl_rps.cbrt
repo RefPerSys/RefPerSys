@@ -615,12 +615,9 @@ replnt_factor: LEFTPAREN replnt_expr RIGHTPAREN {
 
 %%
 
-
-/// temporary workaround github.com/kingletbv/carburetta/issues/10
-#line 620 "carbrepl_rps.cbrt"
-
-
-
+/******
+ * issue #10 of carburetta has been fixed by its commit 1b08a7cfec9563e1
+ ******/
 #pragma message "trailer of carbrepl_rps.cbrt"
 
 //// for objects in REPL
