@@ -1090,6 +1090,8 @@ void
 rps_initialize_carburetta_after_load(Rps_Loader*ld)
 {
   RPS_ASSERT(ld);
+  ///////////////////////////////////
+  ///// fill the delimiters constants
 #define RPS_CARBURETTA_DELIM(Ob,Num) \
   rps_carburetta_fill_delimiter((Ob),(Num),__LINE__)
   RPS_CARBURETTA_DELIM
@@ -1119,6 +1121,18 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
      RPSCARBREPL_RIGHTBRACE);
 #endif
 #undef RPS_CARBURETTA_DELIM
+  /////
+  ///////////////////////////////////
+  ///// fill the keywords constants
+#define RPS_CARBURETTA_KEYWORD(Ob,Num) \
+  rps_carburetta_fill_keyword((Ob),(Num),__LINE__)
+  /// keyword DISPLAY
+  RPS_CARBURETTA_KEYWORD(RPS_ROOT_OB(_006mAbXTG4G00QR5HS), RPSCARBREPL_KEYW_DISPLAY); //display∈symbol
+  /// keyword OBJECT
+  /// RPS_CARBURETTA_KEYWORD(rpskob_7X9eGs8601M021nMue, RPSCARBREPL_KEYW_OBJECT); //$object∈symbol
+  /// TODO: for keyword PUT we need a symbol
+#undef RPS_CARBURETTA_KEYWORD
+  ///////////////////////////////////
   RPS_DEBUG_LOG(REPL, "initialize°carburetta done");
 #warning incomplete rps_initialize_carburetta_after_load
   RPS_WARNOUT("incomplete rps_initialize_carburetta_after_load"
