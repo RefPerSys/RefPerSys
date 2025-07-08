@@ -619,6 +619,9 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                            Rps_Value lextokv;
                            Rps_Value namev;
                 );
+  bool atsignbefore = false;
+  if (curp != nullptr && curp > toksrc_linebuf.c_str() && curp < toksrc_linebuf.c_str() + toksrc_linebuf.size())
+    atsignbefore = curp[-1] == '@';
   const char*startname = curp;
   int curlin = toksrc_line;
   int curcol = toksrc_col;
@@ -630,7 +633,8 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1) << "? namestr: '"
                 << Rps_Cjson_String(namestr) << std::endl
                 << "' tokensrc:" << *this << " startcol=" << startcol
-                << " toksrc_col:" << toksrc_col);
+                << " toksrc_col:" << toksrc_col
+		<< (atsignbefore?" @sign°before":" no@sign°"));
   _f.namev = source_name_val(&_);
   RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
                 << position_str(startcol) << " ... " << position_str()
@@ -650,6 +654,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << position_str(startcol) << " ... " << position_str());
   if (_f.oblex)
     {
+#warning should use atsignbefore in Rps_TokenSource::get__namoid__token
       _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
       _f.lextokv = _f.oblex;
       Rps_LexTokenZone* lextokz =
