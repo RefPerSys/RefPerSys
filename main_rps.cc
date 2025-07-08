@@ -1490,6 +1490,9 @@ int
 main (int argc, char** argv)
 {
   rps_progname = argv[0];
+  //// the double dash in the main thread name rps--main is temporary
+  //// since rps_early_initialization is later setting it to rps-main
+  pthread_setname_np(pthread_self(), "rps--main");
   char*mylocale = nullptr;
   bool helpwanted = false;
   bool versionwanted = false;
