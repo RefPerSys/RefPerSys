@@ -1770,6 +1770,16 @@ rps_schedule_files_postponed_removal(void)
   std::lock_guard<std::mutex> gu(rps_postponed_lock);
   if (rps_postponed_removed_files_vector.empty())
     return;
+  if (access("/bin/rm", X_OK))
+    {
+      RPS_WARNOUT("missing /bin/rm executable file " << strerror(errno));
+      return;
+    };
+  if (access("/bin/at", X_OK))
+    {
+      RPS_WARNOUT("missing /bin/at executable file " << strerror(errno));
+      return;
+    };
   FILE* pat = popen("/bin/at now + 5 minutes", "w");
   if (!pat)
     {
@@ -1783,10 +1793,10 @@ rps_schedule_files_postponed_removal(void)
   for  (auto rf: rps_postponed_removed_files_vector)
     {
       if (rps_syslog_enabled)
-        syslog(LOG_NOTICE, "*rm  %s",  Rps_SingleQuotedC_String(rf).c_str());
+        syslog(LOG_NOTICE, "*°removing %s",  Rps_SingleQuotedC_String(rf).c_str());
       else
-        printf(" *rm %s\n", Rps_SingleQuotedC_String(rf).c_str());
-      fprintf(pat, "/bin/rm -f %s\n", Rps_SingleQuotedC_String(rf).c_str());
+        RPS_INFORM("*°removing %s\n", Rps_SingleQuotedC_String(rf).c_str());
+      fprintf(pat, "/bin/rm -f '%s'\n", Rps_SingleQuotedC_String(rf).c_str());
     }
   rps_postponed_removed_files_vector.clear();
   pclose(pat);
