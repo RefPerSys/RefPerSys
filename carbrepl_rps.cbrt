@@ -440,7 +440,7 @@ replnt_input: replnt_command replnt_input {
 
 replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "show carburetta command:" << $2);
+   RPS_DEBUG_LOG(REPL, "display carburetta command:" << $2);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_POSSIBLE_BREAKPOINT();
    rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $2);
