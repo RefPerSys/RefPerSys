@@ -1780,7 +1780,10 @@ rps_schedule_files_postponed_removal(void)
       RPS_WARNOUT("missing /bin/at executable file " << strerror(errno));
       return;
     };
-  FILE* pat = popen("/bin/at now + 5 minutes", "w");
+  /// Redirection of /bin/at to /dev/null to remove the at warning:
+  //// commands will be executed using /bin/sh
+  /// the -M option never send mail to user
+  FILE* pat = popen("/bin/at -M now + 5 minutes > /dev/null 2>&1", "w");
   if (!pat)
     {
       RPS_WARNOUT("failed to open /bin/at now + 5 minutes :" << strerror(errno));
