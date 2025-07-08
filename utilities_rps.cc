@@ -1793,9 +1793,9 @@ rps_schedule_files_postponed_removal(void)
   for  (auto rf: rps_postponed_removed_files_vector)
     {
       if (rps_syslog_enabled)
-        syslog(LOG_NOTICE, "*°removing %s",  Rps_SingleQuotedC_String(rf).c_str());
+        syslog(LOG_NOTICE, "*°postpone removing %s",  Rps_SingleQuotedC_String(rf).c_str());
       else
-        RPS_INFORM("*°removing %s\n", Rps_SingleQuotedC_String(rf).c_str());
+        RPS_INFORM("*°postpone removing %s\n", Rps_SingleQuotedC_String(rf).c_str());
       fprintf(pat, "/bin/rm -f '%s'\n", Rps_SingleQuotedC_String(rf).c_str());
     }
   rps_postponed_removed_files_vector.clear();
