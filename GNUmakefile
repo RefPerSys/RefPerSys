@@ -227,7 +227,7 @@ _carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 # https://github.com/kingletbv/carburetta/issues/9
 	$(RPS_CARBURETTA) --c $@ --sym-names $^
 
-_nl-carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+_nl_carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 # the --sym-names feature of carburetta is in
 # https://github.com/kingletbv/carburetta/issues/9
 	$(RPS_CARBURETTA) --c $@ --nolinedir --sym-names $^
