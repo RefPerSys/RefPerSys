@@ -202,7 +202,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
 #	$(RM) -v _gramrepl_rps.*
-	$(RM) -v _carbrepl_rps.*
+	$(RM) -vf _carbrepl_rps.* _nl-carbrepl_rps.cc
 	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
@@ -225,9 +225,12 @@ _bispprepl_rps.cc _bispprepl_rps.hh: bispprepl_rps.yyp |GNUmakefile
 _carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 # the --sym-names feature of carburetta is in
 # https://github.com/kingletbv/carburetta/issues/9
-	$(RPS_CARBURETTA) --c _carbrepl_rps.cc --sym-names $^
-# dont indent because of #line-s
-#	$(ASTYLE) $(ASTYLEFLAGS)  _carbrepl_rps.cc
+	$(RPS_CARBURETTA) --c $@ --sym-names $^
+
+_nl-carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --nolinedir --sym-names $^
 
 clean-plugins:
 	$(RM) -v plugins_dir/*.o
@@ -533,6 +536,26 @@ load_rps.o: load_rps.cc refpersys.hh \
 #-   
 
 %_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+## only useful to debug the carburetta input file
+_nl-carbrepl_rps.o: _nl-carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))

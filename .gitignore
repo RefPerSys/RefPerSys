@@ -10,6 +10,8 @@ lto-refpersys
 refpersys
 # temporary files (by make config)
 tmp_*
+_carbrep*
+_nl-carbprep*
 *.o
 *.orig
 *~
