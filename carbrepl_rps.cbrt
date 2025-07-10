@@ -464,19 +464,19 @@ replnt_atom: INT {
 _Pragma("message \"replnt_atom as INT in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
   $$ = Rps_Value::make_tagged_int($0);
-  RPS_DEBUG_LOG(REPL, "atom is INT " << $$);
+  RPS_DEBUG_LOG(REPL, "atom is INT " << $$ << " from integer " << $0);
 }
 
 replnt_atom: DOUBLE {
 _Pragma("message \"replnt_atom as DOUBLE in carbrepl_rps.cbrt\"");
   $$ = Rps_DoubleValue($0);
-  RPS_DEBUG_LOG(REPL, "atom is DOUBLE " << $$);
+  RPS_DEBUG_LOG(REPL, "atom is DOUBLE " << $$ << " from double " << $0);
 }
 
 replnt_atom: STRING {
 _Pragma("message \"replnt_atom as STRING in carbrepl_rps.cbrt\"");
   $$ = Rps_StringValue($0);
-  RPS_DEBUG_LOG(REPL, "atom is STRING " << $$);
+  RPS_DEBUG_LOG(REPL, "atom is STRING " << $$ << " from string " << Rps_QuotedC_String($0));
 }
 
 replnt_atom: replnt_object {
@@ -534,13 +534,13 @@ _Pragma("message \"replnt_restobjectseq with comma in carbrepl_rps.cbrt\"");
 replnt_object: NAME {
   _Pragma("message \"replnt_object as NAME in carbrepl_rps.cbrt\"");
   $$ = Rps_PayloadSymbol::find_named_object($0);
-  RPS_DEBUG_LOG(REPL, "object is name " << $$);
+  RPS_DEBUG_LOG(REPL, "object is name " << $$ << " from name " << Rps_QuotedC_String($0));
 }
 
 replnt_object: OID {
   _Pragma("message \"replnt_object as OID in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectRef::really_find_object_by_oid($0);
-  RPS_DEBUG_LOG(REPL, "object is oid " << $$);
+  RPS_DEBUG_LOG(REPL, "object is oid " << $$ << " from oid " << Rps_QuotedC_String($0));
 }
 
 
