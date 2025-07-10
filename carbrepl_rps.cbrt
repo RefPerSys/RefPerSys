@@ -540,7 +540,7 @@ replnt_object: NAME {
 replnt_object: OID {
   _Pragma("message \"replnt_object as OID in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectRef::really_find_object_by_oid($0);
-  RPS_DEBUG_LOG(REPL, "object is oid " << $$ << " from oid " << Rps_QuotedC_String($0));
+  RPS_DEBUG_LOG(REPL, "object is oid " << $$ << " from oid " << $0);
 }
 
 
