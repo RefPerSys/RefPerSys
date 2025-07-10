@@ -202,7 +202,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
 #	$(RM) -v _gramrepl_rps.*
-	$(RM) -vf _carbrepl_rps.* _nl-carbrepl_rps.cc
+	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
 	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
@@ -555,7 +555,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	$(SYNC)
 
 ## only useful to debug the carburetta input file
-_nl-carbrepl_rps.o: _nl-carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+_nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
