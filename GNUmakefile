@@ -82,16 +82,22 @@ ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 CFLAGS?= -O -g -Wall $(RPS_LTO)
 
 ### Human hand-written C++ sources
-REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard *_rps.cc)
+REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
 
 ### corresponding object files
 REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
-### Generated C++ sources which are written at dump time and needs to be git managed
-REFPERSYS_GENERATED_CPP_SOURCES := $(wildcard generated/*.cc)
+### Generated C++ sources
+REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc
+
+### corresponding C++ objects
+REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
+
+### Dumped C++ sources which are written at dump time and needs to be git managed
+REFPERSYS_DUMPED_CPP_SOURCES := $(wildcard generated/*.cc)
 
 ### corresponding object files
-REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
+REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
 
 ## altredump is dumping into....
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
@@ -144,7 +150,7 @@ all:
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
 
-objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
+objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
 
 .SECONDARY:  __timestamp.c 
 	$(SYNC)
@@ -161,7 +167,8 @@ lto-refpersys:
              $(REFPERSYS_LINKER_FLAGS) \
              -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
-             $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
+             $(REFPERSYS_GENERATED_CPP_OBJECTS) \
+             $(REFPERSYS_DUMPED_CPP_OBJECTS) __timestamp.o \
 	      $(RPS_LIBBACKTRACE) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
@@ -268,7 +275,7 @@ __timestamp.o: __timestamp.c |GNUmakefile
 
 #was
 #refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
-#               $(REFPERSYS_GENERATED_CPP_OBJECTS) \
+#               $(REFPERSYS_DUMPED_CPP_OBJECTS) \
 #                   __timestamp.c |  GNUmakefile
 refpersys: objects |  GNUmakefile _config-refpersys.mk
 	$(MAKE) __timestamp.o
@@ -278,20 +285,24 @@ refpersys: objects |  GNUmakefile _config-refpersys.mk
 	/bin/sleep 0.05
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
+	@echo RefPerSys dumped C++ files $(REFPERSYS_DUMPED_CPP_SOURCES)
+#	@echo RefPerSys dumped C++ object files $(REFPERSYS_DUMPED_CPP_OBJECTS)
 	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
-#	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
 	@echo RPS_LTO is $(RPS_LTO)
 	@echo FLTKconfig is  $(REFPERSYS_FLTKCONFIG)
 	@echo FLTK stuff is  $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags)
 	@echo REFPERSYS_NEEDED_LIBRARIES is $(REFPERSYS_NEEDED_LIBRARIES)
 	@echo REFPERSYS_HUMAN_CPP_OBJECTS is $(REFPERSYS_HUMAN_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
+	@echo REFPERSYS_DUMPED_CPP_OBJECTS is $(REFPERSYS_DUMPED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
-	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
+	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) __timestamp.o
+	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	-@echo Linking $@
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
+             $(REFPERSYS_DUMPED_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
              __timestamp.o \
               $(RPS_LIBBACKTRACE) \
