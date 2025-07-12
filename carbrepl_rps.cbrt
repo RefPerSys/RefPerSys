@@ -244,7 +244,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action { _Pragma("message \"token_action for DOT\""); \
   /* should assign $$ for DOT */ \
   RPS_DEBUG_LOG(REPL, "token_action for DOT tksrc=" << *tksrc); \
-  RPS_FATALOUT("DOT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+  RPS_FATALOUT("DOT token_action is incomplete tksrc=" \
+	       << tksrc << " sym=" << sym	       \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));      \
  }
