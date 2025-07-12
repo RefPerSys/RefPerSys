@@ -1560,7 +1560,8 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
 
 
 void
-rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const std::string&cmd,
+rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
+                        const std::string&cmd,
                         const char*title)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
@@ -1572,7 +1573,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                  Rps_Value parsmainv;
                  Rps_Value parsextrav;
                  Rps_Value cmdparserv;
-                 Rps_Value tok0, tok1, tok2;
+                 Rps_Value tok0;
+                 Rps_Value tok1;
                 );
   _f.obenv = obenvarg;
   RPS_ASSERT(title != nullptr && title[0]);
@@ -1581,50 +1583,47 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl << title << " cmd='" << Rps_Cjson_String(cmd) << "'"
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command")
-		<< std::endl << " in thread "
-		<< rps_current_pthread_name());
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command")
+                << std::endl << " in thread "
+                << rps_current_pthread_name());
   RPS_POSSIBLE_BREAKPOINT();
   Rps_StringTokenSource intoksrc(cmd, std::string(title) + "°repl");
   if (!intoksrc.get_line())
     {
       RPS_WARNOUT("rps_do_one_repl_command " << title << " no line from "
-		  << Rps_Cjson_String(cmd) << " in thread "
-		  << rps_current_pthread_name());
+                  << Rps_Cjson_String(cmd) << " in thread "
+                  << rps_current_pthread_name());
       return;
     }
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< std::endl
-		<< "… p." << intoksrc.position_str()
-		<< " obenv=" << _f.obenv);
+                << std::endl
+                << "… p." << intoksrc.position_str()
+                << " obenv=" << _f.obenv);
   RPS_POSSIBLE_BREAKPOINT();
   _f.tok0 = intoksrc.lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< std::endl
-		<< "… tok0=" << _f.tok0);
+                << std::endl
+                << "… tok0=" << _f.tok0);
   RPS_POSSIBLE_BREAKPOINT();
   _f.tok1 = intoksrc.lookahead_token(&_, 1);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< std::endl
-		<< "… tok1=" << _f.tok1);
-  _f.tok2 = intoksrc.lookahead_token(&_, 2);
-  RPS_POSSIBLE_BREAKPOINT();
+                << std::endl
+                << "… tok1=" << _f.tok1);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-		<< std::endl
-		<< "… tok0=" << _f.tok0
-		<< " tok1=" << _f.tok1
-		<< " tok2=" << _f.tok2
-		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
+                << std::endl
+                << "… tok0=" << _f.tok0
+                << " tok1=" << _f.tok1
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
   std::string commandpos = intoksrc.position_str();
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command "
 //<< title << "'"
 //<< Rps_Cjson_String(cmd) << "'" << std::endl << "… "
                 << "intoksrc:" << intoksrc
-		<< std::endl
+                << std::endl
                 << "… curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                << " tok0=" << _f.tok0 << " tok1=" << _f.tok1
-                << " tok2=" << _f.tok2);
+                << " tok0=" << _f.tok0 << " tok1=" << _f.tok1);
+  RPS_POSSIBLE_BREAKPOINT();
   /*** TODO:
        For debugging purposes, we want builtin commands like !parse_term etc...
    ***/
@@ -1657,10 +1656,10 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   else if (cmd[0] == '@')
     {
       /*** A command starting with @ is parsed using carburetta
-	   generated code from file carbrepl_rps.cbrt  */
+           generated code from file carbrepl_rps.cbrt  */
       //intoksrc.advance_cursor_bytes(1);
       RPS_INFORMOUT("rps_do_one_repl_command carburetta '" << Rps_Cjson_String(cmd)
-		    << "'"
+                    << "'"
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -1668,11 +1667,9 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       })
           << std::endl);
       RPS_POSSIBLE_BREAKPOINT();
-      /* TODO: actually this API for rps_do_carburetta_command is
-         suboptimal, since the token source is built twice.  Perhaps
-         rps_do_carburetta_command should be redesigned to get the
-         command from a Rps_TokenSource.... */
-      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " before calling rps_do_carburetta_command intoksrc=" << intoksrc);
+      /// TODO: should forget and recompute tok1 (as a carburetta keyword)
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
+                    << " before calling rps_do_carburetta_command intoksrc=" << intoksrc);
       RPS_POSSIBLE_BREAKPOINT();
       rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv, &intoksrc);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " after calling rps_do_carburetta_command");
@@ -1846,16 +1843,16 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
       /// do the command
       try
         {
-	  RPS_POSSIBLE_BREAKPOINT();
+          RPS_POSSIBLE_BREAKPOINT();
           RPS_DEBUG_LOG(REPL, "REPL before doing command " << Rps_Cjson_String(cmdvec[cix])
-			<< " in env=" << _f.envob
-			<< " " << bufpath);
-	  RPS_POSSIBLE_BREAKPOINT();
+                        << " in env=" << _f.envob
+                        << " " << bufpath);
+          RPS_POSSIBLE_BREAKPOINT();
           rps_do_one_repl_command(&_, _f.envob, cmdvec[cix],
                                   /*title:*/bufpath);
           RPS_DEBUG_LOG(REPL, "REPL command " << Rps_Cjson_String(cmdvec[cix])
                         << " done");
-	  RPS_POSSIBLE_BREAKPOINT();
+          RPS_POSSIBLE_BREAKPOINT();
         }
       catch (std::exception&ex)
         {
