@@ -2901,7 +2901,7 @@ protected:
       toksrc_col = toksrc_linebuf.size();
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
-public:
+public: //////
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const
   {
@@ -2934,6 +2934,7 @@ public:
   {
     return toksrc_token_deq;
   };
+  void clear_token_dequeue(void);
   void consume_front_token(Rps_CallFrame*callframe, bool *psuccess=nullptr);
   void append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv);
   virtual bool get_line(void) =0; // gives true when another line has been read

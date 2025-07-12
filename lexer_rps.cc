@@ -90,6 +90,11 @@ Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
   toksrc_token_deq.gc_mark(gc, depth+1);
 } // end Rps_TokenSource::really_gc_mark
 
+void
+Rps_TokenSource::clear_token_dequeue(void)
+{
+  toksrc_token_deq.clear();
+} // end Rps_TokenSource::clear_token_dequeue
 
 /// the current token source name is needed as a string value for
 /// constructing Rps_LexTokenValue-s. We want to avoid creating that
