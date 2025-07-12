@@ -93,6 +93,7 @@ Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
 void
 Rps_TokenSource::clear_token_dequeue(void)
 {
+  RPS_ASSERT(rps_is_main_thread());
   toksrc_token_deq.clear();
 } // end Rps_TokenSource::clear_token_dequeue
 
