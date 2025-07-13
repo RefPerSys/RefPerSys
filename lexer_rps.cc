@@ -636,7 +636,9 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1) << "? namestr: '"
                 << Rps_Cjson_String(namestr) << std::endl
                 << "' tokensrc:" << *this << " startcol=" << startcol
-                << " toksrc_col:" << toksrc_col);
+                << " toksrc_col:" << toksrc_col
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
   _f.namev = source_name_val(&_);
   RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
                 << position_str(startcol) << " ... " << position_str()
