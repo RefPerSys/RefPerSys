@@ -1446,7 +1446,7 @@ extern "C" void rps_exiting(void);
 
 
 void
-rps_exiting(void)
+rps_exiting(void) //// called thru atexit
 {
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
@@ -1464,7 +1464,7 @@ rps_exiting(void)
   if (!rps_syslog_enabled)
     {
       printf("RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
-             " ... elapsed %.3f sec, CPU %.3f sec\n",
+             "… elapsed %.3f sec, CPU %.3f sec\n",
              (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
              rps_get_major_version(), rps_get_minor_version(),
              rps_exit_atomic_code.load(),
