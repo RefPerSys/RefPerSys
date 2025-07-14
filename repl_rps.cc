@@ -1819,7 +1819,8 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
   auto paylenv = _f.envob->put_new_plain_payload<Rps_PayloadEnvironment>();
   RPS_ASSERT(paylenv);
   RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec start nbcmd:" << nbcmd
-                << RPS_OBJECT_DISPLAY(_f.envob));
+		<< std::endl
+                << "… envob:" << RPS_OBJECT_DISPLAY(_f.envob));
   for (int cix=0; cix<nbcmd; cix++)
     {
       RPS_POSSIBLE_BREAKPOINT();
