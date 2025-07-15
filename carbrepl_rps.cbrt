@@ -134,68 +134,68 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token INT
 %type INT: intptr_t
-%token_action {  _Pragma("message \"token_action for INT\"");		\
-  $$ = carbdata.cardata_i;						\
-  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc		\
-		<< " cardata_i=" << carbdata.cardata_i);		\
+%token_action {  _Pragma("message \"token_action for INT\"");           \
+  $$ = carbdata.cardata_i;                                              \
+  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc           \
+                << " cardata_i=" << carbdata.cardata_i);                \
   RPS_FATALOUT("INT token_action is incomplete tksrc="                  \
-	       << tksrc << " sym=" << sym				\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+               << tksrc << " sym=" << sym                               \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action INT"));      \
  }
 
 
 %token DOUBLE
 %type DOUBLE: double
-%token_action {  _Pragma("message \"token_action for DOUBLE\"");	\
-  RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc	\
-		<< " cardata_d=" << carbdata.cardata_d);		\
-  /* should assign $$ for DOUBLE */					\
-  $$ = carbdata.cardata_d;						\
-  RPS_FATALOUT("DOUBLE token_action is incomplete tksrc="		\
-	       << tksrc << " sym=" << sym 				\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
-	       << " cardata_d="	  << carbdata.cardata_d			\
+%token_action {  _Pragma("message \"token_action for DOUBLE\"");        \
+  RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc        \
+                << " cardata_d=" << carbdata.cardata_d);                \
+  /* should assign $$ for DOUBLE */                                     \
+  $$ = carbdata.cardata_d;                                              \
+  RPS_FATALOUT("DOUBLE token_action is incomplete tksrc="               \
+               << tksrc << " sym=" << sym                               \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << " cardata_d="   << carbdata.cardata_d                 \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOUBLE"));   \
  }
 
 %token STRING
 %type STRING: std::string
-%token_action { _Pragma("message \"token_action for STRING\"");		\
-  /*  assign $$ for STRING */					\
-  RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc	\
-		<< " cardata_str="					\
-		<< Rps_QuotedC_String(carbdata.cardata_str));		\
-  $$ = carbdata.cardata_str; 						\
-  RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc	\
-	       << " sym=" << sym					\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+%token_action { _Pragma("message \"token_action for STRING\"");         \
+  /*  assign $$ for STRING */                                   \
+  RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc        \
+                << " cardata_str="                                      \
+                << Rps_QuotedC_String(carbdata.cardata_str));           \
+  $$ = carbdata.cardata_str;                                            \
+  RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc      \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action STRING"));   \
  }
 
 %token NAME
 %type NAME: std::string
-%token_action {  _Pragma("message \"token_action for NAME\"");		\
-  RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc		\
-		<< " cardata_str=" << carbdata.cardata_str);		\
-  /* should assign $$ for NAME using cardata_str */			\
-  RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc	\
-	       << " sym=" << sym					\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
-		<< " cardata_str=" << carbdata.cardata_str		\
-               << std::endl						\
-	       << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));	\
+%token_action {  _Pragma("message \"token_action for NAME\"");          \
+  RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc          \
+                << " cardata_str=" << carbdata.cardata_str);            \
+  /* should assign $$ for NAME using cardata_str */                     \
+  RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc        \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+                << " cardata_str=" << carbdata.cardata_str              \
+               << std::endl                                             \
+               << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
 
 %token OID
 %type OID: Rps_Id
-%token_action { _Pragma("message \"token_action for OID\"");		\
-  /* should assign $$ for OID */					\
-  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc		\
-		<< " cardata_str=" << carbdata.cardata_str);		\
-  RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc		\
-	       << " sym=" << sym					\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+%token_action { _Pragma("message \"token_action for OID\"");            \
+  /* should assign $$ for OID */                                        \
+  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc           \
+                << " cardata_str=" << carbdata.cardata_str);            \
+  RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc         \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action NAME"));     \
  }
 
@@ -245,7 +245,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   /* should assign $$ for DOT */ \
   RPS_DEBUG_LOG(REPL, "token_action for DOT tksrc=" << *tksrc); \
   RPS_FATALOUT("DOT token_action is incomplete tksrc=" \
-	       << tksrc << " sym=" << sym	       \
+               << tksrc << " sym=" << sym              \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE_HERE(1, "token_action DOT"));      \
  }
@@ -376,7 +376,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
                                       __LINE__);                        \
     RPS_DEBUG_LOG(REPL, "°-on_next_token tksrc=" << *tksrc << " is "    \
                   << ntk << "::" << RPS_CARBREPL_SYMBOL_NAME(ntk)       \
-		  << std::endl						\
+                  << " sym:" << sym                                     \
+                  << std::endl                                          \
                   << RPS_FULL_BACKTRACE_HERE(1, "¤-on_next_token"));    \
     return ntk; }
 
@@ -795,9 +796,9 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                  Rps_Value tokv;
                  Rps_ObjectRef kindtokob;
                  Rps_Value valtokv;
-		 Rps_ObjectRef valtokob;
+                 Rps_ObjectRef valtokob;
                  Rps_Value nextokv;
-		 Rps_Value carbtermv;
+                 Rps_Value carbtermv;
                 );
   RPS_ASSERT(tksrc);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -833,10 +834,10 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc
-		<< std::endl  << "… tokv=" << _f.tokv
+                << std::endl  << "… tokv=" << _f.tokv
                 << " of °kindtokob=" << _f.kindtokob
                 << " and valtokv=" << _f.valtokv
-		<< std::endl 
+                << std::endl 
                 << " from "
                 << __FILE__ << ":" << lin);
   RPS_POSSIBLE_BREAKPOINT();
@@ -865,45 +866,45 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
       return RPSCARBREPL_INT;
     }
   else if (_f.kindtokob == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
-	  ) {
+          ) {
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		  << "°delim kindtokob=" << _f.kindtokob
-		  << " valtokv=" << _f.valtokv);
+                  << "°delim kindtokob=" << _f.kindtokob
+                  << " valtokv=" << _f.valtokv);
     if (_f.valtokv.is_object()) {
       _f.valtokob = _f.valtokv.as_object();
       RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		    << "°delim kindtokob=" << _f.kindtokob
-		    << std::endl
-		    << " valtokob=" << RPS_OBJECT_DISPLAY(_f.valtokob));
+                    << "°delim kindtokob=" << _f.kindtokob
+                    << std::endl
+                    << " valtokob=" << RPS_OBJECT_DISPLAY(_f.valtokob));
       _f.carbtermv =
-	_f.valtokob->get_physical_attr
-	(rpskob_1cUbHIFNNXi00HOCWM); //!carburetta_terminal∈named_attribute
+        _f.valtokob->get_physical_attr
+        (rpskob_1cUbHIFNNXi00HOCWM); //!carburetta_terminal∈named_attribute
       RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		    << " valtokob=" << _f.valtokob
-		    << " wirth carbtermv=" << _f.carbtermv);
+                    << " valtokob=" << _f.valtokob
+                    << " wirth carbtermv=" << _f.carbtermv);
       if (_f.carbtermv.is_int()) {
-	int carbrank = _f.carbtermv.as_int();
-	char carbtermbuf[16];
-	memset(carbtermbuf, 0, sizeof(carbtermbuf));
-	const char *termname = nullptr;
-	if (carbrank>0 && carbrank<rpscarbrepl_symbol_names_length_)
-	  termname=rpscarbrepl_symbol_names_[carbrank];
-	if (!termname) {
-	  snprintf(carbtermbuf, sizeof(carbtermbuf)-1, "#?Carb-%d", carbrank);
-	  termname = carbtermbuf;
-	};	  
-	RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		      << " gives " << _f.carbtermv
-		      << " which is " << termname);
-	return carbrank;
+        int carbrank = _f.carbtermv.as_int();
+        char carbtermbuf[16];
+        memset(carbtermbuf, 0, sizeof(carbtermbuf));
+        const char *termname = nullptr;
+        if (carbrank>0 && carbrank<rpscarbrepl_symbol_names_length_)
+          termname=rpscarbrepl_symbol_names_[carbrank];
+        if (!termname) {
+          snprintf(carbtermbuf, sizeof(carbtermbuf)-1, "#?Carb-%d", carbrank);
+          termname = carbtermbuf;
+        };        
+        RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
+                      << " gives " << _f.carbtermv
+                      << " which is " << termname);
+        return carbrank;
       }
     }
     RPS_POSSIBLE_BREAKPOINT();
   }
   RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		<< " kindtokob=" << _f.kindtokob
-		<< " valtokv=" << _f.valtokv
+                << " kindtokob=" << _f.kindtokob
+                << " valtokv=" << _f.valtokv
                 << " °gdb_do_return at "
                 << (void*)&gdb_do_return << " is "
                 << (gdb_do_return?"SET":"CLEARED")
@@ -929,7 +930,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
                   << "- tksrc=" << *tksrc << std::endl
                   << "… tokv=" << _f.tokv
-		  << " nextokv=" << _f.nextokv << std::endl
+                  << " nextokv=" << _f.nextokv << std::endl
                   << "… no°gdb_do_return" << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token-gdb"));
   };
@@ -963,7 +964,7 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   RPS_ASSERT(tksrc);
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc starting obenv="
-		<< _f.obenv
+                << _f.obenv
                 << " tksrc=" << *tksrc << "@" << (void*)tksrc
                 << " FROM thread " << rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE_HERE(1, "start rps_do_carburetta_tokensrc")
@@ -1020,20 +1021,20 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
   RPS_ASSERT(ptoksrc != nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command start *ptoksrc=" << *ptoksrc
-		<< std::endl
+                << std::endl
                 << "… obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command start")
-		<< std::endl
+                << std::endl
                 << "… "
-		<< std::endl
+                << std::endl
                 << "… °%° __GNUC__=" << __GNUC__
-		<< " __VERSION__=" << __VERSION__
-		<< " __TIMESTAMP__=" << __TIMESTAMP__
-		<< std::endl
+                << " __VERSION__=" << __VERSION__
+                << " __TIMESTAMP__=" << __TIMESTAMP__
+                << std::endl
                 << "… "
-		<< " __FUNCTION__=" << __FUNCTION__
-		<< " __func__=" << __func__
-		<< " __PRETTY_FUNCTION__=" << __PRETTY_FUNCTION__);
+                << " __FUNCTION__=" << __FUNCTION__
+                << " __func__=" << __func__
+                << " __PRETTY_FUNCTION__=" << __PRETTY_FUNCTION__);
   bool gotlin = ptoksrc->get_line();
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command before rps_do_carburetta_tokensrc *ptoksrc="
@@ -1041,7 +1042,7 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
   RPS_POSSIBLE_BREAKPOINT();
   rps_do_carburetta_tokensrc(&_, _f.obenv, ptoksrc);
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_command end *ptoksrc=" << *ptoksrc
-		<< std::endl
+                << std::endl
                 << "… obenv=" << _f.obenv << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_command end"));
 }  // end rps_do_carburetta_command
@@ -1082,20 +1083,20 @@ rps_carburetta_fill_delimiter(Rps_ObjectRef obdelim, int num, int line)
   Rps_ObjectRef obcarbterm = rpskob_1cUbHIFNNXi00HOCWM /*carburetta_terminal*/;
   Rps_Value atv = obdelim->get_physical_attr(obcarbterm/*carburetta_terminal*/);
   RPS_ASSERT(num>0 && num<rpscarbrepl_symbol_names_length_
-	    && rpscarbrepl_symbol_names_[num] != nullptr);
+            && rpscarbrepl_symbol_names_[num] != nullptr);
   if (atv != Rps_Value::make_tagged_int(num)) {
     obdelim->put_attr(obcarbterm,
-		      Rps_Value::make_tagged_int(num));
+                      Rps_Value::make_tagged_int(num));
     RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter filled from "
-		  << __FILE__ << ":" << line
-		  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num] << std::endl
-		  << RPS_OBJECT_DISPLAY(obdelim));
+                  << __FILE__ << ":" << line
+                  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num] << std::endl
+                  << RPS_OBJECT_DISPLAY(obdelim));
   }
   else
     RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter good delimiter "
-		  << obdelim
-		  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num]
-		  << " from " << __FILE__ << ":" << line);
+                  << obdelim
+                  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num]
+                  << " from " << __FILE__ << ":" << line);
 } // end rps_carburetta_fill_delimiter
 
 static void
@@ -1104,8 +1105,8 @@ rps_carburetta_fill_keyword(Rps_ObjectRef obkeyw, int num, int line)
   RPS_ASSERT(obkeyw);
   RPS_ASSERT(line > __LINE__);
   RPS_ASSERT(num>0 && num<rpscarbrepl_symbol_names_length_
-	     && rpscarbrepl_symbol_names_[num] != nullptr
-	     && strncmp(rpscarbrepl_symbol_names_[num], "KEYW_", sizeof("KEYW_")-1)==0);
+             && rpscarbrepl_symbol_names_[num] != nullptr
+             && strncmp(rpscarbrepl_symbol_names_[num], "KEYW_", sizeof("KEYW_")-1)==0);
 #warning rps_carburetta_fill_keyword incomplete
 } // end rps_carburetta_fill_keyword
 
@@ -1179,7 +1180,7 @@ rps_carbrepl_symname_at(int symnum, int lin) {
   else {
     RPS_WARNOUT("°carbrepl_symname bad symnum#" << symnum
                   << " lin:" << lin
-		<< RPS_FULL_BACKTRACE_HERE(1, "carbrepl_symname/BAD"));
+                << RPS_FULL_BACKTRACE_HERE(1, "carbrepl_symname/BAD"));
     RPS_POSSIBLE_BREAKPOINT();
     static char buf[32];
     memset (buf, 0, sizeof(buf));
