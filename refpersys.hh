@@ -2868,10 +2868,10 @@ class Rps_TokenSource           // this is *not* a value .....
                           Rps_ObjectRef obenvarg,
                           const std::string&cmd,
                           const char*title);
-  std::string toksrc_name;	// displayable name
-  int toksrc_line, toksrc_col;	// current position
-  int toksrc_counter;		// count the number of lexed token
-  const unsigned toksrc_number;	// unique number
+  std::string toksrc_name;      // displayable name
+  int toksrc_line, toksrc_col;  // current position
+  int toksrc_counter;           // count the number of lexed token
+  const unsigned toksrc_number; // unique number
   static std::atomic<unsigned> toksrc_instance_count_;
 protected:
   /// could be called by subclasses
@@ -2912,6 +2912,23 @@ public: //////
       return toksrc_linebuf.c_str()+toksrc_col;
     return nullptr;
   };                            // end Rps_TokenSource::curcptr
+  /// Gives the previous ASCII character or 0 if none or not-ASCII.
+  /// UTF-8 uses bytes with a most significant bit of 1 for every
+  /// multi-byte character.
+  char previous_ascii(void) const {
+    if (toksrc_linebuf.empty())
+      return (char)0;
+    const char* buf = toksrc_linebuf.c_str();
+    auto linesiz = toksrc_linebuf.size();
+    if (toksrc_col>0 && (int)toksrc_col<(int)linesiz) {
+    const signed char* signedbuf =
+      reinterpret_cast<const signed char*>(buf);
+    int prevbyte = (int) signedbuf[toksrc_col-1];
+    if (isascii(prevbyte))
+      return (char)prevbyte&0xff;
+    };
+    return (char)0;
+  }
   const std::string current_line(void) const
   {
     return toksrc_linebuf;
@@ -3063,7 +3080,7 @@ public:
       RPS_WARNOUT("Rps_CinTokenSource " << name()
                   << " depth=" << depth << " greater than maxdepth=" << maxdepth);
     out << "CinTokenSource:" << name() << ".S#" << unique_number()
-	<< '@' << position_str() << " tok.cnt:" << token_count();
+        << '@' << position_str() << " tok.cnt:" << token_count();
   };
   Rps_CinTokenSource();
   virtual ~Rps_CinTokenSource();
