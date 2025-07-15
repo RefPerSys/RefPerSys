@@ -630,6 +630,8 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   int curcol = toksrc_col;
   int startcol = curcol;
   size_t linelen = toksrc_linebuf.size();
+  const bool startswithalpha = isalpha(*curp);
+  const bool afterat = ('@' == previous_ascii());
   while ((isalpha(*curp) || *curp == '_') && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
   std::string namestr(startname, toksrc_col-startcol);
@@ -646,7 +648,11 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
                 << "?  oid|name '" << namestr << "'" << std::endl
-		<< "… oblex=" << RPS_OBJECT_DISPLAY(_f.oblex) << " tokensrc=" << *this
+		<< "… oblex=" << RPS_OBJECT_DISPLAY(_f.oblex)
+		<< ' '
+		<< (startswithalpha?"is starting with letter":"could be oid")
+		<< (afterat?" after@":" NotAfter@")
+		<< " tokensrc=" << *this
                 <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
   const Rps_String* str = _f.namev.to_string();
   RPS_DEBUG_LOG(REPL, "get_token#" << (toksrc_counter+1)
@@ -658,7 +664,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << position_str(startcol) << " ... " << position_str());
   if (_f.oblex)
     {
-#warning should use atsignbefore in Rps_TokenSource::get__namoid__token
+#warning should use startswithalpha and afterat in Rps_TokenSource::get__namoid__token
       _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
       _f.lextokv = _f.oblex;
       Rps_LexTokenZone* lextokz =
