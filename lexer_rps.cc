@@ -852,7 +852,7 @@ Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
   //int startcol = toksrc_col;
   _f.delimv = get_delimiter(&_);
   std::string delimstartstr {curp};
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? after "
+  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get__delim__token#" << (toksrc_counter+1) << "? after "
                 << " get_delimiter_object delimv="
                 << _f.delimv << " at " << position_str() << std::endl
                 << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
@@ -874,7 +874,7 @@ Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
       warndelimstr += delimpos;
       throw std::runtime_error(warndelimstr);
     }
-  RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
+  RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__delim__token#" << toksrc_counter
                 << " from¤ " << *this << std::endl
                 << " delimiter :-◑> " << _f.delimv << " at " << position_str()
                 << " curp:" << Rps_QuotedC_String(curp)
