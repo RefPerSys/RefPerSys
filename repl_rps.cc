@@ -456,6 +456,21 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
 
 ////////////////////////////////////////////////////////////////
 //// the Rps_LexTokenZone values are transient, but do need some GC support
+Rps_LexTokenZone*
+rps_make_lex_token_zone(Rps_TokenSource*tksrc,
+                        Rps_ObjectRef lexkindob,
+                        Rps_Value lexval,
+                        const Rps_String*lexstr,
+                        int lin, int col)
+{
+#warning unimplemented rps_make_lex_token_zone
+  RPS_FATALOUT("unimplemented rps_make_lex_token_zone tksrc=" << tksrc
+               << " lexkindob=" << RPS_OBJECT_DISPLAY(lexkindob)
+               << " lexval=" << lexval
+               << " lexstr=" << lexstr
+               << " lin=" << lin
+               << " col=" << col);
+} // end rps_make_lex_token_zone
 
 Rps_LexTokenZone::Rps_LexTokenZone(Rps_TokenSource* tsrc, Rps_ObjectRef kindob, Rps_Value val, const Rps_String*filestringp, int line, int col)
   : Rps_LazyHashedZoneValue(Rps_Type::LexToken),
@@ -1819,7 +1834,7 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
   auto paylenv = _f.envob->put_new_plain_payload<Rps_PayloadEnvironment>();
   RPS_ASSERT(paylenv);
   RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec start nbcmd:" << nbcmd
-		<< std::endl
+                << std::endl
                 << "… envob:" << RPS_OBJECT_DISPLAY(_f.envob));
   for (int cix=0; cix<nbcmd; cix++)
     {
