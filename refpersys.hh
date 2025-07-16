@@ -2915,18 +2915,20 @@ public: //////
   /// Gives the previous ASCII character or 0 if none or not-ASCII.
   /// UTF-8 uses bytes with a most significant bit of 1 for every
   /// multi-byte character.
-  char previous_ascii(void) const {
+  char previous_ascii(void) const
+  {
     if (toksrc_linebuf.empty())
       return (char)0;
     const char* buf = toksrc_linebuf.c_str();
     auto linesiz = toksrc_linebuf.size();
-    if (toksrc_col>0 && (int)toksrc_col<(int)linesiz) {
-    const signed char* signedbuf =
-      reinterpret_cast<const signed char*>(buf);
-    int prevbyte = (int) signedbuf[toksrc_col-1];
-    if (isascii(prevbyte))
-      return (char)prevbyte&0xff;
-    };
+    if (toksrc_col>0 && (int)toksrc_col<(int)linesiz)
+      {
+        const signed char* signedbuf =
+          reinterpret_cast<const signed char*>(buf);
+        int prevbyte = (int) signedbuf[toksrc_col-1];
+        if (isascii(prevbyte))
+          return (char)prevbyte&0xff;
+      };
     return (char)0;
   }
   const std::string current_line(void) const
@@ -3200,10 +3202,20 @@ struct Rps_ChunkData_st /// not a value neither
 };                              // end Rps_ChunkData_st
 
 //////////////// boxed lexical token - always transient
+extern "C" Rps_LexTokenZone* rps_make_lex_token_zone(Rps_TokenSource*tksrc,
+    Rps_ObjectRef lexkindob,
+    Rps_Value lexval,
+    const Rps_String*str,
+    int lin, int col);
 class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
 {
   friend Rps_LexTokenZone*
   Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcol);
+  friend Rps_LexTokenZone* rps_make_lex_token_zone(Rps_TokenSource*tksrc,
+      Rps_ObjectRef lexkindob,
+      Rps_Value lexval,
+      const Rps_String*pathstr,
+      int lin, int col);
   friend class Rps_GarbageCollector;
   friend class Rps_LexTokenValue;
   friend class Rps_QuasiZone;
@@ -3216,10 +3228,18 @@ class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
   int lex_colno;
   unsigned lex_serial;
 public:
-  inline void* operator new (std::size_t siz, std::nullptr_t)
+  void* operator new (std::size_t siz, std::nullptr_t)
   {
     return Rps_QuasiZone::operator new(siz,nullptr);
   }
+  static Rps_LexTokenZone* make_lex_token_zone(Rps_TokenSource*tksrc,
+      Rps_ObjectRef lexkindob,
+      Rps_Value lexval,
+      const Rps_String*str,
+      int lin, int col)
+  {
+    return rps_make_lex_token_zone(tksrc, lexkindob, lexval, str, lin, col);
+  };
   void set_serial (unsigned serial);
   unsigned serial(void) const
   {
