@@ -463,14 +463,17 @@ rps_make_lex_token_zone(Rps_TokenSource*tksrc,
                         const Rps_String*lexstr,
                         int lin, int col)
 {
-#warning unimplemented rps_make_lex_token_zone
-  RPS_FATALOUT("unimplemented rps_make_lex_token_zone tksrc=" << tksrc
-               << " lexkindob=" << RPS_OBJECT_DISPLAY(lexkindob)
-               << " lexval=" << lexval
-               << " lexstr=" << lexstr
-               << " lin=" << lin
-               << " col=" << col);
+  Rps_LexTokenZone* reslx = nullptr;
+  RPS_ASSERT(tksrc != nullptr);
+  RPS_ASSERT(lexkindob && lexkindob->stored_type() == Rps_Type::Object);
+  RPS_ASSERT(lexstr && lexstr->stored_type() == Rps_Type::String);
+  reslx =
+    Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,
+    Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+    (tksrc, lexkindob, lexval, lexstr, lin, col);
+  return reslx;
 } // end rps_make_lex_token_zone
+
 
 Rps_LexTokenZone::Rps_LexTokenZone(Rps_TokenSource* tsrc, Rps_ObjectRef kindob, Rps_Value val, const Rps_String*filestringp, int line, int col)
   : Rps_LazyHashedZoneValue(Rps_Type::LexToken),
