@@ -135,9 +135,7 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
   _f.nstrv = _f.namestrv.as_string();
   _f.srcv = sourcev;
   RPS_ASSERT (!_f.srcv || _f.srcv->stored_type() == Rps_Type::String);
-  _f.tokenp =
-    Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,
-    Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+  _f.tokenp = rps_make_lex_token_zone
     (this, _f.lexkindob, _f.lexval, _f.nstrv,
      toksrc_line, toksrc_col);
 #warning Rps_TokenSource::make_token should probably use _f.srcv
