@@ -2510,17 +2510,19 @@ rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr
   out << bufsiz;
   int vecix=0;
 #warning TODO: use rps_indentnl once defined
-  for (const std::string& curstr: vecstr) {
-    char bufidx[16];
-    memset(bufidx, 0, sizeof(bufidx));
-    snprintf(bufidx, sizeof(bufidx), "[%d]", vecix);
-    if (vecix>0) {
-      out << std::endl;
-      for (int i=0; i<indent; i++) out << ' ';
-    };
-    out << bufidx;
-    out << '"' << Rps_QuotedC_String(curstr) << '"' << std::flush;
-  }
+  for (const std::string& curstr: vecstr)
+    {
+      char bufidx[16];
+      memset(bufidx, 0, sizeof(bufidx));
+      snprintf(bufidx, sizeof(bufidx), "[%d]", vecix);
+      if (vecix>0)
+        {
+          out << std::endl;
+          for (int i=0; i<indent; i++) out << ' ';
+        };
+      out << bufidx;
+      out << Rps_QuotedC_String(curstr) << std::flush;
+    }
   out << ")endvecstr" << std::flush;
 #warning TODO: use rps_indentnl once defined
 } // end rps_output_vector_string
