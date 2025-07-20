@@ -767,8 +767,23 @@ inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst)
 {
   rst.output(out);
   return out;
-};                              // end operator << for Rps_Status
+};                              // end output operator << for Rps_Status
 
+
+/// TODO: if allowed we could define
+///    extern "C" void rps_initialize_indented_ostream(std::ostream&out, unsigned linewidth=80);
+/// which would use register_callback and xalloc and pword and iword
+/// and we would have some rps_indentnl C++ output manipulator
+extern "C" void rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr, int indent=0);
+inline std::ostream& operator << (std::ostream&out, const std::vector<std::string>&vecstr)
+{
+  rps_output_vector_string(out, vecstr);
+  return out;
+} /// end output operator <<  for std::vector<std::string>
+
+
+/// TODO: we may need to define output of vectors of Rps_ObjectRef and of vectors of Rps_Value
+#pragma GCC "may need to define output of more vectors and indented output"
 
 #if RPS_USE_CURL
 //// a function to interact with some web service, usually on

@@ -2497,4 +2497,33 @@ rps_stringprintf(const char*fmt, ...)
     }
 } // end rps_stringprintf
 
+
+#warning we need some rps_initialize_indented_ostream and some rps_indentnl C++ output manipulator
+void
+rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr, int indent)
+{
+  size_t sizvec = vecstr.size();
+  std::streampos inipos = out.tellp();
+  char bufsiz[32];
+  memset (bufsiz, 0, sizeof(bufsiz));
+  int sizln = snprintf(bufsiz, sizeof(bufsiz), "vecstr.ℓ%zd(", sizvec);
+  out << bufsiz;
+  int vecix=0;
+#warning TODO: use rps_indentnl once defined
+  for (const std::string& curstr: vecstr) {
+    char bufidx[16];
+    memset(bufidx, 0, sizeof(bufidx));
+    snprintf(bufidx, sizeof(bufidx), "[%d]", vecix);
+    if (vecix>0) {
+      out << std::endl;
+      for (int i=0; i<indent; i++) out << ' ';
+    };
+    out << bufidx;
+    out << '"' << Rps_QuotedC_String(curstr) << '"' << std::flush;
+  }
+  out << ")endvecstr" << std::flush;
+#warning TODO: use rps_indentnl once defined
+} // end rps_output_vector_string
+
+#pragma GCC "may need to define output of more vectors (of objects, values, ...) and indented output"
 //// end of file utilities_rps.cc
