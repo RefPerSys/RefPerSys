@@ -1107,8 +1107,23 @@ rps_carburetta_fill_keyword(Rps_ObjectRef obkeyw, int num, int line)
   RPS_ASSERT(num>0 && num<rpscarbrepl_symbol_names_length_
              && rpscarbrepl_symbol_names_[num] != nullptr
              && strncmp(rpscarbrepl_symbol_names_[num], "KEYW_", sizeof("KEYW_")-1)==0);
-#warning rps_carburetta_fill_keyword incomplete
+  Rps_ObjectRef obcarbkeyw = rpskob_083n2ydb4Zm03bbZW1/*carburetta_keyword*/;
+  Rps_Value atv = obkeyw->get_physical_attr(obcarbkeyw);
+  if (atv != Rps_Value::make_tagged_int(num)) {
+    obkeyw->put_attr(obcarbkeyw,
+                      Rps_Value::make_tagged_int(num));
+    RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter filled from "
+                  << __FILE__ << ":" << line
+                  << " keyword#" <<num << ":" << rpscarbrepl_symbol_names_[num] << std::endl
+                  << RPS_OBJECT_DISPLAY(obkeyw));
+  }
+  else
+    RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter good keyword "
+                  << obkeyw
+                  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num]
+                  << " from " << __FILE__ << ":" << line);
 } // end rps_carburetta_fill_keyword
+
 
 void
 rps_initialize_carburetta_after_load(Rps_Loader*ld)
