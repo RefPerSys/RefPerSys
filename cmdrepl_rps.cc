@@ -1113,7 +1113,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
   _dispobref->oid().to_cbuf24(obidbuf);
   out  << std::endl
        << BOLD_esc
-       << "{¤¤ object " << _dispobref
+       <<  _dispobref << "::{¤¤ object "
        << NORM_esc
        << std::endl << "  of class "
        << _dispobref->get_class()
