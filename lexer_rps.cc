@@ -72,6 +72,16 @@ Rps_TokenSource::Rps_TokenSource(std::string name)
 } // end Rps_TokenSource::Rps_TokenSource
 
 void
+Rps_TokenSource::restart_token_source(void)
+{
+  toksrc_line = 0;
+  toksrc_col = 0;
+  toksrc_counter = 0;
+  toksrc_linebuf.clear();
+  toksrc_token_deq.clear();
+} // end Rps_TokenSource::restart_token_source
+
+void
 Rps_TokenSource::gc_mark(Rps_GarbageCollector&gc, unsigned depth)
 {
   RPS_ASSERT(gc.is_valid_garbcoll());
@@ -308,6 +318,12 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_StringTokenSource::Rps_StringTokenSource
 
+void
+Rps_StringTokenSource::restart_string_token_source(void)
+{
+  restart_token_source();
+  toksrcstr_inp.seekg(0);
+} // end Rps_StringTokenSource::restart_string_token_source
 
 Rps_StringTokenSource::~Rps_StringTokenSource()
 {

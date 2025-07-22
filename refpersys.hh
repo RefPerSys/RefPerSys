@@ -2889,6 +2889,7 @@ class Rps_TokenSource           // this is *not* a value .....
   const unsigned toksrc_number; // unique number
   static std::atomic<unsigned> toksrc_instance_count_;
 protected:
+  void restart_token_source(void);
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
   std::string toksrc_linebuf;
@@ -2995,7 +2996,7 @@ public: //////
 #define RPS_DO_LOOKAHEAD ((bool*)nullptr)
   static bool is_looking_ahead(bool*p)
   {
-    return p == RPS_DO_LOOKAHEAD;
+    return p == RPS_DO_LOOKAHEAD; // ie p == nullptr
   };
   ///////////////////
   ////
@@ -3134,6 +3135,7 @@ public:
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
+  void restart_string_token_source(void);
   const std::string str() const
   {
     return toksrcstr_str;
