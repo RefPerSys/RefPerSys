@@ -675,7 +675,12 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#" << toksrc_counter
                     << " from¤ " << *this
                     << std::endl
-                    << " object :-◑> " << _f.res << std::endl
+		    << "… startswithalpha=" << startswithalpha
+		    << " afterat=" << afterat
+                    << std::endl
+		    << RPS_FULL_BACKTRACE_HERE(1, "-Rps_TokenSource::get__namoid__token")
+		    << std::endl
+                    << "…  object :-◑> " << _f.res << std::endl
                     << "… @! " << position_str()
                     << " curcptr:" <<  Rps_QuotedC_String(curcptr())
                     << std::endl
