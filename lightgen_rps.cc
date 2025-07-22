@@ -247,7 +247,7 @@ rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::
   RPS_WARNOUT("unimplemented rpsldpy_lightning_code_generator jv=" << jv << std::endl
               << " spacid=" << spacid
               << " lineno=" << lineno << std::endl
-	      << " obz=" << RPS_OBJECT_DISPLAY(obz) << std::endl
+              << " obz=" << RPS_OBJECT_DISPLAY(obz) << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_lightning_code_generator"));
 } // end rpsldpy_lightning_code_generator
 

@@ -736,7 +736,7 @@ rps_run_loaded_application(int &argc, char **argv)
     {
       int nbcmd = (int)rps_command_vec.size();
       RPS_INFORMOUT("before running " << nbcmd
-		    << " command[s]: " << rps_command_vec);
+                    << " command[s]: " << rps_command_vec);
       try
         {
           rps_do_repl_commands_vec(rps_command_vec);

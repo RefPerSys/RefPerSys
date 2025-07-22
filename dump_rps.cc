@@ -947,10 +947,10 @@ Rps_Dumper::scan_every_source_file_for_constants(void)
       if (lencurpath < 8 || strstr(curpath, "generated/") || strstr(curpath, "attic/"))
         continue;
       if (!strcmp(curpath+lencurpath-3, ".cc")
-	  || !strcmp(curpath+lencurpath-3, ".hh")
-	  || !strcmp(curpath+lencurpath-3, ".yy")
-	  || !strcmp(curpath+lencurpath-4, ".yyp")
-	  || (!strcmp(curpath+lencurpath-5, ".cbrt")))
+          || !strcmp(curpath+lencurpath-3, ".hh")
+          || !strcmp(curpath+lencurpath-3, ".yy")
+          || !strcmp(curpath+lencurpath-4, ".yyp")
+          || (!strcmp(curpath+lencurpath-5, ".cbrt")))
         {
           std::string relfilname = curpath;
           nbtotconsts += scan_source_file_for_constants(relfilname);
