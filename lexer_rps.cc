@@ -673,7 +673,8 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
       _f.res = Rps_LexTokenValue(lextokz);
       lextokz->set_serial(++toksrc_counter);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#" << toksrc_counter
-                    << " from¤ " << *this
+                    << " from¤ " << *this << " str=" << str << " oblex=" << _f.oblex
+		    << " lexkindob=" << _f.lexkindob
                     << std::endl
 		    << "… startswithalpha=" << startswithalpha
 		    << " afterat=" << afterat
