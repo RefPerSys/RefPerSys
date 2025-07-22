@@ -798,7 +798,6 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
 			   Rps_ObjectRef kindtokob;
 			   Rps_Value valtokv;
 			   Rps_ObjectRef valtokob;
-			   Rps_Value nextokv;
 			   Rps_Value carbtermv;
                 );
   RPS_ASSERT(tksrc);
@@ -842,21 +841,6 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << " from "
                 << __FILE__ << ":" << lin);
   RPS_POSSIBLE_BREAKPOINT();
-  _f.nextokv = tksrc->lookahead_token(&_, 1);
-  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
-                << __FILE__ << ":" << lin
-                << " tksrc=" << *tksrc << std::endl
-                << Rps_Do_Output([&](std::ostream& out)
-		{
-		  tksrc->display_current_line_with_cursor(out);
-		})
-                << std::endl /// REPL debugging ⌣ rps_carbrepl_next_token
-                << "+!tokv=" << _f.tokv
-                << " nextokv=" << _f.nextokv
-                << " tksrc=" << *tksrc << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/b")
-                << "… currentline=" << Rps_QuotedC_String(tksrc->current_line())
-                << " at " << tksrc->position_str());
   if (_f.kindtokob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b)) //int∈class
     {
       RPS_POSSIBLE_BREAKPOINT();
@@ -934,7 +918,6 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                   << "… tokv=" << _f.tokv
 		  << " kindtokob=" << _f.kindtokob
 		  << " valtokv=" << _f.valtokv
-                  << " nextokv=" << _f.nextokv << std::endl
                   << "… no°gdb_do_return" << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token-gdb"));
   };
@@ -953,7 +936,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
 	       {
 		 tksrc->display_current_line_with_cursor(out);
 	       })
-	       << std::endl << "… tokv=" << _f.tokv);
+	       << std::endl);
 } // end rps_carbrepl_next_token
 
 
