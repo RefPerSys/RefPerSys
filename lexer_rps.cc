@@ -666,6 +666,9 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << position_str(startcol) << " ... " << position_str());
   if (_f.obnamed)
     {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
+		    << std::endl
+		    << "… obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed));
 #warning should use startswithalpha and afterat in Rps_TokenSource::get__namoid__token
       _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
       _f.lextokv = _f.obnamed;
