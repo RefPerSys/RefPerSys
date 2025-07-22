@@ -617,7 +617,6 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                            /*callerframe:*/callframe,
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
-                           Rps_ObjectRef oblex;
                            Rps_ObjectRef obnamed;
                            Rps_Value lextokv;
                            Rps_Value namev;
@@ -650,10 +649,9 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << " at "
                 << position_str(startcol) << " … " << position_str()
                 << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
-  _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
                 << "?  oid|name '" << namestr << "'" << std::endl
-                << "… oblex=" << RPS_OBJECT_DISPLAY(_f.oblex)
+                << "… obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
                 << "… startswithalpha=" << startswithalpha
                 << " afterat=" << afterat
                 << " tokensrc=" << *this
@@ -661,16 +659,16 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   const Rps_String* str = _f.namev.to_string();
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
                 << "?  namestr=" << namestr
-                << " oblex=" << _f.oblex
+                << " obnamed=" << _f.obnamed
                 << std::endl
                 << "…  tokensrc:" << *this << std::endl
                 << "…  namev=" << _f.namev << ", str=" << Rps_Value(str)<< " at "
                 << position_str(startcol) << " ... " << position_str());
-  if (_f.oblex)
+  if (_f.obnamed)
     {
 #warning should use startswithalpha and afterat in Rps_TokenSource::get__namoid__token
       _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
-      _f.lextokv = _f.oblex;
+      _f.lextokv = _f.obnamed;
       Rps_LexTokenZone* lextokz =
         rps_make_lex_token_zone
         (this, _f.lexkindob, _f.lextokv,
@@ -678,7 +676,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
       _f.res = Rps_LexTokenValue(lextokz);
       lextokz->set_serial(++toksrc_counter);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#" << toksrc_counter
-                    << " from¤ " << *this << " str=" << str << " oblex=" << _f.oblex
+                    << " from¤ " << *this << " str=" << str << " obnamed=" << _f.obnamed
                     << " lexkindob=" << _f.lexkindob
                     << std::endl
                     << "… startswithalpha=" << startswithalpha
