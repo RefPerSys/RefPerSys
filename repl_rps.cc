@@ -1592,15 +1592,16 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                  Rps_Value parsextrav;
                  Rps_Value cmdparserv;
                  Rps_Value tok0;
-                 Rps_Value tok1;
                 );
+  bool startswithat = cmd.size() > 0 && cmd[0]=='@';
   _f.obenv = obenvarg;
   RPS_ASSERT(title != nullptr && title[0]);
   RPS_ASSERT(!_f.obenv || (Rps_Value(_f.obenv)).is_object());
 #warning rps_do_one_repl_command unimplemented
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
-                << std::endl << title << " cmd='" << Rps_Cjson_String(cmd) << "'"
+                << std::endl << title << " cmd=" << Rps_QuotedC_String(cmd)
+		<< " startswithat=" << startswithat
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command")
                 << std::endl << " in thread "
@@ -1624,14 +1625,9 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << std::endl
                 << "… tok0=" << _f.tok0);
   RPS_POSSIBLE_BREAKPOINT();
-  _f.tok1 = intoksrc.lookahead_token(&_, 1);
-  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
-                << std::endl
-                << "… tok1=" << _f.tok1);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
                 << std::endl
                 << "… tok0=" << _f.tok0
-                << " tok1=" << _f.tok1
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
   std::string commandpos = intoksrc.position_str();
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command "
@@ -1640,7 +1636,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << "intoksrc:" << intoksrc
                 << std::endl
                 << "… curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                << " tok0=" << _f.tok0 << " tok1=" << _f.tok1);
+                << " tok0=" << _f.tok0);
   RPS_POSSIBLE_BREAKPOINT();
   /*** TODO:
        For debugging purposes, we want builtin commands like !parse_term etc...
@@ -1671,11 +1667,15 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       return;
     }
-  else if (cmd[0] == '@')
+  else if (startswithat && cmd.size()> 1 && isalpha(cmd[1]))
     {
       /*** A command starting with @ is parsed using carburetta
            generated code from file carbrepl_rps.cbrt  */
       //intoksrc.advance_cursor_bytes(1);
+#warning should reinitialize the intoksrc for carburetta
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command intoksrc:" << intoksrc
+		    << " need to be reinitialized");
+      RPS_POSSIBLE_BREAKPOINT();
       RPS_INFORMOUT("rps_do_one_repl_command carburetta '" << Rps_Cjson_String(cmd)
                     << "'"
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
@@ -1685,7 +1685,6 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
       })
           << std::endl);
       RPS_POSSIBLE_BREAKPOINT();
-      /// TODO: should forget and recompute tok1 (as a carburetta keyword)
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
                     << " before calling rps_do_carburetta_command intoksrc=" << intoksrc);
       RPS_POSSIBLE_BREAKPOINT();
