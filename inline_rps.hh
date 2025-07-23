@@ -434,8 +434,8 @@ Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::iterate_apply0(Rps_CallFrame*callerf, cons
       _f.xtrav = nullptr;
       _f.curob = it;
       Rps_TwoValues two = _f.closv->as_closure().apply1(&_, _f.curob);
-      _f.mainv = two.main();
-      _f.xtrav = two.xtra();
+      _f.mainv = two.mainv();
+      _f.xtrav = two.xtrav();
       if (!_f.mainv && !_f.xtrav)
         break;
     }
@@ -462,8 +462,8 @@ Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::reverse_iterate_apply0(Rps_CallFrame*calle
       _f.xtrav = nullptr;
       _f.curob = _seqob[ix];
       Rps_TwoValues two = _f.closv->as_closure().apply1(&_, _f.curob);
-      _f.mainv = two.main();
-      _f.xtrav = two.xtra();
+      _f.mainv = two.mainv();
+      _f.xtrav = two.xtrav();
       if (!_f.mainv && !_f.xtrav)
         break;
     }
@@ -491,8 +491,8 @@ Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::iterate_apply1(Rps_CallFrame*callerf, cons
       _f.xtrav = nullptr;
       _f.curob = it;
       Rps_TwoValues two = _f.closv->as_closure().apply2(&_, _f.curob, _f.arg0);
-      _f.mainv = two.main();
-      _f.xtrav = two.xtra();
+      _f.mainv = two.mainv();
+      _f.xtrav = two.xtrav();
       if (!_f.mainv && !_f.xtrav)
         break;
     }
@@ -521,8 +521,8 @@ Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::reverse_iterate_apply1(Rps_CallFrame*calle
       _f.xtrav = nullptr;
       _f.curob = _seqob[ix];
       Rps_TwoValues two = _f.closv->as_closure().apply2(&_, _f.curob, _f.arg0v);
-      _f.mainv = two.main();
-      _f.xtrav = two.xtra();
+      _f.mainv = two.mainv();
+      _f.xtrav = two.xtrav();
       if (!_f.mainv && !_f.xtrav)
         break;
     }

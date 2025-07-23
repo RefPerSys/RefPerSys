@@ -341,8 +341,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                                               _f.obmodule,
                                               Rps_Value::make_tagged_int(mix));
           /// make the GC happy
-          _f.mainv = apres.main();
-          _f.xtrav = apres.xtra();
+          _f.mainv = apres.mainv();
+          _f.xtrav = apres.xtrav();
           if (!_f.mainv && !_f.xtrav)
             RPS_WARNOUT("rps_generate_lightning_code failed to apply element#" << mix
                         << "=" << _f.elemv
@@ -361,8 +361,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                            _f.genparamv,
                            _f.obmodule,
                            Rps_Value::make_tagged_int(mix));
-          _f.mainv = snres.main();
-          _f.xtrav = snres.xtra();
+          _f.mainv = snres.mainv();
+          _f.xtrav = snres.xtrav();
           if (!_f.mainv && !_f.xtrav)
             RPS_WARNOUT("rps_generate_lightning_code failed to send"
                         " lightning_generate_code to element#" << mix

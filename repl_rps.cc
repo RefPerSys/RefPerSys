@@ -1672,13 +1672,16 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
       /*** A command starting with @ is parsed using carburetta
            generated code from file carbrepl_rps.cbrt  */
       //intoksrc.advance_cursor_bytes(1);
-#warning should reinitialize the intoksrc for carburetta
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command intoksrc:" << intoksrc
 		    << " need to be reinitialized");
       RPS_POSSIBLE_BREAKPOINT();
-      RPS_INFORMOUT("rps_do_one_repl_command carburetta '" << Rps_Cjson_String(cmd)
+      intoksrc.restart_string_token_source();
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command carburetta '"
+		    << Rps_Cjson_String(cmd)
                     << "'"
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
+		    << std::endl
+                    << "… restarted intoksrc:" << intoksrc 
                     << Rps_Do_Output([&](std::ostream& out)
       {
         intoksrc.display_current_line_with_cursor(out);
@@ -1686,7 +1689,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
           << std::endl);
       RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
-                    << " before calling rps_do_carburetta_command intoksrc=" << intoksrc);
+                    << " before calling rps_do_carburetta_command on restarted intoksrc="
+		    << intoksrc);
       RPS_POSSIBLE_BREAKPOINT();
       rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv, &intoksrc);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " after calling rps_do_carburetta_command");
@@ -1777,8 +1781,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                         << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
                         <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/before-apply"));
           Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
-          _f.parsmainv = parspair.main();
-          _f.parsextrav = parspair.xtra();
+          _f.parsmainv = parspair.mainv();
+          _f.parsextrav = parspair.xtrav();
           RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command applied "
                         << _f.cmdparserv << " to cmd "
                         << title << " "<< std::endl

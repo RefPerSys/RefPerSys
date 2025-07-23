@@ -383,8 +383,8 @@ rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_Objec
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_simple_evaluate_repl_expr"));
   {
     Rps_TwoValues two = rps_full_evaluate_repl_expr(&_,_f.exprv,_f.envob);
-    _f.mainresv = two.main();
-    _f.otheresv = two.xtra();
+    _f.mainresv = two.mainv();
+    _f.otheresv = two.xtrav();
   }
   return _f.mainresv;
 } // end rps_simple_evaluate_repl_expr

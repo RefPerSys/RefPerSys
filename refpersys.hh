@@ -1941,17 +1941,17 @@ struct Rps_TwoValues
     main_val(nullptr), xtra_val(nullptr) {};
   Rps_TwoValues(Rps_Value m=nullptr, Rps_Value x=nullptr)
     : main_val(m), xtra_val(x) {};
-  Rps_Value main() const
+  Rps_Value mainv() const
   {
     return main_val;
   };
-  Rps_Value xtra() const
+  Rps_Value xtrav() const
   {
     return xtra_val;
   };
   operator Rps_Value (void) const
   {
-    return main();
+    return mainv();
   };
   void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const
   {

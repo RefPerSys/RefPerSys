@@ -1586,8 +1586,8 @@ Rps_Dumper::write_all_generated_files(void)
                     << std::endl
                     << Rps_ShowCallFrame(&_));
       Rps_TwoValues two = _f.refpersysv.send3(&_, _f.gencodselob, _f.dumpdirnamev, _f.tempsuffixv, _f.genstoreob);
-      _f.mainv = two.main();
-      _f.xtrav  = two.xtra();
+      _f.mainv = two.mainv();
+      _f.xtrav  = two.xtrav();
       RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files after sending "<< _f.gencodselob << " to "
                     << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
                     << std::endl << " --> mainv=" << _f.mainv << " & xtrav=" << _f.xtrav

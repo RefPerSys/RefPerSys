@@ -579,8 +579,8 @@ Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*calle
                     << " obgenerator=" << _f.obgenerator);
       Rps_TwoValues tv = //
         _f.closv.apply2(&_, _f.obmodule, _f.obgenerator);
-      _f.mainresv = tv.main();
-      _f.xtraresv = tv.xtra();
+      _f.mainresv = tv.mainv();
+      _f.xtraresv = tv.xtrav();
       RPS_DEBUG_LOG(CODEGEN,
                     "Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment applied closv=" << _f.closv
                     << std::endl
@@ -673,8 +673,8 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
       _f.vclos = Rps_ClosureValue(_f.vinclude);
       Rps_TwoValues tv = //
         _f.vclos.apply2(&_, _f.obmodule, _f.obgenerator);
-      _f.vinclude = tv.main();
-      _f.vxtrares = tv.xtra();
+      _f.vinclude = tv.mainv();
+      _f.vxtrares = tv.xtrav();
       RPS_DEBUG_LOG(CODEGEN,
                     "Rps_PayloadCplusplusGen::emit_cplusplus_includes include "
                     << _f.vinclude << " with closure=" << _f.voldval
@@ -932,8 +932,8 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
             //prepare_cplusplus_generation∈named_selector
             _f.obmodule,
             _f.vgenparam);
-      _f.vmain = two.main();
-      _f.vxtra = two.xtra();
+      _f.vmain = two.mainv();
+      _f.vxtra = two.xtrav();
     }
   catch  (std::exception&exc)
     {
