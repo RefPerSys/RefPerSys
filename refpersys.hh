@@ -783,7 +783,7 @@ inline std::ostream& operator << (std::ostream&out, const std::vector<std::strin
 
 
 /// TODO: we may need to define output of vectors of Rps_ObjectRef and of vectors of Rps_Value
-#pragma GCC "may need to define output of more vectors and indented output"
+#pragma message "may need to define output of more vectors and indented output"
 
 #if RPS_USE_CURL
 //// a function to interact with some web service, usually on
@@ -793,7 +793,7 @@ inline std::ostream& operator << (std::ostream&out, const std::vector<std::strin
 extern "C" void rps_curl_publish_me(const char*url);
 #endif /*RPS_USE_CURL*/
 ///////////////////////////////////////////////////////////////////////////////
-// DEBUGGING MACROS
+// DEBUGGING FACILITIES AND MACROS
 // Adapted from MELT Monitor project
 // https://github.com/bstarynk/melt-monitor/blob/master/meltmoni.hh#L278
 ///////////////////////////////////////////////////////////////////////////////
