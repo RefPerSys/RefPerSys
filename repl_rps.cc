@@ -597,7 +597,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned depth, unsigned maxdepth
   else if (!lex_kind)
     out<<"°°nul°°";
   else
-    out<<"kind:" << lex_kind;
+    out<<"°*kind:" << lex_kind;
   if (depth > Rps_Value::max_output_depth || depth > maxdepth)
     {
       out << "…}";
@@ -1669,6 +1669,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
     }
   else if (startswithat && cmd.size()> 1 && isalpha(cmd[1]))
     {
+      RPS_POSSIBLE_BREAKPOINT();
       /*** A command starting with @ is parsed using carburetta
            generated code from file carbrepl_rps.cbrt  */
       //intoksrc.advance_cursor_bytes(1);
