@@ -652,7 +652,6 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << "? namestr: "
                 << Rps_QuotedC_String(namestr)
                 << " obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
-                << std::endl
                 << "… tokensrc:" << *this << " startcol=" << startcol
                 << " toksrc_col:" << toksrc_col
                 << " startswithalpha:" << startswithalpha
@@ -660,11 +659,16 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
   _f.namev = source_name_val(&_);
-  RPS_DEBUG_LOG(REPL, "get__namoid__token oid|name '" << namestr << "' namev=" << _f.namev
+  RPS_DEBUG_LOG(REPL, "get__namoid__token oid|name " << namestr
+                << " namev=" << _f.namev
                 << " obnamed=" << _f.obnamed
                 << " at "
                 << position_str(startcol) << " … " << position_str()
-                << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
+                << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                << " startswithalpha:" << startswithalpha
+                << " afterat:" << afterat
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
                 << "?  oid|name '" << namestr << "'" << std::endl
                 << "… obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
@@ -683,9 +687,9 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   if (_f.obnamed)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
-		    << std::endl
-		    << "… °obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
-		    <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
+                    << std::endl
+                    << "… °obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
+                    <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
 #warning should use startswithalpha and afterat in Rps_TokenSource::get__namoid__token
       _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
       _f.lextokv = _f.obnamed;
