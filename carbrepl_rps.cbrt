@@ -213,30 +213,40 @@ extern "C" const char rps_carbrepl_shortgitid[];
 ***/
 ////
 %token KEYW_DISPLAY
-%token_action { _Pragma("message \"token_action for KEYW_DISPLAY\"");  \
-  RPS_DEBUG_LOG(REPL, "token_action for KEYW_DISPLAY tksrc=" << *tksrc); \
-  /* should assign $$ for KEYW_DISPLAY */ \
-  RPS_FATALOUT("KEYW_DISPLAY token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_DISPLAY"));     \
+%token_action { _Pragma("message \"token_action for KEYW_DISPLAY\"");    \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_DISPLAY tksrc=" << *tksrc   \
+                << " sym=" << sym << "::"                                \
+                << RPS_CARBREPL_SYMBOL_NAME(sym));                       \
+  /* should assign $$ for KEYW_DISPLAY */                                \
+  RPS_FATALOUT("KEYW_DISPLAY token_action is incomplete tksrc="          \
+               << tksrc << " sym=" << sym                                \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                   \
+               << RPS_FULL_BACKTRACE_HERE(1,                             \
+                                          "token_action KEYW_DISPLAY")); \
  }
 
 %token KEYW_OBJECT
-%token_action { _Pragma("message \"token_action for KEYW_OBJECT\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for KEYW_OBJECT tksrc=" << *tksrc); \
-  /* should assign $$ for KEYW_OBJECT */ \
-  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_OBJECT"));      \
+%token_action { _Pragma("message \"token_action for KEYW_OBJECT\"");    \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_OBJECT tksrc=" << *tksrc   \
+                << " sym=" << sym << "::"                               \
+                << RPS_CARBREPL_SYMBOL_NAME(sym));                      \
+  /* should assign $$ for KEYW_OBJECT */                                \
+  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE_HERE(1,                            \
+                                          "token_action KEYW_OBJECT")); \
  }
 
 %token KEYW_PUT
-%token_action { _Pragma("message \"token_action for KEYW_PUT\"");  \
-  RPS_DEBUG_LOG(REPL, "token_action for KEYW_PUT tksrc=" << *tksrc); \
-  /* should assign $$ for KEYW_PUT */ \
-  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE_HERE(1, "token_action KEYW_PUT"));      \
+%token_action { _Pragma("message \"token_action for KEYW_PUT\"");       \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_PUT tksrc=" << *tksrc);    \
+  /* should assign $$ for KEYW_PUT */                                   \
+  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE_HERE(1,                            \
+                                          "token_action KEYW_PUT"));    \
  }
  
 
