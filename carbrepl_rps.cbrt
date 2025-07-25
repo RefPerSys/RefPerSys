@@ -792,13 +792,13 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
   int callnum = ++callcnt;
   RPS_POSSIBLE_BREAKPOINT();
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
-			   callframe,
-			   Rps_ObjectRef obenv;
-			   Rps_Value tokv;
-			   Rps_ObjectRef kindtokob;
-			   Rps_Value valtokv;
-			   Rps_ObjectRef valtokob;
-			   Rps_Value carbtermv;
+                           callframe,
+                           Rps_ObjectRef obenv;
+                           Rps_Value tokv;
+                           Rps_ObjectRef kindtokob;
+                           Rps_Value valtokv;
+                           Rps_ObjectRef valtokob;
+                           Rps_Value carbtermv;
                 );
   RPS_ASSERT(tksrc);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -806,11 +806,11 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc << "@" << (void*)tksrc << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
-		{
-		  tksrc->display_current_line_with_cursor(out);
-		})
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token+"));
+                {
+                  tksrc->display_current_line_with_cursor(out);
+                })
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token+"));
   RPS_POSSIBLE_BREAKPOINT();
   _f.tokv = tksrc->lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
@@ -881,7 +881,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
         RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
                       << " gives " << _f.carbtermv
                       << " which is " << termname << std::endl
-		      << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/terminal"));
+                      << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token/terminal"));
         return carbrank;
       }
     }
@@ -891,7 +891,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
                 << " kindtokob=" << _f.kindtokob
                 << " valtokv=" << _f.valtokv
-		<< " tokv=" << _f.tokv
+                << " tokv=" << _f.tokv
                 << " °gdb_do_return at "
                 << (void*)&gdb_do_return << " is "
                 << (gdb_do_return?"SET":"CLEARED")
@@ -917,8 +917,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
                   << "- tksrc=" << *tksrc << std::endl
                   << "… tokv=" << _f.tokv
-		  << " kindtokob=" << _f.kindtokob
-		  << " valtokv=" << _f.valtokv
+                  << " kindtokob=" << _f.kindtokob
+                  << " valtokv=" << _f.valtokv
                   << "… no°gdb_do_return" << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_carbrepl_next_token-gdb"));
   };
@@ -929,15 +929,15 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                << " from "
                << __FILE__ << ":" << lin
                << std::endl << "… tksrc=" << *tksrc
-	       << "… tokv=" << _f.tokv
-	       << " kindtokob=" << _f.kindtokob
-	       << " valtokv=" << _f.valtokv
+               << "… tokv=" << _f.tokv
+               << " kindtokob=" << _f.kindtokob
+               << " valtokv=" << _f.valtokv
                << std::endl
-	       << Rps_Do_Output([&](std::ostream& out)
-	       {
-		 tksrc->display_current_line_with_cursor(out);
-	       })
-	       << std::endl);
+               << Rps_Do_Output([&](std::ostream& out)
+               {
+                 tksrc->display_current_line_with_cursor(out);
+               })
+               << std::endl);
 } // end rps_carbrepl_next_token
 
 
@@ -988,8 +988,11 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
 #warning check this
   int r = rpscarbrepl_parse(&carbstack, /*sym:*/RPSCARBREPL_REPLNT_INPUT, tksrc, &_, carbdata);
   RPS_DEBUG_LOG(REPL, "rps_do_carburetta_tokensrc after rpscarbrepl_parse r=" << r
+                << ":" <<  RPS_CARBREPL_SYMBOL_NAME(r)
                 << " obenv=" << _f.obenv
-                << " tksrc=" << *tksrc);
+                << " tksrc=" << *tksrc
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_tokensrc°+pars"));
 #warning unimplemented rps_do_carburetta_tokensrc
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
