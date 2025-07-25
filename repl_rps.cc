@@ -1819,7 +1819,10 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
     {
       RPS_WARNOUT("rps_do_one_repl_command: REPL command unexpected token "
                   <<  _f.lextokv << " at " << commandpos << " " << title
-                  << " now at " << intoksrc.position_str());
+                  << " now at " << intoksrc.position_str()
+		  << " in " << intoksrc
+		  << std::endl
+		  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unexpected"));
       return;
     }
 } // end rps_do_one_repl_command
