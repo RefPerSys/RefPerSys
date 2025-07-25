@@ -1601,7 +1601,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl << title << " cmd=" << Rps_QuotedC_String(cmd)
-		<< " startswithat=" << startswithat
+                << " startswithat=" << startswithat
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command")
                 << std::endl << " in thread "
@@ -1623,7 +1623,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
   _f.tok0 = intoksrc.lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
                 << std::endl
-                << "… tok0=" << _f.tok0);
+                << "… tok0=" << _f.tok0 << " startswithat=" << startswithat
+                << " cmd=" << Rps_QuotedC_String(cmd));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
                 << std::endl
@@ -1631,12 +1632,11 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
   std::string commandpos = intoksrc.position_str();
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command "
-//<< title << "'"
-//<< Rps_Cjson_String(cmd) << "'" << std::endl << "… "
                 << "intoksrc:" << intoksrc
                 << std::endl
                 << "… curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                << " tok0=" << _f.tok0);
+                << " tok0=" << _f.tok0
+                << Rps_QuotedC_String(cmd));
   RPS_POSSIBLE_BREAKPOINT();
   /*** TODO:
        For debugging purposes, we want builtin commands like !parse_term etc...
@@ -1674,14 +1674,14 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
            generated code from file carbrepl_rps.cbrt  */
       //intoksrc.advance_cursor_bytes(1);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command intoksrc:" << intoksrc
-		    << " need to be reinitialized");
+                    << " need to be reinitialized");
       RPS_POSSIBLE_BREAKPOINT();
       intoksrc.restart_string_token_source();
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command carburetta '"
-		    << Rps_Cjson_String(cmd)
+                    << Rps_Cjson_String(cmd)
                     << "'"
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
-		    << std::endl
+                    << std::endl
                     << "… restarted intoksrc:" << intoksrc 
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -1691,7 +1691,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
       RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
                     << " before calling rps_do_carburetta_command on restarted intoksrc="
-		    << intoksrc);
+                    << intoksrc);
       RPS_POSSIBLE_BREAKPOINT();
       rps_do_carburetta_command(&_,  /*obenv:*/_f.obenv, &intoksrc);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " after calling rps_do_carburetta_command");
@@ -1704,7 +1704,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << " pos=" << intoksrc.position_str() << std::endl
                 << "… intoksrc:" << intoksrc
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                << " token_deq:" << intoksrc.token_dequeue());
+                << " token_deq:" << intoksrc.token_dequeue()
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
   if (!_f.lextokv)
     {
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command no lexical token"
@@ -1820,9 +1821,9 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
       RPS_WARNOUT("rps_do_one_repl_command: REPL command unexpected token "
                   <<  _f.lextokv << " at " << commandpos << " " << title
                   << " now at " << intoksrc.position_str()
-		  << " in " << intoksrc
-		  << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unexpected"));
+                  << " in " << intoksrc
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unexpected"));
       return;
     }
 } // end rps_do_one_repl_command
