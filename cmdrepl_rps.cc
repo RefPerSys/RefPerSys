@@ -1181,7 +1181,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
           /// (alphabetically by name, else by objid), using
           /// Rps_ObjectRef::compare_for_display
           out<< BOLD_esc << "** "
-             << nbphysattr << " physical attributes **"
+             << nbphysattr << " physical attributes **[<"
              << NORM_esc << std::endl;
           std::vector<Rps_ObjectRef> attrvect(nbphysattr);
           for (int ix=0; ix<(int)nbphysattr; ix++)
@@ -1191,11 +1191,12 @@ Rps_Object_Display::output_display(std::ostream&out) const
             {
               const Rps_ObjectRef curattr = attrvect[ix];
               const Rps_Value curval =  _dispobref->get_physical_attr(curattr);
-              out << BOLD_esc << "*"
+              out << " " << BOLD_esc << "*"
                   << NORM_esc << curattr << ": "
                   << Rps_OutputValue(curval, _dispdepth, disp_max_depth)
                   << std::endl;
             }
+	  out << BOLD_esc << ">]" << NORM_esc << std::endl;
         };
     };
   //// °°°°°°°°°°° display physical components
@@ -1217,7 +1218,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
     _dispobref->vector_physical_components();
   for (unsigned ix=0; ix<nbphyscomp; ix++)
     {
-      out << BOLD_esc << "[" << ix << "]" << NORM_esc << " "
+      out << BOLD_esc << " [" << ix << "]" << NORM_esc << " "
           << Rps_OutputValue(vectcomp[ix], _dispdepth, disp_max_depth)
           << std::endl;
     };
