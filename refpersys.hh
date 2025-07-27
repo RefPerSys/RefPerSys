@@ -5915,6 +5915,34 @@ public:
 };  // end of Rps_PayloadTasklet
 
 
+/// the transient payload for C++ streams
+enum Rps_KindStream {
+  rps_no_stream,
+  rps_input_stream,
+  rps_output_stream,
+};
+
+struct Rps_DebugStreamTag {};
+class Rps_PayloadCppStream : public Rps_Payload
+{
+  friend Rps_PayloadCppStream*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadCppStream,Rps_ObjectZone*>(Rps_ObjectZone*);
+  enum Rps_KindStream _kind_stream;
+  union {
+    void* _ptr_stream;
+    std::ostream* _out_stream;
+    std::istream* _int_stream;
+    std::iostream* _inout_stream;
+  };
+  Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
+  Rps_PayloadCppStream(Rps_ObjectZone*owner);
+  Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&output);
+  Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input);
+  Rps_PayloadCppStream(Rps_ObjectZone*owner, std::iostream&inout);
+  Rps_PayloadCppStream(Rps_ObjectZone*, Rps_DebugStreamTag);
+  virtual ~Rps_PayloadCppStream();
+};				// end Rps_PayloadCppStream
+
 typedef std::vector<std::string> rps_cppvect_of_string_t;
 
 /// the transient payload for unix processes (see PaylUnixProcess)
