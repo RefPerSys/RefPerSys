@@ -408,6 +408,57 @@ Rps_PayloadUnixProcess::do_on_active_process_queue(std::function<void(Rps_Object
     }
 } // end Rps_PayloadUnixProcess::do_on_active_process_queue
 
+
+///////////////////////////////////////
+///// transient C++ stream payload
+
+//// needed but never called
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_no_stream),
+    _ptr_stream(nullptr)
+{
+  RPS_FATALOUT("cannot load payload of C++ stream for owner " << owner);
+}
+
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_no_stream),
+    _ptr_stream(nullptr)
+{
+}
+
+  
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&output)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_output_stream),
+    _out_stream(&output)
+{
+}
+
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_input_stream),
+    _in_stream(&input)
+{
+}
+
+Rps_PayloadCppStream::~Rps_PayloadCppStream()
+{
+  /** TODO: each Rps_PayloadCppStream should be registered in a global
+   *  vector, using xalloc of C++ stream library (see
+   *  https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html ...)
+   *  so that the _ptr_stream is cleared when the stream is destroyed
+   *  using its index...
+   *
+   * Hence the Rps_PayloadCppStream should have a private static
+   * vector of Rps_PayloadCppStream pointers and a mutex protecting
+   * it..
+  **/
+#warning Rps_PayloadCppStream destructor incomplete
+}
+
+
 ///////////////////////////////////////
 ///// transient popened file payload
 Rps_PayloadPopenedFile::Rps_PayloadPopenedFile(Rps_ObjectZone*owner, const std::string command, bool reading)  // See PaylPopenedFile

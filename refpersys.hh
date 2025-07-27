@@ -5931,7 +5931,7 @@ class Rps_PayloadCppStream : public Rps_Payload
   union {
     void* _ptr_stream;
     std::ostream* _out_stream;
-    std::istream* _int_stream;
+    std::istream* _in_stream;
     std::iostream* _inout_stream;
   };
   Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
@@ -5939,7 +5939,7 @@ class Rps_PayloadCppStream : public Rps_Payload
   Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&output);
   Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input);
   Rps_PayloadCppStream(Rps_ObjectZone*owner, std::iostream&inout);
-  Rps_PayloadCppStream(Rps_ObjectZone*, Rps_DebugStreamTag);
+  Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_DebugStreamTag);
   virtual ~Rps_PayloadCppStream();
 };				// end Rps_PayloadCppStream
 
