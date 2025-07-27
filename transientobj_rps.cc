@@ -423,6 +423,27 @@ Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld)
   RPS_FATALOUT("cannot load payload of C++ stream for owner " << owner);
 }
 
+int
+Rps_PayloadCppStream::register_cpp_stream(void)
+{
+  if (!owner())
+    return -1;
+  std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  /// see https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html
+#warning Rps_PayloadCppStream::register_cpp_stream very incomplete
+} // end Rps_PayloadCppStream::register_cpp_stream
+
+void
+Rps_PayloadCppStream::unregister_cpp_stream(void)
+{
+  if (!owner())
+    return;
+  std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+#warning Rps_PayloadCppStream::unregister_cpp_stream very incomplete
+}
+
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylCppStream,owner),
     _kind_stream(rps_no_stream),
@@ -430,7 +451,7 @@ Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner)
 {
 }
 
-  
+
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&output)
   : Rps_Payload(Rps_Type::PaylCppStream,owner),
     _kind_stream(rps_output_stream),
