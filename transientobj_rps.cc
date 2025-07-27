@@ -411,6 +411,8 @@ Rps_PayloadUnixProcess::do_on_active_process_queue(std::function<void(Rps_Object
 
 ///////////////////////////////////////
 ///// transient C++ stream payload
+std::mutex Rps_PayloadCppStream::_cppstream_mtx;
+std::vector<Rps_PayloadCppStream*> Rps_PayloadCppStream::_cppstream_vector;
 
 //// needed but never called
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld)

@@ -5925,6 +5925,8 @@ enum Rps_KindStream {
 struct Rps_DebugStreamTag {};
 class Rps_PayloadCppStream : public Rps_Payload
 {
+  static std::mutex _cppstream_mtx;
+  static std::vector<Rps_PayloadCppStream*> _cppstream_vector;
   friend Rps_PayloadCppStream*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadCppStream,Rps_ObjectZone*>(Rps_ObjectZone*);
   enum Rps_KindStream _kind_stream;
@@ -5940,6 +5942,8 @@ class Rps_PayloadCppStream : public Rps_Payload
   Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input);
   Rps_PayloadCppStream(Rps_ObjectZone*owner, std::iostream&inout);
   Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_DebugStreamTag);
+  int register_cpp_stream(void);
+  void unregister_cpp_stream(void);
   virtual ~Rps_PayloadCppStream();
 };				// end Rps_PayloadCppStream
 
