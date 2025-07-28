@@ -418,7 +418,9 @@ std::vector<Rps_PayloadCppStream*> Rps_PayloadCppStream::_cppstream_vector;
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld)
   : Rps_Payload(Rps_Type::PaylCppStream,owner),
     _kind_stream(rps_no_stream),
-    _ptr_stream(nullptr)
+    _ptr_stream(nullptr),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
 {
   RPS_FATALOUT("cannot load payload of C++ stream for owner " << owner);
 }
@@ -430,7 +432,10 @@ Rps_PayloadCppStream::register_cpp_stream(void)
     return -1;
   std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
+  int uniqix = std::ios_base::xalloc();
   /// see https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html
+  RPS_ASSERT(uniqix >= 0);
 #warning Rps_PayloadCppStream::register_cpp_stream very incomplete
 } // end Rps_PayloadCppStream::register_cpp_stream
 
@@ -441,33 +446,44 @@ Rps_PayloadCppStream::unregister_cpp_stream(void)
     return;
   std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
 #warning Rps_PayloadCppStream::unregister_cpp_stream very incomplete
 }
 
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylCppStream,owner),
     _kind_stream(rps_no_stream),
-    _ptr_stream(nullptr)
+    _ptr_stream(nullptr),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
 {
+  std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
 }
 
 
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&output)
   : Rps_Payload(Rps_Type::PaylCppStream,owner),
     _kind_stream(rps_output_stream),
-    _out_stream(&output)
+    _out_stream(&output),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
 {
+  std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
 }
 
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input)
   : Rps_Payload(Rps_Type::PaylCppStream,owner),
     _kind_stream(rps_input_stream),
-    _in_stream(&input)
+    _in_stream(&input),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
 {
+  std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
 }
 
 Rps_PayloadCppStream::~Rps_PayloadCppStream()
 {
+  std::lock_guard<std::mutex> _gu_(_cppstream_mtx);
   /** TODO: each Rps_PayloadCppStream should be registered in a global
    *  vector, using xalloc of C++ stream library (see
    *  https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html ...)
@@ -478,6 +494,7 @@ Rps_PayloadCppStream::~Rps_PayloadCppStream()
    * vector of Rps_PayloadCppStream pointers and a mutex protecting
    * it..
   **/
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
 #warning Rps_PayloadCppStream destructor incomplete
 }
 

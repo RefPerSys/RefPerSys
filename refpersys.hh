@@ -2290,7 +2290,7 @@ public:
   enum class Kind : std::uint16_t
   {
     None = 0,
-    ////// define kind enumarations
+    ////// define kind enumerations
     /*** Below Xmacro expands to :
      *    FullOut_Kind,
      *    FullClos_Kind
@@ -5926,6 +5926,7 @@ struct Rps_DebugStreamTag {};
 class Rps_PayloadCppStream : public Rps_Payload
 {
   static std::mutex _cppstream_mtx;
+#warning Rps_PayloadCppStream::_cppstream_mtx should be a recursive mutex
   static std::vector<Rps_PayloadCppStream*> _cppstream_vector;
   friend Rps_PayloadCppStream*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadCppStream,Rps_ObjectZone*>(Rps_ObjectZone*);
@@ -5936,6 +5937,9 @@ class Rps_PayloadCppStream : public Rps_Payload
     std::istream* _in_stream;
     std::iostream* _inout_stream;
   };
+  int _ix_stream;
+  const int _ix_magic;
+  static constexpr int _ix_magicnum_ = 1284499573; // 0x4c8fe875
   Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
   Rps_PayloadCppStream(Rps_ObjectZone*owner);
   Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&output);
