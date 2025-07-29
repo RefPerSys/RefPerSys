@@ -5925,8 +5925,7 @@ enum Rps_KindStream {
 struct Rps_DebugStreamTag {};
 class Rps_PayloadCppStream : public Rps_Payload
 {
-  static std::mutex _cppstream_mtx;
-#warning Rps_PayloadCppStream::_cppstream_mtx should be a recursive mutex
+  static std::recursive_mutex _cppstream_mtx;
   static std::vector<Rps_PayloadCppStream*> _cppstream_vector;
   friend Rps_PayloadCppStream*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadCppStream,Rps_ObjectZone*>(Rps_ObjectZone*);
