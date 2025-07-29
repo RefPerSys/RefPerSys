@@ -1001,8 +1001,14 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                 << ":" <<  RPS_CARBREPL_SYMBOL_NAME(r)
                 << " obenv=" << _f.obenv
                 << " tksrc=" << *tksrc
+		<< " carbdata: {v1=" << carbdata.cardata_v1
+		<< ", v2=" <<  carbdata.cardata_v2
+		<< ", ob1=" << carbdata.cardata_ob1
+		<< ", ob2=" << carbdata.cardata_ob2
+		<< "}" 
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_carburetta_tokensrc°+pars"));
+  RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_do_carburetta_tokensrc
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
