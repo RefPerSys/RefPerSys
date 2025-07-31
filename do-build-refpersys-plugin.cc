@@ -350,7 +350,7 @@ bp_prog_options(int argc, char**argv)
                      bp_progname, optarg,  __FILE__, __LINE__-1);
             }
           fflush(nullptr);
-	  /// https://lists.gnu.org/archive/html/guile-user/2025-05/msg00005.html
+          /// https://lists.gnu.org/archive/html/guile-user/2025-05/msg00005.html
           SCM guilexp = scm_c_read_string(optarg);
           SCM resguile = scm_primitive_eval(guilexp);
           fflush(nullptr);
@@ -368,16 +368,20 @@ bp_prog_options(int argc, char**argv)
   while (opt > 0 && ix < argc);
   fflush(nullptr);
   asm volatile ("nop; nop; nop; nop");
+  char cwdbuf[256];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
+  const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   while (optind < argc)
     {
       std::string curarg=argv[optind];
       int srcix=1+(int)bp_vect_cpp_sources.size();
       if (access(curarg.c_str(), R_OK))
         {
+          int err= errno;
           fprintf(stderr,
-                  "%s failed to access plugin source#%d %s (%s) [%s:%d]\n",
+                  "%s failed to access plugin source#%d %s (%s) cwd %s [%s:%d]\n",
                   bp_progname, srcix, curarg.c_str(),
-                  strerror(errno), __FILE__, __LINE__-2);
+                  strerror(err), cwd, __FILE__, __LINE__-2);
           exit(EXIT_FAILURE);
         };
       for (char c: curarg)
@@ -588,7 +592,7 @@ main(int argc, char**argv, const char**env)
            "\n (plugin binary %s, %d sources starting with %s)\n",
            bp_progname,
            __FILE__, __LINE__-2,
-	   rps_topdirectory,
+           rps_topdirectory,
            buildcmd,  bp_plugin_binary,
            (int)bp_vect_cpp_sources.size(),
            bp_vect_cpp_sources.at(0).c_str());
