@@ -6,6 +6,7 @@
  *      This file is part of the Reflective Persistent System.
  *      It is its Carburetta grammar and parser
  *      see https://carburetta.com/
+ *      It should be processed by at least carburetta 0.8.27 (mid-july 2025)
  *
  * Author(s):
  *      Basile Starynkevitch, France   <basile@starynkevitch.net>
