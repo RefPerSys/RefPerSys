@@ -43,6 +43,8 @@ const char rps_carbrepl_timestamp[]= __TIMESTAMP__;
 constexpr unsigned rps_magic_carbrepl_data = 696140743; // 0x297e43c7
 struct rps_carbrepl_data_st {
   unsigned cardata_magic;       // always  rps_magic_carbrepl_data
+  unsigned cardata_touchline;
+  double cardata_mtime;		// elapsed realtime
   intptr_t cardata_i;
   double cardata_d;
   std::string cardata_str;
@@ -56,21 +58,37 @@ struct rps_carbrepl_data_st {
   Rps_Value cardata_vleft;
   Rps_Value cardata_vright;
   Rps_InstanceValue cardata_vinst;
+  inline void touch_carbdata(int li=__builtin_LINE());
   inline void reset_carbdata(int li=__builtin_LINE());
 };
+
+void
+rps_carbrepl_data_st::touch_carbdata(int lin)
+{
+  RPS_ASSERT(cardata_magic == rps_magic_carbrepl_data);
+  RPS_ASSERT(lin>0);
+  cardata_touchline=lin;
+  cardata_mtime=rps_elapsed_real_time();
+  RPS_DEBUG_LOG(REPL, "touching carbrepl_data@" << (void*)this << " line#" << lin);
+} // end rps_carbrepl_data_st::touch_carbdata
+
 
 void
 rps_carbrepl_data_st::reset_carbdata(int lin)
 {
   RPS_ASSERT(cardata_magic == rps_magic_carbrepl_data);
+  RPS_ASSERT(lin>0);
   cardata_i = 0;
   cardata_d = 0.0;
   cardata_str.erase();
   memset((void*)&cardata_ptr, 0,
          sizeof(*this)-offsetof(rps_carbrepl_data_st, cardata_ptr));
   RPS_ASSERT(cardata_magic == rps_magic_carbrepl_data);
+  cardata_touchline=lin;
+  cardata_mtime=rps_elapsed_real_time();
   RPS_DEBUG_LOG(REPL, "resetting carbrepl_data@" << (void*)this << " line#" << lin);
 } // end rps_carbrepl_data_st::reset_carbdata
+
 
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
 static void rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin);
@@ -598,19 +616,40 @@ replnt_expr: replnt_expr PLUS replnt_term            {
   /// for the garbage collector we need to...
   carbdata.cardata_vleft = $0;
   carbdata.cardata_vright = $2;
+  carbdata.touch_carbdata();
   _Pragma("message \"take inspiration from parsrepl_rps.cc function Rps_TokenSource::parse_sum\"");
   $$ = carbdata.cardata_vinst
     = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
                         {carbdata.cardata_obop, $0, $2});
   RPS_DEBUG_LOG(REPL, "replnt_expr: replnt_expr PLUS replnt_term result is " << $$
+		<< " obdelim=" << carbdata.cardata_obdelim
+		<< " obop=" << carbdata.cardata_obop
                 << " left:" << $0 << " right:" << $2 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "replnt_expr: replnt_expr PLUS replnt_term"));
-  //FIXME:carbdata.cardata_vinst->put_pesistent_metadata(<some-object>,<some-integer>);
+  //FIXME:carbdata.cardata_vinst->put_persistent_metadata(<some-object>,<some-integer>);
   carbdata.reset_carbdata();
 }
 
 replnt_expr: replnt_expr MINUS replnt_term           {
   _Pragma("message \"replnt_expr as replnt_expr MINUS replnt_term in carbrepl_rps.cbrt\"");
+  static Rps_Id id_minus_delim;
+  _Pragma("message \"wrong Ids for MINUS\"");
+  if (!id_minus_delim)
+    id_minus_delim = Rps_Id("_4ShDsOWk7al02eDRtM");  ///TODO: WRONG FIXME
+  static Rps_Id id_minus_binop;
+  if (!id_minus_binop)
+    id_minus_binop = Rps_Id("_51jvc2mFhql03qwRG6");  ///TODO: WRONG FIXME
+  carbdata.cardata_obdelim =
+    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
+                                              id_minus_delim); // "minus!delim"∈repl_delimiter
+  RPS_ASSERT(carbdata.cardata_obdelim);
+  carbdata.cardata_obop =
+    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
+                                              id_minus_binop); // "minus!binop"∈repl_binary_operator
+  /// for the garbage collector we need to...
+  carbdata.cardata_vleft = $0;
+  carbdata.cardata_vright = $2;
+  carbdata.touch_carbdata();
   // $$ = $0 - $2;
 }
   
