@@ -689,12 +689,21 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                     << std::endl
                     << "… °obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
-		    << " startswithalpha=" << startswithalpha
-		    << " afterat=" << afterat
+                    << " startswithalpha=" << startswithalpha
+                    << " afterat=" << afterat
                     <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
 #warning should use startswithalpha and afterat in Rps_TokenSource::get__namoid__token
       _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
-      _f.lextokv = _f.obnamed;
+      if (startswithalpha && afterat)
+        {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                        << " possible keyword  °obnamed=" << _f.obnamed);
+          RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                       << " toksrc=" << *this
+                       << " °unimplemented °keyword "<< RPS_OBJECT_DISPLAY(_f.obnamed));
+        }
+      else
+        _f.lextokv = _f.obnamed;
       Rps_LexTokenZone* lextokz =
         rps_make_lex_token_zone
         (this, _f.lexkindob, _f.lextokv,
