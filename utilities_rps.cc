@@ -2507,6 +2507,7 @@ rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr
   char bufsiz[32];
   memset (bufsiz, 0, sizeof(bufsiz));
   int sizln = snprintf(bufsiz, sizeof(bufsiz), "vecstr.ℓ%zd(", sizvec);
+  RPS_ASSERT(sizln>0);
   out << bufsiz;
   int vecix=0;
 #warning TODO: use rps_indentnl once defined
