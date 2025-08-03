@@ -686,6 +686,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << position_str(startcol) << "…" << position_str());
   if (_f.obnamed)
     {
+      std::lock_guard<std::recursive_mutex> gu(*_f.obnamed->objmtxptr());
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                     << std::endl
                     << "… °obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
