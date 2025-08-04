@@ -75,7 +75,13 @@ rps_do_plugin(const Rps_Plugin* plugin)
                 << Rps_QuotedC_String(plugarg)
                 << " and extra name " << Rps_QuotedC_String(xtraname)
                 << " and extra precedence " << Rps_QuotedC_String(xtraprecedence));
-  /** TODO:
+  /*** TODO:
+   * We need to create the instance of _55Z5Wgzuprq01MU6Br //repl_binary_operator∈class
+   *
+   * A possible way of compiling this plugin might be to run:
+   *
+    make one-plugin REFPERSYS_PLUGIN_SOURCE=$REFPERSYS_TOPDIR/plugins_dir/rpsplug_createnoncommutativeoperator.cc \
+                    REFPERSYS_PLUGIN_SHARED_OBJECT=/tmp/rpsplug_createnoncommutativeoperator.so
    *
    **/
   RPS_FATALOUT("rpsplug_createnoncommutativeoperator not implemented for "
