@@ -34,13 +34,13 @@
 #include "refpersys.hh"
 
 extern "C" const char rps_cmdrepl_gitid[];
-const char rps_repl_gitid[]= RPS_GITID;
+const char rps_cmdrepl_gitid[]= RPS_GITID;
 
 extern "C" const char rps_cmdrepl_date[];
 const char rps_cmdrepl_date[]= __DATE__;
 
 extern "C" const char rps_cmdrepl_shortgitid[];
-const char rps_repl_shortgitid[]= RPS_SHORTGITID;
+const char rps_cmdrepl_shortgitid[]= RPS_SHORTGITID;
 
 // internal code to evaluate composite expressions like arithmetic, conditionals, etc...
 static Rps_TwoValues
