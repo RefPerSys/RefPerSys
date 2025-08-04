@@ -583,7 +583,7 @@ rps_show_version_handwritten_source_files(void)
     nbsourcefiles++;
   RPS_INFORMOUT("showing versions of " << nbsourcefiles
                 << " handwritten source files (git " << rps_utilities_shortgitid
-                << ")");
+                << " from " __FILE__ ")");
   RPS_DEBUG_LOG(PROGARG, "starting " << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_show_version_handwritten_source_files/start"));
   //// show gitid and date of individual handwritten *cc files, using dlsym
@@ -607,6 +607,14 @@ rps_show_version_handwritten_source_files(void)
         continue;
       if (strchr(curfile, '/'))
         continue;
+      if (strchr(curfile, '~'))
+        continue;
+      if (strchr(curfile, '%'))
+        continue;
+      if (strstr(curfile, ".json"))
+	continue;
+      if (strstr(curfile, ".hh"))
+	continue;
       if ((sscanf(curfile, "%60[a-zA-Z_].%10[a-z]%n", curbase, cursuffix, &endpos))<1
           || endpos<2 || curfile[endpos]!=(char)0)
         continue;
