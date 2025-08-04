@@ -621,6 +621,7 @@ rps_show_version_handwritten_source_files(void)
 void
 rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int &nbshownfiles, bool&nl)
 {
+  //// notice that RPS_FULL_BACKTRACE_HERE cannot be used here....
   RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
                 << " curbase=" <<  Rps_Cjson_String(curbase));
   int lencurbase=strlen(curbase);
@@ -676,9 +677,8 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
       {
         RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
                     << dlerror()
-		    << " curbase=" << Rps_QuotedC_String(curbase)
-		    << std::endl
-		    << RPS_FULL_BACKTRACE_HERE(1, "rps_show_version_one_source_file"));
+		    << " curbase=" << Rps_QuotedC_String(curbase));
+        RPS_POSSIBLE_BREAKPOINT();
         return;
       }
     RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit
@@ -697,10 +697,10 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
         && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2))
       {
         /// this should not happen and is likely a bug in C++ files or build procedure
-        RPS_POSSIBLE_BREAKPOINT();
         RPS_WARNOUT("perhaps corrupted " << curfile << " in topdir " << rps_topdirectory
                     << " with " << cursymgit << "=" << symgit
                     << " and " << cursymshortgit << "=" << symshortgit);
+        RPS_POSSIBLE_BREAKPOINT();
       }
   };
   if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0]))
