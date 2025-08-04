@@ -626,6 +626,8 @@ rps_show_version_handwritten_source_files(void)
       if ((sscanf(curfile, "%60[a-zA-Z_].%10[a-z]%n", curbase, cursuffix, &endpos))<1
           || endpos<2 || curfile[endpos]!=(char)0)
         continue;
+      if (!isalpha(curbase[0]))
+	continue;
       rps_show_version_one_source_file(curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
       if (!nl)
 	std::cout << " ";
