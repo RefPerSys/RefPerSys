@@ -1,5 +1,5 @@
 // see http://refpersys.org/
-// passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
+// passed to commits after 306c6f5f688a (in august 2025) of RefPerSys
 // GPLv3+ licensed
 // © Copyright 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin installs a noncommutative REPL operator
@@ -20,7 +20,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
                            Rps_ObjectRef obnewroot;
-                           Rps_ObjectRef obclasscommut;
+                           Rps_ObjectRef obclassbinary;
                            Rps_ObjectRef obclassoper;
                            Rps_ObjectRef obclassrepldelim;
                            Rps_ObjectRef obreplprecedence;
@@ -38,14 +38,13 @@ rps_do_plugin(const Rps_Plugin* plugin)
   _f.obreplprecedence = RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp); //repl_precedence∈symbol
   /// get the repl_operator superclass
   _f.obclassoper =  RPS_ROOT_OB(_9j12Nhm4itk00YYUW7); //repl_operator∈class
-  _f.obclasscommut =  RPS_ROOT_OB(_2dvQOlSMjOu02zWx1n); //repl_commutative_operator∈class
-#error the class above is wrong
+  _f.obclassbinary =  RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br); //repl_binary_operator∈class
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassoper);
-  RPS_ASSERT(_f.obclasscommut);
+  RPS_ASSERT(_f.obclassbinary);
   RPS_ASSERT(_f.obclassrepldelim);
   RPS_ASSERT(_f.obclassoper->is_class());
-  RPS_ASSERT(_f.obclasscommut->is_class());
+  RPS_ASSERT(_f.obclassbinary->is_class());
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
