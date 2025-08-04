@@ -611,14 +611,24 @@ rps_show_version_handwritten_source_files(void)
         continue;
       if (strchr(curfile, '%'))
         continue;
+      // ignore JSON files
       if (strstr(curfile, ".json"))
 	continue;
+      // ignore header files
       if (strstr(curfile, ".hh"))
+	continue;
+      // ignore markdown documentation
+      if (strstr(curfile, ".md"))
+	continue;
+      // ignore BisonC++ file
+      if (strstr(curfile, "yyp"))
 	continue;
       if ((sscanf(curfile, "%60[a-zA-Z_].%10[a-z]%n", curbase, cursuffix, &endpos))<1
           || endpos<2 || curfile[endpos]!=(char)0)
         continue;
       rps_show_version_one_source_file(curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
+      if (!nl)
+	std::cout << " ";
     };        // end major loop of rps_show_version_handwritten_source_files
   ////
   ////
@@ -713,17 +723,17 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
   };
   if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0]))
     {
-      char msgbuf[80];
+      char msgbuf[96];
       memset (msgbuf, 0, sizeof(msgbuf));
-      nbshownfiles++;
-      if (snprintf(msgbuf, sizeof(msgbuf)-1, "%-16s git %.12s built %s",
-                   curfile, symgit, symdat)>0)
-        std::cout << "#" << msgbuf << std::flush;
       if (nbshownfiles % 2 == 0)
         {
           std::cout << std::endl;
           nl= true;
         };
+      nbshownfiles++;
+      if (snprintf(msgbuf, sizeof(msgbuf)-1, "#¤ %-20s git %.10s built %s",
+                   curfile, symgit, symdat)>0)
+        std::cout << msgbuf << std::flush;
     };
 } // end  rps_show_version_one_source_file
 
