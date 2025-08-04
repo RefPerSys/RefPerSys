@@ -667,14 +667,18 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
     memset (cursymdat, 0, sizeof(cursymdat));
     memset (cursymshortgit, 0, sizeof(cursymshortgit));
     snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
-    snprintf (cursymshortgit, sizeof(cursymgit), "rps_%s_shortgitid", curbase);
+    snprintf (cursymshortgit, sizeof(cursymshortgit),
+	      "rps_%s_shortgitid", curbase);
     snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
     RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
     symgit = (const char*)dlsym(rps_proghdl, cursymgit);
     if (!symgit)
       {
         RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
-                    << dlerror());
+                    << dlerror()
+		    << " curbase=" << Rps_QuotedC_String(curbase)
+		    << std::endl
+		    << RPS_FULL_BACKTRACE_HERE(1, "rps_show_version_one_source_file"));
         return;
       }
     RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit
@@ -715,6 +719,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
     };
 } // end  rps_show_version_one_source_file
 
+  
 void
 rps_show_version(void)
 {
