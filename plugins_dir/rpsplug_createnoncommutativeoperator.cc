@@ -19,7 +19,7 @@ void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-                           Rps_ObjectRef obnewroot;
+                           Rps_ObjectRef obnewoper;
                            Rps_ObjectRef obclassbinary;
                            Rps_ObjectRef obclassoper;
                            Rps_ObjectRef obclassrepldelim;
@@ -30,6 +30,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   char argcopy[MYARGMAXLEN];
   bool argispunct = false;
   bool argisident = false;
+  int precedence = -1;
   memset (argcopy, 0, MYARGMAXLEN);
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*xtraname = rps_get_extra_arg("name");
@@ -43,6 +44,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_ASSERT(_f.obclassoper);
   RPS_ASSERT(_f.obclassbinary);
   RPS_ASSERT(_f.obclassrepldelim);
+  _f.obclassoper = _f.obclassbinary;
+  /** we might improve and accept a subclass for the operator **/
   RPS_ASSERT(_f.obclassoper->is_class());
   RPS_ASSERT(_f.obclassbinary->is_class());
   RPS_ASSERT(_f.obclassrepldelim->is_class());
@@ -53,6 +56,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with too long argument " << Rps_QuotedC_String(plugarg));
   strncpy(argcopy, plugarg, MYARGMAXLEN);
+  if (xtraprecedence && isdigit(xtraprecedence[0]))
+    precedence = atoi (xtraprecedence);
   if (ispunct(plugarg[0]))
     {
       bool allpunct = true;
@@ -77,6 +82,16 @@ rps_do_plugin(const Rps_Plugin* plugin)
                 << " and extra precedence " << Rps_QuotedC_String(xtraprecedence));
   /*** TODO:
    * We need to create the instance of _55Z5Wgzuprq01MU6Br //repl_binary_operator∈class
+   ****/
+  _f.obnewoper =
+    Rps_ObjectRef::make_object(&_,
+                               _f.obclassoper,
+                               Rps_ObjectRef::root_space());
+  std::lock_guard<std::recursive_mutex> gunewoper(*_f.obnewoper->objmtxptr());
+  /** TODO:
+   * we need to fill obnewoper and register it as a root or as a constant
+   */
+  /***
    *
    * A possible way of compiling this plugin might be to run:
    *
@@ -85,7 +100,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
    *
    **/
   RPS_FATALOUT("rpsplug_createnoncommutativeoperator not implemented for "
-               <<  Rps_QuotedC_String(plugarg));
+               <<  Rps_QuotedC_String(plugarg)
+               << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper));
 #warning unimplemented rpsplug_createnoncommutativeoperator
 } // end rps_do_plugin
 
