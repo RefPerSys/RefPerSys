@@ -440,7 +440,12 @@ Rps_PayloadCppStream::register_cpp_stream(void)
   int uniqix = std::ios_base::xalloc();
   /// see https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html
   RPS_ASSERT(uniqix >= 0);
-#warning Rps_PayloadCppStream::register_cpp_stream very incomplete
+  RPS_ASSERT(_ix_stream<0);
+  _cppstream_vector.reserve(rps_prime_above(5*uniqix+3));
+  RPS_ASSERT(_cppstream_vector[uniqix]==nullptr);
+  _cppstream_vector[uniqix] = this;
+  _ix_stream = uniqix;
+  return uniqix;
 } // end Rps_PayloadCppStream::register_cpp_stream
 
 void
@@ -451,7 +456,12 @@ Rps_PayloadCppStream::unregister_cpp_stream(void)
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
   RPS_ASSERT(_ix_magic == _ix_magicnum_);
-#warning Rps_PayloadCppStream::unregister_cpp_stream very incomplete
+  if (_ix_stream<0)
+    return;
+  RPS_ASSERT(_ix_stream<_cppstream_vector.size());
+  RPS_ASSERT(_cppstream_vector[_ix_stream] == this);
+  _cppstream_vector[_ix_stream] = nullptr;
+  _ix_stream = -1;
 } // end Rps_PayloadCppStream::unregister_cpp_stream
 
 
