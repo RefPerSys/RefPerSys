@@ -79,6 +79,8 @@ ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
 -include _config-refpersys.mk
 
+REFPERSYS_CXX_STANDARD?= -std=gnu++2c
+
 CFLAGS?= -O -g -Wall $(RPS_LTO)
 
 ### Human hand-written C++ sources
@@ -525,7 +527,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	        $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
@@ -552,7 +554,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
@@ -572,7 +574,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
@@ -590,7 +592,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) -C -E $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) -C -E $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).ii.mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
@@ -607,7 +609,7 @@ fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefil
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) \
             $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
@@ -627,7 +629,7 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) -C -E $(REFPERSYS_PREPRO_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) -C -E $(REFPERSYS_PREPRO_FLAGS) \
             $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).ii.mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
@@ -646,11 +648,12 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) -c -std=gnu++17 -g -O $< -o $@
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) -c -std=gnu++17 -g -O $< -o $@
 
 ## for plugins, see do-build-refpersys-plugin.cc
 print-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" "$(REFPERSYS_CXX)"
+	@printf "RPSPLUGIN_CXX_STANDARD='%s'\n" "$(REFPERSYS_CXX_STANDARD)"
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) $(shell pkg-config --cflags $(PKGLIST_refpersys))"
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
 
