@@ -52,6 +52,12 @@
 #define _GNU_SOURCE 1
 #endif /*_GNU_SOURCE*/
 
+#include <version>
+
+/// we really want C++26 but this require approval on the mailing list
+/// the reason for wanting C++26 is in particular support of
+/// https://en.cppreference.com/w/cpp/io/basic_fstream/native_handle
+
 #if __cplusplus < 201412L
 #error expecting C++17 standard
 #endif

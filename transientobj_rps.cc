@@ -468,25 +468,29 @@ Rps_PayloadCppStream::posix_fd(void)
     return -1;
   case rps_input_stream:
     {
-#if 0
+      /// https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1759r6.html
+      /// https://gcc.gnu.org/projects/cxx-status.html
+#if __cpplib_fstream_native_handle_type
       std::ifstream*fs = dynamic_cast<std::ifstream*>(_in_stream);
       if (fs)
-	return fs->get_fd();
+	return fs->native_handle();
       else
 	return -1;
 #else
+#warning missing feature for  Rps_PayloadCppStream::posix_fd
       return -1;
 #endif
     }
   case rps_output_stream:
     {
-#if 0
+#if  __cpplib_fstream_native_handle_type
       std::ofstream*fs = dynamic_cast<std::ofstream*>(_out_stream);
       if (fs)
-	return fs->get_fd();
+	return fs->native_handle();
       else
 	return -1;
 #else
+#warning missing feature for  Rps_PayloadCppStream::posix_fd
       return -1;
 #endif
     }
