@@ -448,6 +448,50 @@ Rps_PayloadCppStream::register_cpp_stream(void)
   return uniqix;
 } // end Rps_PayloadCppStream::register_cpp_stream
 
+int
+Rps_PayloadCppStream::posix_fd(void)
+{
+  if (!owner())
+    return -1;
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
+  if (_ptr_stream == nullptr)
+    return -1;
+#warning FIXME Rps_PayloadCppStream::posix_fd
+  switch(_kind_stream) {
+  case rps_no_stream:
+    return -1;
+  case rps_input_stream:
+    {
+#if 0
+      std::ifstream*fs = dynamic_cast<std::ifstream*>(_in_stream);
+      if (fs)
+	return fs->get_fd();
+      else
+	return -1;
+#else
+      return -1;
+#endif
+    }
+  case rps_output_stream:
+    {
+#if 0
+      std::ofstream*fs = dynamic_cast<std::ofstream*>(_out_stream);
+      if (fs)
+	return fs->get_fd();
+      else
+	return -1;
+#else
+      return -1;
+#endif
+    }
+  default:
+    return -1;
+  };
+} // end Rps_PayloadCppStream::posix_fd
+
+
 void
 Rps_PayloadCppStream::unregister_cpp_stream(void)
 {
