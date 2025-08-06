@@ -20,6 +20,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
                            Rps_ObjectRef obnewoper;
+                           Rps_ObjectRef obsymbol;
                            Rps_ObjectRef obclassbinary;
                            Rps_ObjectRef obclassoper;
                            Rps_ObjectRef obclassrepldelim;
@@ -58,20 +59,24 @@ rps_do_plugin(const Rps_Plugin* plugin)
   strncpy(argcopy, plugarg, MYARGMAXLEN);
   if (xtraprecedence && isdigit(xtraprecedence[0]))
     precedence = atoi (xtraprecedence);
+  else
+    RPS_FATALOUT("failure: plugin " << plugin->plugin_name 
+                 << " with bad precedence " << precedence << " for argument " << Rps_QuotedC_String(plugarg));
   if (ispunct(plugarg[0]))
     {
       bool allpunct = true;
       for (const char*pc = plugarg; allpunct && *pc; pc++)
         allpunct = ispunct(*pc);
       argispunct = allpunct;
-    };
-  if (isalpha(plugarg[0]))
+    }
+  else
+    if (isalpha(plugarg[0]))
     {
       bool allident = true;
       for (const char*pc = plugarg; allident && *pc; pc++)
         allident = isalnum(*pc) || *pc=='_';
       argisident = allident;
-    }
+    };
   if (!argispunct && !argisident)
     RPS_FATALOUT("rpsplug_createnoncommutativeoperator with bad argument "
                  <<  Rps_QuotedC_String(plugarg)
@@ -91,6 +96,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /** TODO:
    * we need to fill obnewoper and register it as a root or as a constant
    */
+  if (xtraname) {
+    _f.namestr = Rps_Value{std::string(xtraname)};
+    _f.obnewoper
+      ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+		 _f.namestr);
+  }
   /***
    *
    * A possible way of compiling this plugin might be to run:
@@ -108,6 +119,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins/rpsplug_createnoncommutativeoperator.cc -o /tmp/rpsplug_createnoncommutativeoperator.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin plugins/rpsplug_createnoncommutativeoperator.cc -o /tmp/rpsplug_createnoncommutativeoperator.so" ;;
  ** End: ;;
  ****************/
