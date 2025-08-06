@@ -509,6 +509,7 @@ rps_print_types_info(void)
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
   EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
   printf("########################## %s:%d\n", __FILE__, __LINE__);
+  fflush(nullptr);
   EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
   EXPLAIN_TYPE3(std::variant<unsigned, std::function<Rps_Value(void*)>,
                 std::function<int(void*,Rps_ObjectRef)>>);
@@ -533,6 +534,7 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_String);
   EXPLAIN_TYPE(Rps_StringValue);
   EXPLAIN_TYPE(Rps_TupleOb);
+  fflush(nullptr);
   EXPLAIN_TYPE(Rps_TupleValue);
   EXPLAIN_TYPE(Rps_Type);
   EXPLAIN_TYPE(Rps_Value);
