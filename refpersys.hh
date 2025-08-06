@@ -122,7 +122,18 @@
 #include <wordexp.h>
 #include <glob.h>
 
-
+/// GNU libunistring handles UTF-8 and Unicode (and UTF-8 is the only
+/// encoding accepted)
+#include <unistr.h>
+#include <unictype.h>
+#include <uniname.h>
+#include <uniwidth.h>
+#include <uniwbrk.h>
+#include <unilbrk.h>
+#include <uninorm.h>
+#include <unicase.h>
+#include <unistdio.h>
+/// we dont need uniconv.h and uniregex.h is not yet implemented in 2025
 
 /// libssh2-1-dev package on Debian
 #include <libssh2.h>
