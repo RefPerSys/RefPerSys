@@ -381,7 +381,7 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
 {
 #warning unimplemented rps_glob_plain_file_path
   if (!shellpatt || !shellpatt[0])
-    return std::string(nullptr);
+    return std::string();
   if (shellpatt[0] == '~')
     {
       wordexp_t wx = {};
@@ -389,12 +389,12 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
       if (err)
         {
           wordfree(&wx);
-          return std::string(nullptr);
+          return std::string();
         };
       if (wx.we_wordc==0)
         {
           wordfree(&wx);
-          return std::string(nullptr);
+          return std::string();
         };
       if (wx.we_wordc==1)
         {
@@ -405,14 +405,14 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
               || access(rp, R_OK))
             {
               free (rp);
-              return std::string(nullptr);
+              return std::string();
             };
           return std::string(rp);
         }
       // several files but starting with ~
       {
         wordfree(&wx);
-        return std::string(nullptr);
+        return std::string();
       };
     }
   else if (shellpatt[0] == '/')
@@ -422,12 +422,12 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
       if (glob(shellpatt, GLOB_ERR|GLOB_MARK|GLOB_TILDE_CHECK, nullptr, &g))
         {
           globfree(&g);
-          return std::string(nullptr);
+          return std::string();
         };
       if (g.gl_pathc != 1)
         {
           globfree(&g);
-          return std::string(nullptr);
+          return std::string();
         }
       char*rp = realpath(g.gl_pathv[0], nullptr);
       struct stat rs= {};
@@ -436,12 +436,12 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
           || access(rp, R_OK))
         {
           free (rp);
-          return std::string(nullptr);
+          return std::string();
         };
       return std::string(rp);
     };
   if (!dirpath || !dirpath[0])
-    return std::string(nullptr);
+    return std::string();
   {
     std::string dirstr(dirpath);
     const char* pc=nullptr;
@@ -458,12 +458,12 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
         if (glob(curpatt.c_str(), GLOB_ERR|GLOB_MARK, nullptr, &g))
           {
             globfree(&g);
-            return std::string(nullptr);
+            return std::string();
           };
         if (g.gl_pathc != 1)
           {
             globfree(&g);
-            return std::string(nullptr);
+            return std::string();
           }
         char*rp = realpath(g.gl_pathv[0], nullptr);
         struct stat rs= {};
@@ -472,12 +472,12 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
             || access(rp, R_OK))
           {
             free (rp);
-            return std::string(nullptr);
+            return std::string();
           };
         return std::string(rp);
       }
   }
-  return std::string(nullptr);
+  return std::string();
 } // end rps_glob_plain_file_path
 
 //////////////////////////////////////////////// end of file scalar_rps.cc
