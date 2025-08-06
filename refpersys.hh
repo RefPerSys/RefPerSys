@@ -5958,6 +5958,7 @@ class Rps_PayloadCppStream : public Rps_Payload
   Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_DebugStreamTag);
   int register_cpp_stream(void);
   void unregister_cpp_stream(void);
+  int posix_fd(void);
   virtual ~Rps_PayloadCppStream();
 };				// end Rps_PayloadCppStream
 

@@ -33,6 +33,10 @@
 
 #include "refpersys.hh"
 
+#if !defined(__GLIBCXX__) && !defined(__GLIBCPP__)
+#error need GNU libstdc++
+#endif
+
 extern "C" const char rps_transientobj_gitid[];
 const char rps_transientobj_gitid[]= RPS_GITID;
 
