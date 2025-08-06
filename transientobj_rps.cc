@@ -458,7 +458,7 @@ Rps_PayloadCppStream::posix_fd(void)
   RPS_ASSERT(_ix_magic == _ix_magicnum_);
   if (_ptr_stream == nullptr)
     return -1;
-#warning FIXME Rps_PayloadCppStream::posix_fd
+#warning FIXME Rps_PayloadCppStream::posix_fd see https://www.ginac.de/~kreckel/fileno/
   switch(_kind_stream) {
   case rps_no_stream:
     return -1;
