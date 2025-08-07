@@ -35,11 +35,13 @@ rps_do_plugin(const Rps_Plugin* plugin)
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*xtraname = rps_get_extra_arg("name");
   const char*xtraprecedence = rps_get_extra_arg("precedence");
+  const char*xtracomment = rps_get_extra_arg("comment");
   /// get repl_precedence attribute, conventionally values are small non-negative tagged integers
   _f.obreplprecedence = RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp); //repl_precedence∈symbol
   /// get the repl_operator superclass
   _f.obclassoper =  RPS_ROOT_OB(_9j12Nhm4itk00YYUW7); //repl_operator∈class
   _f.obclasscommut =  RPS_ROOT_OB(_2dvQOlSMjOu02zWx1n); //repl_commutative_operator∈class
+  /// latter the class could be improved
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassoper);
   RPS_ASSERT(_f.obclasscommut);
@@ -86,6 +88,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                                _f.obclasscommut,
                                Rps_ObjectRef::root_space());
   std::lock_guard<std::recursive_mutex> gunewoper(*_f.obnewoper->objmtxptr());
+  
   /** TODO:
    * we need to fill obnewoper and register it as a root or as a constant
    */
@@ -98,6 +101,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins/rpsplug_createcommutativeoperator.cc -o /tmp/rpsplug_createcommutativeoperator.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin plugins/rpsplug_createcommutativeoperator.cc -o /tmp/rpsplug_createcommutativeoperator.so" ;;
  ** End: ;;
  ****************/
