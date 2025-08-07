@@ -39,6 +39,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./do-build-refpersys-plugin plugins/rpsplug_installrootoid.cc -o /tmp/rpsplug_installrootoid.so" ;;
+ ** compile-command: "cd $REFPERSYSY_TOPDIR && ./do-build-refpersys-plugin plugins/rpsplug_installrootoid.cc -o /tmp/rpsplug_installrootoid.so" ;;
  ** End: ;;
  ****************/

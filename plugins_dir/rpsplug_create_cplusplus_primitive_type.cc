@@ -105,6 +105,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; make plugins_dir/rpsplug_create_cplusplus_primitive_type.so &&  /bin/ln -sfv $(/bin/pwd)/plugins_dir/rpsplug_create_cplusplus_primitive_type.so /tmp/"" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && make plugins_dir/rpsplug_create_cplusplus_primitive_type.so &&  /bin/ln -sfv $(/bin/pwd)/plugins_dir/rpsplug_create_cplusplus_primitive_type.so /tmp/" ;;
  ** End: ;;
  ****************/

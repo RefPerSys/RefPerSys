@@ -133,6 +133,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_root2const.cc /tmp/rpsplug_root2const.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do_build_refpersys-plugin plugins_dir/rpsplug_root2const.cc -o /tmp/rpsplug_root2const.so" ;;
  ** End: ;;
  ****************/

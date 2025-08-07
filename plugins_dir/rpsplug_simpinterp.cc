@@ -71,7 +71,7 @@ rps_do_plugin(const Rps_Plugin*plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; make plugins_dir/rpsplug_simpinterp.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_simpinterp.so /tmp/" ;;
+ ** compile-command: cd $REFPERSYS_TOPDIR && ./do_build_refpersys-plugin plugins_dir/rpsplug_simpinterp.cc && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_simpinterp.so /tmp/" ;;
  ** End: ;;
  ****************/
 

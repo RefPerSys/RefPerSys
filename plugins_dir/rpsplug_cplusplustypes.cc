@@ -59,6 +59,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; gmake one-plugin REFPERSYS_PLUGIN_SOURCE=plugins_dir/rpsplug_cplusplustypes.cc REFPERSYS_PLUGIN_SHARED_OBJECT=plugins_dir/rpsplug_cplusplustypes.so; /bin/ln -svf plugins_dir/rpsplug_cplusplustypes.so /tmp" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && gmake one-plugin REFPERSYS_PLUGIN_SOURCE=plugins_dir/rpsplug_cplusplustypes.cc REFPERSYS_PLUGIN_SHARED_OBJECT=plugins_dir/rpsplug_cplusplustypes.so && /bin/ln -svf plugins_dir/rpsplug_cplusplustypes.so /tmp" ;;
  ** End: ;;
  *****************/

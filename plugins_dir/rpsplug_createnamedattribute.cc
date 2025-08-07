@@ -162,6 +162,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..;  make plugins_dir/rpsplug_createnamedattribute.so && /bin/ln -sfv $(/bin/pwd)/plugins_dir/rpsplug_createnamedattribute.so /tmp/" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && make plugins_dir/rpsplug_createnamedattribute.so && /bin/ln -sfv $(/bin/pwd)/plugins_dir/rpsplug_createnamedattribute.so /tmp/" ;;
  ** End: ;;
  ****************/

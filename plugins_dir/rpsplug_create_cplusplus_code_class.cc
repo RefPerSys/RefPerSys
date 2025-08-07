@@ -1,7 +1,7 @@
 // see http://refpersys.org/
 // SPDX-License-Identifier: GPL-3.0-or-later
 // GPLv3+ licensed
-// © Copyright 2024 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2024 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys code class for C++ generation
 /*****
       Once compiled, use it for example as:
@@ -142,6 +142,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; make plugins_dir/rpsplug_create_cplusplus_code_class.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_create_cplusplus_code_class.so /tmp/"
+ ** compile-command: "cd $REFPERSYS_TOPDIR && make plugins_dir/rpsplug_create_cplusplus_code_class.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_create_cplusplus_code_class.so /tmp/"
  ** End: ;;
  ****************/

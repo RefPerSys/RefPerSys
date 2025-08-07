@@ -113,6 +113,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; make plugins_dir/rpsplug_createsymbol.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_createsymbol.so /tmp/" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && make plugins_dir/rpsplug_createsymbol.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_createsymbol.so /tmp/" ;;
  ** End: ;;
  ****************/
