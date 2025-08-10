@@ -124,6 +124,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin plugins/rpsplug_createnoncommutativeoperator.cc -o /tmp/rpsplug_createnoncommutativeoperator.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin plugins_dir/rpsplug_createnoncommutativeoperator.cc -o /tmp/rpsplug_createnoncommutativeoperator.so" ;;
  ** End: ;;
  ****************/
