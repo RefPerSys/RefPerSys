@@ -102,6 +102,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
       ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
 		 _f.namestr);
   }
+  if (precedence >= 0) {
+    _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
+			   Rps_Value::make_tagged_int(precedence));
+  }
   /***
    *
    * A possible way of compiling this plugin might be to run:

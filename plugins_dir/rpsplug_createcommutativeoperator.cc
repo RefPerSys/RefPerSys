@@ -1,7 +1,7 @@
 // see http://refpersys.org/
 // passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
 // GPLv3+ licensed
-// © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin installs a commutative REPL operator
 /*****
  * Once compiled, use it for example as:
@@ -88,9 +88,21 @@ rps_do_plugin(const Rps_Plugin* plugin)
                                _f.obclasscommut,
                                Rps_ObjectRef::root_space());
   std::lock_guard<std::recursive_mutex> gunewoper(*_f.obnewoper->objmtxptr());
-  
   /** TODO:
-   * we need to fill obnewoper and register it as a root or as a constant
+   * we need to fill obnewoper
+   **/
+  if (xtraname) {
+    _f.namestr = Rps_Value{std::string(xtraname)};
+    _f.obnewoper
+      ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+		 _f.namestr);
+  }
+  if (precedence >= 0) {
+    _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
+			   Rps_Value::make_tagged_int(precedence));
+  }
+  /** TODO:
+   * we need to register obnewoper as a root or as a constant
    */
 #warning unimplemented rpsplug_createcommutativeoperator
   RPS_FATALOUT("rpsplug_createcommutativeoperator not implemented for "
