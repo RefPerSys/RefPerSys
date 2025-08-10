@@ -107,7 +107,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
 #warning unimplemented rpsplug_createcommutativeoperator
   RPS_FATALOUT("rpsplug_createcommutativeoperator not implemented for "
                <<  Rps_QuotedC_String(plugarg)
-               << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper));
+               << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper)
+	       << " see rpsplug_thesetreploper.cc plugin");
 } // end rps_do_plugin
 
 /****************
