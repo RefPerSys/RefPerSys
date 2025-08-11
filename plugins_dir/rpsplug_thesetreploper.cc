@@ -25,7 +25,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
   int precedence = -1;
   memset (argcopy, 0, MYARGMAXLEN);
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
-  const char*xtraname = rps_get_extra_arg("name");
 #warning incomplete rpsplug_thesetreploper.cc
 
   /** TODO: We need to create a single constant object, named
@@ -41,6 +40,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin plugins_dir/rpsplug_thesetreploper.cc -o /tmp/rpsplug_thesetreploper.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v plugins_dir/rpsplug_thesetreploper.cc -o /tmp/rpsplug_thesetreploper.so" ;;
  ** End: ;;
  ****************/

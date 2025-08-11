@@ -398,15 +398,19 @@ bp_prog_options(int argc, char**argv)
       {
         std::string realfile;
         char*rp = realpath(curarg.c_str(),nullptr);
-        if (rp) realfile.assign(rp);
+        if (rp && strcmp(rp, curarg.c_str()))
+          realfile.assign(rp);
         else
           realfile = curarg;
         if (bp_verbose)
           {
-            printf("%s adding plugin C++ source file#%d %s really %s\n",
-                   bp_progname, srcix, curarg.c_str(), realfile.c_str());
+            printf("%s (:%d) adding plugin C++ source file#%d %s (@%p) really %s (@%p)\n",
+                   bp_progname, __LINE__ -1, srcix,
+                   curarg.c_str(), (void*) curarg.c_str(),
+                   realfile.c_str(),  (void*)realfile.c_str());
             fflush(nullptr);
           };
+        BP_NOP_BREAKPOINT();
         bp_vect_cpp_sources.push_back(realfile);
         /// dont bother freeing rp....
       }
@@ -574,35 +578,71 @@ main(int argc, char**argv, const char**env)
       bp_base_src_set.insert({bufstr,cursrc});
     };
   /// run the script to build the plugin
-  {
-    char buildcmd[384];
-    memset (buildcmd, 0, sizeof(buildcmd));
-    BP_NOP_BREAKPOINT();
-    if (bp_verbose)
-      snprintf (buildcmd, sizeof(buildcmd), "%s -v -C %s %s",
-                rps_gnu_make,
-                rps_topdirectory,
-                bp_plugin_binary);
-    else
-      snprintf (buildcmd, sizeof(buildcmd), "%s -C %s %s",
-                rps_gnu_make,
-                rps_topdirectory,
-                bp_plugin_binary);
-    printf("%s [%s:%d] running GNU make in %s as \n  %s"
-           "\n (plugin binary %s, %d sources starting with %s)\n",
-           bp_progname,
-           __FILE__, __LINE__-2,
-           rps_topdirectory,
-           buildcmd,  bp_plugin_binary,
-           (int)bp_vect_cpp_sources.size(),
-           bp_vect_cpp_sources.at(0).c_str());
-    fflush (nullptr);
-    BP_NOP_BREAKPOINT();
-    int ex = system(buildcmd);
-    sync ();
-    if (ex)
-      return ex;
-  }
+  char buildcmd[1024];
+  memset (buildcmd, 0, sizeof(buildcmd));
+  ///
+  /// special case for a single C++ plugin source
+  if (bp_vect_cpp_sources.size() == 1)
+    {
+      const std::string thecppsrc= bp_vect_cpp_sources[0];
+      BP_NOP_BREAKPOINT();
+      if (bp_verbose)
+        {
+          std::clog << "#" << bp_progname << " single C++ source is "
+                    << thecppsrc
+                    << " [" << __FILE__ << ":" << __LINE__ <<"]"
+                    << std::endl;
+        };
+      BP_NOP_BREAKPOINT();
+      if (bp_verbose)
+        snprintf (buildcmd, sizeof(buildcmd)-1, "%s -v -C %s "
+                  "one-plugin"
+                  " REFPERSYS_PLUGIN_SOURCE='%s' REFPERSYS_PLUGIN_SHARED_OBJECT='%s'",
+                  rps_gnu_make,
+                  rps_topdirectory,
+                  thecppsrc.c_str(),
+                  bp_plugin_binary);
+      else
+        snprintf (buildcmd, sizeof(buildcmd)-1, "%s -C %s one-plugin"
+                  " REFPERSYS_PLUGIN_SOURCE='%s' REFPERSYS_PLUGIN_SHARED_OBJECT='%s'",
+                  rps_gnu_make,
+                  rps_topdirectory,
+                  thecppsrc.c_str(),
+                  bp_plugin_binary);
+    }
+  else        // several C++ plugin sources
+    {
+      BP_NOP_BREAKPOINT();
+      if (bp_verbose)
+        snprintf (buildcmd, sizeof(buildcmd)-1, "%s -v -C %s %s",
+                  rps_gnu_make,
+                  rps_topdirectory,
+                  bp_plugin_binary);
+      else
+        snprintf (buildcmd, sizeof(buildcmd)-1, "%s -C %s %s",
+                  rps_gnu_make,
+                  rps_topdirectory,
+                  bp_plugin_binary);
+    };
+  if (buildcmd && strlen(buildcmd)> sizeof(buildcmd)-5)
+    {
+      std::cerr << bp_progname << " : too wide build command " << buildcmd << std::endl;
+      exit(EXIT_FAILURE);
+    };
+  printf("%s [%s:%d] running GNU make in %s as \n  %s"
+         "\n (plugin binary %s, %d sources starting with %s)\n",
+         bp_progname,
+         __FILE__, __LINE__-2,
+         rps_topdirectory,
+         buildcmd,  bp_plugin_binary,
+         (int)bp_vect_cpp_sources.size(),
+         bp_vect_cpp_sources.at(0).c_str());
+  fflush (nullptr);
+  BP_NOP_BREAKPOINT();
+  int ex = system(buildcmd);
+  sync ();
+  if (ex)
+    return ex;
   /// temporary files should be removed using at(1) utility in ten minutes
   /// see https://linuxize.com/post/at-command-in-linux/
   if (!bp_temp_ninja.empty() || symlkbuf[0])

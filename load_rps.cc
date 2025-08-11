@@ -1233,7 +1233,7 @@ Rps_InstanceZone::fill_loaded_instance_from_json(Rps_Loader*ld,Rps_ObjectRef obc
       }
     else
       {
-        rps_load_add_todo(ld, [=](Rps_Loader*ld2)
+        rps_load_add_todo(ld, [=,this](Rps_Loader*ld2)
         {
           this->fill_loaded_instance_from_json(ld2,obclass,jv);
         });
