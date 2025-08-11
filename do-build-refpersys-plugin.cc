@@ -609,8 +609,12 @@ main(int argc, char**argv, const char**env)
                   rps_topdirectory,
                   thecppsrc.c_str(),
                   bp_plugin_binary);
+      // Nota Bene: we assume that both the plugin source and shared
+      // object don't contain pathological characters, including
+      // quotes, spaces or backslashes.
     }
-  else        // several C++ plugin sources
+  else        // several C++ plugin sources; in that case the
+    // GNUmakefile should know about them
     {
       BP_NOP_BREAKPOINT();
       if (bp_verbose)
@@ -624,7 +628,7 @@ main(int argc, char**argv, const char**env)
                   rps_topdirectory,
                   bp_plugin_binary);
     };
-  if (buildcmd && strlen(buildcmd)> sizeof(buildcmd)-5)
+  if (strlen(buildcmd)> sizeof(buildcmd)-5)
     {
       std::cerr << bp_progname << " : too wide build command " << buildcmd << std::endl;
       exit(EXIT_FAILURE);
