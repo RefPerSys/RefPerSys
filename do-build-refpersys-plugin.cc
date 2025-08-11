@@ -103,6 +103,7 @@ struct option bp_options_arr[BP_MAX_OPTIONS] =
 {
   {
     .name= "verbose", // --verbose | -v
+    // so GNU make uses --trace
     .has_arg= no_argument,
     .flag= nullptr,
     .val= 'v',
@@ -595,7 +596,7 @@ main(int argc, char**argv, const char**env)
         };
       BP_NOP_BREAKPOINT();
       if (bp_verbose)
-        snprintf (buildcmd, sizeof(buildcmd)-1, "%s -v -C %s "
+        snprintf (buildcmd, sizeof(buildcmd)-1, "%s --trace -C %s "
                   "one-plugin"
                   " REFPERSYS_PLUGIN_SOURCE='%s' REFPERSYS_PLUGIN_SHARED_OBJECT='%s'",
                   rps_gnu_make,
@@ -618,7 +619,7 @@ main(int argc, char**argv, const char**env)
     {
       BP_NOP_BREAKPOINT();
       if (bp_verbose)
-        snprintf (buildcmd, sizeof(buildcmd)-1, "%s -v -C %s %s",
+        snprintf (buildcmd, sizeof(buildcmd)-1, "%s --trace -C %s %s",
                   rps_gnu_make,
                   rps_topdirectory,
                   bp_plugin_binary);
