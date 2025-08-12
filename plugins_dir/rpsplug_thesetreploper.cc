@@ -32,6 +32,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
     Rps_PayloadSetOb::make_mutable_set_object(&_,
 					      RPS_ROOTOB(_0J1C39JoZiv03qA2HA), // mutable_set
 					      Rps_ObjectRef::root_space());
+  Rps_PayloadSetOb* paylset=  _f.obnewsetoper->get_dynamic_payload<Rps_PayloadSetOb>();
+  RPS_ASSERT(paylset != nullptr);
   std::lock_guard<std::recursive_mutex> gunewsetoper(*(_f.obnewsetoper->objmtxptr()));
   _f.strname = Rps_StringValue(nm);
   _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, nm);
