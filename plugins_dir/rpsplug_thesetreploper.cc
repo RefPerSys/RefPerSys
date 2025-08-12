@@ -43,13 +43,17 @@ rps_do_plugin(const Rps_Plugin* plugin)
   _f.obnewsetoper->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
 			    _f.obsymbol);
   paysymb->symbol_put_value(_f.obnewsetoper);
+  rps_add_constant_object(&_, _f.obnewsetoper);
+  rps_add_constant_object(&_, _f.obsymbol);
   /** TODO: We need to create a single constant object, named
       set_of_repl_operators, whose payload is a mutable set of
       objects.  Once dumped successfully, we need to improve the
       rpsplug_createcommutativeoperator.cc &
       rpsplug_createnoncommutativeoperator.cc */
-  RPS_FATALOUT("rpsplug_thesetreploper not implemented for "
-               <<  Rps_QuotedC_String(plugarg));
+  RPS_FATALOUT("rpsplug_thesetreploper incomplete implemented for "
+               <<  Rps_QuotedC_String(plugarg) << std::endl
+	       << " obnewsetoper=" << RPS_OBJECT_DISPLAY(_f.obnewsetoper)
+	       << " obsymbol=" << << RPS_OBJECT_DISPLAY(_f.obsymbol));
 
 } // end rps_do_plugin
 
