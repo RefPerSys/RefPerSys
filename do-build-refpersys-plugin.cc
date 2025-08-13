@@ -237,7 +237,7 @@ bp_prog_options(int argc, char**argv)
             {
               if (!S_ISDIR(dirstat.st_mode))
                 {
-                  std::cerr << bp_progname
+                  std::clog << bp_progname
                             << " : specified object directory " << optarg
                             << " is not a directory." << std::endl;
                   exit(EXIT_FAILURE);
@@ -247,7 +247,7 @@ bp_prog_options(int argc, char**argv)
             {
               if (mkdir(optarg, 0700))
                 {
-                  std::cerr << bp_progname
+                  std::clog << bp_progname
                             << " : failed to mkdir object directory "
                             << optarg
                             << " - " << strerror(errno)
@@ -258,7 +258,7 @@ bp_prog_options(int argc, char**argv)
           char*dirpath = realpath(optarg, dirbuf);
           if (!dirpath)
             {
-              std::cerr << bp_progname
+              std::clog << bp_progname
                         << " : failed to get real path of object directory "
                         << optarg
                         << " - " << strerror(errno)
@@ -276,7 +276,7 @@ bp_prog_options(int argc, char**argv)
             {
               if (!S_ISDIR(dirstat.st_mode))
                 {
-                  std::cerr << bp_progname
+                  std::clog << bp_progname
                             << " : specified plugin source directory " << optarg
                             << " is not a directory." << std::endl;
                   exit(EXIT_FAILURE);
@@ -286,7 +286,7 @@ bp_prog_options(int argc, char**argv)
             {
               if (mkdir(optarg, 0700))
                 {
-                  std::cerr << bp_progname
+                  std::clog << bp_progname
                             << " : failed to mkdir plugin source directory "
                             << optarg
                             << " - " << strerror(errno)
@@ -297,7 +297,7 @@ bp_prog_options(int argc, char**argv)
           char*dirpath = realpath(optarg, dirbuf);
           if (!dirpath)
             {
-              std::cerr << bp_progname
+              std::clog << bp_progname
                         << " : failed to get real path of plugin source directory "
                         << optarg
                         << " - " << strerror(errno)
@@ -314,7 +314,13 @@ bp_prog_options(int argc, char**argv)
           bp_plugin_binary = optarg;
           if (!access(optarg, F_OK) && strlen(optarg)<sizeof(bufbak)-2)
             {
-              snprintf(bufbak, sizeof(bufbak), "%s~", optarg);
+              int n = snprintf(bufbak, sizeof(bufbak), "%s~", optarg);
+	      if (n >= sizeof(bufbak)-2) {
+              std::clog << bp_progname
+                        << " : too long output "
+                        << optarg << std::endl;
+	      exit(EXIT_FAILURE);
+	      };
               if (!rename(optarg, bufbak) && bp_verbose)
                 printf("%s renamed old plugin: %s -> %s\n", bp_progname, optarg, bufbak);
             };
@@ -551,7 +557,7 @@ main(int argc, char**argv, const char**env)
   std::set<std::string> bp_base_src_set;
   if (bp_vect_cpp_sources.empty())
     {
-      std::cerr << bp_progname << " : no C++ source files given" << std::endl;
+      std::clog << bp_progname << " : no C++ source files given" << std::endl;
       exit(EXIT_FAILURE);
     }
   assert(bp_first_base.empty());
@@ -570,7 +576,7 @@ main(int argc, char**argv, const char**env)
       std::string bufstr{buf};
       if (bp_base_src_set.find(bufstr) != bp_base_src_set.end())
         {
-          std::cerr << bp_progname << " : the base name " << bufstr << " appears more than once, last in C++ file " << cursrc
+          std::clog << bp_progname << " : the base name " << bufstr << " appears more than once, last in C++ file " << cursrc
                     << " [" << __FILE__ << ":" << __LINE__ <<"]" <<std::endl;
           exit(EXIT_FAILURE);
         };
@@ -631,7 +637,7 @@ main(int argc, char**argv, const char**env)
     };
   if (strlen(buildcmd)> sizeof(buildcmd)-5)
     {
-      std::cerr << bp_progname << " : too wide build command " << buildcmd << std::endl;
+      std::clog << bp_progname << " : too wide build command " << buildcmd << std::endl;
       exit(EXIT_FAILURE);
     };
   printf("%s [%s:%d] running GNU make in %s as \n  %s"
@@ -646,15 +652,18 @@ main(int argc, char**argv, const char**env)
   BP_NOP_BREAKPOINT();
   int ex = system(buildcmd);
   sync ();
-  if (ex)
+  if (ex) {
+    std::clog << bp_progname << " fail to run " << buildcmd
+	      << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
     return ex;
+  };
   /// temporary files should be removed using at(1) utility in ten minutes
   /// see https://linuxize.com/post/at-command-in-linux/
   if (!bp_temp_ninja.empty() || symlkbuf[0])
     {
       char atcmd[80];
       memset (atcmd, 0, sizeof(atcmd));
-      snprintf(atcmd, sizeof(atcmd), "/bin/at now + 10 minutes");
+      strcpy(atcmd, "/bin/at now + 10 minutes");
       FILE *p = popen(atcmd, "w");
       if (!p)
         {
