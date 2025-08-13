@@ -655,7 +655,7 @@ main(int argc, char**argv, const char**env)
   if (ex) {
     char cwdbuf[256];
     memset(cwdbuf, 0, sizeof(cwdbuf));
-    if (!getcwd(cwdbuf, sizeof(cwdbuf)-2))
+    if (!getcwd(cwdbuf, sizeof(cwdbuf)-3) || cwdbuf[sizeof(cwdbuf)-3])
       strcpy(cwdbuf, "./");
     std::clog << bp_progname << " fail to run " << buildcmd << " in " << cwdbuf
 	      << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
