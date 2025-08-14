@@ -6,6 +6,7 @@
 
 ///      © Copyright 2024 - 2025 The Reflective Persistent System Team
 ///      team@refpersys.org & http://refpersys.org/
+///      including Basile Starynkevitch
 ///
 /// Purpose: build a plugin for RefPerSys
 ///
@@ -66,7 +67,7 @@
 #define BP_MAX_OPTIONS 32
 
 /// a macro to ease GDB breakpoint
-#define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop");} while(0)
+#define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop; nop; nop");} while(0)
 
 #pragma message "compiling " __FILE__
 
