@@ -36,7 +36,7 @@ rps_do_plugin(const Rps_Plugin*plugin)
     RPS_WARNOUT("in git " << rps_shortgitid << " " << plugarg << " dont name any object");
   else
     RPS_INFORMOUT("in git " << rps_shortgitid << " object " << plugarg << " is:"
-		  << RPS_OBJECT_DISPLAY(_f.ob));
+                  << RPS_OBJECT_DISPLAY(_f.ob));
 } // end rps_do_plugin
 
 /****************
