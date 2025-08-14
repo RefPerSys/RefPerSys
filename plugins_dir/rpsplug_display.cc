@@ -30,8 +30,11 @@ rps_do_plugin(const Rps_Plugin*plugin)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument - expecting an object name or oid");
   _f.ob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg));
-  RPS_INFORMOUT("in git " << rps_shortgitid << " object " << plugarg " is:"
-		<< RPS_OBJECT_DISPLAY(_f.ob));
+  if (!_f.ob)
+    RPS_WARNOUT("in git " << rps_shortgitid << " " << plugarg << " dont name any object");
+  else
+    RPS_INFORMOUT("in git " << rps_shortgitid << " object " << plugarg << " is:"
+		  << RPS_OBJECT_DISPLAY(_f.ob));
 } // end rps_do_plugin
 
 /****************
