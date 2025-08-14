@@ -316,12 +316,12 @@ bp_prog_options(int argc, char**argv)
           if (!access(optarg, F_OK) && strlen(optarg)<sizeof(bufbak)-2)
             {
               int n = snprintf(bufbak, sizeof(bufbak), "%s~", optarg);
-	      if (n >= sizeof(bufbak)-2) {
+              if (n >= (int)sizeof(bufbak)-2) {
               std::clog << bp_progname
                         << " : too long output "
                         << optarg << std::endl;
-	      exit(EXIT_FAILURE);
-	      };
+              exit(EXIT_FAILURE);
+              };
               if (!rename(optarg, bufbak) && bp_verbose)
                 printf("%s renamed old plugin: %s -> %s\n", bp_progname, optarg, bufbak);
             };
@@ -601,6 +601,13 @@ main(int argc, char**argv, const char**env)
                     << " [" << __FILE__ << ":" << __LINE__ <<"]"
                     << std::endl;
         };
+      if (access(thecppsrc.c_str(), R_OK)) {
+        int e=errno;
+        std::clog << "#" << bp_progname << " missing single C++ source is "
+                  << thecppsrc << " " << strerror(e)
+                  << " [" << __FILE__ << ":" << __LINE__ <<"]"
+                  << std::endl;
+      }
       BP_NOP_BREAKPOINT();
       if (bp_verbose)
         snprintf (buildcmd, sizeof(buildcmd)-1, "%s --trace -C %s "
@@ -659,7 +666,7 @@ main(int argc, char**argv, const char**env)
     if (!getcwd(cwdbuf, sizeof(cwdbuf)-3) || cwdbuf[sizeof(cwdbuf)-3])
       strcpy(cwdbuf, "./");
     std::clog << bp_progname << " fail to run " << buildcmd << " in " << cwdbuf
-	      << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
+              << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
     return ex;
   };
   /// temporary files should be removed using at(1) utility in ten minutes
