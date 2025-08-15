@@ -148,10 +148,10 @@ all:
 	   echo run $(MAKE) config > /dev/stderr ; \
 	   exit 1 ; \
 	fi
+	-$(RM) plugins_dir/rpsplug_display.so
 	$(MAKE) refpersys
 	$(MAKE) do-build-refpersys-plugin
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
-	$(RM) plugins_dir/rps_display.so
 	$(MAKE) plugins
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
