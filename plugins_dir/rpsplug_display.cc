@@ -10,8 +10,13 @@
 
     Once compiled use it as
 
-    ./refpersys --plugin-after-load=plugins_dir/rpsplug_display.so \
-    --plugin-arg=rpsplug_display:<object-name-or-oid>
+      ./refpersys --plugin-after-load=plugins_dir/rpsplug_display.so \
+                  --plugin-arg=rpsplug_display:<object-name-or-oid>
+
+    for example
+
+      ./refpersys --plugin-after-load=plugins_dir/rpsplug_display.so \
+                  --plugin-arg=rpsplug_display:RefPerSys_system
 
 ***/
 
@@ -44,12 +49,12 @@ rps_do_plugin(const Rps_Plugin*plugin)
   _f.ob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg));
   if (!_f.ob)
     RPS_WARNOUT("in git " << rpsplug_display_shortgit << " " 
-		<< " build " << rpsplug_display_buildtimestamp
-		<< " " << plugarg << " dont name any object");
+                << " build " << rpsplug_display_buildtimestamp
+                << " " << plugarg << " dont name any object");
   else
     RPS_INFORMOUT("in git " << rpsplug_display_shortgit
-		  << " build " << rpsplug_display_buildtimestamp
-		  << " object " << plugarg << " is:"
+                  << " build " << rpsplug_display_buildtimestamp
+                  << " object " << plugarg << " is:"
                   << RPS_OBJECT_DISPLAY(_f.ob));
 } // end rps_do_plugin
 
