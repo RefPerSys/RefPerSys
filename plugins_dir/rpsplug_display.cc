@@ -58,6 +58,8 @@ rps_do_plugin(const Rps_Plugin*plugin)
                   << RPS_OBJECT_DISPLAY(_f.ob));
 } // end rps_do_plugin
 
+#pragma message "compiling " __FILE__ " at " __DATE__ "@" __TIME__
+
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
