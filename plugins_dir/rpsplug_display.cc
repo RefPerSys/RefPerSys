@@ -17,6 +17,16 @@
 
 #include "refpersys.hh"
 
+extern "C" const char rpsplug_display_shortgitid[];
+extern "C" const char rpsplug_display_buildtimestamp[];
+
+#ifndef RPS_SHORTGIT
+#error missing RPS_SHORTGIT
+#endif
+
+const char rpsplug_display_shortgit[]= RPS_SHORTGIT;
+const char rpsplug_display_buildtimestamp[] = __DATE__ "@" __TIME__;
+
 void
 rps_do_plugin(const Rps_Plugin*plugin)
 {
@@ -33,9 +43,13 @@ rps_do_plugin(const Rps_Plugin*plugin)
                  << " without argument - expecting an object name or oid");
   _f.ob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg));
   if (!_f.ob)
-    RPS_WARNOUT("in git " << rps_shortgitid << " " << plugarg << " dont name any object");
+    RPS_WARNOUT("in git " << rpsplug_display_shortgit << " " 
+		<< " build " << rpsplug_display_buildtimestamp
+		<< " " << plugarg << " dont name any object");
   else
-    RPS_INFORMOUT("in git " << rps_shortgitid << " object " << plugarg << " is:"
+    RPS_INFORMOUT("in git " << rpsplug_display_shortgit
+		  << " build " << rpsplug_display_buildtimestamp
+		  << " object " << plugarg << " is:"
                   << RPS_OBJECT_DISPLAY(_f.ob));
 } // end rps_do_plugin
 
