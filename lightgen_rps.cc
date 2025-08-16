@@ -285,11 +285,17 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                  Rps_Value elemv;
                  Rps_Value mainv;
                  Rps_Value xtrav;
-
                 );
+  std::vector<Rps_TwoValues> mutpairvect;
+  std::recursive_mutex mutlock;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
-#warning probably needs more GC-ed data in rps_generate_lightning_code
+    RPS_ASSERT(gc != nullptr);
+    std::lock_guard<std::recursive_mutex> gu(mutlock);
+    for (Rps_TwoValues&curpair : mutpairvect)
+      {
+        curpair.gc_mark(*gc);
+      };
   });
   _f.obmodule = argobmodule;
   _f.genparamv = arggenparam;
@@ -315,6 +321,12 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                  << " generation params " << _f.genparamv << std::endl
                  << " thread=" << rps_current_pthread_name()
                  << " jit_r_num=" << JIT_R_NUM << " jit_v_num=" << JIT_V_NUM);
+  /// reserve extra data size
+  {
+    unsigned modlen = _f.obmodule->nb_components(&_);
+    std::lock_guard<std::recursive_mutex> gu(mutlock);
+    mutpairvect.reserve(modlen);
+  }
   /// iterate on every component of the module
   int mix = -1;
   for (mix = 0; (unsigned)mix < _f.obmodule->nb_components(&_); mix++)
@@ -349,7 +361,6 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                         << " to generator " << _f.obgenerator
                         << " with parameters " << _f.genparamv
                         << " of module " << _f.obmodule);
-          continue; /// the for loop in the module
         }
       else
         {
@@ -364,23 +375,27 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
           _f.mainv = snres.mainv();
           _f.xtrav = snres.xtrav();
           if (!_f.mainv && !_f.xtrav)
-            RPS_WARNOUT("rps_generate_lightning_code failed to send"
-                        " lightning_generate_code to element#" << mix
-                        << "=" << _f.elemv
-                        << " and generator " << _f.obgenerator
-                        << " with parameters " << _f.genparamv
-                        << " of module " << _f.obmodule);
-
+            {
+              RPS_WARNOUT("rps_generate_lightning_code failed to send"
+                          " lightning_generate_code to element#" << mix
+                          << "=" << _f.elemv
+                          << " and generator " << _f.obgenerator
+                          << " with parameters " << _f.genparamv
+                          << " of module " << _f.obmodule);
+              continue;
+            };
         };
-    };
-  RPS_WARNOUT("unimplemented rps_generate_lightning_code obmodule="
+      std::lock_guard<std::recursive_mutex> gu(mutlock);
+      mutpairvect.push_back(Rps_TwoValues{_f.mainv, _f.xtrav});
+    };        // end for mix... loop
+  RPS_WARNOUT("incomplete rps_generate_lightning_code obmodule="
               << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
               << " obgenerator=" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
               << " genparamv=" << _f.genparamv << std::endl
               << " thread=" << rps_current_pthread_name()
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_lightning_code/end-incomplete"));
-#warning unimplemented rps_generate_lightning_code
+#warning incomplete rps_generate_lightning_code
   return false;
 } // end rps_generate_lightning_code
 
