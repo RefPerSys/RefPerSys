@@ -172,7 +172,8 @@ rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
   auto nbroots = the_gc.nb_roots();
   RPS_INFORM("rps_garbage_collect completed; count#%ld, %ld roots, %ld scans,"
              " %ld marks, %ld deletions, real %.3f, cpu %.3f sec",
-             gcnt, (long) nbroots, (long)(the_gc.nb_scans()),  (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
+             gcnt, (long) nbroots, (long)(the_gc.nb_scans()),
+	     (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
              the_gc.elapsed_time(), the_gc.process_time());
 } // end of rps_garbage_collect
 
@@ -191,33 +192,33 @@ Rps_GarbageCollector::mark_obj(Rps_ObjectRef ob)
 void
 Rps_GarbageCollector::mark_gcroots(void)
 {
-  rps_each_root_object([=](Rps_ObjectRef obr)
+  rps_each_root_object([=,this](Rps_ObjectRef obr)
   {
     this->mark_root_objectref(obr);
   });
   rps_garbcoll_application(*this);
   ///
   /// mark the hardcoded global roots
-#define RPS_INSTALL_ROOT_OB(Oid)    {     \
-   if (RPS_ROOT_OB(Oid))        \
+#define RPS_INSTALL_ROOT_OB(Oid)    {			\
+   if (RPS_ROOT_OB(Oid))				\
      { this->mark_root_objectref(RPS_ROOT_OB(Oid)); };  \
   };
 #include "generated/rps-roots.hh"
 
   ///
   /// mark the hardcoded global symbols
-#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {   \
-   if (RPS_SYMB_OB(Nam))        \
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {		\
+   if (RPS_SYMB_OB(Nam))				\
      { this->mark_root_objectref(RPS_SYMB_OB(Nam)); };  \
 };
 #include "generated/rps-names.hh"
 
   ///
   /// mark the constants
-#define RPS_INSTALL_CONSTANT_OB(Oid) {    \
-  if (rpskob##Oid)        \
-    this->mark_root_objectref(rpskob##Oid); \
-};
+#define RPS_INSTALL_CONSTANT_OB(Oid) {				\
+  if (rpskob##Oid)						\
+    this->mark_root_objectref(rpskob##Oid);			\
+};								\
   Rps_PayloadUnixProcess::gc_mark_active_processes(*this);
 #include "generated/rps-constants.hh"
   ///
