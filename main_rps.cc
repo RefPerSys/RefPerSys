@@ -74,6 +74,9 @@ std::map<std::string,std::string> rps_pluginargs_map;
 extern "C" char*rps_pidfile_path;
 
 
+// in userpref_rps.cc:
+extern "C" void rps_try_parsing_default_user_preferences(void);
+
 std::string rps_cpluspluseditor_str;
 std::string rps_cplusplusflags_str;
 std::string rps_dumpdir_str;
@@ -1650,6 +1653,8 @@ main (int argc, char** argv)
       RPS_INFORMOUT("after loading the current directory has changed to " << cwdbuf);
     };
   atexit (rps_exiting);
+  if (!rps_has_parsed_user_preferences())
+    rps_try_parsing_default_user_preferences();
   if (!rps_batch)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
