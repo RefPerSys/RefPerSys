@@ -1025,7 +1025,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.res = get__namoid__token(&_, curp);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token namoid "
                     << Rps_QuotedC_String(curp)
-                    << " toksrc=" << *this << " gives " << _f.res);
+                    << " toksrc=" << *this << " gives " << _f.res
+		    << std::endl
+		    << RPS_FULL_BACKTRACE(1,"Rps_TokenSource::get_token"
+					  " namoid"));
       return _f.res;
     } // end get__namoid__token
   //// literal single line strings are like in C++
