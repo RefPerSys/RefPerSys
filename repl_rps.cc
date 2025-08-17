@@ -12,6 +12,7 @@
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
+ *     with help from Niklas Rozencrantz (Sweden)
  *
  *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -1576,6 +1577,20 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
 } // end rps_do_builtin_repl_command
 
 
+extern "C" int
+rps_keyword_lexer (Rps_CallFrame*,const std::string&keystr,Rps_ObjectRef obkw);
+
+int
+rps_keyword_lexer (Rps_CallFrame*callframe,
+                   const std::string&keystr,
+                   Rps_ObjectRef obkw)
+{
+  RPS_ASSERT(callframe&&callframe->is_good_call_frame(callframe));
+  RPS_FATALOUT("unimplemented rps_keyword_lexer keystr="
+               << keystr
+               << " obkw=" << RPS_OBJECT_DISPLAY(obkw));
+  return -1;
+} // end rps_keyword_lexer
 
 void
 rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
@@ -1610,21 +1625,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
   Rps_StringTokenSource intoksrc(cmd, std::string(title) + "°repl");
 #warning rps_do_one_repl_command should provide a keyword lexing function
 #if 0 && BADCODE
-  intoksrc.set_keyword_lexing_fun([=](Rps_CallFrame*keycf,const std::string&keystr,Rps_ObjectRef ob) {
-      RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		     keycf,
-		     Rps_ObjectRef obkw;
-		    );
-      _f.obkw = ob;
-      RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command+keywfun keystr=" << keystr
-		    << " obkw=" << RPS_OBJECT_DISPLAY(_f.obkw)
-		    << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command+keywfun"));
-      RPS_POSSIBLE_BREAKPOINT();
-      RPS_FATALOUT("unimplemented rps_do_one_repl_command+keywfun keystr=" << keystr
-		   << " obkw=" << RPS_OBJECT_DISPLAY(_f.obkw));
-#warning missing code inside rps_do_one_repl_command+keywfun      
-    });
-#endif 
+  intoksrc.set_keyword_lexing_fun(rps_keyword_lexer);
+#endif
   if (!intoksrc.get_line())
     {
       RPS_WARNOUT("rps_do_one_repl_command " << title << " no line from "
