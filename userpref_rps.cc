@@ -299,5 +299,26 @@ rps_userpref_with_cvalue(const char*csection, const char*cname)
 
 #warning using https://github.com/benhoyt/inih for user preferences
 /// TODO: look into https://github.com/OSSystems/inih
+extern "C" void rps_try_parsing_default_user_preferences(void);
+
+void
+rps_try_parsing_default_user_preferences(void)
+{
+  RPS_ASSERT(!rps_has_parsed_user_preferences());
+  static char buf[rps_path_byte_size];
+  char*h = getenv("HOME");
+  if (!h)
+    RPS_FATALOUT("missing $HOME for default user preference (%s)"
+                 << strerror(errno));
+  int s = snprintf(buf, sizeof(buf)-2, "%s/.config/refpersys-pref",
+                   h);
+  if (s>0 && s < (int)sizeof(buf)-4)
+    {
+      if (!access(buf, R_OK))
+        {
+          rps_set_user_preferences(buf);
+        }
+    }
+} // end rps_try_parsing_default_user_preferences
 
 ////// end of file userpref_rps.cc
