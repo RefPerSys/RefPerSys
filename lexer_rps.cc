@@ -627,7 +627,7 @@ Rps_TokenSource::get__infinity__token(Rps_CallFrame*callframe, const char*curp)
 
 void
 Rps_TokenSource::set_keyword_lexing_fun
-  (std::function<int(Rps_CallFrame*,std::string)>&fun)
+(std::function<int(Rps_CallFrame*,const std::string&keystr,Rps_ObjectRef ob)>&fun)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   toksrc_keywfun = fun;
@@ -706,9 +706,24 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                         << " possible keyword  °obnamed=" << _f.obnamed);
-          RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
-                       << " toksrc=" << *this
-                       << " °unimplemented °keyword "<< RPS_OBJECT_DISPLAY(_f.obnamed));
+	  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+	  if (toksrc_keywfun) {
+	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
+			  << " lexing keyword " << namestr
+			  << " from:"
+			  <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token/keyw"));
+	    int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed);
+	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
+			  << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
+	    RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
+			 << "incomplete toksrc=" << *this<< " lexed keyword "
+			 << namestr <<" °obnamed=" << _f.obnamed
+			 << " as kwdcode=" << kwdcode);
+	  }
+	  else
+	    RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
+			 << " toksrc=" << *this
+			 << " °unimplemented °keyword "<< RPS_OBJECT_DISPLAY(_f.obnamed));
         }
       else
         _f.lextokv = _f.obnamed;

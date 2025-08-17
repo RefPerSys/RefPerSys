@@ -2907,7 +2907,7 @@ class Rps_TokenSource           // this is *not* a value .....
   int toksrc_counter;           // count the number of lexed token
   const unsigned toksrc_number; // unique number
   mutable std::recursive_mutex toksrc_mtx;
-  std::function<int(Rps_CallFrame*,std::string)> toksrc_keywfun;
+  std::function<int(Rps_CallFrame*,const std::string&, Rps_ObjectRef ob)> toksrc_keywfun;
   static std::atomic<unsigned> toksrc_instance_count_;
 protected:
   void restart_token_source(void);
@@ -2922,7 +2922,7 @@ protected:
     toksrc_name = name;
   };
   void set_keyword_lexing_fun
-  (std::function<int(Rps_CallFrame*,std::string)>&fun);
+   (std::function<int(Rps_CallFrame*,const std::string&,Rps_ObjectRef)>&fun);
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
   std::string lex_quoted_literal_string(Rps_CallFrame*callframe);
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
