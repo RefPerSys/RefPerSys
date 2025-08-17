@@ -1608,6 +1608,23 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << rps_current_pthread_name());
   RPS_POSSIBLE_BREAKPOINT();
   Rps_StringTokenSource intoksrc(cmd, std::string(title) + "°repl");
+#warning rps_do_one_repl_command should provide a keyword lexing function
+#if 0 && BADCODE
+  intoksrc.set_keyword_lexing_fun([=](Rps_CallFrame*keycf,const std::string&keystr,Rps_ObjectRef ob) {
+      RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		     keycf,
+		     Rps_ObjectRef obkw;
+		    );
+      _f.obkw = ob;
+      RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command+keywfun keystr=" << keystr
+		    << " obkw=" << RPS_OBJECT_DISPLAY(_f.obkw)
+		    << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command+keywfun"));
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_FATALOUT("unimplemented rps_do_one_repl_command+keywfun keystr=" << keystr
+		   << " obkw=" << RPS_OBJECT_DISPLAY(_f.obkw));
+#warning missing code inside rps_do_one_repl_command+keywfun      
+    });
+#endif 
   if (!intoksrc.get_line())
     {
       RPS_WARNOUT("rps_do_one_repl_command " << title << " no line from "
