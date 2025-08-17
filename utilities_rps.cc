@@ -2501,11 +2501,11 @@ std::string
 rps_stringprintf(const char*fmt, ...)
 {
   va_list args;
-  char smallbuf[128];
+  char smallbuf[256];
   memset (smallbuf, 0, sizeof(smallbuf));
   RPS_ASSERT(fmt);
   va_start(args, fmt);
-  size_t l = vsnprintf(smallbuf, sizeof(smallbuf), fmt, args);
+  size_t l = vsnprintf(smallbuf, sizeof(smallbuf)-2, fmt, args);
   va_end(args);
   if (l < sizeof(smallbuf)-4)
     {
@@ -2514,7 +2514,7 @@ rps_stringprintf(const char*fmt, ...)
   else
     {
       std::string res;
-      size_t ml = ((l+4)|0xf)+1;
+      size_t ml = ((l+4)|0xf)+4;
       char*buf = (char*)calloc(1, ml);
       if (!buf)
         RPS_FATALOUT("rps_stringprintf fmt " << fmt
