@@ -207,8 +207,8 @@ Rps_PayloadCplusplusGen::push_new_data(const struct cppgen_data_st&d)
       RPS_WARNOUT("too big data size "<< data_size()
                   << " in C++ generator " << RPS_OBJECT_DISPLAY(owner())
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,
-                                             "Rps_PayloadCplusplusGen::push_new_data"));
+                  << RPS_FULL_BACKTRACE(1,
+                                        "Rps_PayloadCplusplusGen::push_new_data"));
       throw RPS_RUNTIME_ERROR_OUT("too big data size "<< data_size()
                                   << " in C++ generator " << owner());
     };
@@ -228,8 +228,8 @@ Rps_PayloadCplusplusGen::checked_nth_const_data(int n) const
       RPS_WARNOUT("out of index access #" << orign << " of data size "<< data_size()
                   << " in C++ generator " << owner()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,
-                                             "Rps_PayloadCplusplusGen::checked_nth_const_data"));
+                  << RPS_FULL_BACKTRACE(1,
+                                        "Rps_PayloadCplusplusGen::checked_nth_const_data"));
       throw RPS_RUNTIME_ERROR_OUT("out of index data access #" << orign << " of size "<< data_size()
                                   << " in C++ generator " << owner());;
     };
@@ -247,8 +247,8 @@ Rps_PayloadCplusplusGen::checked_nth_data(int n)
       RPS_WARNOUT("out of index access #" << orign << " of data size "<< data_size()
                   << " in C++ generator " << owner()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,
-                                             "Rps_PayloadCplusplusGen::checked_nth_data"));
+                  << RPS_FULL_BACKTRACE(1,
+                                        "Rps_PayloadCplusplusGen::checked_nth_data"));
       throw RPS_RUNTIME_ERROR_OUT("out of data access #" << orign << " of size "<< data_size()
                                   << " in C++ generator " << owner());
     }
@@ -923,7 +923,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                 "rps_generate_cplusplus_code starting obmodule=" << _f.obmodule
                 << " obgenerator=" << _f.obgenerator
                 << " vgenparam=" << _f.vgenparam
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code/start"));
+                << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/start"));
   try
     {
       Rps_TwoValues two
@@ -941,7 +941,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                   << _f.obgenerator << " for module " << _f.obmodule
                   << " got exception " << exc.what()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,"rps_generate_cplusplus_code"));
+                  << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code"));
       return false;
     };
   /// detailed debug display after preparation
@@ -950,7 +950,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                 << _f.vgenparam << std::endl
                 << " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
                 << " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"rps_generate_cplusplus_code/after preparation"));
+                << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code/after preparation"));
   /// emit the C++ comment with copyright notice
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->clear_indentation();
@@ -965,7 +965,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   RPS_DEBUG_LOG(CODEGEN,
                 "rps_generate_cplusplus_code emitted C++ includes obmodule=" << _f.obmodule
                 << " obgenerator=" << _f.obgenerator
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code/emitted-includes"));
+                << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/emitted-includes"));
   /// emit C++ declarations
   cppgenpayl->output([&](std::ostringstream&out)
   {
@@ -977,7 +977,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   RPS_DEBUG_LOG(CODEGEN,
                 "rps_generate_cplusplus_code emitted C++ declarations obmodule=" << _f.obmodule
                 << " obgenerator=" << _f.obgenerator
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code/emitted-C++-declarations") << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/emitted-C++-declarations") << std::endl
                 << RPS_OBJECT_DISPLAY(_f.obgenerator));
   /// emit C++ definitions
   cppgenpayl->output([&](std::ostringstream&out)
@@ -999,7 +999,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   RPS_WARNOUT("incomplete rps_generate_cplusplus_code obmodule="
               << _f.obmodule << " generator=" << _f.obgenerator
               << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_cplusplus_code"));
+              << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code"));
   return false;
 } // end rps_generate_cplusplus_code
 

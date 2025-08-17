@@ -54,7 +54,7 @@ rps_parsrepl_termvect_stammering(std::vector<Rps_Value>& termvect, int line)
     {
       RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG_AT(__FILE__,line,REPL, "@termvect_stammering " << termvect << std::endl
-                       << RPS_FULL_BACKTRACE_HERE(1,"rps_parsrepl_termvect_stammering"));
+                       << RPS_FULL_BACKTRACE(1,"rps_parsrepl_termvect_stammering"));
       RPS_POSSIBLE_BREAKPOINT();
       return true;
     }
@@ -105,7 +105,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                 << "… token_deq:" << toksrc_token_deq
                 << " calldepth=" << rps_call_frame_depth(&_)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression start")
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_expression start")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -137,7 +137,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                     << std::endl
                     << "… token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression failing_A"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_expression failing_A"));
       return nullptr;
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " before parse_disjunction"
@@ -160,7 +160,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                     << std::endl
                     << " token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression failing_B (noleftdisj)")
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_expression failing_B (noleftdisj)")
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -274,7 +274,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                             << " position:" << position_str()
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
                             << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression failing_C"));
+                            << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_expression failing_C"));
               RPS_PARSREPL_FAILURE(&_,
                                    "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum
                                    << " failing_C at startpos:" << startpos
@@ -294,7 +294,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression/endloop"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_expression/endloop"));
     }
   while (again);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum
@@ -317,7 +317,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression failing_empty")
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_expression failing_empty")
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -419,7 +419,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction failing_A"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_disjunction failing_A"));
 
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_disjunction¤" << callnum << " failing_A at startpos:" << startpos
@@ -452,7 +452,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction/after-leftconj")
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_disjunction/after-leftconj")
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -469,7 +469,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << " leftv:" << _f.leftv << " should be null"
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction failing_B/noleftconj"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_disjunction failing_B/noleftconj"));
       RPS_ASSERT (_f.leftv == nullptr);
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_disjunction¤" << callnum << " failing_B at startpos:" << startpos
@@ -562,7 +562,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                             << " position:" << position_str()
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
                             << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction failing_C"));
+                            << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_disjunction failing_C"));
               RPS_PARSREPL_FAILURE(&_,
                                    "Rps_TokenSource::parse_disjunction¤" << callnum << " failing_C at startpos:" << startpos
                                    << " in:" << (*this)
@@ -645,7 +645,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                 << "… token_deq:" << toksrc_token_deq
                 << " curcptr:" << curcptr()
                 << " calldepth=" << rps_call_frame_depth(&_) << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction/start") << std::endl
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_conjunction/start") << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     this->display_current_line_with_cursor(out);
@@ -683,7 +683,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing_A"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_conjunction failing_A"));
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_conjunction¤" << callnum << " failing_A at startpos:" << startpos
                            << " in:" << (*this)
@@ -723,7 +723,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing_B/noleftcompar"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_conjunction failing_B/noleftcompar"));
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_conjunction¤" << callnum << " failing_B at startpos:" << startpos
                            << " in:" << (*this)
@@ -832,7 +832,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                   << std::endl << " position:" << position_str()
                   << " curcptr:" << Rps_QuotedC_String(curcptr())
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing_C"));
+                  << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_conjunction failing_C"));
               //
               RPS_PARSREPL_FAILURE(&_,
                                    "Rps_TokenSource::parse_conjunction¤"
@@ -871,7 +871,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing noconjunct"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_conjunction failing noconjunct"));
 
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_conjunction¤" << callnum << " failing noconjunct at startpos:" << startpos
@@ -986,7 +986,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparison failing_A"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_comparison failing_A"));
 
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_comparison¤" << callnum << "  failing_A at startpos:" << startpos
@@ -998,7 +998,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
       RPS_WARNOUT("parse_comparison¤" << callnum << "  failed to parse left comparand at " << startpos
                   << " current line:" << Rps_QuotedC_String(current_line())
                   << " curpos " << position_str()
-                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparison fail"));
+                  << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_comparison fail"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -1108,7 +1108,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   })
       << " termvect:" << termvect << std::endl
       << (rps_parsrepl_termvect_stammering (termvect, __LINE__)?"!st!²":"!st!*")
-      << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/START")
+      << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_sum/START")
                );
   bool okleft = false;
   _f.leftv = parse_term(&_, &okleft);
@@ -1303,7 +1303,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                             << " token_deq:" << toksrc_token_deq
                             << " termvect=" << termvect << " is ending with leftv="
                             << _f.leftv << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1,"Rps_TokenSource::parse_sum/Test01c-bug"));
+                            << RPS_FULL_BACKTRACE(1,"Rps_TokenSource::parse_sum/Test01c-bug"));
               RPS_POSSIBLE_BREAKPOINT();
             };
           /// end of temporary code to catch make test01c bug in commit e78fd8f9b3 at mid Oct. 2024
@@ -1395,8 +1395,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                             << " with rightv=" << _f.rightv
                             << " to termvect:"<< termvect
                             << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1,
-                                "Rps_TokenSource::parse_sum/pushleft"));
+                            << RPS_FULL_BACKTRACE(1,
+                                                  "Rps_TokenSource::parse_sum/pushleft"));
               termvect.push_back(_f.leftv);
               again = true;
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
@@ -1414,7 +1414,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
               {
                 this->display_current_line_with_cursor(out);
               })
-                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/p"));
+                  << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_sum/p"));
               continue;
             };
           //// reached when okleft is false (see previous parse_term)....
@@ -1457,7 +1457,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
       {
         this->display_current_line_with_cursor(out);
       })
-          << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/q"));
+          << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_sum/q"));
     };        // end if
   /***
    * We probably should loop and collect all terms if they are
@@ -1539,7 +1539,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
   else
     {
       RPS_WARNOUT("parse_comparand¤" << callnum << " failed to parse left comparand at " << startpos
-                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand fail"));
+                  << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_comparand fail"));
       if (pokparse)
         *pokparse = false;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " failing_A at startpos:" << startpos
@@ -1547,7 +1547,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr()) << " token_deq:" <<  toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparison failing_A"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_comparison failing_A"));
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_comparand¤" << callnum << " failing_A at startpos:" << startpos
                            << "  in:" << (*this)
@@ -1636,7 +1636,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
     this->display_current_line_with_cursor(out);
   })
       << std::endl
-      << RPS_FULL_BACKTRACE_HERE(1, "incomplete Rps_TokenSource::parse_comparand"));
+      << RPS_FULL_BACKTRACE(1, "incomplete Rps_TokenSource::parse_comparand"));
 #warning TODO: missing code in Rps_TokenSource::parse_comparand
   RPS_PARSREPL_FAILURE(&_,
                        "Rps_TokenSource::parse_comparand¤" << callnum << " missing code at startpos:" << startpos<<
@@ -1668,7 +1668,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
     this->display_current_line_with_cursor(out);
   })
       << std::endl
-      << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand incomplete"));
+      << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_comparand incomplete"));
 } // end Rps_TokenSource::parse_comparand
 
 
@@ -1747,10 +1747,10 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_factor failing_A"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_factor failing_A"));
       RPS_WARNOUT("Rps_TokenSource::parse_factor¤" << callnum << " failed to parse left primary at " << position_str()
                   << " startpos:" << startpos << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_factor fail/left"));
+                  << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_factor fail/left"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -1831,7 +1831,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, bool*pokparse)
                << " in:" << (*this) << " at " << position_str()  << " startpos:" << startpos
                << " curcptr:" << Rps_QuotedC_String(curcptr())
                << " token_deq:" << toksrc_token_deq
-               << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_factor incomplete"));
+               << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_factor incomplete"));
 } // end Rps_TokenSource::parse_factor
 
 
@@ -1967,7 +1967,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term failing_A")
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_term failing_A")
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -1992,7 +1992,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                 << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)(curcptr())
                 << " token_deq:" << toksrc_token_deq
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term/bef.loop"));
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_term/bef.loop"));
   bool again = true;
   int loopcnt = 0;
   while (again)
@@ -2014,7 +2014,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after left"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_term after left"));
       _f.lexopertokv = lookahead_token(&_,  1);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " after leftv=" << _f.leftv << " lextokv="
                     << _f.lextokv
@@ -2040,7 +2040,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       {
         this->display_current_line_with_cursor(out);
       })
-          << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
+          << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_term after-left"));
       if (!_f.lextokv)
         break;
       if (_f.lexopertokv && _f.lexopertokv.is_lextoken()
@@ -2120,7 +2120,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                                 << " position:" << position_str()
                                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                                 << std::endl
-                                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term failing_B")
+                                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_term failing_B")
                                 << std::endl
                                 << Rps_Do_Output([&](std::ostream& out)
                   {
@@ -2223,7 +2223,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                    << " curoperob:" << _f.curoperob
                    << " operandvect:" << operandvect
                    << " leftv=" << _f.leftv << std::endl
-                   << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term/INCOMPLETE"));
+                   << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_term/INCOMPLETE"));
     }
 } // end Rps_TokenSource::parse_term
 
@@ -2366,7 +2366,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                 << "… callframe:" << callframe<< " curcptr:" << Rps_QuotedC_String(curcptr())
                 << std::endl
                 << "… token_deq:" << toksrc_token_deq<< std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary start")
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary start")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -2386,7 +2386,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary failing_A"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary failing_A"));
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_primary¤" << callnum << " fail left prim at startpos:" << startpos
                            << " in:" << (*this)
@@ -2422,7 +2422,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary failing_B"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary failing_B"));
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_primary¤" << callnum << " fail bad start at startpos:" << startpos
                            << " in:" << (*this)
@@ -2460,7 +2460,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << "…  in:" << (*this)
                     << " token_deq:" << toksrc_token_deq
                     << " at " << position_str() << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary int"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary int"));
       if (pokparse)
         *pokparse = true;
       return _f.lexvalv;
@@ -2476,7 +2476,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " lexgotokv:" << _f.lexgotokv
                     << " at " << position_str() << " startpos:" << startpos
                     << " token_deq:" << toksrc_token_deq
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary string"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary string"));
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
@@ -2493,7 +2493,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " startpos: " << startpos << std::endl
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary double"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary double"));
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
@@ -2578,7 +2578,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " position:" << position_str() << " startpos:" << startpos << std::endl
                         << " token_deq:" << toksrc_token_deq << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary before subexpression"));
+                        << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary before subexpression"));
           bool oksubexpr = false;
           _f.exprv = parse_expression(&_, &oksubexpr);
           if (oksubexpr)
@@ -2588,7 +2588,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
                             << " token_deq:" << toksrc_token_deq
                             << "  in:" << (*this)
-                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary after subexpression")
+                            << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary after subexpression")
                             << std::endl
                             << Rps_Do_Output([&](std::ostream& out)
               {
@@ -2613,7 +2613,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                             << " token_deq:" << toksrc_token_deq
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
                             << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary failing_C"));
+                            << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary failing_C"));
               RPS_PARSREPL_FAILURE(&_,
                                    "Rps_TokenSource::parse_primary¤" << callnum << " fail subexpr in paren at startpos:" << startpos
                                    << " in:" << (*this)
@@ -2625,7 +2625,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                           << " startpos:" << startpos
                           << " position:" << position_str()
                           << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
-                          << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary/failed-subexpression"));
+                          << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary/failed-subexpression"));
               if (pokparse)
                 *pokparse = false;
               return nullptr;
@@ -2639,7 +2639,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " token_deq:" << toksrc_token_deq
                         << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary failing_D"));
+                        << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary failing_D"));
           RPS_PARSREPL_FAILURE(&_,
                                "Rps_TokenSource::parse_primary¤" << callnum << " failD unexpected delim" << _f.obdelim
                                <<" at startpos:" << startpos
@@ -2668,7 +2668,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                 << " obdelim:" << _f.obdelim
                 << " token_deq:" << toksrc_token_deq
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary@@incomplete")
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_primary@@incomplete")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -2754,7 +2754,7 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_start_primary¤" << callnum << " delimiter "
                     << " lexvalv=" << _f.lexvalv << " at startpos: " << startpos
                     << " position_str:" << position_str() << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::can_parse_primary§delim"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::can_parse_primary§delim"));
       if (_f.lexvalv.is_object())
         {
           _f.delimob = _f.lexvalv.to_object();

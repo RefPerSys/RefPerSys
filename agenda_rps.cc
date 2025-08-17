@@ -56,18 +56,18 @@ std::condition_variable_any Rps_Agenda::agenda_changed_condvar_;
 
 std::deque<Rps_ObjectRef> Rps_Agenda::agenda_fifo_[Rps_Agenda::AgPrio__Last];
 
+constexpr unsigned rps_JMAX=RPS_NBJOBS_MAX+2;
 std::atomic<unsigned long>  Rps_Agenda::agenda_add_counter_;
 std::atomic<bool> Rps_Agenda::agenda_is_running_;
-std::atomic<std::thread*> Rps_Agenda::agenda_thread_array_[RPS_NBJOBS_MAX+2];
+std::atomic<std::thread*> Rps_Agenda::agenda_thread_array_[rps_JMAX];
 
 const char*
 Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
-std::atomic<Rps_Agenda::workthread_state_en>
-Rps_Agenda::agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
+std::atomic<Rps_Agenda::workthread_state_en> Rps_Agenda::agenda_work_thread_state_[rps_JMAX];
 std::atomic<bool> Rps_Agenda::agenda_needs_garbcoll_;
 std::atomic<uint64_t> Rps_Agenda::agenda_cumulw_gc_;
-std::atomic<Rps_CallFrame*> Rps_Agenda::agenda_work_gc_callframe_[RPS_NBJOBS_MAX+2];
-std::atomic<Rps_CallFrame**> Rps_Agenda::agenda_work_gc_current_callframe_ptr[RPS_NBJOBS_MAX+2];
+std::atomic<Rps_CallFrame*> Rps_Agenda::agenda_work_gc_callframe_[rps_JMAX];
+std::atomic<Rps_CallFrame**> Rps_Agenda::agenda_work_gc_current_callframe_ptr[rps_JMAX];
 void
 Rps_Agenda::initialize(void)
 {
@@ -458,7 +458,8 @@ rps_stop_agenda_mechanism(void)
 
 //// loading of agenda related payload
 void
-rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
+               Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -466,7 +467,7 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_ASSERT(spacid);
   RPS_ASSERT(lineno>0);
-  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn))   // the agenda rps_rootob_1aGtWm38Vw701jDhZn
+  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn))   // the agenda
     {
       RPS_POSSIBLE_BREAKPOINT();
       RPS_FATALOUT("in space " << spacid << " line " << lineno
@@ -497,7 +498,7 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
   RPS_DEBUG_LOG(LOAD, "incomplete rpsldpy_agenda obz=" << obz
                 << " spacid=" << spacid
                 << " lineno=" << lineno
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_agenda"));
+                << RPS_FULL_BACKTRACE(1, "rpsldpy_agenda"));
 #warning incomplete rpsldpy_agenda
 } // end of rpsldpy_agenda
 
@@ -545,7 +546,8 @@ Rps_PayloadAgenda::is_erasable() const
 
 //// loading of tasklet related payload
 void
-rpsldpy_tasklet(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+rpsldpy_tasklet(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
+                Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -556,20 +558,22 @@ rpsldpy_tasklet(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id
     {
       auto jtodo = jv["tasklet_todo"];
       auto jdelay = jv["tasklet_obsolete_delay"];
-      payltasklet->tasklet_todoclos = Rps_ClosureValue(Rps_Value(jtodo,ld).as_closure());
-      payltasklet->tasklet_obsoltime = rps_wallclock_real_time() + jdelay.asDouble();
+      payltasklet->tasklet_todoclos =
+        Rps_ClosureValue(Rps_Value(jtodo,ld).as_closure());
+      payltasklet->tasklet_obsoltime =
+        rps_wallclock_real_time() + jdelay.asDouble();
     }
   RPS_DEBUG_LOG(LOAD, "rpsldpy_tasklet obz=" << obz
                 << " spacid=" << spacid
                 << " lineno=" << lineno
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_tasklet"));
+                << RPS_FULL_BACKTRACE(1, "rpsldpy_tasklet"));
 } // end of rpsldpy_tasklet
 
 Rps_PayloadTasklet::~Rps_PayloadTasklet()
 {
   RPS_WARNOUT("unimplemented Rps_PayloadTasklet::~Rps_PayloadTasklet this="
               << (void*)this
-              << RPS_FULL_BACKTRACE_HERE(1, "~Rps_PayloadTasklet"));
+              << RPS_FULL_BACKTRACE(1, "~Rps_PayloadTasklet"));
 } // end Rps_PayloadTasklet::~Rps_PayloadTasklet
 
 void
@@ -603,21 +607,23 @@ Rps_PayloadTasklet::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
     {
       if (tasklet_obsoltime < rps_dump_start_wallclock_time(du))
         {
-          jv["tasklet_todo"] = rps_dump_json_value(du, tasklet_todoclos);
-          jv["tasklet_obsolete_delay"] =  rps_dump_start_wallclock_time(du) - tasklet_obsoltime;
+          jv["tasklet_todo"] =
+            rps_dump_json_value(du, tasklet_todoclos);
+          jv["tasklet_obsolete_delay"] =
+            rps_dump_start_wallclock_time(du) - tasklet_obsoltime;
         }
     }
   RPS_DEBUG_LOG(DUMP,"Rps_PayloadTasklet::dump_json_content this="
                 << (void*)this << std::endl
                 << jv << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::dump_json_content"));
+                << RPS_FULL_BACKTRACE(1, "Rps_PayloadTasklet::dump_json_content"));
 } // end Rps_PayloadTasklet::dump_json_content
 
 bool
 Rps_PayloadTasklet::is_erasable() const
 {
   RPS_WARNOUT("Rps_PayloadTasklet::is_erasable() still a stub"
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::is_erasable"));
+              << RPS_FULL_BACKTRACE(1, "Rps_PayloadTasklet::is_erasable"));
   // a tasklet might be mutated to something else, even if I cannot
   // imagine why that could be useful.
   return true;

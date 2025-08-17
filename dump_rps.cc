@@ -235,7 +235,7 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   RPS_DEBUG_LOG(DUMP, "Rps_Dumper constr topdir=" << topdir
                 << " this@" << (void*)this
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper constr"));
+                << RPS_FULL_BACKTRACE(1, "Rps_Dumper constr"));
   RPS_ASSERT(rps_is_main_thread());
 } // end Rps_Dumper::Rps_Dumper
 
@@ -244,7 +244,7 @@ Rps_Dumper::~Rps_Dumper()
   RPS_DEBUG_LOG(DUMP, "Rps_Dumper destr topdir=" << du_topdir
                 << " this@" << (void*)this
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper destr"));
+                << RPS_FULL_BACKTRACE(1, "Rps_Dumper destr"));
   RPS_ASSERT(rps_is_main_thread());
   du_callframe = nullptr;
 } // end Rps_Dumper::~Rps_Dumper
@@ -291,7 +291,7 @@ rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
   if (shortpath.empty())
     {
       RPS_WARNOUT("empty shortpath"
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/E"));
+                  << RPS_FULL_BACKTRACE(1, "rps_dumper_temporary_path/E"));
       throw RPS_RUNTIME_ERROR_OUT("empty shortpath");
     }
   int splen = shortpath.length();
@@ -299,7 +299,7 @@ rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
     {
       RPS_WARNOUT("too small shortpath=" << Rps_Cjson_String(shortpath)
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/S"));
+                  << RPS_FULL_BACKTRACE(1, "rps_dumper_temporary_path/S"));
       throw RPS_RUNTIME_ERROR_OUT("too small shortpath");
     };
   bool goodshortpath = true;
@@ -319,7 +319,7 @@ rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
     {
       RPS_WARNOUT("bad shortpath=" << Rps_Cjson_String(shortpath)
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/D"));
+                  << RPS_FULL_BACKTRACE(1, "rps_dumper_temporary_path/D"));
       throw RPS_RUNTIME_ERROR_OUT("bad shortpath");
     };
   restemp = du->temporary_opened_path(shortpath);
@@ -454,7 +454,7 @@ Rps_Dumper::scan_source_file_for_constants(const std::string&relfilename)
   int nbconst = 0;
   RPS_DEBUG_LOG(DUMP, "start dumper scan_source_file_for_constants file " << relfilename
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper::scan_source_file_for_constants"));
+                << RPS_FULL_BACKTRACE(1, "Rps_Dumper::scan_source_file_for_constants"));
   RPS_ASSERT(relfilename.size()>2 && isalpha(relfilename[0]));
   std::string fullpath = std::string(rps_topdirectory) + "/" + relfilename;
   std::ifstream ins(fullpath);
@@ -1603,7 +1603,7 @@ Rps_Dumper::write_all_generated_files(void)
                       << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
                       << std::endl << Rps_ShowCallFrame(&_)
                       << std::endl
-                      << RPS_FULL_BACKTRACE_HERE(1,"Rps_Dumper::write_all_generated_files"));
+                      << RPS_FULL_BACKTRACE(1,"Rps_Dumper::write_all_generated_files"));
         }
       write_generated_parser_decl_file(&_, _f.genstoreob);
       write_generated_parser_impl_file(&_, _f.genstoreob);
@@ -1615,7 +1615,7 @@ Rps_Dumper::write_all_generated_files(void)
                   << " tempsuffixv=" << _f.tempsuffixv
                   << " got exception " << exc.what()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,"Rps_Dumper::write_all_generated_files"));
+                  << RPS_FULL_BACKTRACE(1,"Rps_Dumper::write_all_generated_files"));
     }
 } // end Rps_Dumper::write_all_generated_files
 
@@ -1911,7 +1911,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   double startcputime = rps_process_cpu_time();
   RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_dump_into"));
+                << RPS_FULL_BACKTRACE(1, "rps_dump_into"));
   if (dirpath.empty())
     dirpath = std::string(".");
   int lendirpath = dirpath.size();
@@ -2082,7 +2082,7 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe, /// "generate_code°the_s
               << "… cwds=" << cwds << " pid:" << (int)getpid()
               << " from " << (rps_is_main_thread()?"main":"other")
               << " thread"
-              << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
+              << std::endl << RPS_FULL_BACKTRACE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
   // arg1 is the dumped directory string, e.g. ~/RefPerSys
   RPS_ASSERT(_f.dumpstrv.is_string());
   // arg2 is a temporary suffix like "_3MPAZx-p1084952%"

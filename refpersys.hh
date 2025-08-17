@@ -2401,11 +2401,11 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb)
 // can appear in RPS_WARNOUT etc...
 #define RPS_FULL_BACKTRACE_HERE(Skip,Name) \
   Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),&std::cerr)
-
+#define RPS_FULL_BACKTRACE(Skip,Name) RPS_FULL_BACKTRACE_HERE(Skip,Name)
 // can appear in RPS_DEBUG_LOG etc...
 #define RPS_DEBUG_BACKTRACE_HERE(Skip,Name) \
   Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),(std::ostream*)nullptr)
-
+#define RPS_DEBUG_BACKTRACE(Skip,Name) RPS_DEBUG_BACKTRACE_HERE(Skip,Name)
 ////////////////////////////////////////////////////// garbage collector
 
 extern "C" void rps_forbid_garbage_collection(void);
@@ -5602,10 +5602,10 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 /// GNU lightning approved on Whatsapp by Abishek Chakravarti on July,
 /// 24, 2023.
 
-/// both code generation functions returns true when successful. 
+/// both code generation functions returns true when successful.
 extern "C" bool rps_generate_lightning_code(Rps_CallFrame*callerframe,
-					    Rps_ObjectRef argobmodule,
-					    Rps_Value arggenparam=nullptr);
+    Rps_ObjectRef argobmodule,
+    Rps_Value arggenparam=nullptr);
 extern "C" bool rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     Rps_ObjectRef obmodule,
     Rps_Value genparamv=nullptr);
@@ -5944,7 +5944,8 @@ public:
 
 
 /// the transient payload for C++ streams
-enum Rps_KindStream {
+enum Rps_KindStream
+{
   rps_no_stream,
   rps_input_stream,
   rps_output_stream,
@@ -5958,7 +5959,8 @@ class Rps_PayloadCppStream : public Rps_Payload
   friend Rps_PayloadCppStream*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadCppStream,Rps_ObjectZone*>(Rps_ObjectZone*);
   enum Rps_KindStream _kind_stream;
-  union {
+  union
+  {
     void* _ptr_stream;
     std::ostream* _out_stream;
     std::istream* _in_stream;
@@ -5977,7 +5979,7 @@ class Rps_PayloadCppStream : public Rps_Payload
   void unregister_cpp_stream(void);
   int posix_fd(void);
   virtual ~Rps_PayloadCppStream();
-};				// end Rps_PayloadCppStream
+};        // end Rps_PayloadCppStream
 
 typedef std::vector<std::string> rps_cppvect_of_string_t;
 

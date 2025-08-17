@@ -101,7 +101,7 @@ rpsapply_repl_not_implemented(Rps_CallFrame*callerframe,
                 << " from caller frame:"
                 << Rps_ShowCallFrame(callerframe)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_repl_not_implemented"));
+                << RPS_FULL_BACKTRACE(1, "rpsapply_repl_not_implemented"));
   else
     {
       auto nbargs = restargs->size();
@@ -121,7 +121,7 @@ rpsapply_repl_not_implemented(Rps_CallFrame*callerframe,
                   << " from caller frame:"
                   << Rps_ShowCallFrame(callerframe)
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_repl_not_implemented/many"));
+                  << RPS_FULL_BACKTRACE(1, "rpsapply_repl_not_implemented/many"));
     }
   return {nullptr,nullptr};
 } // end rpsapply_repl_not_implemented
@@ -234,7 +234,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
             << "                << Rps_ShowCallFrame(&_));" << std::endl
             << "#warning incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << std::endl
             << "  RPS_" "WARNOUT(\"incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << " from \" << std::endl" << std::endl
-            << "                << RPS_FULL_BACKTRACE_HERE(1, \"rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\"));" << std::endl
+            << "                << RPS_FULL_BACKTRACE(1, \"rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\"));" << std::endl
             << "  return {nullptr,nullptr};" << std::endl
             << "} //end of rpsapply" << _f.obfun->oid() << " for REPL command " << commandname
             << std::endl << std::endl;
@@ -296,7 +296,7 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
                 << linestart+chkdata->chunkdata_colno
                 << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-start"));
+                <<  RPS_FULL_BACKTRACE(1, "rps_lex_chunk_element-start"));
   /// For C name-like things, we return the object naming them or else a string
   const char*curstr = linestart+chkdata->chunkdata_colno;
   if (isalpha(*curstr))
@@ -420,7 +420,7 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
                     << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
                     << " endstr='" << chkdata->chunkdata_endstr << "'"
                     << std::endl
-                    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-ending")
+                    <<  RPS_FULL_BACKTRACE(1, "rps_lex_chunk_element-ending")
                    );
       chkdata->chunkdata_colno += strlen(chkdata->chunkdata_endstr);
       return nullptr;
@@ -437,7 +437,7 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
                     << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
                     << " endstr='" << chkdata->chunkdata_endstr << "'"
                     << std::endl
-                    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-incomplete")
+                    <<  RPS_FULL_BACKTRACE(1, "rps_lex_chunk_element-incomplete")
                    );
     }
   RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
@@ -676,7 +676,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned depth, unsigned maxdepth
         }
       else
         RPS_WARNOUT("Rps_LexTokenZone::val_output code chunk without object"
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::val_output/codechunk?"));
+                    << RPS_FULL_BACKTRACE(1, "Rps_LexTokenZone::val_output/codechunk?"));
     }
   if (lex_file)
     {
@@ -1105,7 +1105,7 @@ rps_repl_builtin_parse_expression_command(Rps_CallFrame*callframe, Rps_ObjectRef
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_expression_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_expression_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1145,7 +1145,7 @@ rps_repl_builtin_parse_disjunction_command(Rps_CallFrame*callframe, Rps_ObjectRe
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_disjunction_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_disjunction_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1187,7 +1187,7 @@ rps_repl_builtin_parse_conjunction_command(Rps_CallFrame*callframe, Rps_ObjectRe
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_conjunction_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_conjunction_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1230,7 +1230,7 @@ rps_repl_builtin_parse_comparison_command(Rps_CallFrame*callframe, Rps_ObjectRef
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_comparison_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_comparison_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1262,7 +1262,7 @@ rps_repl_builtin_parse_comparand_command(Rps_CallFrame*callframe, Rps_ObjectRef 
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_comparand_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_comparand_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1296,7 +1296,7 @@ rps_repl_builtin_parse_sum_command(Rps_CallFrame*callframe, Rps_ObjectRef obenva
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_sum_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_sum_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1330,7 +1330,7 @@ rps_repl_builtin_parse_product_command(Rps_CallFrame*callframe, Rps_ObjectRef ob
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_product_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_product_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1363,7 +1363,7 @@ rps_repl_builtin_parse_factor_command(Rps_CallFrame*callframe, Rps_ObjectRef obe
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_factor_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_factor_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1396,7 +1396,7 @@ rps_repl_builtin_parse_term_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_term_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_term_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1429,7 +1429,7 @@ rps_repl_builtin_parse_primary_command(Rps_CallFrame*callframe, Rps_ObjectRef ob
                 << "… intoksrc:" << intoksrc << " obenv=" << _f.obenv
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_primary_command")
+                <<  RPS_FULL_BACKTRACE(1, "rps_repl_builtin_parse_primary_command")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
@@ -1603,7 +1603,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << std::endl << title << " cmd=" << Rps_QuotedC_String(cmd)
                 << " startswithat=" << startswithat
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command")
+                << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command")
                 << std::endl << " in thread "
                 << rps_current_pthread_name());
   RPS_POSSIBLE_BREAKPOINT();
@@ -1629,7 +1629,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
   RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command intoksrc="<< intoksrc
                 << std::endl
                 << "… tok0=" << _f.tok0
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
+                << std::endl << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command"));
   std::string commandpos = intoksrc.position_str();
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command "
                 << "intoksrc:" << intoksrc
@@ -1680,9 +1680,9 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command carburetta '"
                     << Rps_Cjson_String(cmd)
                     << "'"
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command carburetta")
+                    << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command carburetta")
                     << std::endl
-                    << "… restarted intoksrc:" << intoksrc 
+                    << "… restarted intoksrc:" << intoksrc
                     << Rps_Do_Output([&](std::ostream& out)
       {
         intoksrc.display_current_line_with_cursor(out);
@@ -1705,7 +1705,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << "… intoksrc:" << intoksrc
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                 << " token_deq:" << intoksrc.token_dequeue()
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command"));
+                << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command"));
   if (!_f.lextokv)
     {
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command no lexical token"
@@ -1748,7 +1748,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                   << "… intoksrc:" << intoksrc
                   << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/symbol"));
+                  << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command/symbol"));
     }
   else
     {
@@ -1757,7 +1757,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                   << "Should start with an object or symbol but got "
                   << _f.lextokv << " of kind " << lextokz->lxkind()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/non-obj-cmd"));
+                  << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command/non-obj-cmd"));
       return;
     }
   RPS_ASSERT(_f.lexval.is_object());
@@ -1781,7 +1781,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                         << " command at " << commandpos
                         << " ... at position " <<  intoksrc.position_str()
                         << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
-                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/before-apply"));
+                        <<  RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command/before-apply"));
           Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
           _f.parsmainv = parspair.mainv();
           _f.parsextrav = parspair.xtrav();
@@ -1795,7 +1795,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                         << std::endl
                         << "… now position is " <<  intoksrc.position_str() << " curptr:" <<
                         Rps_QuotedC_String(intoksrc.curcptr())  << std::endl
-                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/applied"));
+                        <<  RPS_FULL_BACKTRACE(1, "rps_do_repl_commands_vec/applied"));
           if (!_f.parsmainv && !_f.parsextrav)
             {
               RPS_WARNOUT("rps_do_one_repl_command: REPL command " << title
@@ -1803,7 +1803,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                           << _f.cmdparserv << std::endl
                           << " ... at position " <<  intoksrc.position_str()
                           << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
-                          <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/apply failed"));
+                          <<  RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command/apply failed"));
               return;
             }
         }
@@ -1823,7 +1823,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                   << " now at " << intoksrc.position_str()
                   << " in " << intoksrc
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unexpected"));
+                  << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command/unexpected"));
       return;
     }
 } // end rps_do_one_repl_command

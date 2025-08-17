@@ -463,40 +463,41 @@ Rps_PayloadCppStream::posix_fd(void)
   if (_ptr_stream == nullptr)
     return -1;
 #warning FIXME Rps_PayloadCppStream::posix_fd see https://www.ginac.de/~kreckel/fileno/
-  switch(_kind_stream) {
-  case rps_no_stream:
-    return -1;
-  case rps_input_stream:
+  switch(_kind_stream)
+    {
+    case rps_no_stream:
+      return -1;
+    case rps_input_stream:
     {
       /// https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1759r6.html
       /// https://gcc.gnu.org/projects/cxx-status.html
 #if __cpplib_fstream_native_handle_type
       std::ifstream*fs = dynamic_cast<std::ifstream*>(_in_stream);
       if (fs)
-	return fs->native_handle();
+        return fs->native_handle();
       else
-	return -1;
+        return -1;
 #else
 #warning missing feature for  Rps_PayloadCppStream::posix_fd
       return -1;
 #endif
     }
-  case rps_output_stream:
+    case rps_output_stream:
     {
 #if  __cpplib_fstream_native_handle_type
       std::ofstream*fs = dynamic_cast<std::ofstream*>(_out_stream);
       if (fs)
-	return fs->native_handle();
+        return fs->native_handle();
       else
-	return -1;
+        return -1;
 #else
 #warning missing feature for  Rps_PayloadCppStream::posix_fd
       return -1;
 #endif
     }
-  default:
-    return -1;
-  };
+    default:
+      return -1;
+    };
 } // end Rps_PayloadCppStream::posix_fd
 
 

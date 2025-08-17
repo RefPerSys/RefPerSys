@@ -149,7 +149,7 @@ rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
     {
       RPS_WARNOUT("garbage collection is forbidden from "
                   <<  rps_current_pthread_name() << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_garbage_collect"));
+                  << RPS_FULL_BACKTRACE(1, "rps_garbage_collect"));
       return;
     };
 #warning TODO: we might want to wait half a second in rps_garbage_collect
@@ -284,7 +284,7 @@ rps_garbcoll_application(Rps_GarbageCollector&gc)
   RPS_ASSERT(gc.is_valid_garbcoll());
 #warning incomplete rps_garbcoll_application
   RPS_WARNOUT("incomplete rps_garbcoll_application " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_garbcoll_application"));
+              << RPS_FULL_BACKTRACE(1, "rps_garbcoll_application"));
 } // end rps_garbcoll_application
 
 //////////////////////////////////////////////////////////// end of file garbcoll_rps.cc

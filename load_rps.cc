@@ -159,7 +159,7 @@ Rps_Loader::Rps_Loader(const std::string&topdir) :
   RPS_DEBUG_LOG(LOAD, "Rps_Loader constr topdir=" << topdir
                 << " this@" << (void*)this
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Loader constr"));
+                << RPS_FULL_BACKTRACE(1, "Rps_Loader constr"));
 } // end Rps_Loader::Rps_Loader
 
 Rps_Loader::~Rps_Loader()
@@ -167,7 +167,7 @@ Rps_Loader::~Rps_Loader()
   RPS_DEBUG_LOG(LOAD, "Rps_Loader destr topdir=" << ld_topdir
                 << " this@" << (void*)this
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Loader constr"));
+                << RPS_FULL_BACKTRACE(1, "Rps_Loader constr"));
 } // end Rps_Loader::~Rps_Loader
 
 
@@ -780,7 +780,7 @@ void
 Rps_Loader::second_pass_space(Rps_Id spacid)
 {
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::second_pass_space start spacid:" << spacid
-                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::second_pass_space"));
+                << std::endl << RPS_FULL_BACKTRACE(0, "RpsLoader::second_pass_space"));
   auto spacepath = load_real_path(space_file_path(spacid));
   std::ifstream ins(spacepath);
   unsigned lincnt = 0;
@@ -860,7 +860,7 @@ Rps_Loader::load_all_state_files(void)
                          :rps_progname?rps_progname:"*RefPerSys*");
   RPS_ASSERT(thisprog != nullptr);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files start this@" << (void*)this
-                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
+                << std::endl << RPS_FULL_BACKTRACE(0, "RpsLoader::load_all_state_files"));
   int spacecnt1 = 0, spacecnt2 = 0;
   Rps_Id initialspaceid("_8J6vNYtP5E800eCr5q"); //"initial_space"∈space
   first_pass_space(initialspaceid);
@@ -912,7 +912,7 @@ Rps_Loader::load_all_state_files(void)
              (long)getpid(), rps_hostname(), rps_shortgitid);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@"
                 << (void*)this << std::endl
-                << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
+                << RPS_FULL_BACKTRACE(0, "RpsLoader::load_all_state_files"));
 } // end Rps_Loader::load_all_state_files
 
 
@@ -922,7 +922,7 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
 
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::string_of_loaded_file start this@" << (void*)this
                 << " relpath=" << relpath
-                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::string_of_loaded_file"));
+                << std::endl << RPS_FULL_BACKTRACE(0, "RpsLoader::string_of_loaded_file"));
   constexpr size_t maxfilen = 1024*1024; // a megabyte
   std::string fullpath = load_real_path(relpath);
   std::string res;
@@ -1263,7 +1263,7 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
     }
   RPS_WARNOUT("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)"
               << std::endl << " jv=" << jv
-              << RPS_FULL_BACKTRACE_HERE(2,"strange ObjectRef::Rps_ObjectRef"));
+              << RPS_FULL_BACKTRACE(2,"strange ObjectRef::Rps_ObjectRef"));
   throw  std::runtime_error("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
 #warning partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 } // end Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
@@ -1590,7 +1590,7 @@ void rps_load_from (const std::string& dirpath)
   double endcput = NAN;
   RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_load_from"));
+                << RPS_FULL_BACKTRACE(1, "rps_load_from"));
   {
     Rps_Loader loader(dirpath);
     try
@@ -1882,7 +1882,7 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
 {
   RPS_ASSERT(ld != nullptr);
   RPS_WARNOUT("incomplete rps_set_native_data_in_loader" << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_set_native_data_in_loader"));
+              << RPS_FULL_BACKTRACE(1, "rps_set_native_data_in_loader"));
   /* Some loaded objects are representing machine types, and their
      attributes _6EsfxShTuwH02waeLE !byte_alignment∈named_attribute
      and _8IRzlYX53kN00tC3fG !byte_size∈named_attribute need to be set

@@ -48,7 +48,7 @@ rps_do_plugin(const Rps_Plugin*plugin)
                  << " without argument - expecting an object name or oid");
   _f.ob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg));
   if (!_f.ob)
-    RPS_WARNOUT("in git " << rpsplug_display_shortgit << " " 
+    RPS_WARNOUT("in git " << rpsplug_display_shortgit << " "
                 << " build " << rpsplug_display_buildtimestamp
                 << " " << plugarg << " dont name any object");
   else

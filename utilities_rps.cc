@@ -190,7 +190,7 @@ rps_do_create_fifos_from_prefix(void)
   std::string outfifo = rps_fifo_prefix+".out";
   RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix " << rps_fifo_prefix
                 << " in " << cwdbuf << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_create_fifos_from_prefix"));
+                << RPS_FULL_BACKTRACE(1, "rps_do_create_fifos_from_prefix"));
   if (!rps_is_fifo(cmdfifo))
     {
       if (mkfifo(cmdfifo.c_str(), 0660)<0)
@@ -592,7 +592,7 @@ rps_show_version_handwritten_source_files(void)
                 << " handwritten source files (git " << rps_utilities_shortgitid
                 << " from " __FILE__ ")");
   RPS_DEBUG_LOG(PROGARG, "starting " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_show_version_handwritten_source_files/start"));
+                << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files/start"));
   //// show gitid and date of individual handwritten *cc files, using dlsym
   //// since every file like utilities_rps.cc has rps_utilities_gitid and rps_utilities_date
   int curfilno=0;
@@ -620,24 +620,24 @@ rps_show_version_handwritten_source_files(void)
         continue;
       // ignore JSON files
       if (strstr(curfile, ".json"))
-	continue;
+        continue;
       // ignore header files
       if (strstr(curfile, ".hh"))
-	continue;
+        continue;
       // ignore markdown documentation
       if (strstr(curfile, ".md"))
-	continue;
+        continue;
       // ignore BisonC++ file
       if (strstr(curfile, "yyp"))
-	continue;
+        continue;
       if ((sscanf(curfile, "%60[a-zA-Z_].%10[a-z]%n", curbase, cursuffix, &endpos))<1
           || endpos<2 || curfile[endpos]!=(char)0)
         continue;
       if (!isalpha(curbase[0]))
-	continue;
+        continue;
       rps_show_version_one_source_file(curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
       if (!nl)
-	std::cout << " ";
+        std::cout << " ";
     };        // end major loop of rps_show_version_handwritten_source_files
   ////
   ////
@@ -648,7 +648,7 @@ rps_show_version_handwritten_source_files(void)
 void
 rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int &nbshownfiles, bool&nl)
 {
-  //// notice that RPS_FULL_BACKTRACE_HERE cannot be used here....
+  //// notice that RPS_FULL_BACKTRACE cannot be used here....
   RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
                 << " curbase=" <<  Rps_Cjson_String(curbase));
   int lencurbase=strlen(curbase);
@@ -696,7 +696,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
     memset (cursymshortgit, 0, sizeof(cursymshortgit));
     snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
     snprintf (cursymshortgit, sizeof(cursymshortgit),
-	      "rps_%s_shortgitid", curbase);
+              "rps_%s_shortgitid", curbase);
     snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
     RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
     symgit = (const char*)dlsym(rps_proghdl, cursymgit);
@@ -704,7 +704,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
       {
         RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
                     << dlerror()
-		    << " curbase=" << Rps_QuotedC_String(curbase));
+                    << " curbase=" << Rps_QuotedC_String(curbase));
         RPS_POSSIBLE_BREAKPOINT();
         return;
       }
@@ -746,7 +746,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
     };
 } // end  rps_show_version_one_source_file
 
-  
+
 void
 rps_show_version(void)
 {
@@ -1223,7 +1223,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                   << " argnum:" << state->arg_num
                   << " state.next:" << state->next
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,"rps_parse1opt"));
+                  << RPS_FULL_BACKTRACE(1,"rps_parse1opt"));
   switch (key)
     {
     case RPSPROGOPT_DEBUG:
@@ -1635,7 +1635,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " plugname=" << Rps_QuotedC_String(plugname)
                     << " plugarg=" << Rps_QuotedC_String(plugarg)
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "--plugin-arg processing"));
+                    << RPS_FULL_BACKTRACE(1, "--plugin-arg processing"));
     }
     return 0;
     case RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD:
@@ -1818,21 +1818,30 @@ rps_schedule_files_postponed_removal(void)
   FILE* pat = popen("/bin/at -M now + 5 minutes > /dev/null 2>&1", "w");
   if (!pat)
     {
-      RPS_WARNOUT("failed to open /bin/at now + 5 minutes :" << strerror(errno));
+      RPS_WARNOUT("failed to open /bin/at now + 5 minutes :"
+                  << strerror(errno));
       return;
     };
   if (rps_syslog_enabled)
-    syslog(LOG_NOTICE, "RefPerSys will later remove %d files (in five minutes, with /bin/at)", (int) rps_postponed_removed_files_vector.size());
+    syslog(LOG_NOTICE, "RefPerSys will later remove %d files "
+           "(in five minutes, with /bin/at)",
+           (int) rps_postponed_removed_files_vector.size());
   else
-    RPS_INFORM("RefPerSys will later remove %d files (in five minutes, with /bin/at)", (int) rps_postponed_removed_files_vector.size());
+    RPS_INFORM("RefPerSys will later remove %d files "
+               "(in five minutes, with /bin/at)",
+               (int) rps_postponed_removed_files_vector.size());
   for  (auto rf: rps_postponed_removed_files_vector)
     {
       if (rps_syslog_enabled)
-        syslog(LOG_NOTICE, "*°postpone removing %s",  Rps_SingleQuotedC_String(rf).c_str());
+        syslog(LOG_NOTICE, "*°postpone removing %s",
+               Rps_SingleQuotedC_String(rf).c_str());
       else
-        RPS_INFORM("*°postpone removing %s\n", Rps_SingleQuotedC_String(rf).c_str());
-      fprintf(pat, "/bin/rm -f '%s'\n", Rps_SingleQuotedC_String(rf).c_str());
+        RPS_INFORM("*°postpone removing %s\n",
+                   Rps_SingleQuotedC_String(rf).c_str());
+      fprintf(pat, "/bin/rm -f '%s'\n",
+              Rps_SingleQuotedC_String(rf).c_str());
     }
+  fflush(pat);
   rps_postponed_removed_files_vector.clear();
   pclose(pat);
 } // end rps_schedule_files_postponed_removal
@@ -2142,7 +2151,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object start adding " << _f.obconst
                 << " of class " <<  _f.obconst->get_class()
                 << " in space " << _f.obconst->get_space() << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/start"));
+                << RPS_FULL_BACKTRACE(1, "rps_add_constant_object/start"));
   RPS_POSSIBLE_BREAKPOINT();
   if (false
       || _f.obconst == RPS_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
@@ -2184,7 +2193,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                   << " of class " << _f.obconst->get_class()
                   << " thread " << rps_current_pthread_name()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object")
+                  << RPS_FULL_BACKTRACE(1, "rps_add_constant_object")
                  );
       return;
     };
@@ -2203,7 +2212,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                   << " of class " << _f.obconst->get_class()
                   << " in  thread " << rps_current_pthread_name()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/known")
+                  << RPS_FULL_BACKTRACE(1, "rps_add_constant_object/known")
                  );
       return;
     };
@@ -2223,7 +2232,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                 << " of class " << _f.obconst->get_class() << " space " << _f.obconst->get_space()
                 << std::endl
                 << "… oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv << " in " << _f.obsystem
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending"));
+                << RPS_FULL_BACKTRACE(1, "rps_add_constant_object/ending"));
   RPS_POSSIBLE_BREAKPOINT();
   _f.xtrav = _f.obsystem->get_physical_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp));
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst=" << _f.obconst
@@ -2233,7 +2242,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                 << std::endl << "… newsetv=" << _f.newsetv
                 << std::endl << "… xtrav=" << _f.xtrav << " " << ((_f.xtrav  == _f.newsetv)?"same":"different")
                 << " in " << _f.obsystem
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending2"));
+                << RPS_FULL_BACKTRACE(1, "rps_add_constant_object/ending2"));
   RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
                 << RPS_OBJECT_DISPLAY(_f.obconst) << std::endl
                 << " obsystem=" << RPS_OBJECT_DISPLAY(_f.obsystem)
@@ -2295,7 +2304,7 @@ rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argobcon
       RPS_WARNOUT("cannot remove core sacred root object as constant " << _f.obconst
                   << " thread " << rps_current_pthread_name()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_remove_constant_object")
+                  << RPS_FULL_BACKTRACE(1, "rps_remove_constant_object")
                  );
       return;
     };
@@ -2394,7 +2403,7 @@ rps_set_debug(const std::string &deblev)
     }
   else if (deblev.empty())
     {
-      RPS_WARNOUT("empty debugging from " << RPS_FULL_BACKTRACE_HERE(1, "rps_set_debug/empty"));
+      RPS_WARNOUT("empty debugging from " << RPS_FULL_BACKTRACE(1, "rps_set_debug/empty"));
     }
   else if (isdigit(deblev[0]))
     {

@@ -67,7 +67,7 @@ Rps_TokenSource::Rps_TokenSource(std::string name)
     toksrc_ptrnameval(nullptr)
 {
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource @" << this << " named " << name
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource constr"));
+                << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource constr"));
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_TokenSource::Rps_TokenSource
 
@@ -188,7 +188,7 @@ Rps_TokenSource::~Rps_TokenSource()
   RPS_DEBUG_LOG(REPL, "~Rps_TokenSource " << toksrc_name << " @" << this
                 << " p." << position_str()
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "~Rps_TokenSource"));
+                << RPS_FULL_BACKTRACE(1, "~Rps_TokenSource"));
   toksrc_name.clear();
   toksrc_line= -1;
   toksrc_col= -1;
@@ -308,7 +308,7 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
                 << std::endl << " " << (*this)
                 << " p." << position_str()
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "constr StringTokenSource"));
+                << RPS_FULL_BACKTRACE(1, "constr StringTokenSource"));
   RPS_POSSIBLE_BREAKPOINT();
   //RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
   //              << " from " << Rps_QuotedC_String(toksrcstr_str));
@@ -332,7 +332,7 @@ Rps_StringTokenSource::~Rps_StringTokenSource()
                 << " with "  << Rps_QuotedC_String(toksrcstr_str)
                 << std::endl
                 << " p." << position_str() << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "destr StringTokenSource"));
+                << RPS_FULL_BACKTRACE(1, "destr StringTokenSource"));
   RPS_POSSIBLE_BREAKPOINT();
   //RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
   if (!RPS_DEBUG_ENABLED(REPL))
@@ -455,7 +455,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   close(fd);
   RPS_DEBUG_LOG(REPL, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this
                 << " p." << position_str()
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "constr MemoryFileTokenSource"));
+                << std::endl << RPS_FULL_BACKTRACE(1, "constr MemoryFileTokenSource"));
   RPS_DEBUG_LOG(LOWREP, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
 };                              // end Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource
@@ -657,7 +657,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << " startswithalpha:" << startswithalpha
                 << " afterat:" << afterat
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token"));
   _f.namev = source_name_val(&_);
   RPS_DEBUG_LOG(REPL, "get__namoid__token oid|name " << namestr
                 << " namev=" << _f.namev
@@ -668,14 +668,14 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << " startswithalpha:" << startswithalpha
                 << " afterat:" << afterat
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token"));
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
                 << "?  oid|name '" << namestr << "'" << std::endl
                 << "… obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
                 << "… startswithalpha=" << startswithalpha
                 << " afterat=" << afterat
                 << " tokensrc=" << *this
-                <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
+                <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token"));
   const Rps_String* str = _f.namev.to_string();
   RPS_DEBUG_LOG(REPL, "get__namoid__token#" << (toksrc_counter+1)
                 << "?  namestr=" << namestr
@@ -692,7 +692,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                     << "… °obnamed=" << RPS_OBJECT_DISPLAY(_f.obnamed)
                     << " startswithalpha=" << startswithalpha
                     << " afterat=" << afterat
-                    <<  RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token"));
+                    <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token"));
 #warning should use startswithalpha and afterat in Rps_TokenSource::get__namoid__token
       _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
       if (startswithalpha && afterat)
@@ -718,7 +718,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                     << "… startswithalpha=" << startswithalpha
                     << " afterat=" << afterat
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "-Rps_TokenSource::get__namoid__token")
+                    << RPS_FULL_BACKTRACE(1, "-Rps_TokenSource::get__namoid__token")
                     << std::endl
                     << "…  object :-◑> " << _f.res << std::endl
                     << "… @! " << position_str()
@@ -757,7 +757,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter << "? FAIL bad name " << _f.namev
                     << " @! " << position_str()
                     << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get__namoid__token/badname")
+                    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token/badname")
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -902,7 +902,7 @@ Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
       RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos
                   << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
                   <<  Rps_QuotedC_String(curcptr())
-                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token")
+                  << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_token")
                   << std::endl
                   << Rps_Do_Output([&](std::ostream& out)
       {
@@ -954,7 +954,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   {
     this->display_current_line_with_cursor(out);
   })
-      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/start"));
+      << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_token/start"));
   ucs4_t curuc=0;
   int ulen= -1;
   size_t linelen = toksrc_linebuf.size();
@@ -1226,7 +1226,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
                             << RPS_OBJECT_DISPLAY(_f.delimob)
                             << std::endl
                             << "… loopcnt#" << loopcnt << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter/ob"));
+                            << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_delimiter/ob"));
             };
           _f.lextokv = _f.delimv;
           toksrc_col += delimstr.size();
@@ -1246,7 +1246,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
             this->display_current_line_with_cursor(out);
           })
               << " startpos " << startpos << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
+              << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_delimiter"));
           return _f.res;
         };
       /// truncate the delimstr by one ending UTF-8
@@ -1284,7 +1284,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
               << std::endl << " host:" << rps_hostname()
               << std::endl << " procversion:" << rps_get_proc_version()
               << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter-fail"));
+              << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_delimiter-fail"));
   std::string failmsg {"Rps_TokenSource::get_delimiter failing at "};
   failmsg += startpos;
   throw std::runtime_error{failmsg};
@@ -1787,7 +1787,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
                 << " token_deq:" << toksrc_token_deq << std::endl
                 << "… curcptr:" << Rps_QuotedC_String(curcptr())
                 //<< " called from:" << std::endl << Rps_ShowCallFrame(&_)
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token start")
+                << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::lookahead_token start")
                 << std::endl);
   RPS_ASSERT(_.call_frame_depth() < 32);
   while (rank >= toksrc_token_deq.size())
@@ -1808,7 +1808,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
                         << std::endl << "… tokendeq=" << toksrc_token_deq
                         << std::endl
                         << "… rank#" << rank
-                        << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token pushed"));
+                        << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::lookahead_token pushed"));
         }
       else
         {
@@ -1819,7 +1819,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
                         << "… token_deq:" << toksrc_token_deq
                         << std::endl << Rps_ShowCallFrame(&_)
                         << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token/fail")
+                        << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::lookahead_token/fail")
                         << std::endl << "… this token source=" << *this);
           RPS_POSSIBLE_BREAKPOINT();
           return nullptr;
@@ -1864,7 +1864,7 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt <<" START from:"
                 << std::endl << Rps_ShowCallFrame(callframe)
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token start")
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::consume_front_token start")
                 << " this-token:" << (*this) << " token_deq:" << toksrc_token_deq
                 << " pos:" << position_str()
                 << std::endl
@@ -1886,7 +1886,7 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
         this->display_current_line_with_cursor(out);
       })
           << std::endl
-          << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token FAIL"));
+          << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::consume_front_token FAIL"));
       if (psuccess==nullptr)
         throw std::runtime_error("Rps_TokenSource::consume_front_token without any queued token");
       else
@@ -1905,7 +1905,7 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
   toksrc_token_deq.pop_front();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt
                 << " done€, now token_deq:" << toksrc_token_deq
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token/done€")
+                << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::consume_front_token/done€")
                 << " pos:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
@@ -1928,14 +1928,14 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token called from:" << std::endl << Rps_ShowCallFrame(&_)
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::append_back_new_token start")
+                << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::append_back_new_token start")
                 << std::endl
                 << " this-token:" << (*this) << " token_deq:" << toksrc_token_deq
                 << " tokenv:" << _f.lextokv);
   RPS_ASSERT (_f.lextokv && _f.lextokv.is_lextoken());
   toksrc_token_deq.push_back(tokenv);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token done€ token_deq=" << toksrc_token_deq
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::append_back_new_token/done€"));
+                << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::append_back_new_token/done€"));
 } // end Rps_TokenSource::append_back_new_token
 
 extern "C" void rps_run_test_repl_lexer(const std::string&);

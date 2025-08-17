@@ -264,7 +264,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                     << " object VARIABLE expr:" << _f.evalob << " exprv:" << _f.exprv
                     << " unbound in envob=" << _f.envob << " firstenvob=" << _f.firstenvob << " count#" << count << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1,"rps_full_evaluate_repl_expr unboundvar"));
+                    << RPS_FULL_BACKTRACE(1,"rps_full_evaluate_repl_expr unboundvar"));
       RPS_POSSIBLE_BREAKPOINT();
       RPS_REPLEVAL_FAIL("unbound variable","Variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
                         << _f.envob->get_class()
@@ -354,7 +354,7 @@ rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long c
   _f.envob = envobarg;
   RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_composite_object#" << count <<" START exprob:" << _f.exprob << " envob:" << _f.envob
                 << " depth:" << depth << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_full_evaluate_repl_composite_object"));
+                << RPS_FULL_BACKTRACE(1, "rps_full_evaluate_repl_composite_object"));
 #warning unimplemented rps_full_evaluate_repl_composite_object
   RPS_FATALOUT("rps_full_evaluate_repl_composite_object#" << count <<" UNIMPLEMENTED exprob:" << _f.exprob << " envob:" << _f.envob << " depth:" << depth);
 } // end rps_full_evaluate_repl_composite_object
@@ -380,7 +380,7 @@ rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_Objec
   _f.envob = envob;
 
   RPS_DEBUG_LOG(REPL, "rps_simple_evaluate_repl_expr START expr:" << _f.exprv << " envob:" << _f.envob << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_simple_evaluate_repl_expr"));
+                << RPS_FULL_BACKTRACE(1, "rps_simple_evaluate_repl_expr"));
   {
     Rps_TwoValues two = rps_full_evaluate_repl_expr(&_,_f.exprv,_f.envob);
     _f.mainresv = two.mainv();
@@ -490,7 +490,7 @@ rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob)
           // this should never happen in practice....
           RPS_WARNOUT("rps_environment_find_binding_depth looping "
                       << loopcnt << " times for initial environment " << envob << " and variable " << varob
-                      << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "rps_environment_find_binding_depth"));
+                      << std::endl <<  RPS_FULL_BACKTRACE(1, "rps_environment_find_binding_depth"));
           return -1;
         }
       if (envob.is_empty())
@@ -533,7 +533,7 @@ rps_environment_find_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
           // this should never happen in practice....
           RPS_WARNOUT("rps_environment_find_bound_value looping "
                       << loopcnt << " times for initial environment " << envob << " and variable " << varob
-                      << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "rps_environment_find_binding_depth"));
+                      << std::endl <<  RPS_FULL_BACKTRACE(1, "rps_environment_find_binding_depth"));
           if (pdepth)
             *pdepth = -1;
           if (penvob)
@@ -653,7 +653,7 @@ rps_environment_overwrite_binding(Rps_CallFrame*callframe,
           // this should never happen in practice....
           RPS_WARNOUT("rps_environment_overwrite_binding looping "
                       << loopcnt << " times for initial environment " << _f.firstenvob << " and variable " << _f.varob << " value " << _f.valv
-                      << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "rps_environment_find_binding_depth"));
+                      << std::endl <<  RPS_FULL_BACKTRACE(1, "rps_environment_find_binding_depth"));
           if (penvob)
             *penvob = _f.envob;
           return -1;
@@ -889,7 +889,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
                 << " descoid=" << descoid
                 << " CALLED from:" << std::endl
                 << Rps_ShowCallFrame(callerframe) << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
+                << RPS_FULL_BACKTRACE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
                            Rps_ObjectRef replcmdob;
@@ -912,7 +912,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_)
                 << "**calldepth=" << _.call_frame_depth()
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
+                << std::endl << RPS_FULL_BACKTRACE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
   RPS_DEBUG_LOG(REPL, "REPL command dump start callcnt#" << callcnt << " arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
@@ -922,7 +922,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_)
                 << "**calldepth=" << _.call_frame_depth()
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
+                << std::endl << RPS_FULL_BACKTRACE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
   _f.replcmdob = arg0.to_object();
   _f.lextokv = arg1;
   RPS_ASSERT(_.call_frame_depth() < 7);
@@ -930,7 +930,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
                 << " lextokv=" << _f.lextokv
                 <<" curframe:"
                 << std::endl << Rps_ShowCallFrame(&_)
-                << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
+                << RPS_FULL_BACKTRACE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
   {
@@ -951,7 +951,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
   RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexob=" << _f.lexob << " lextokv=" << _f.lextokv
                 << " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval
                 << " framedepth=" << _.call_frame_depth() << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
+                << RPS_FULL_BACKTRACE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
 
   // Attempt to check if there are no more tokens following
   RPS_ASSERT (_f.nextlexval);
@@ -1011,7 +1011,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
                 << " callcnt#" << callcnt<< " nextlexval" << _f.nextlexval);
 #warning incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump
   RPS_WARNOUT("incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
+              << RPS_FULL_BACKTRACE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
               << " arg0=" << arg0 << " arg1=" << arg1 << " callcnt#" << callcnt
               << " nextlexob:" << _f.nextlexob << std::endl
               << " lextokv:" << _f.lextokv << ", nextokv:"  << _f.nextokv);
@@ -1196,7 +1196,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
                   << Rps_OutputValue(curval, _dispdepth, disp_max_depth)
                   << std::endl;
             }
-	  out << BOLD_esc << ">]" << NORM_esc << std::endl;
+          out << BOLD_esc << ">]" << NORM_esc << std::endl;
         };
     };
   //// °°°°°°°°°°° display physical components
@@ -1494,20 +1494,20 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                 << "∈" << _f.a1.compute_class(&_) <<std::endl
                 << Rps_ShowCallFrame(&_)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
+                << RPS_FULL_BACKTRACE(1, "%command show°_7WsQyJK6lty02uz5KT"));
   _f.replcmdob = _f.a0.as_object();
   _f.lextokv = _f.a1;
 #warning REPL command show may need some local Rps_TokenSource
   RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started replcmdob:"
                 << _f.replcmdob << " lextokv:" << _f.lextokv
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
+                << RPS_FULL_BACKTRACE(1, "%command show°_7WsQyJK6lty02uz5KT"));
   RPS_ASSERT(_.call_frame_depth() < 7);
   RPS_DEBUG_LOG(CMD, "REPL command show framedepth=" << _.call_frame_depth()
                 << " lextokv=" << _f.lextokv
                 <<" curframe:"
                 << std::endl << Rps_ShowCallFrame(&_)
-                << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT"));
+                << RPS_FULL_BACKTRACE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT"));
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
   std::string showpos;
@@ -1529,7 +1529,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                   << " token_deq:" << tksrc->token_dequeue());
     RPS_DEBUG_LOG(CMD, "REPL command show got lextokv=" << _f.lextokv
-                  << " from " << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
+                  << " from " << RPS_FULL_BACKTRACE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
     if (_f.lextokv)
       {
         tksrc->append_back_new_token(&_, _f.lextokv);
@@ -1537,11 +1537,11 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                       << std::endl
                       << "… curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                       << " token_deq:" << tksrc->token_dequeue()
-                      << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
+                      << RPS_FULL_BACKTRACE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
       }
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/before pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob << std::endl
                   << " lextokv:" << _f.lextokv
-                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/before parsexp")
+                  << std::endl << RPS_FULL_BACKTRACE(1, "%command show°_7WsQyJK6lty02uz5KT/before parsexp")
                   << std::endl << "… before parse_expression token_deq:"
                   << tksrc->token_dequeue()
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr()) << std::endl);
@@ -1561,7 +1561,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
           tksrc->display_current_line_with_cursor(out);
         })
             << std::endl
-            << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/fail parsexp")
+            << RPS_FULL_BACKTRACE(1, "%command show°_7WsQyJK6lty02uz5KT/fail parsexp")
             << std::endl);
         return  {nullptr,nullptr};
       };
@@ -1576,7 +1576,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                   << " lextokv:" << _f.lextokv << " should evaluate showv:" << _f.showv
                   << " in evalenvob:" << _f.evalenvob
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
+                  << RPS_FULL_BACKTRACE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
                   << std::endl);
     _f.evalshowv = rps_simple_evaluate_repl_expr(&_,
                    _f.showv, _f.evalenvob);
@@ -1605,7 +1605,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
   }
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
   RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show  of " << _f.showv << " from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
+              << RPS_FULL_BACKTRACE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
   return {nullptr,nullptr};
 } //end of rpsapply_7WsQyJK6lty02uz5KT for REPL command show
 
@@ -1660,7 +1660,7 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe, /// REPL command help
                     << (restargs?" restargs=":" no restargs:")
                     << (restargs?(*restargs):std::vector<Rps_Value>())
                     << " from " << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "REPL command help°"));
+                    << RPS_FULL_BACKTRACE(1, "REPL command help°"));
     };
   _f.cmdob = _f.a0.as_object();
   RPS_ASSERT(_f.obdictcmd);
@@ -1681,7 +1681,7 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe, /// REPL command help
   });
 #warning incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help
   RPS_WARNOUT("incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
+              << RPS_FULL_BACKTRACE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
   return {nullptr,nullptr};
 } //end of rpsapply_2TZNwgyOdVd001uasl for REPL command help
 
@@ -1789,7 +1789,7 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe, // REPL command put dest 
   RPS_WARNOUT("rpsapply_28DGtmXCyOX02AuPLd for REPL command put obdest=" << _f.obdest
               << " index=" << _f.vindex
               << " called from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_28DGtmXCyOX02AuPLd for REPL command put"));
+              << RPS_FULL_BACKTRACE(1, "rpsapply_28DGtmXCyOX02AuPLd for REPL command put"));
   return {nullptr,nullptr};
 } //end of rpsapply_28DGtmXCyOX02AuPLd for REPL command put
 
@@ -1849,7 +1849,7 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe, // REPL command remove de
   RPS_DEBUG_LOG(REPL, "REPL command remove destination destv=" << _f.destv << " indexv=" << _f.indexv);
 #warning incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove
   RPS_WARNOUT("incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_09ehnxiXQKo006cZer for REPL command remove"));
+              << RPS_FULL_BACKTRACE(1, "rpsapply_09ehnxiXQKo006cZer for REPL command remove"));
   return {nullptr,nullptr};
 } //end of rpsapply_09ehnxiXQKo006cZer for REPL command remove
 
@@ -1890,7 +1890,7 @@ rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe, /// REPL command append d
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append
   RPS_WARNOUT("incomplete rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append"));
+              << RPS_FULL_BACKTRACE(1, "rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append"));
   return {nullptr,nullptr};
 } //end of rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append
 
@@ -1973,7 +1973,7 @@ rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe, // REPL command remove_ro
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root
   RPS_WARNOUT("incomplete rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root"));
+              << RPS_FULL_BACKTRACE(1, "rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root"));
   return {nullptr,nullptr};
 } //end of rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root
 
@@ -2008,7 +2008,7 @@ rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe, // REPL make_symbol
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol
   RPS_WARNOUT("incomplete rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol"));
+              << RPS_FULL_BACKTRACE(1, "rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol"));
   return {nullptr,nullptr};
 } //end of rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol
 

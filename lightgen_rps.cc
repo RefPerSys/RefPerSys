@@ -248,7 +248,7 @@ rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::
               << " spacid=" << spacid
               << " lineno=" << lineno << std::endl
               << " obz=" << RPS_OBJECT_DISPLAY(obz) << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_lightning_code_generator"));
+              << RPS_FULL_BACKTRACE(1, "rpsldpy_lightning_code_generator"));
 } // end rpsldpy_lightning_code_generator
 
 void
@@ -394,7 +394,7 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
               << " genparamv=" << _f.genparamv << std::endl
               << " thread=" << rps_current_pthread_name()
               << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_lightning_code/end-incomplete"));
+              << RPS_FULL_BACKTRACE(1, "rps_generate_lightning_code/end-incomplete"));
 #warning incomplete rps_generate_lightning_code
   return false;
 } // end rps_generate_lightning_code
@@ -420,7 +420,7 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
                                                 ))
     {
       RPS_WARNOUT("make_lightgen_code_object with bad class " << RPS_OBJECT_DISPLAY(_f.obclass)
-                  << " from " << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
+                  << " from " << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
       throw std::runtime_error("invalid class for make_lightgen_code_object");
     };
   _f.oblightgen =  Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
@@ -428,7 +428,7 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
   RPS_ASSERT(paylgen);
   RPS_DEBUG_LOG (CODEGEN, "make_lightgen_code_object made " << RPS_OBJECT_DISPLAY(_f.oblightgen)
                  << std::endl
-                 <<  " from " << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
+                 <<  " from " << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
 #warning probably incomplete Rps_PayloadLightningCodeGen::make_lightgen_code_object
   return _f.oblightgen;
 } // end Rps_PayloadLightningCodeGen::make_lightgen_code_object

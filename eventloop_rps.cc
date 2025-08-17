@@ -135,7 +135,7 @@ rps_do_stop_event_loop(void)
 {
   RPS_DEBUG_LOG(REPL, "rps_do_stop_event_loop thread:"
                 <<  rps_current_pthread_name()
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_stop_event_loop"));
+                << RPS_FULL_BACKTRACE(1, "rps_do_stop_event_loop"));
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   rps_stop_event_loop_flag.store(true);
   if (rps_fltk_enabled ())
@@ -331,7 +331,7 @@ rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
   int nbr = read(fd, buf, sizeof(buf));
   RPS_DEBUG_LOG(REPL, "rps_self_pipe_read_handler fd#" << fd << " nbr=" << nbr
                 << " buf=" << buf << "." << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_self_pipe_read_handler"));
+                << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
   if (nbr > 0)
     {
       std::function<void(Rps_GarbageCollector*)> gcmarker
@@ -375,7 +375,7 @@ rps_self_pipe_write_handler(Rps_CallFrame*cf, int fd, void* data)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "rps_self_pipe_write_handler fd#" << fd
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_self_pipe_write_handler"));
+                << RPS_FULL_BACKTRACE(1, "rps_self_pipe_write_handler"));
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipewritefd);
@@ -500,7 +500,7 @@ rps_initialize_pipe_to_self_in_event_loop(void)
                   << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
                   << " in thread " << rps_current_pthread_name()
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_pipe_to_self_event_loop"));
+                  << RPS_FULL_BACKTRACE(1, "rps_initialize_pipe_to_self_event_loop"));
   }
 } // end rps_initialize_pipe_to_self_in_event_loop
 
@@ -524,7 +524,7 @@ rps_initialize_signalfd_in_event_loop(void)
                 << rps_current_pthread_name()
                 << " sigfd#" << rps_eventloopdata.eld_sigfd
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_signalfd_in_event_loop")
+                << RPS_FULL_BACKTRACE(1, "rps_initialize_signalfd_in_event_loop")
                );
   rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_sigfd, rps_sigfd_read_handler,
                                       "signalfd", nullptr);
@@ -542,7 +542,7 @@ rps_initialize_timerfd_in_event_loop(void)
                 << rps_current_pthread_name()
                 << " timerfd#" << rps_eventloopdata.eld_timfd
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_timerfd_in_event_loop")
+                << RPS_FULL_BACKTRACE(1, "rps_initialize_timerfd_in_event_loop")
                );
   rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_sigfd, rps_timerfd_read_handler,
                                       "timerfd", nullptr);
@@ -597,7 +597,7 @@ rps_initialize_event_loop(void)
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting "
                 << (rps_fltk_enabled()?"with FLTK":"without-fltk")
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
+                << RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop*start"));
   rps_initialize_pipe_to_self_in_event_loop();
   rps_initialize_signalfd_in_event_loop();
   rps_initialize_timerfd_in_event_loop();
@@ -609,7 +609,7 @@ rps_initialize_event_loop(void)
                 << (rps_fltk_enabled()?"with FLTK":"without-fltk")
                 << " polldelay=" << rps_poll_delay_millisec << " ms"
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*ended"));
+                << RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop*ended"));
 } // end rps_initialize_event_loop
 
 
@@ -634,7 +634,7 @@ rps_jsonrpc_initialize(void)
                 << rps_get_fifo_prefix()
                 << " wcmdfd#" << fdp.fifo_ui_wcmd
                 << " routfd#" << fdp.fifo_ui_rout
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_jsonrpc_initialize")
+                << RPS_FULL_BACKTRACE(1, "rps_jsonrpc_initialize")
                 << std::endl << " in thread " << rps_current_pthread_name());
 #warning maybe incomplete rps_jsonrpc_initialize
   /**
@@ -688,7 +688,7 @@ rps_event_loop(void)
   RPS_DEBUG_LOG(REPL, "rps_event_loop starting elapsedtime=" << startelapsedtime
                 << " cputime=" << startcputime
                 << " thread:" << rps_current_pthread_name() << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/start"));
+                << RPS_FULL_BACKTRACE(1, "rps_event_loop/start"));
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
   ///
   /// check that rps_event_loop is called exactly once from main
@@ -721,7 +721,7 @@ rps_event_loop(void)
   RPS_INFORMOUT("starting rps_event_loop in pid " << (long)getpid() << std::endl
                 << "… on " << rps_hostname() << " thread " << rps_current_pthread_name()
                 << " git " << rps_shortgitid << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
+                << RPS_FULL_BACKTRACE(1, "rps_event_loop")
                );
   while (!rps_stop_event_loop_flag.load())
     {
@@ -740,7 +740,7 @@ rps_event_loop(void)
                         << " thread:" << rps_current_pthread_name()
                         << ((rps_fltk_enabled())?" with FLTK": " without-fltk")
                         << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/looping"));
+                        << RPS_FULL_BACKTRACE(1, "rps_event_loop/looping"));
         }
       else
         RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt
@@ -970,7 +970,7 @@ rps_event_loop(void)
         {
           RPS_INFORMOUT("stopping agenda mechanism because of agenda timeoutafter "
                         << pollcount << " polling." << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/timeout"));
+                        << RPS_FULL_BACKTRACE(1, "rps_event_loop/timeout"));
           rps_stop_agenda_mechanism();
           break;
         };
@@ -1056,7 +1056,7 @@ rps_event_loop(void)
         {
           RPS_INFORMOUT("stopping event loop because of agenda timeout after "
                         << pollcount << " polling." << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/agenda-timeout"));
+                        << RPS_FULL_BACKTRACE(1, "rps_event_loop/agenda-timeout"));
           rps_stop_event_loop_flag.store(true);
         };
       fflush(nullptr);
@@ -1075,12 +1075,12 @@ rps_event_loop(void)
                 << " in " << (endelapsedtime-startelapsedtime) << " elapsed and "
                 << (endcputime-startcputime) << " cpu seconds"
                 << " git " << rps_shortgitid << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
+                << RPS_FULL_BACKTRACE(1, "rps_event_loop")
                );
   RPS_DEBUG_LOG(REPL, "rps_event_loop ended elapsedtime=" << startelapsedtime
                 << " cputime=" << startcputime
                 << " thread:" << rps_current_pthread_name() << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/ended"));
+                << RPS_FULL_BACKTRACE(1, "rps_event_loop/ended"));
 #undef EXPLAIN_EVFD_AT
 #undef EXPLAIN_EVFD_ATBIS
 #undef EXPLAIN_EVFD_RPS
@@ -1100,7 +1100,7 @@ rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
   RPS_DEBUG_LOG (REPL, "rps_sigfd_read_handler fd#" << fd
                  << " thread:" << rps_current_pthread_name()
                  << " data:" << data
-                 << RPS_FULL_BACKTRACE_HERE(1, "rps_sigfd_read_handler"));
+                 << RPS_FULL_BACKTRACE(1, "rps_sigfd_read_handler"));
   RPS_ASSERT (rps_eventloopdata.eld_sigfd>0);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   struct signalfd_siginfo infsig;
@@ -1165,7 +1165,7 @@ rps_timerfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
   RPS_DEBUG_LOG (REPL, "rps_timerfd_read_handler fd#" << fd
                  << " data:" << data
                  << " thread:" << rps_current_pthread_name() << std::endl
-                 << RPS_FULL_BACKTRACE_HERE(1, "rps_timerfd_read_handler"));
+                 << RPS_FULL_BACKTRACE(1, "rps_timerfd_read_handler"));
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
 #warning unimplemented rps_timerfd_read_handler
   RPS_FATALOUT("unimplemented rps_timerfd_read_handler fd#" << fd);

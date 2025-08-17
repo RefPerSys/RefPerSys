@@ -547,7 +547,7 @@ rps_run_loaded_application(int &argc, char **argv)
     memset (cwdbuf, 0, sizeof(cwdbuf));
     if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
       RPS_FATALOUT("rps_run_loaded_application failed to getcwd " << strerror(errno)
-                   << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application"));
+                   << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application"));
     RPS_INFORM("rps_run_loaded_application: start of %s (with %d args)\n"
                ".. gitid %s version %d.%d\n"
                ".. build timestamp %s\n"
@@ -584,7 +584,7 @@ rps_run_loaded_application(int &argc, char **argv)
   else
     {
       RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application before running rps_small_quick_tests_after_load from "
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/quick-tests")
+                    << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/quick-tests")
                     << std::endl
                     << " with call frame:" << std::endl
                     << Rps_ShowCallFrame(&_));
@@ -600,7 +600,7 @@ rps_run_loaded_application(int &argc, char **argv)
     }
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application after load & fifos"
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application"));
+                << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application"));
   //// running the given Unix command after load
   if (rps_run_command_after_load)
     {
@@ -723,7 +723,7 @@ rps_run_loaded_application(int &argc, char **argv)
                       << Rps_Cjson_String(rps_test_repl_string)
                       << " with exception " << exc.what()
                       << std::endl
-                      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/testrepl"));
+                      << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/testrepl"));
           return;
         };
     }
@@ -759,7 +759,7 @@ rps_run_loaded_application(int &argc, char **argv)
               }
           })
               << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/exc"));
+              << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/exc"));
         };
     }
   if (access(rps_gui_script_executable, X_OK))
@@ -771,12 +771,12 @@ rps_run_loaded_application(int &argc, char **argv)
     {
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
       RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:" << rps_get_fifo_prefix() << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application JSONRPC"));
+                    << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application JSONRPC"));
       rps_jsonrpc_initialize();
     };
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread " << rps_current_pthread_name()
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application ending"));
+                << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application ending"));
 } // end rps_run_loaded_application
 
 
@@ -816,14 +816,14 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
   fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
   fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
            "                      << plugin->plugin_name << \" from \" << std::endl\n");
-  fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
+  fprintf (tfil, "                << RPS_FULL_BACKTRACE(1, \"temporary C++ plugin\"));\n");
   fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
   fprintf (tfil, //
            "  RPS_INFORMOUT(\"did run temporary plugin \" << plugin->plugin_name\n"
            "                << \" from pid \" << (int)getpid()\n"
            "                << \" on \" << rps_hostname() << \" orig.git %s\"\n"
            "                << std::endl\n"
-           "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary %s#%d\"));\n",
+           "                << RPS_FULL_BACKTRACE(1, \"temporary %s#%d\"));\n",
            rps_shortgitid, _f.tempob->oid().to_string().c_str(), tcnt);
   fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
   fprintf (tfil, "\n\n\n");
@@ -908,7 +908,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                      << " - from "
                      << Rps_ShowCallFrame(&_)
                      << std::endl
-                     << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *no-editor*"));
+                     << RPS_FULL_BACKTRACE(1, "rps_edit_run_cplusplus_code *no-editor*"));
       rps_cpluspluseditor_str.assign(editorenv);
     }
   bool cppcompilegood = false;
@@ -938,13 +938,13 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                     << " - from "
                     << Rps_ShowCallFrame(&_)
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1,
-                                               "rps_edit_run_cplusplus_code *unchangedsize*"));
+                    << RPS_FULL_BACKTRACE(1,
+                                          "rps_edit_run_cplusplus_code *unchangedsize*"));
       RPS_INFORMOUT("rps_edit_run_cplusplus_code should compile C++ code in " << tempcppfilename
                     << std::endl
                     << " - from "
-                    << RPS_FULL_BACKTRACE_HERE(1,
-                        "rps_edit_run_cplusplus_code")
+                    << RPS_FULL_BACKTRACE(1,
+                                          "rps_edit_run_cplusplus_code")
                     << std::endl);
       std::string cwdpath;
       bool needchdir = false;
@@ -996,7 +996,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                       << " - from "
                       << Rps_ShowCallFrame(&_)
                       << std::endl
-                      << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code build failure"));
+                      << RPS_FULL_BACKTRACE(1, "rps_edit_run_cplusplus_code build failure"));
           cppcompilegood = false;
         }
       else
@@ -1015,7 +1015,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                      << " - from "
                      << Rps_ShowCallFrame(&_)
                      << std::endl
-                     << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *buildfail*"));
+                     << RPS_FULL_BACKTRACE(1, "rps_edit_run_cplusplus_code *buildfail*"));
     };        // end while !cppcompilegood
 
   RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code after compilation to " << tempsofilename);
@@ -1041,7 +1041,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
               << (realendtim-realstartim) << " real seconds - from "
               << Rps_ShowCallFrame(&_)
               << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code ending"));
+              << RPS_FULL_BACKTRACE(1, "rps_edit_run_cplusplus_code ending"));
 #warning rps_edit_cplusplus_code still incomplete
   rps_edit_cplusplus_callframe = nullptr;
 #warning rps_edit_cplusplus_code is perhaps incomplete
@@ -1190,7 +1190,7 @@ rps_small_quick_tests_after_load(void)
   RPS_DEBUG_LOG(CMD, "start rps_small_quick_tests_after_load in "
                 << Rps_ShowCallFrame(&_)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_small_quick_tests_after_load"));
+                << RPS_FULL_BACKTRACE(1, "rps_small_quick_tests_after_load"));
   _f.obtempcpp = Rps_ObjectRef::find_object_or_fail_by_string(&_, "temporary_cplusplus_code");
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obtempcpp=" << _f.obtempcpp);
   RPS_ASSERT(_f.obtempcpp);
@@ -1666,16 +1666,16 @@ main (int argc, char** argv)
         {
           RPS_DEBUG_LOG(REPL, "main before calling rps_fltk_run"
                         << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "main/fltk-run+"));
+                        << RPS_FULL_BACKTRACE(1, "main/fltk-run+"));
           rps_fltk_run();
           RPS_DEBUG_LOG(REPL, "main rps_fltk_run ended"
                         << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "main/fltk-run-"));
+                        << RPS_FULL_BACKTRACE(1, "main/fltk-run-"));
         }
       else
         {
           RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
-                        << RPS_FULL_BACKTRACE_HERE(1, "main"));
+                        << RPS_FULL_BACKTRACE(1, "main"));
           rps_event_loop();
           RPS_DEBUG_LOG(REPL, "main after calling rps_event_loop");
         };

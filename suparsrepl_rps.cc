@@ -124,7 +124,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                            << opername << " LEFT FAILURE startpos:" <<  startpos
                            << " curpos" << position_str()
                            << std::endl
-                           << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-left"));
+                           << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-left"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -152,7 +152,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                 << " in:" << (*this)
                 << "startpos:" << startpos << " pos:" << position_str()
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/after-leftv") << std::endl
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_symmetrical_binop/after-leftv") << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     this->display_current_line_with_cursor(out);
@@ -171,7 +171,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                            << " curpos" << position_str()  << " calldepth="
                            << rps_call_frame_depth(&_)
                            << std::endl
-                           << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-bad-delim"));
+                           << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-bad-delim"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -198,7 +198,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
       }));
       RPS_WARNOUT("Rps_TokenSource::parse_symmetrical_binop failed for "<< opername << " at " << position_str()
                   << " starting " << startpos
-                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-right"));
+                  << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-right"));
       if (pokparse)
         *pokparse = false;
       return nullptr;

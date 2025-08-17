@@ -296,7 +296,7 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
   auto oid = obz->oid();
   RPS_DEBUG_LOG(LOWREP, "register_objzone obz=" << obz << " oid=" << oid
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "register_objzone"));
+                << RPS_FULL_BACKTRACE(1, "register_objzone"));
   if (ob_idmap_.find(oid) != ob_idmap_.end())
     RPS_FATALOUT("Rps_ObjectZone::register_objzone duplicate oid " << oid);
   ob_idmap_.insert({oid,obz});
@@ -333,7 +333,7 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, registermode_en regmod)
   RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone oid=" << oid << ' '
                 << (regmod==OBZ_DONT_REGISTER?"non-":"") << "registering"
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(2, "Rps_ObjectZone")
+                << RPS_FULL_BACKTRACE(2, "Rps_ObjectZone")
                 << std::endl);
   if (regmod == OBZ_REGISTER)
     {
@@ -387,7 +387,7 @@ Rps_ObjectZone::put_applying_function(rps_applyingfun_t*afun)
       RPS_WARNOUT("Rps_ObjectZone::put_applying_function for oid=" << oid()
                   << " did overwrite applying function to " << afun
                   << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "put_applying_function"));
+                  << RPS_FULL_BACKTRACE(1, "put_applying_function"));
     };
 } // end Rps_ObjectZone::put_applying_function
 
@@ -397,7 +397,7 @@ Rps_ObjectZone::make(void)
   Rps_Id oid = fresh_random_oid(nullptr);
   RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make start oid=" << oid
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::make start"));
+                << RPS_FULL_BACKTRACE(1, "Rps_ObjectZone::make start"));
   Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,registermode_en>(oid,OBZ_REGISTER);
   *(const_cast<Rps_Id*>(&obz->ob_oid)) = oid;
   double rtime = rps_wallclock_real_time();
@@ -410,7 +410,7 @@ Rps_ObjectZone::make(void)
   obz->ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
   RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make oid=" << oid << " obz=" << obz
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::make"));
+                << RPS_FULL_BACKTRACE(1, "Rps_ObjectZone::make"));
   return obz;
 } // end Rps_ObjectZone::make
 
@@ -642,7 +642,7 @@ Rps_ObjectZone::put_attr(const Rps_ObjectRef obattr, const Rps_Value valattr)
                 <<  Rps_ObjectRef(this) << std::endl
                 << " obattr=" << obattr << " valattr=" << valattr
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::put_attr")
+                << RPS_FULL_BACKTRACE(1, "Rps_ObjectZone::put_attr")
                 << RPS_OBJECT_DISPLAY(this));
   RPS_POSSIBLE_BREAKPOINT();
   if (valattr.is_empty())
@@ -1318,7 +1318,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                     RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob <<
                                 " dli_sname:" << di.dli_sname
                                 << " @@oidfun:" << oidfun << std::endl
-                                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::dump_json_content@@oidfun"));
+                                << RPS_FULL_BACKTRACE(1, "Rps_ObjectZone::dump_json_content@@oidfun"));
                     json["magicgetter"] = oidfun.to_string();
                     /// TODO: FIXME the C++ (or GNU lightning?) code
                     /// of oidfun should be generated....
@@ -1371,7 +1371,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                         RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob <<
                                     " applyingfun dli_sname:" << di.dli_sname
                                     << " @@apoidfun:" << apoidfun << std::endl
-                                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::dump_json_content@@apoidfun"));
+                                    << RPS_FULL_BACKTRACE(1, "Rps_ObjectZone::dump_json_content@@apoidfun"));
                         json["applyfun"] = apoidfun.to_string();
                       }
                   };
@@ -2141,7 +2141,7 @@ Rps_PayloadSymbol::~Rps_PayloadSymbol()
   RPS_DEBUG_LOG(LOWREP, "~Rps_PayloadSymbol symb_name='"
                 << symb_name << "' owner=" << owner()
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "~Rps_PayloadSymbol"));
+                << RPS_FULL_BACKTRACE(1, "~Rps_PayloadSymbol"));
   if (!symb_name.empty())
     symb_table.erase(symb_name);
 } // end Rps_PayloadSymbol::~Rps_PayloadSymbol()
@@ -2167,7 +2167,7 @@ Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld, bool weak)
                 "Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
                 << " " << (weak?"weak":"strong")
                 << " owner:" << owner()->oid().to_string() << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadSymbol::load_register_name"));
+                << RPS_FULL_BACKTRACE(1, "Rps_PayloadSymbol::load_register_name"));
 } // end Rps_PayloadSymbol::load_register_name
 
 void
@@ -2373,7 +2373,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                 << "' from " << std::endl
                 << Rps_ShowCallFrame(&_)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_string"));
+                << RPS_FULL_BACKTRACE(1, "find_object_by_string"));
   if (str.empty())
     {
       if (behav == Rps_Null_When_Missing)
@@ -2445,7 +2445,7 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, Rps_Obj
   RPS_DEBUG_LOG(LOWREP, "find_object_by_oid oid=" << oid << " from "
                 << Rps_ShowCallFrame(&_)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_oid"));
+                << RPS_FULL_BACKTRACE(1, "find_object_by_oid"));
   if (!oid || !oid.valid())
     {
       if (behav == Rps_Null_When_Missing)
@@ -2456,7 +2456,7 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, Rps_Obj
   RPS_DEBUG_LOG(LOWREP, "find_object_by_oid oid=" << oid << " obfound="
                 << _f.obfound
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_oid"));
+                << RPS_FULL_BACKTRACE(1, "find_object_by_oid"));
   if (!_f.obfound)
     {
       if (behav == Rps_Null_When_Missing)
