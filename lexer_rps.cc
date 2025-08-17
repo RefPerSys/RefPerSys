@@ -625,6 +625,13 @@ Rps_TokenSource::get__infinity__token(Rps_CallFrame*callframe, const char*curp)
   return _f.res;
 } // end Rps_TokenSource::get__infinity__token
 
+void
+Rps_TokenSource::set_keyword_lexing_fun
+  (std::function<int(Rps_CallFrame*,std::string)>&fun)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  toksrc_keywfun = fun;
+} // end Rps_TokenSource::set_keyword_lexing_fun
 
 Rps_LexTokenValue
 Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
