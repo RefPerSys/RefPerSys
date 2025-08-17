@@ -3161,6 +3161,8 @@ public:
 };          // end Rps_StringTokenSource
 
 class Rps_MemoryFileTokenSource;
+
+/// the default user preference file is $HOME/.config/refpersys-pref
 extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
 
 /// this is testing if the user preferences has been parsed

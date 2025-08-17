@@ -78,6 +78,7 @@ rps_delete_user_preferences(void)
 void
 rps_set_user_preferences(char*path)
 {
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(!access(path, R_OK));
   RPS_ASSERT(rps_is_main_thread());
   if (rps_userpref_mts)
