@@ -3168,6 +3168,12 @@ extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*);
 /// this is testing if the user preferences has been parsed
 extern "C" bool rps_has_parsed_user_preferences(void);
 
+
+/// notice: on Linux the XDG_SESSION_TYPE environment variable could
+/// be used to detect a display server...  It could be a string like
+/// "x11" or "wayland".  When missing (e.g. when running batch or
+/// crontab scripts) no graphical display is possible.
+
 extern "C" std::string rps_userpref_get_string(const std::string& section, const std::string& name,
     const std::string& default_value);
 /// C compatible: all arguments are non-null pointers, returns an
