@@ -780,8 +780,11 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
                     << Rps_Cjson_String(_f.vstrpath.to_cppstring())
                     << "\"" << std::endl;
     }
-#warning incomplete PayloadCplusplusGen::emit_cplusplus_includes
+  cppgen_outcod << "///-- did " << nbinc << " includes in obmodule "
+                << _f.obmodule
+                << std::endl;
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_includes
+
 
 void
 Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule)
@@ -795,7 +798,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                 );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
-  // TODO: we probably need a selector to send some message related to C++ declaration emission
+  // TODO: we need a selector to send some message related to C++ declaration emission
   //
   // it could happen that the components number of the module is
   // changing during the loop, or that the components are dynamically
@@ -812,7 +815,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
         {
           _f.obcomp = _f.vcomp.as_object();
           std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
-
+#warning TODO: send the message to emit C++ declaration
         }
       else
         {
@@ -857,6 +860,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
         {
           _f.obcomp = _f.vcomp.as_object();
           std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+#warning TODO: send the message to emit C++ definition i.e. implementation
         }
       else
         {
