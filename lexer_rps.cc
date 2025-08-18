@@ -731,9 +731,9 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                             << "… startswithalpha=" << startswithalpha
                             << " afterat=" << afterat
                             << std::endl
-                            << RPS_FULL_BACKTRACE(1, "-Rps_TokenSource::get__namoid__token")
+                            << RPS_FULL_BACKTRACE(1, "-Rps_TokenSource::get__namoid__token/keyw")
                             << std::endl
-                            << "…  keyword :-◑> " << _f.res << std::endl
+                            << "… keyword :-◑> " << _f.res << std::endl
                             << "… @! " << position_str()
                             << " curcptr:" <<  Rps_QuotedC_String(curcptr())
                             << std::endl
