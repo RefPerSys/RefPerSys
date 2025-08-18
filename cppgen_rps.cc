@@ -820,7 +820,12 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
 	    _f.vcomp.send3(&_,
 			    rpskob_3QBHZTFGVwD03fbgOY, //!declare_cplusplus∈named_selector,
 			    _f.obgenerator, _f.obmodule, Rps_Value::make_tagged_int(cix));
-#warning should probably check success of C++ declaration emission
+	  if (!two)
+	    RPS_WARNOUT("in module " << _f.obmodule
+                      << " component#" << cix
+                      << " = " << _f.vcomp
+                      << " is not declarable in C++ for generator "
+			<< _f.obgenerator);
         }
       else
         {
@@ -870,8 +875,12 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
 	    _f.vcomp.send3(&_,
 			    rpskob_1Ktl8r3QJzL01lHPRy, //!implement_cplusplus∈named_selector,
 			    _f.obgenerator, _f.obmodule, Rps_Value::make_tagged_int(cix));
-#warning should probably check success of C++ declaration emission
-#warning TODO: send the message to emit C++ definition i.e. implementation
+	  if (!two)
+	    RPS_WARNOUT("in module " << _f.obmodule
+                      << " component#" << cix
+                      << " = " << _f.vcomp
+                      << " is not implementable in C++ for generator "
+			<< _f.obgenerator);
         }
       else
         {
