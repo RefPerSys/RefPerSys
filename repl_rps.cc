@@ -52,6 +52,10 @@ const char rps_repl_timestamp[]= __TIMESTAMP__;
 
 std::vector<std::string> rps_completion_vect;
 
+extern "C" int
+rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
+                            const std::string&keystr,
+                            Rps_ObjectRef obkw);
 /// a C++ closure for getting the REPL lexical token.... with
 /// lookahead=0, next token, with lookahead=1 the second-next token
 std::function<Rps_LexTokenValue(Rps_CallFrame*,unsigned)> rps_repl_cmd_lexer_fun;
@@ -1592,6 +1596,10 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
   return -1;
 } // end rps_keyword_lexer
 
+extern "C" int rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
+    const std::string&keystr,
+    Rps_ObjectRef obkw);
+
 void
 rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                         const std::string&cmd,
@@ -1623,6 +1631,9 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                 << rps_current_pthread_name());
   RPS_POSSIBLE_BREAKPOINT();
   Rps_StringTokenSource intoksrc(cmd, std::string(title) + "°repl");
+  {
+    intoksrc.set_keyword_lexing_fun(rps_carbrepl_keyword_lexer);
+  }
 #warning rps_do_one_repl_command should provide a keyword lexing function
 #if 0 && BADCODE
   intoksrc.set_keyword_lexing_fun(rps_keyword_lexer);

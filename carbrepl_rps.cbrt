@@ -62,6 +62,7 @@ struct rps_carbrepl_data_st {
   inline void reset_carbdata(int li=__builtin_LINE());
 };
 
+
 void
 rps_carbrepl_data_st::touch_carbdata(int lin)
 {
@@ -89,7 +90,7 @@ rps_carbrepl_data_st::reset_carbdata(int lin)
   RPS_DEBUG_LOG(REPL, "resetting carbrepl_data@" << (void*)this << " line#" << lin);
 } // end rps_carbrepl_data_st::reset_carbdata
 
-
+extern "C" int rps_carbrepl_keyword_lexer(Rps_CallFrame*,const std::string&keystr,Rps_ObjectRef obkw);
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
 static void rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin);
 static void rps_carbrepl_destructor_replnt_object(Rps_ObjectRef&obr, int lin);
@@ -1255,6 +1256,18 @@ rps_carbrepl_symname_at(int symnum, int lin) {
 } // end rps_carbrepl_symname_at
 
 ////////////////////////////////////////////////////////////////
+
+int
+rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
+			    const std::string&keystr,
+			    Rps_ObjectRef obkw)
+{
+  RPS_ASSERT(callframe&&callframe->is_good_call_frame(callframe));
+  RPS_FATALOUT("unimplemented rps_carbrepl_keyword_lexer keystr="
+               << keystr
+               << " obkw=" << RPS_OBJECT_DISPLAY(obkw));
+  return -1;
+} // end rps_carbrepl_keyword_lexer
 
 extern "C" const size_t rpscarbrepl_stack_size;
 extern "C" const size_t rpscarbrepl_stack_align;

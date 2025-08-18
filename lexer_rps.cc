@@ -64,10 +64,12 @@ Rps_TokenSource::Rps_TokenSource(std::string name)
     toksrc_number(1+toksrc_instance_count_.fetch_add(1)),
     toksrc_linebuf{},
     toksrc_token_deq(),
-    toksrc_ptrnameval(nullptr)
+    toksrc_ptrnameval(nullptr),
+    toksrc_keywfun(nullptr)
 {
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource @" << this << " named " << name
-                << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource constr"));
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource constr"));
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_TokenSource::Rps_TokenSource
 
@@ -626,8 +628,7 @@ Rps_TokenSource::get__infinity__token(Rps_CallFrame*callframe, const char*curp)
 } // end Rps_TokenSource::get__infinity__token
 
 void
-Rps_TokenSource::set_keyword_lexing_fun
-(std::function<int(Rps_CallFrame*,const std::string&keystr,Rps_ObjectRef ob)>&fun)
+Rps_TokenSource::set_keyword_lexing_fun(rps_keyword_lexing_sigt*fun)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   toksrc_keywfun = fun;
@@ -706,24 +707,25 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                         << " possible keyword  °obnamed=" << _f.obnamed);
-	  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-	  if (toksrc_keywfun) {
-	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
-			  << " lexing keyword " << namestr
-			  << " from:"
-			  <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token/keyw"));
-	    int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed);
-	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
-			  << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
-	    RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
-			 << "incomplete toksrc=" << *this<< " lexed keyword "
-			 << namestr <<" °obnamed=" << _f.obnamed
-			 << " as kwdcode=" << kwdcode);
-	  }
-	  else
-	    RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
-			 << " toksrc=" << *this
-			 << " °unimplemented °keyword "<< RPS_OBJECT_DISPLAY(_f.obnamed));
+          std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+          if (toksrc_keywfun)
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                            << " lexing keyword " << namestr
+                            << " from:"
+                            <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token/keyw"));
+              int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed);
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                            << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
+              RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                           << "incomplete toksrc=" << *this<< " lexed keyword "
+                           << namestr <<" °obnamed=" << _f.obnamed
+                           << " as kwdcode=" << kwdcode);
+            }
+          else
+            RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                         << " toksrc=" << *this
+                         << " °unimplemented °keyword "<< RPS_OBJECT_DISPLAY(_f.obnamed));
         }
       else
         _f.lextokv = _f.obnamed;
@@ -1048,9 +1050,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token namoid "
                     << Rps_QuotedC_String(curp)
                     << " toksrc=" << *this << " gives " << _f.res
-		    << std::endl
-		    << RPS_FULL_BACKTRACE(1,"Rps_TokenSource::get_token"
-					  " namoid"));
+                    << std::endl
+                    << RPS_FULL_BACKTRACE(1,"Rps_TokenSource::get_token"
+                                          " namoid"));
       return _f.res;
     } // end get__namoid__token
   //// literal single line strings are like in C++
