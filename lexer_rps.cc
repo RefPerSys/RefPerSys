@@ -717,6 +717,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
               int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed);
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                             << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
+#warning missing code for Rps_TokenSource::get__namoid__token keyword
               RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
                            << "incomplete toksrc=" << *this<< " lexed keyword "
                            << namestr <<" °obnamed=" << _f.obnamed
