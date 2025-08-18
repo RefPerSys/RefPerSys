@@ -1258,14 +1258,40 @@ rps_carbrepl_symname_at(int symnum, int lin) {
 ////////////////////////////////////////////////////////////////
 
 int
-rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
+rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
 			    const std::string&keystr,
-			    Rps_ObjectRef obkw)
+			    Rps_ObjectRef obkwarg)
 {
-  RPS_ASSERT(callframe&&callframe->is_good_call_frame(callframe));
-  RPS_FATALOUT("unimplemented rps_carbrepl_keyword_lexer keystr="
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+	/*prev:*/callerframe,
+		 Rps_ObjectRef obkeyw;
+		 Rps_Value cval;
+		);
+  _f.obkeyw = obkwarg;
+  RPS_ASSERT(_f.obkeyw);
+  std::lock_guard<std::recursive_mutex> gu(*_f.obkeyw->objmtxptr());
+  int numkeyw = -1;
+  _f.cval = _f.obkeyw->get_physical_attr(rpskob_083n2ydb4Zm03bbZW1); //!carburetta_keyword∈named_attribute
+  if (_f.cval.is_int()) {
+    numkeyw = _f.cval.as_int();
+    const char*keywname = RPS_CARBREPL_SYMBOL_NAME(numkeyw);
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_keyword_lexer keystr=" << keystr
+		  << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
+		  <<  " cval=" << _f.cval << ":" <<  keywname);
+    if (keywname && !strncmp(keywname, "KEYW_", sizeof("KEYW_")-1)) {
+      RPS_DEBUG_LOG(REPL, "rps_carbrepl_keyword_lexer got keyword#" << numkeyw
+		    << " keystr=" << keystr
+		    << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
+		    <<  " cval=" << _f.cval << ":" <<  keywname
+		    << RPS_FULL_BACKTRACE(1, "rps_carbrepl_keyword_lexer"));
+    return numkeyw;
+    }
+  };
+  RPS_FATALOUT("corrupted rps_carbrepl_keyword_lexer keystr="
                << keystr
-               << " obkw=" << RPS_OBJECT_DISPLAY(obkw));
+               << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
+	       << " cval=" << _f.cval << ":" <<  RPS_CARBREPL_SYMBOL_NAME(numkeyw));
   return -1;
 } // end rps_carbrepl_keyword_lexer
 
