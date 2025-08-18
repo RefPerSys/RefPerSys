@@ -141,7 +141,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
     }
   else
     {
-      RPS_INFORMOUT("rpsplug_createnamedselector added new named attribute " << _f.obnamedselector
+      RPS_INFORMOUT("rpsplug_createnamedselector added new named selector "
+		    << RPS_OBJECT_DISPLAY(_f.obnamedselector)
                     << " of class " << _f.obnamedselector->compute_class(&_) << " space " << _f.obnamedselector->get_space()
                     << " named " << plugarg
                     << " with symbol " << _f.obsymbol);
