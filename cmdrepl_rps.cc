@@ -1146,6 +1146,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
       output_routine_addr(out, reinterpret_cast<void*>(getfun));
     }
   rps_applyingfun_t*applfun = _dispobref->applying_function();
+  unsigned nbphysattr = 0;
   if (applfun)
     {
       out << BOLD_esc << "⊚ applying function "
@@ -1154,15 +1155,17 @@ Rps_Object_Display::output_display(std::ostream&out) const
     }
   //// °°°°°°°°°°° display physical attributes
   Rps_Value setphysattr = _dispobref->set_of_physical_attributes();
-  if (setphysattr.is_empty())
+  if (setphysattr.is_empty()) {
     out << BOLD_esc
         << "** no physical attributes **"
         << NORM_esc << std::endl;
+    nbphysattr = 0;
+  }
   else
     {
       RPS_ASSERT(setphysattr.is_set());
       const Rps_SetOb*physattrset = setphysattr.as_set();
-      unsigned nbphysattr = physattrset->cardinal();
+      nbphysattr = physattrset->cardinal();
       if (nbphysattr == 1)
         {
           const Rps_ObjectRef thesingleattr = physattrset->at(0);
@@ -1175,7 +1178,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
               << Rps_OutputValue(thesingleval, _dispdepth, disp_max_depth)
               << std::endl;
         }
-      else
+      else if (nbphysattr > 1)
         {
           /// TODO: we need to sort physattrset in displayable order
           /// (alphabetically by name, else by objid), using
