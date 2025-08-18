@@ -473,11 +473,13 @@ replnt_input: replnt_command replnt_input {
 
 replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "display carburetta command:" << $2);
+   RPS_DEBUG_LOG(REPL, "display carburetta command $2 is:" << $2
+		 << RPS_FULL_BACKTRACE(1, "display carburetta command"));
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    RPS_POSSIBLE_BREAKPOINT();
    rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $2);
+   RPS_POSSIBLE_BREAKPOINT();
    tksrc->clear_token_dequeue();
    RPS_POSSIBLE_BREAKPOINT();
    $$ = 1;
@@ -485,7 +487,7 @@ replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
 
 replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
    _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "put carburetta command:" << $2 << " attr " << $4 << " expr " << $6);
+   RPS_DEBUG_LOG(REPL, "put carburetta command $2 is:" << $2 << ", attr $4 is " << $4 << ", expr $6 is " << $6);
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
@@ -1113,7 +1115,9 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_do_display_command starting obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
-                << " expr=" << _f.exprv);
+                << " expr=" << _f.exprv
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "carburetta command display"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(CMD, "carburetta display obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
                 << "display expr=" << _f.exprv
