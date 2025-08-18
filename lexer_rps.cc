@@ -717,11 +717,31 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
               int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed);
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                             << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
-#warning missing code for Rps_TokenSource::get__namoid__token keyword
-              RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
-                           << "incomplete toksrc=" << *this<< " lexed keyword "
-                           << namestr <<" °obnamed=" << _f.obnamed
-                           << " as kwdcode=" << kwdcode);
+              Rps_LexTokenZone* lextokz =
+                rps_make_lex_token_zone
+                (this, rpskob_083n2ydb4Zm03bbZW1, //!carburetta_keyword∈named_attribute
+                 _f.obnamed,
+                 str, curlin, curcol);
+              _f.res = Rps_LexTokenValue(lextokz);
+              lextokz->set_serial(++toksrc_counter);
+              RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#" << toksrc_counter
+                            << " from¤ " << *this << " str=" << str << " obnamed=" << _f.obnamed
+                            << " ¤keyword lexkindob=" << _f.lexkindob
+                            << std::endl
+                            << "… startswithalpha=" << startswithalpha
+                            << " afterat=" << afterat
+                            << std::endl
+                            << RPS_FULL_BACKTRACE(1, "-Rps_TokenSource::get__namoid__token")
+                            << std::endl
+                            << "…  keyword :-◑> " << _f.res << std::endl
+                            << "… @! " << position_str()
+                            << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                            << std::endl
+                            << Rps_Do_Output([&](std::ostream& out)
+              {
+                this->display_current_line_with_cursor(out);
+              }));
+              return _f.res;
             }
           else
             RPS_FATALOUT("Rps_TokenSource::get__namoid__token#" << toksrc_counter
