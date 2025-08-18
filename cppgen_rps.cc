@@ -1007,7 +1007,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   cppgenpayl->output([&](std::ostringstream&out)
   {
     out << std::endl << std::endl;
-    out << "//// C++ definitions from " << _f.obmodule << std::endl;
+    out << "//// C++ implementions and definitions from " << _f.obmodule << std::endl;
   });
   cppgenpayl->emit_cplusplus_definitions(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
@@ -1020,8 +1020,10 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     out << std::flush;
   });
   sync();
+#warning incomplete incomplete rps_generate_cplusplus_code
   RPS_WARNOUT("incomplete rps_generate_cplusplus_code obmodule="
-              << _f.obmodule << " generator=" << _f.obgenerator
+              << RPS_OBJECT_DISPLAY(_f.obmodule)
+	      << " generator=" << RPS_OBJECT_DISPLAY(_f.obgenerator)
               << std::endl
               << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code"));
   return false;
@@ -1029,3 +1031,6 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
 
 
 #warning incomplete cppgen_rps.cc file
+
+
+/// end of file cppgen_rps.cc
