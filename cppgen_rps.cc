@@ -865,6 +865,12 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
         {
           _f.obcomp = _f.vcomp.as_object();
           std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+	  /* send the message to emit C++ implementation */
+	  Rps_TwoValues two = 
+	    _f.vcomp.send3(&_,
+			    rpskob_1Ktl8r3QJzL01lHPRy, //!implement_cplusplus∈named_selector,
+			    _f.obgenerator, _f.obmodule, Rps_Value::make_tagged_int(cix));
+#warning should probably check success of C++ declaration emission
 #warning TODO: send the message to emit C++ definition i.e. implementation
         }
       else
