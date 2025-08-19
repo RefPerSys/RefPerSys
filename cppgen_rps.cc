@@ -136,11 +136,11 @@ public:
                     intptr_t num=0)
   {
     struct cppgen_data_st d
-      {
-	.cppg_object= obj,
-	.cppg_data= val,
-	.cppg_num=num
-      };
+    {
+      .cppg_object= obj,
+      .cppg_data= val,
+      .cppg_num=num
+    };
     return push_new_data(d);
   };
   unsigned data_size(void) const
@@ -356,7 +356,27 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsign
         out << BOLD_esc << "C++ data vector has " <<  nbdata << " elements."
             << NORM_esc << std::endl;
       }
-  }
+  };
+  int nbincl = (int) cppgen_includeset.size();
+  RPS_ASSERT(nbincl == (int) cppgen_includepriomap.size());
+  if (nbincl>0)
+    {
+      out << BOLD_esc << nbincl << " C++ includes " << NORM_esc << std::endl;
+      for (Rps_ObjectRef curinclob: cppgen_includeset)
+        {
+          auto curit = cppgen_includepriomap.find(curinclob);
+          int curprio = -1;
+          if (curit != cppgen_includepriomap.end())
+            curprio = curit->second;
+          out << BOLD_esc << "include " << NORM_esc << curinclob
+              << BOLD_esc << " of prio " << curprio << NORM_esc << std::endl;
+        }
+    }
+  else
+    {
+      out << BOLD_esc << "no C++ includes" << NORM_esc << std::endl;
+    }
+
 #warning incomplete Rps_PayloadCplusplusGen::output_payload
   ///TODO: output the included things: cppgen_includeset, cppgen_includepriomap
 } // end of Rps_PayloadCplusplusGen::output_payload
@@ -382,7 +402,7 @@ Rps_PayloadCplusplusGen::check_size(int lineno)
 
 long
 Rps_PayloadCplusplusGen::compute_include_priority(Rps_CallFrame*callerframe,
-						  Rps_ObjectRef obincl)
+    Rps_ObjectRef obincl)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
@@ -481,7 +501,7 @@ Rps_PayloadCplusplusGen::dump_json_content(Rps_Dumper*, Json::Value&) const
 
 void
 Rps_PayloadCplusplusGen::add_cplusplus_include(Rps_CallFrame*callerframe,
-					       Rps_ObjectRef argcurinclude)
+    Rps_ObjectRef argcurinclude)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
@@ -558,7 +578,7 @@ Rps_PayloadCplusplusGen::add_cplusplus_include(Rps_CallFrame*callerframe,
 
 void
 Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
-						   const std::string& str)
+    const std::string& str)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
@@ -613,53 +633,53 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
           }
         else if (csz==1 && (char)cch>=' ' && (char)cch<127 && isprint(cch))
           continue;
-	//TODO: we need to call u8_possible_linebreaks which needs the current encoding
+        //TODO: we need to call u8_possible_linebreaks which needs the current encoding
       };
   }
 #warning incomplete Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
   RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment generator=" << _f.obgenerator
-	      << " module=" << _f.obgenerator
-	      << " incomplete for str=" << Rps_QuotedC_String(str)
-	      << std::endl << RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/incomplete"));
+              << " module=" << _f.obgenerator
+              << " incomplete for str=" << Rps_QuotedC_String(str)
+              << std::endl << RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/incomplete"));
 } // end Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
 
 
-  
+
 void
 Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*callerframe, Rps_ObjectRef argobmodule)
 {
   RPS_LOCALFRAME(nullptr,
-		 callerframe,
-		 Rps_ObjectRef obgenerator;
-		 Rps_ObjectRef obmodule;
-		 Rps_Value initcppcomv;
-		 Rps_ClosureValue closv;
-		 Rps_Value mainresv;
-		 Rps_Value xtraresv;
-		);
+                 callerframe,
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                 Rps_Value initcppcomv;
+                 Rps_ClosureValue closv;
+                 Rps_Value mainresv;
+                 Rps_Value xtraresv;
+                );
   _f.obmodule = argobmodule;
   _f.obgenerator = owner();
   _f.initcppcomv = _f.obmodule->get_attr1(&_,
-					  RPS_ROOT_OB(_6QhoB1m97HC03kkKTa)  //"initial_cpp_comment"∈named_attribute
-					 );
+                                          RPS_ROOT_OB(_6QhoB1m97HC03kkKTa)  //"initial_cpp_comment"∈named_attribute
+                                         );
   if (_f.initcppcomv.is_closure())
     {
       _f.closv = Rps_ClosureValue(_f.initcppcomv);
       check_size(__LINE__);
       RPS_DEBUG_LOG(CODEGEN,
-		    "Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment closv=" << _f.closv << " obmodule=" << _f.obmodule
-		    << " obgenerator=" << _f.obgenerator);
+                    "Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment closv=" << _f.closv << " obmodule=" << _f.obmodule
+                    << " obgenerator=" << _f.obgenerator);
       Rps_TwoValues tv = //
-	_f.closv.apply2(&_, _f.obmodule, _f.obgenerator);
+        _f.closv.apply2(&_, _f.obmodule, _f.obgenerator);
       _f.mainresv = tv.mainv();
       _f.xtraresv = tv.xtrav();
       RPS_DEBUG_LOG(CODEGEN,
-		    "Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment applied closv=" << _f.closv
-		    << std::endl
-		    << "to module=" << _f.obmodule
-		    << " obgenerator=" << _f.obgenerator
-		    << " mainresv=" << _f.mainresv
-		    << " xtraresv=" << _f.xtraresv);
+                    "Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment applied closv=" << _f.closv
+                    << std::endl
+                    << "to module=" << _f.obmodule
+                    << " obgenerator=" << _f.obgenerator
+                    << " mainresv=" << _f.mainresv
+                    << " xtraresv=" << _f.xtraresv);
       check_size(__LINE__);
     }
   else if (_f.initcppcomv.is_string())
@@ -668,25 +688,25 @@ Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*calle
       std::string comstr = _f.initcppcomv.to_cppstring();
       cppgen_outcod << "//@" ;
       for (char c: comstr)
-	{
-	  if (c=='\n'||c=='\r'||c=='\f'||c=='\v'||c==(char)0)
-	    cppgen_outcod << eol_indent() << "//@";
-	  else
-	    cppgen_outcod << c;
-	};
+        {
+          if (c=='\n'||c=='\r'||c=='\f'||c=='\v'||c==(char)0)
+            cppgen_outcod << eol_indent() << "//@";
+          else
+            cppgen_outcod << c;
+        };
       cppgen_outcod << eol_indent() << std::flush;
     }
   else
     {
       if (!cppgen_path.empty())
-	cppgen_outcod << "//!! generated " << cppgen_path
-		      << " from " <<  _f.obmodule
-		      << " by " << _f.obgenerator
-		      << eol_indent() << std::flush;
+        cppgen_outcod << "//!! generated " << cppgen_path
+                      << " from " <<  _f.obmodule
+                      << " by " << _f.obgenerator
+                      << eol_indent() << std::flush;
       else
-	cppgen_outcod << "//-- generated from " <<  _f.obmodule
-		      << " by " << _f.obgenerator
-		      << eol_indent() << std::flush;
+        cppgen_outcod << "//-- generated from " <<  _f.obmodule
+                      << " by " << _f.obgenerator
+                      << eol_indent() << std::flush;
     }
 } // end Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment
 
@@ -694,25 +714,25 @@ void
 Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe, Rps_ObjectRef argobmodule)
 {
   RPS_LOCALFRAME(nullptr,
-		 callerframe,
-		 Rps_ObjectRef obgenerator;
-		 Rps_ObjectRef obmodule;
-		 Rps_ObjectRef obcurinclude;
-		 Rps_Value vinclude;
-		 Rps_Value vincludeset;
-		 Rps_Value voldval;
-		 Rps_StringValue vstrpath;
-		 Rps_ClosureValue vclos;
-		 Rps_Value vxtrares;
-		 Rps_Value vmain;
-		);
+                 callerframe,
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                 Rps_ObjectRef obcurinclude;
+                 Rps_Value vinclude;
+                 Rps_Value vincludeset;
+                 Rps_Value voldval;
+                 Rps_StringValue vstrpath;
+                 Rps_ClosureValue vclos;
+                 Rps_Value vxtrares;
+                 Rps_Value vmain;
+                );
   std::vector<cppgen_data_st> cppgen_data;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     for (cppgen_data_st curdat : cppgen_data)
       {
-	gc->mark_obj(curdat.cppg_object);
-	gc->mark_value(curdat.cppg_data);
+        gc->mark_obj(curdat.cppg_object);
+        gc->mark_value(curdat.cppg_data);
       }
   });
   _f.obmodule = argobmodule;
@@ -724,9 +744,9 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
      We need to document more.... **/
   _f.vinclude =
     _f.obmodule->get_attr1(&_,
-			   RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
+                           RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
   RPS_DEBUG_LOG(CODEGEN,"Rps_PayloadCplusplusGen::emit_cplusplus_includes start obmodule=" << _f.obmodule
-		<< " obgenerator=" << _f.obgenerator << " vinclude=" << _f.vinclude);
+                << " obgenerator=" << _f.obgenerator << " vinclude=" << _f.vinclude);
   /**
      TODO complete here:
 
@@ -744,20 +764,20 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
       _f.voldval = _f.vinclude;
       _f.vclos = Rps_ClosureValue(_f.vinclude);
       Rps_TwoValues tv = //
-	_f.vclos.apply2(&_, _f.obmodule, _f.obgenerator);
+        _f.vclos.apply2(&_, _f.obmodule, _f.obgenerator);
       _f.vinclude = tv.mainv();
       _f.vxtrares = tv.xtrav();
       RPS_DEBUG_LOG(CODEGEN,
-		    "Rps_PayloadCplusplusGen::emit_cplusplus_includes include "
-		    << _f.vinclude << " with closure=" << _f.voldval
-		    << " obmodule=" << _f.obmodule
-		    << " obgenerator=" << _f.obgenerator);
+                    "Rps_PayloadCplusplusGen::emit_cplusplus_includes include "
+                    << _f.vinclude << " with closure=" << _f.voldval
+                    << " obmodule=" << _f.obmodule
+                    << " obgenerator=" << _f.obgenerator);
     }
   else
     RPS_DEBUG_LOG(CODEGEN,
-		  "Rps_PayloadCplusplusGen::emit_cplusplus_includes plain include "
-		  << _f.vinclude << " obmodule=" << _f.obmodule
-		  << " obgenerator=" << _f.obgenerator);
+                  "Rps_PayloadCplusplusGen::emit_cplusplus_includes plain include "
+                  << _f.vinclude << " obmodule=" << _f.obmodule
+                  << " obgenerator=" << _f.obgenerator);
   if (_f.vinclude.is_set())
     {
       _f.vincludeset = _f.vinclude;
@@ -766,33 +786,33 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
       /// some new constant attributes, maybe include_priority and
       /// cxx_include_dependencies
       for (int nix=0; nix<(int)cardinclset; nix++)
-	{
-	  _f.obcurinclude = _f.vincludeset.as_set()->at(nix);
-	  RPS_ASSERT(_f.obcurinclude);
-	  std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
-	  _f.obgenerator->get_dynamic_payload<Rps_PayloadCplusplusGen>()->add_cplusplus_include(&_,_f.obcurinclude);
-	}
+        {
+          _f.obcurinclude = _f.vincludeset.as_set()->at(nix);
+          RPS_ASSERT(_f.obcurinclude);
+          std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
+          _f.obgenerator->get_dynamic_payload<Rps_PayloadCplusplusGen>()->add_cplusplus_include(&_,_f.obcurinclude);
+        }
     }
   else if (_f.vinclude.is_tuple())
     {
       unsigned lenincltup = _f.vinclude.as_tuple()->size();
       for (int nix=0; nix<(int)lenincltup; nix++)
-	{
-	  _f.obcurinclude = _f.vinclude.as_tuple()->at(nix);
-	  RPS_ASSERT(_f.obcurinclude);
-	  std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
-	  _f.obgenerator->get_dynamic_payload<Rps_PayloadCplusplusGen>()->add_cplusplus_include(&_,_f.obcurinclude);
-	}
+        {
+          _f.obcurinclude = _f.vinclude.as_tuple()->at(nix);
+          RPS_ASSERT(_f.obcurinclude);
+          std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
+          _f.obgenerator->get_dynamic_payload<Rps_PayloadCplusplusGen>()->add_cplusplus_include(&_,_f.obcurinclude);
+        }
     }
   else
     {
       RPS_WARNOUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes C++ generated module "
-		  << _f.obmodule
-		  << " with generator " << _f.obgenerator
-		  << " unexpected include " << _f.vinclude);
+                  << _f.obmodule
+                  << " with generator " << _f.obgenerator
+                  << " unexpected include " << _f.vinclude);
       throw RPS_RUNTIME_ERROR_OUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes obmodule="
-				  << _f.obmodule << " obgenerator=" << _f.obgenerator
-				  << "unexpected include=" << _f.vinclude);
+                                  << _f.obmodule << " obgenerator=" << _f.obgenerator
+                                  << "unexpected include=" << _f.vinclude);
     }
   ///TODO: sort cleverly the cppgen_includeset and emit the #include
   for (Rps_ObjectRef thecurinclob : cppgen_includeset)
@@ -803,58 +823,58 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
       long inclprio = 0;
       auto it = cppgen_includepriomap.find(_f.obcurinclude);
       if (it != cppgen_includepriomap.end())
-	inclprio = it->second;
+        inclprio = it->second;
       else
-	inclprio = compute_include_priority(&_, _f.obcurinclude);
+        inclprio = compute_include_priority(&_, _f.obcurinclude);
       cppgen_datavect.push_back(cppgen_data_st
-				{
-				  .cppg_object=_f.obcurinclude,
-				  .cppg_data=nullptr,
-				  .cppg_num=inclprio});
+      {
+        .cppg_object=_f.obcurinclude,
+        .cppg_data=nullptr,
+        .cppg_num=inclprio});
       continue;
     };
   _f.obcurinclude = nullptr;
   /// now sort the cppgen_datavect according to its cppg_num
   std::sort(cppgen_datavect.begin(), cppgen_datavect.end(),
-	    [&](const struct cppgen_data_st&x, const struct cppgen_data_st&y)
-	    {
-	      if (x.cppg_num < y.cppg_num)
-		return true;
-	      else
-		return false;
-	    });
+            [&](const struct cppgen_data_st&x, const struct cppgen_data_st&y)
+  {
+    if (x.cppg_num < y.cppg_num)
+      return true;
+    else
+      return false;
+  });
   int nbinc = cppgen_datavect.size();
   cppgen_outcod << "///++ " << nbinc << " includes in obmodule "
-		<< _f.obmodule
-		<< std::endl;
+                << _f.obmodule
+                << std::endl;
   for (int ix=0; ix<nbinc; ix++)
     {
       _f.obcurinclude = cppgen_datavect[ix].cppg_object;
       RPS_ASSERT(_f.obcurinclude);
       std::lock_guard<std::recursive_mutex>
-        guobcurincl(*_f.obcurinclude->objmtxptr());
+      guobcurincl(*_f.obcurinclude->objmtxptr());
       _f.vstrpath =
-	_f.obcurinclude->get_attr1(&_,
-				   RPS_ROOT_OB(_2774WA6lAq504yCPWa) //"file_path"∈named_attribute
-				  ).as_string();
+        _f.obcurinclude->get_attr1(&_,
+                                   RPS_ROOT_OB(_2774WA6lAq504yCPWa) //"file_path"∈named_attribute
+                                  ).as_string();
       if (!_f.vstrpath)
-	{
-	  RPS_WARNOUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes C++ generated module "
-		      << _f.obmodule
-		      << " with generator " << _f.obgenerator
-		      << " include " << _f.obcurinclude << " without file_path=_2774WA6lAq504yCPWa");
-	  throw RPS_RUNTIME_ERROR_OUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes obmodule="
-				      << _f.obmodule << " obgenerator=" << _f.obgenerator
-				      << " include=" << _f.obcurinclude
-				      << " without file_path=_2774WA6lAq504yCPWa");
-	}
+        {
+          RPS_WARNOUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes C++ generated module "
+                      << _f.obmodule
+                      << " with generator " << _f.obgenerator
+                      << " include " << _f.obcurinclude << " without file_path=_2774WA6lAq504yCPWa");
+          throw RPS_RUNTIME_ERROR_OUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes obmodule="
+                                      << _f.obmodule << " obgenerator=" << _f.obgenerator
+                                      << " include=" << _f.obcurinclude
+                                      << " without file_path=_2774WA6lAq504yCPWa");
+        }
       cppgen_outcod << "#include \""
-		    << Rps_Cjson_String(_f.vstrpath.to_cppstring())
-		    << "\"" << std::endl;
+                    << Rps_Cjson_String(_f.vstrpath.to_cppstring())
+                    << "\"" << std::endl;
     }
   cppgen_outcod << "///-- did " << nbinc << " includes in obmodule "
-		<< _f.obmodule
-		<< std::endl;
+                << _f.obmodule
+                << std::endl;
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_includes
 
 
@@ -862,12 +882,12 @@ void
 Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule)
 {
   RPS_LOCALFRAME(nullptr,
-		 callerframe,
-		 Rps_ObjectRef obgenerator;
-		 Rps_ObjectRef obmodule;
-		 Rps_Value vcomp;
-		 Rps_ObjectRef obcomp;
-		);
+                 callerframe,
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                 Rps_Value vcomp;
+                 Rps_ObjectRef obcomp;
+                );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
   // TODO: we need a selector to send some message related to C++ declaration emission
@@ -882,36 +902,36 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
       std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
       _f.vcomp = _f.obmodule->component_at(&_, cix, /*dontfail=*/true);
       if (!_f.vcomp)
-	continue;
+        continue;
       if (_f.vcomp.is_object())
-	{
-	  _f.obcomp = _f.vcomp.as_object();
-	  std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
-	  /* send the message to emit C++ declaration */
-	  Rps_TwoValues two =
-	    _f.vcomp.send3(&_,
-			   rpskob_3QBHZTFGVwD03fbgOY, //!declare_cplusplus∈named_selector,
-			   _f.obgenerator, _f.obmodule, Rps_Value::make_tagged_int(cix));
-	  if (!two)
-	    RPS_WARNOUT("in module " << _f.obmodule
-			<< " component#" << cix
-			<< " = " << _f.vcomp
-			<< " is not declarable in C++ for generator "
-			<< _f.obgenerator);
-	}
+        {
+          _f.obcomp = _f.vcomp.as_object();
+          std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+          /* send the message to emit C++ declaration */
+          Rps_TwoValues two =
+            _f.vcomp.send3(&_,
+                           rpskob_3QBHZTFGVwD03fbgOY, //!declare_cplusplus∈named_selector,
+                           _f.obgenerator, _f.obmodule, Rps_Value::make_tagged_int(cix));
+          if (!two)
+            RPS_WARNOUT("in module " << _f.obmodule
+                        << " component#" << cix
+                        << " = " << _f.vcomp
+                        << " is not declarable in C++ for generator "
+                        << _f.obgenerator);
+        }
       else
-	{
-	  RPS_WARNOUT("in module " << _f.obmodule
-		      << " component#" << cix
-		      << " = " << _f.vcomp
-		      << " is not an object," << std::endl
-		      << "...so cannot be translated to C++ declaration.");
-	  throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad component#" << cix
-				      << " = " << _f.vcomp
-				      << " cannot be declared"
-				      << " in obmodule=" << _f.obmodule
-				      << " obgenerator=" << _f.obgenerator);
-	}
+        {
+          RPS_WARNOUT("in module " << _f.obmodule
+                      << " component#" << cix
+                      << " = " << _f.vcomp
+                      << " is not an object," << std::endl
+                      << "...so cannot be translated to C++ declaration.");
+          throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad component#" << cix
+                                      << " = " << _f.vcomp
+                                      << " cannot be declared"
+                                      << " in obmodule=" << _f.obmodule
+                                      << " obgenerator=" << _f.obgenerator);
+        }
     };
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_declarations
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_declarations
@@ -920,12 +940,12 @@ void
 Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule)
 {
   RPS_LOCALFRAME(nullptr,
-		 callerframe,
-		 Rps_ObjectRef obgenerator;
-		 Rps_ObjectRef obmodule;
-		 Rps_Value vcomp;
-		 Rps_ObjectRef obcomp;
-		);
+                 callerframe,
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                 Rps_Value vcomp;
+                 Rps_ObjectRef obcomp;
+                );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
   // TODO: we probably need a selector to send some message related to C++ definition emission
@@ -937,35 +957,35 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
       _f.obcomp = nullptr;
       _f.vcomp = _f.obmodule->component_at(&_, cix, /*dontfail=*/true);
       if (!_f.vcomp)
-	continue;
+        continue;
       if (_f.vcomp.is_object())
-	{
-	  _f.obcomp = _f.vcomp.as_object();
-	  std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
-	  /* send the message to emit C++ implementation */
-	  Rps_TwoValues two =
-	    _f.vcomp.send3(&_,
-			   rpskob_1Ktl8r3QJzL01lHPRy, //!implement_cplusplus∈named_selector,
-			   _f.obgenerator, _f.obmodule, Rps_Value::make_tagged_int(cix));
-	  if (!two)
-	    RPS_WARNOUT("in module " << _f.obmodule
-			<< " component#" << cix
-			<< " = " << _f.vcomp
-			<< " is not implementable in C++ for generator "
-			<< _f.obgenerator);
-	}
+        {
+          _f.obcomp = _f.vcomp.as_object();
+          std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+          /* send the message to emit C++ implementation */
+          Rps_TwoValues two =
+            _f.vcomp.send3(&_,
+                           rpskob_1Ktl8r3QJzL01lHPRy, //!implement_cplusplus∈named_selector,
+                           _f.obgenerator, _f.obmodule, Rps_Value::make_tagged_int(cix));
+          if (!two)
+            RPS_WARNOUT("in module " << _f.obmodule
+                        << " component#" << cix
+                        << " = " << _f.vcomp
+                        << " is not implementable in C++ for generator "
+                        << _f.obgenerator);
+        }
       else
-	{
-	  RPS_WARNOUT("in module " << _f.obmodule
-		      << " component#" << cix
-		      << " = " << _f.vcomp
-		      << " is not an object so cannot be translated to C++ definition.");
-	  throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad component#" << cix
-				      << " = " << _f.vcomp
-				      << " cannot be defined"
-				      << " in obmodule=" << _f.obmodule
-				      << " obgenerator=" << _f.obgenerator);
-	}
+        {
+          RPS_WARNOUT("in module " << _f.obmodule
+                      << " component#" << cix
+                      << " = " << _f.vcomp
+                      << " is not an object so cannot be translated to C++ definition.");
+          throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad component#" << cix
+                                      << " = " << _f.vcomp
+                                      << " cannot be defined"
+                                      << " in obmodule=" << _f.obmodule
+                                      << " obgenerator=" << _f.obgenerator);
+        }
     };
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_definitions
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_definitions
@@ -973,28 +993,28 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
 //// return true on successful C++ code generation
 bool
 rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
-			    Rps_ObjectRef argobmodule,
-			    Rps_Value arggenparam)
+                            Rps_ObjectRef argobmodule,
+                            Rps_Value arggenparam)
 {
   RPS_LOCALFRAME(nullptr,
-		 callerframe,
-		 Rps_ObjectRef obmodule;
-		 Rps_Value vgenparam;
-		 Rps_ObjectRef obgenerator;
-		 Rps_ObjectRef obincludeset;
-		 Rps_ObjectRef obcurinclude;
-		 Rps_ClosureValue vclos;
-		 Rps_Value vinclude;
-		 Rps_Value vincludeset;
-		 Rps_Value voldval;
-		 Rps_Value vmainres;
-		 Rps_Value vxtrares;
-		 Rps_Value vtype;
-		 Rps_Value vcomp;
-		 Rps_Value vmain;
-		 Rps_Value vxtra;
-		 Rps_Value vprepar;
-		);
+                 callerframe,
+                 Rps_ObjectRef obmodule;
+                 Rps_Value vgenparam;
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obincludeset;
+                 Rps_ObjectRef obcurinclude;
+                 Rps_ClosureValue vclos;
+                 Rps_Value vinclude;
+                 Rps_Value vincludeset;
+                 Rps_Value voldval;
+                 Rps_Value vmainres;
+                 Rps_Value vxtrares;
+                 Rps_Value vtype;
+                 Rps_Value vcomp;
+                 Rps_Value vmain;
+                 Rps_Value vxtra;
+                 Rps_Value vprepar;
+                );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     RPS_ASSERT(gc != nullptr);
@@ -1010,49 +1030,49 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   std::lock_guard<std::recursive_mutex> gumodule(*_f.obmodule->objmtxptr());
   _f.obgenerator =
     Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_2yzD3HZ6VQc038ekBU)//midend_cplusplus_code_generator∈class
-			      );
+                               RPS_ROOT_OB(_2yzD3HZ6VQc038ekBU)//midend_cplusplus_code_generator∈class
+                              );
   std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
-			   _f.obmodule);
+                           _f.obmodule);
   auto cppgenpayl = _f.obgenerator->put_new_plain_payload<Rps_PayloadCplusplusGen>();
   RPS_DEBUG_LOG(CODEGEN,
-		"rps_generate_cplusplus_code starting obmodule=" << _f.obmodule
-		<< " obgenerator=" << _f.obgenerator
-		<< " vgenparam=" << _f.vgenparam
-		<< RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/start"));
+                "rps_generate_cplusplus_code starting obmodule=" << _f.obmodule
+                << " obgenerator=" << _f.obgenerator
+                << " vgenparam=" << _f.vgenparam
+                << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/start"));
   try
     {
       Rps_TwoValues two
-	= Rps_ObjectValue(_f.obgenerator).send2(&_,
-						rpskob_29rlRCUyHHs04aWezh,
-   //prepare_cplusplus_generation∈named_selector
-						_f.obmodule,
-						_f.vgenparam);
+        = Rps_ObjectValue(_f.obgenerator).send2(&_,
+            rpskob_29rlRCUyHHs04aWezh,
+            //prepare_cplusplus_generation∈named_selector
+            _f.obmodule,
+            _f.vgenparam);
       _f.vmain = two.mainv();
       _f.vxtra = two.xtrav();
       if (_f.vmain)
-	_f.vprepar = _f.vmain;
+        _f.vprepar = _f.vmain;
       else if (_f.vxtra)
-	_f.vprepar = _f.vxtra;
+        _f.vprepar = _f.vxtra;
       /// detailed debug display after preparation
       RPS_DEBUG_LOG(CODEGEN,
-		    "rps_generate_cplusplus_code after preparation genparam="
-		    << _f.vgenparam
-		    << " vmain=" << _f.vmain << " vextra=" << _f.vxtra
-		    << " vprepar=" << _f.vprepar
-		    << std::endl
-		    << " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
-		    << " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
-		    << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code/after preparation"));
+                    "rps_generate_cplusplus_code after preparation genparam="
+                    << _f.vgenparam
+                    << " vmain=" << _f.vmain << " vextra=" << _f.vxtra
+                    << " vprepar=" << _f.vprepar
+                    << std::endl
+                    << " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
+                    << " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
+                    << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code/after preparation"));
     }
   catch  (std::exception&exc)
     {
       RPS_WARNOUT("rps_generate_cplusplus_code failed to prepare "
-		  << _f.obgenerator << " for module " << _f.obmodule
-		  << " got exception " << exc.what()
-		  << std::endl
-		  << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code"));
+                  << _f.obgenerator << " for module " << _f.obmodule
+                  << " got exception " << exc.what()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code"));
       return false;
     };
   /// emit the C++ comment with copyright notice
@@ -1068,9 +1088,9 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   cppgenpayl->emit_cplusplus_includes(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
   RPS_DEBUG_LOG(CODEGEN,
-		"rps_generate_cplusplus_code emitted C++ includes obmodule=" << _f.obmodule
-		<< " obgenerator=" << _f.obgenerator
-		<< RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/emitted-includes"));
+                "rps_generate_cplusplus_code emitted C++ includes obmodule=" << _f.obmodule
+                << " obgenerator=" << _f.obgenerator
+                << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/emitted-includes"));
   /// emit C++ declarations
   cppgenpayl->output([&](std::ostringstream&out)
   {
@@ -1080,10 +1100,10 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   cppgenpayl->emit_cplusplus_declarations(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
   RPS_DEBUG_LOG(CODEGEN,
-		"rps_generate_cplusplus_code emitted C++ declarations obmodule=" << _f.obmodule
-		<< " obgenerator=" << _f.obgenerator
-		<< RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/emitted-C++-declarations") << std::endl
-		<< RPS_OBJECT_DISPLAY(_f.obgenerator));
+                "rps_generate_cplusplus_code emitted C++ declarations obmodule=" << _f.obmodule
+                << " obgenerator=" << _f.obgenerator
+                << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code/emitted-C++-declarations") << std::endl
+                << RPS_OBJECT_DISPLAY(_f.obgenerator));
   /// emit C++ definitions
   cppgenpayl->output([&](std::ostringstream&out)
   {
@@ -1096,17 +1116,17 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   {
     out << std::endl << std::endl;
     out << "//// end of generated C++ from module " << _f.obmodule << " using generator "
-	<< _f.obgenerator << " in refpersys git " <<  rps_cppgen_shortgitid
-	<< " {<" __FILE__ ":" << __LINE__ << ">}" << std::endl;
+        << _f.obgenerator << " in refpersys git " <<  rps_cppgen_shortgitid
+        << " {<" __FILE__ ":" << __LINE__ << ">}" << std::endl;
     out << std::flush;
   });
   sync();
 #warning incomplete incomplete rps_generate_cplusplus_code
   RPS_WARNOUT("incomplete rps_generate_cplusplus_code obmodule="
-	      << RPS_OBJECT_DISPLAY(_f.obmodule)
-	      << " generator=" << RPS_OBJECT_DISPLAY(_f.obgenerator)
-	      << std::endl
-	      << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code"));
+              << RPS_OBJECT_DISPLAY(_f.obmodule)
+              << " generator=" << RPS_OBJECT_DISPLAY(_f.obgenerator)
+              << std::endl
+              << RPS_FULL_BACKTRACE(1, "rps_generate_cplusplus_code"));
   return false;
 } // end rps_generate_cplusplus_code
 
