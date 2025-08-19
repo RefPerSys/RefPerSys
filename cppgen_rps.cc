@@ -98,6 +98,7 @@ protected:
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
   static constexpr size_t maximal_cpp_code_size = 512*1024; // in bytes of generated code
+  static constexpr size_t maximal_comment_size = 16384;
   void check_size(int lineno=0);
   std::string cplusplus_file_path(void) const
   {
@@ -179,6 +180,8 @@ public:
   void emit_cplusplus_includes(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
   void emit_cplusplus_declarations(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
   void emit_cplusplus_definitions(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
+  /// emit a long string as a valid C++ comment
+  void emit_as_cplusplus_comment(Rps_CallFrame*callerframe, const std::string& str);
   virtual const std::string payload_type_name(void) const
   {
     return "cplusplusgen";
@@ -553,6 +556,48 @@ Rps_PayloadCplusplusGen::add_cplusplus_include(Rps_CallFrame*callerframe,
 } // end Rps_PayloadCplusplusGen::add_cplusplus_include
 
 
+void 
+Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
+						   const std::string& str)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                );
+  _f.obgenerator = owner();
+  _f.obmodule = _f.obgenerator->get_attr1(&_,
+                                          RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC)).as_object(); //"code_module"∈named_attribute;
+  RPS_DEBUG_LOG(CODEGEN,
+		"Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
+		" generator=" << _f.obgenerator
+		<< " module=" << _f.obgenerator
+		<< " str=" << Rps_QuotedC_String(str));
+  if (str.size() > maximal_comment_size) {
+    RPS_WARNOUT("too long C++ (" << str.size() << "bytes) comment"
+		" to emit generator=" << _f.obgenerator << ", module=" << _f.obmodule
+		<< std::endl << RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/toolong"));
+    throw RPS_RUNTIME_ERROR_OUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
+				" generator=" << _f.obgenerator
+				<< " module=" << _f.obgenerator
+				<< "too long C++ (" << str.size() << "bytes) comment");
+  };
+  if (u8_check((const uint8_t*)str.c_str(), str.size())) {
+    RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment generator=" << _f.obgenerator
+		<< " module=" << _f.obgenerator
+		<< " Bad non-UTF8 str=" << Rps_QuotedC_String(str));
+    throw RPS_RUNTIME_ERROR_OUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
+				" generator=" << _f.obgenerator
+				<< " module=" << _f.obgenerator
+				<< " Bad non-UTF8 str=" << Rps_QuotedC_String(str));
+  }
+#warning incomplete Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
+    RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment generator=" << _f.obgenerator
+		<< " module=" << _f.obgenerator
+		<< " incomplete for str=" << Rps_QuotedC_String(str)
+		<< std::endl << RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/incomplete"));
+} // end Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
+
 void
 Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*callerframe, Rps_ObjectRef argobmodule)
 {
@@ -921,6 +966,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_Value vcomp;
                  Rps_Value vmain;
                  Rps_Value vxtra;
+		 Rps_Value vprepar;
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
@@ -958,6 +1004,20 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
             _f.vgenparam);
       _f.vmain = two.mainv();
       _f.vxtra = two.xtrav();
+      if (_f.vmain)
+	_f.vprepar = _f.vmain;
+      else if (_f.vxtra)
+	_f.vprepar = _f.vxtra;
+  /// detailed debug display after preparation
+  RPS_DEBUG_LOG(CODEGEN,
+                "rps_generate_cplusplus_code after preparation genparam="
+                << _f.vgenparam
+		<< " vmain=" << _f.vmain << " vextra=" << _f.vxtra
+		<< " vprepar=" << _f.vprepar
+		<< std::endl
+                << " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
+                << " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
+                << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code/after preparation"));
     }
   catch  (std::exception&exc)
     {
@@ -968,19 +1028,13 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                   << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code"));
       return false;
     };
-  /// detailed debug display after preparation
-  RPS_DEBUG_LOG(CODEGEN,
-                "rps_generate_cplusplus_code after preparation genparam="
-                << _f.vgenparam << std::endl
-                << " obmodule:" << RPS_OBJECT_DISPLAY(_f.obmodule) << std::endl
-                << " obgenerator:" << RPS_OBJECT_DISPLAY(_f.obgenerator) << std::endl
-                << RPS_FULL_BACKTRACE(1,"rps_generate_cplusplus_code/after preparation"));
   /// emit the C++ comment with copyright notice
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->clear_indentation();
   /// emit C++ #include-s
   cppgenpayl->output([&](std::ostringstream&out)
   {
+    out << std::endl << std::endl;
     out << std::endl << std::endl;
     out << "//// include files from " << _f.obmodule << std::endl;
   });
