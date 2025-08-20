@@ -615,6 +615,8 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
                                   << " Bad non-UTF8 str=" << Rps_QuotedC_String(str));
     }
   int nblines = 0;
+  int nbslash = 0;
+  int nbstar = 0;
   {
     const uint8_t *start = (const uint8_t*)str.c_str();
     const uint8_t *end = start + ssz;
@@ -631,10 +633,29 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
             nblines++;
             continue;
           }
+	else if (csz==1 && (char)cch=='/')
+	  {
+	    nbslash++;
+	    continue;
+	  }
+	else if (csz==1 && (char)cch=='*') {
+	  nbstar++;
+	  continue;
+	}
         else if (csz==1 && (char)cch>=' ' && (char)cch<127 && isprint(cch))
           continue;
-        //TODO: we need to call u8_possible_linebreaks which needs the current encoding
+        //TODO: maybe we need to call u8_possible_linebreaks which
+        //needs the current encoding
       };
+    if (nblines==0) {
+      cppgen_outcod << "//° " << str << eol_indent();
+    }
+    else {
+      cppgen_outcod << "/***" << eol_indent();
+#warning should emit multiline comment in  Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
+      // we need a loop and transform "*/" into "*\/"
+      cppgen_outcod << eol_indent() << "****/" << eol_indent();
+    }
   }
 #warning incomplete Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
   RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment generator=" << _f.obgenerator
