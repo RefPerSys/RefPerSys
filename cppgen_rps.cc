@@ -617,46 +617,80 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
   int nblines = 0;
   int nbslash = 0;
   int nbstar = 0;
-  {
-    const uint8_t *start = (const uint8_t*)str.c_str();
-    const uint8_t *end = start + ssz;
-    int csz= 0;
-    for (const uint8_t*pc = start; pc<end; pc += csz)
-      {
-        ucs4_t cch= 0;
-        csz = u8_mbtouc(&cch, pc, end-pc);
-        if (csz <= 0)
-          break;
-        if ((char)cch=='\n' || (char)cch=='\r' || (char)cch=='\v' || (char)cch=='\f'
-            || cch==0x2028 /*Unicode Character 'LINE SEPARATOR'*/)
-          {
-            nblines++;
-            continue;
-          }
-	else if (csz==1 && (char)cch=='/')
-	  {
-	    nbslash++;
-	    continue;
-	  }
-	else if (csz==1 && (char)cch=='*') {
-	  nbstar++;
-	  continue;
-	}
-        else if (csz==1 && (char)cch>=' ' && (char)cch<127 && isprint(cch))
+  const uint8_t *start = (const uint8_t*)str.c_str();
+  const uint8_t *end = start + ssz;
+  int csz= 0;
+  for (const uint8_t*pc = start; pc<end; pc += csz)
+    {
+      ucs4_t cch= 0;
+      csz = u8_mbtouc(&cch, pc, end-pc);
+      if (csz <= 0)
+        break;
+      if ((char)cch=='\n' || (char)cch=='\r' || (char)cch=='\v' || (char)cch=='\f'
+          || cch==0x2028 /*Unicode Character 'LINE SEPARATOR'*/)
+        {
+          nblines++;
           continue;
-        //TODO: maybe we need to call u8_possible_linebreaks which
-        //needs the current encoding
-      };
-    if (nblines==0) {
+        }
+      else if (csz==1 && (char)cch=='/')
+        {
+          nbslash++;
+          continue;
+        }
+      else if (csz==1 && (char)cch=='*')
+        {
+          nbstar++;
+          continue;
+        }
+      else if (csz==1 && (char)cch>=' ' && (char)cch<127 && isprint(cch))
+        continue;
+      //TODO: maybe we need to call u8_possible_linebreaks which
+      //needs the current encoding
+    };
+  if (nblines==0)
+    {
       cppgen_outcod << "//° " << str << eol_indent();
     }
-    else {
+  else
+    {
       cppgen_outcod << "/***" << eol_indent();
-#warning should emit multiline comment in  Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
-      // we need a loop and transform "*/" into "*\/"
-      cppgen_outcod << eol_indent() << "****/" << eol_indent();
+      for (const uint8_t*pc = start; pc<end; pc += csz)
+        {
+          ucs4_t cch= 0;
+          csz = u8_mbtouc(&cch, pc, end-pc);
+          if (csz <= 0)
+            break;
+          if ((char)cch=='\n' || (char)cch=='\r' || (char)cch=='\v' || (char)cch=='\f'
+              || cch==0x2028 /*Unicode Character 'LINE SEPARATOR'*/)
+            cppgen_outcod << eol_indent() << '*';
+          else if ((char)cch=='*')
+            {
+              RPS_ASSERT(*pc=='*');
+              cppgen_outcod << '*';
+              if (pc[1]=='/')
+                {
+                  pc++;
+                  cppgen_outcod << "\\/";
+                  continue;
+                }
+            }
+          else
+            {
+              if (iscntrl((char)cch))
+                cppgen_outcod << ' ';
+              else if (isalnum((char)cch))
+                cppgen_outcod << (char)cch;
+              else
+                {
+                  char buf[12];
+                  memset(buf, 0, sizeof(buf));
+                  u8_set((uint8_t*)buf, cch, sizeof(buf)-1);
+                  cppgen_outcod << buf;
+                };
+            }
+          cppgen_outcod << eol_indent() << "****/" << eol_indent();
+        }
     }
-  }
 #warning incomplete Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
   RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment generator=" << _f.obgenerator
               << " module=" << _f.obgenerator
