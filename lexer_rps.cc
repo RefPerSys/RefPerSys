@@ -1988,6 +1988,10 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
 
 extern "C" void rps_run_test_repl_lexer(const std::string&);
 
+extern "C" int rps_keyword_lexer (Rps_CallFrame*,
+				  const std::string&keystr,
+				  Rps_ObjectRef obkw);
+
 void
 rps_run_test_repl_lexer(const std::string& teststr)
 {
@@ -1996,9 +2000,9 @@ rps_run_test_repl_lexer(const std::string& teststr)
                            Rps_Value curlextokenv;
                 );
   RPS_ASSERT(rps_is_main_thread());
-
   RPS_TIMER_START();
   Rps_StringTokenSource toktestsrc(teststr, "*test-repl-lexer*°lex");
+  toktestsrc.set_keyword_lexing_fun(rps_keyword_lexer);
   bool gotl = toktestsrc.get_line();
   RPS_DEBUG_LOG(REPL, "start rps_run_test_repl_lexer gitid " << rps_gitid
                 << " teststr: " << Rps_QuotedC_String(teststr)

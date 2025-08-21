@@ -2923,7 +2923,6 @@ protected:
   {
     toksrc_name = name;
   };
-  void set_keyword_lexing_fun(rps_keyword_lexing_sigt*fun);
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
   std::string lex_quoted_literal_string(Rps_CallFrame*callframe);
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
@@ -2942,6 +2941,7 @@ protected:
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public: //////
+  void set_keyword_lexing_fun(rps_keyword_lexing_sigt*fun);
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const
   {
