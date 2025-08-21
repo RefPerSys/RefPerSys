@@ -951,6 +951,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
   // changing during the loop, or that the components are dynamically
   // inserted (e.g. in the generator object)...
   // TODO: document more.
+  int nbcompdcl = 0;
   for (int cix=0; cix<(int)_f.obmodule->nb_components(&_); cix++)
     {
       _f.obcomp = nullptr;
@@ -973,6 +974,8 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                         << " = " << _f.vcomp
                         << " is not declarable in C++ for generator "
                         << _f.obgenerator);
+	  else
+	    nbcompdcl++;
         }
       else
         {
@@ -987,8 +990,15 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                                       << " in obmodule=" << _f.obmodule
                                       << " obgenerator=" << _f.obgenerator);
         }
-    };
-#warning incomplete PayloadCplusplusGen::emit_cplusplus_declarations
+    };	   // end for loop on components
+  if (nbcompdcl>0) {
+    cppgen_outcod << eol_indent()
+		  << "///¤¤¤¤ end of " << nbcompdcl << " declarations"
+		  << " in module " << _f.obmodule
+		  << " with generator " << _f.obgenerator
+		  << eol_indent()
+		  << eol_indent();
+  };
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_declarations
 
 void
@@ -1003,6 +1013,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
                 );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
+  int nbcompdef = 0;
   // TODO: we probably need a selector to send some message related to C++ definition emission
   //
   // It could happen that the number of components in the module is
@@ -1028,6 +1039,8 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
                         << " = " << _f.vcomp
                         << " is not implementable in C++ for generator "
                         << _f.obgenerator);
+	  else
+	    nbcompdef++;
         }
       else
         {
@@ -1042,8 +1055,19 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
                                       << " obgenerator=" << _f.obgenerator);
         }
     };
-#warning incomplete PayloadCplusplusGen::emit_cplusplus_definitions
+  if (nbcompdef>0) {
+    cppgen_outcod << eol_indent()
+		  << "///¤¤¤¤ end of " << nbcompdef
+		  << " implemented definitions"
+		  << " in module " << _f.obmodule
+		  << " with generator " << _f.obgenerator
+		  << eol_indent()
+		  << eol_indent();
+  };
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_definitions
+
+
+
 
 //// return true on successful C++ code generation
 bool
