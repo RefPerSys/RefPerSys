@@ -191,11 +191,12 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                     << " instance expr:" << _f.exprv
                     << " of class:" << _f.classob
                     << " in env:" << _f.envob);
-#warning TODO: should probably define and call a rps_full_evaluate_repl_instance
+      Rps_TwoValues two = rps_full_evaluate_repl_instance(&_, _f.exprv, _f.envob);
       RPS_FATALOUT("rps_full_evaluate_repl_expr#" << eval_number
                    << " UNIMPLEMENTED instance expr:" << _f.exprv
                    << " of class:" << _f.classob
-                   << " in env:" << _f.envob);
+                   << " in env:" << _f.envob
+                   << " gives two main=" << two.mainv() << " xtra=" << two.xtrav());
     }
   else if (_f.exprv.is_object())
     {
@@ -339,6 +340,12 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     }
 } // end rps_full_evaluate_repl_expr
 
+Rps_TwoValues
+rps_full_evaluate_repl_instance(Rps_CallFrame*callframe,Rps_Value instv,Rps_ObjectRef envob)
+{
+  RPS_FATALOUT("rps_full_evaluate_repl_instance unimplemented instv=" << instv << " envob=" << envob);
+#warning unimplemented rps_full_evaluate_repl_instance
+} // end rps_full_evaluate_repl_instance
 
 Rps_TwoValues
 rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long count, Rps_ObjectRef exprobarg, Rps_ObjectRef envobarg,  unsigned depth)
