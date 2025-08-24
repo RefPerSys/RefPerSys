@@ -1772,9 +1772,15 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
                     << " token_deq:" << intoksrc.token_dequeue());
       if (_f.lexval.is_string())
         _f.cmdob = Rps_PayloadSymbol::find_named_object(_f.lexval.as_string()->cppstring());
+      RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented symbol token rps_do_one_repl_command
-      RPS_WARNOUT("unimplemented symbol token rps_do_one_repl_command lextok=" << _f.lextokv
-                  << " lexval:" << _f.lexval << " cmdob=" << _f.cmdob<< std::endl
+      RPS_WARNOUT("unimplemented symbol token rps_do_one_repl_command"
+                  " lextok=" << _f.lextokv
+                  << std::endl
+                  << "… lexval:" << _f.lexval
+                  << std::endl
+                  << "… cmdob=" << RPS_OBJECT_DISPLAY(_f.cmdob)
+                  << std::endl
                   << "… intoksrc:" << intoksrc
                   << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                   << std::endl
@@ -1782,6 +1788,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
     }
   else
     {
+      RPS_POSSIBLE_BREAKPOINT();
       RPS_WARNOUT("rps_do_one_repl_command command at "
                   << commandpos << std::endl
                   << "Should start with an object or symbol but got "
