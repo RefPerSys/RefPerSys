@@ -30,6 +30,15 @@ or [ITEA](https://itea4.org/) consortia interested by
 [RefPerSys](http://refpersys.org/) are welcome to contact us. Likewise for students or academics or passionate open source developers 
 wanting to contribute.
 
+
+
+# related repositories
+
+They are on
+[github.com/bstarynk/misc-basile](https://github.com/bstarynk/misc-basile/)
+(many files, including `q6refpersys.cc` for
+[https://www.qt.io/product/qt6](Qt6) graphical toolkits.
+
 ## A research project
 
 The Reflective Persistent System language is a **research project**,
@@ -62,7 +71,7 @@ in commit 559ea329f46a28 (nov. 2024).
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
 
-**Don't expect RefPerSys to be a mature project.** It is not in October 2024.
+**Don't expect (RefPerSys)[http://refpersys.org/] to be a mature project.** It is not in August 2025.
 
 ## environment variables
 
@@ -245,9 +254,9 @@ genuine C++ code than we do and will find our C++ code pityful. We
 just want our runtime to work, not to serve as an example of well
 written C++17 code.
 
-The prefered C++ compiler (in 2023Q2) for *RefPerSys* is
-[GCC](http://gcc.gnu.org/) version [13](https://gcc.gnu.org/gcc-13/) or
-(preferably in 2024Q3) [14](https://gcc.gnu.org/gcc-14).
+The prefered C++ compiler (in 2025Q2) for *RefPerSys* is
+[GCC](http://gcc.gnu.org/) version [14](https://gcc.gnu.org/gcc-14/) or
+(preferably in 2025Q3) [15](https://gcc.gnu.org/gcc-15).
 
 It could be worthwhile to sometimes compile *RefPerSys* with `clang++`
 (see http://clang.llvm.org/ for more). In practice `make clean` then
@@ -337,12 +346,13 @@ The [JsonCPP](https://github.com/open-source-parsers/jsoncpp/) and and
 also a [mail](https://linux.die.net/man/1/mail) command in your
 `$PATH`.
 
-To install the dependencies on a recent [Debian](https://debian.org/) 12 *bookworm* or
-[Ubuntu](https://ubuntu.com/) 22 system, you could run the following
+To install the dependencies on a recent [Debian](https://debian.org/) 13 *trixie* or
+[Ubuntu](https://ubuntu.com/) 24 system, you could run the following
 steps
 
-* `sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test` (for Ubuntu 20.04)
-* `sudo apt install -y gcc-12 g++-12 clang-14 libc++-11-dev libc++abi-11-dev` (for Ubuntu 22.04)
+
+* `sudo apt install -y gcc-15 g++-15 libgccjit-15-dev clang-19`
+* `sudo apt build-dep g++-15`
 * `sudo apt install libunistring-dev`
 * `sudo apt install libjsoncpp-dev`
 * `sudo apt-get install libssl-dev`
