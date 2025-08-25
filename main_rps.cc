@@ -1501,7 +1501,7 @@ main (int argc, char** argv)
   bool helpwanted = false;
   bool versionwanted = false;
   _Pragma("message \"start of main\"");
-  if (argc>1 && !strcmp(argv[1], "--help"))
+  if (argc>1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-?")))
     helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
     versionwanted = true;
@@ -1553,9 +1553,16 @@ main (int argc, char** argv)
   if (versionwanted)
     rps_show_version();
   rps_parse_program_arguments(argc, argv);
+  fflush(nullptr);
+  if (helpwanted)
+    printf("%s preference example file is in\n"
+           "… %s/etc/user-preferences-refpersys.txt\n"
+           "… so copy it to ~/.refpersysrc and improve it\n",
+           rps_progname, rps_topdirectory);
   if (helpwanted || versionwanted)
     printf("%s minimal jobs or threads number %d, maximal %d, default %d\n",
            rps_progname, RPS_NBJOBS_MIN, RPS_NBJOBS_MAX, rps_nbjobs);
+  fflush(nullptr);
   if (rps_pidfile_path)
     {
       FILE* fpid = fopen(rps_pidfile_path, "w");
