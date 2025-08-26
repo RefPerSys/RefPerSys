@@ -1533,11 +1533,10 @@ rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
   RPS_ASSERT(line != 0);
   RPS_ASSERT((int)dbgopt != 0);
   RPS_ASSERT(dbgcount>0);
-  RPS_ASSERT(msg != nullptr);
   RPS_WARNOUT("incomplete rps_fltk_show_debug_message "
               << file << ":" << line << ":" << funcname << "::"
               << std::endl
-              << msg
+              << (msg?msg:"?°?")
               << std::endl
               << RPS_FULL_BACKTRACE(1, "rps_fltk_show_debug_message"));
 #warning incomplete rps_fltk_show_debug_message
