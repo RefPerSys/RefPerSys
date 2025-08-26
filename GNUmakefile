@@ -809,7 +809,7 @@ testcarb3: refpersys
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=testfltk1 --run-delay=29s  \
+	./refpersys -AREPL --run-name=testfltk1 --run-delay=39s  \
                     --fltk=$$HOME/fltk1-refpersys-pref \
                     --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk1 failed; exit 1)
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
