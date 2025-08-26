@@ -74,7 +74,7 @@
 #include <FL/Enumerations.H>
 
 #if FL_API_VERSION < 10400
-#error FLTK 1.4 is required
+#error FLTK 1.4 or 1.5 is required
 #endif
 
 #include <FL/platform.H>
@@ -92,6 +92,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Input.H>
+#include <FL/Fl_Tooltip.H>
 /// Fl_Flex.h is only in FLTK 1.4 not FLTK 1.3
 #include <FL/Fl_Flex.H>
 
@@ -844,7 +845,13 @@ Rps_FltkMainWindow::fill_main_window(void)
   }
   int texteditheight = h()/2-(menubar_h+label_h+1);
   int textedity = menubar_h+label_h+1;
-  const char*inputcolor = rps_get_extra_arg("fltk_input_color");
+  const char*inputcolor = nullptr;
+  inputcolor = rps_get_extra_arg("fltk_input_color");
+  if (!inputcolor) {
+    RPS_POSSIBLE_BREAKPOINT();
+    RPS_ASSERT(rps_has_parsed_user_preferences());
+    inputcolor = rps_userpref_get_string("fltk", "input_color", "ivory").c_str();
+  };
   _mainwin_inptextedit
     = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/textedity,
                                         /*w:*/w(), /*h:*/texteditheight);
@@ -858,8 +865,15 @@ Rps_FltkMainWindow::fill_main_window(void)
                         << "=" << col);
           _mainwin_inptextedit->color(col);
         }
-
     }
+  {
+    /// tooltip strings are not copied by FLTK, so should be in static memory 
+    static char tooltipbuf[128];
+    snprintf(tooltipbuf, sizeof(tooltipbuf)-1,
+	     "RefPerSys input text\n"
+	     "[%s:%d]\n", __FILE__, __LINE__);
+    _mainwin_inptextedit->tooltip(tooltipbuf);
+  }
 #warning _mainwin_inptextedit should have a different background color
   _mainwin_vpack->add(_mainwin_inptextedit);
   _mainwin_outputdisp =
@@ -1252,6 +1266,7 @@ rps_fltk_initialize (int argc, char**argv)
              rps_hostname());
 
   fl_open_display();
+  Fl_Tooltip::enable();
   //-* RPS_ASSERT (rps_fltk_preferences != nullptr);
   /// FIXME: should use preferences
 #warning rps_fltk_initialize should use our user preferences functions in userpref_rps.cc
