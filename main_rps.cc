@@ -669,7 +669,7 @@ rps_run_loaded_application(int &argc, char **argv)
                     << std::endl
                     << " with call frame " << Rps_ShowCallFrame(&_));
       rps_edit_run_cplusplus_code (&_);
-    }
+    };
   //// initialize the FLTK windows in --fltk mode
   if (rps_fltk_enabled ())
     {
@@ -1662,6 +1662,7 @@ main (int argc, char** argv)
   atexit (rps_exiting);
   if (!rps_has_parsed_user_preferences())
     rps_try_parsing_default_user_preferences();
+  RPS_ASSERT(rps_has_parsed_user_preferences());
   if (!rps_batch)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
