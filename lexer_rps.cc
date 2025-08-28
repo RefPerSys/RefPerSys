@@ -417,7 +417,8 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   : Rps_TokenSource(path), toksrcmfil_path(path),
     toksrcmfil_start(nullptr),
     toksrcmfil_line(nullptr),
-    toksrcmfil_end(nullptr), toksrcmfil_nextpage(nullptr)
+    toksrcmfil_end(nullptr), toksrcmfil_nextpage(nullptr),
+    toksrcmfil_fd(-1)
 {
   int fd= open(path.c_str(), O_RDONLY);
   if (fd<0)
@@ -443,19 +444,25 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
         }
     };
   RPS_ASSERT(pgsiz == 1L<<logpgsiz);
+  RPS_POSSIBLE_BREAKPOINT();
   size_t mappedsize = fsiz;
   if (mappedsize & (( 1L<<logpgsiz)-1))
     mappedsize = (mappedsize | ((1L<<logpgsiz)-1)) + 1;
   RPS_ASSERT(mappedsize % pgsiz == 0);
-  void* ad = mmap(nullptr, mappedsize, PROT_READ, MAP_PRIVATE, fd, mappedsize);
+  int moreflags = (mappedsize>(2<<20))?(MAP_HUGE_2MB|MAP_HUGETLB):0;
+  void* ad = mmap(nullptr, mappedsize, PROT_READ, MAP_PRIVATE|moreflags,
+                  fd, mappedsize);
   if (ad == MAP_FAILED)
     RPS_FATALOUT("memory file source " << path << " mmap failure for fd#" << fd
                  << " " << (mappedsize>>10) << " kb " << strerror(errno));
   toksrcmfil_start = toksrcmfil_line = (char*)ad;
   toksrcmfil_nextpage = (char*)ad + mappedsize;
   toksrcmfil_end = (char*)ad + fsiz;
-  close(fd);
+  toksrcmfil_fd = fd;
   RPS_DEBUG_LOG(REPL, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this
+                << " [start@" << (void*)toksrcmfil_start
+                << ", end@" << (void*)toksrcmfil_end
+                << "]"
                 << " p." << position_str()
                 << std::endl << RPS_FULL_BACKTRACE(1, "constr MemoryFileTokenSource"));
   RPS_DEBUG_LOG(LOWREP, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
@@ -478,6 +485,8 @@ Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
   toksrcmfil_line=nullptr;
   toksrcmfil_end=nullptr;
   toksrcmfil_nextpage=nullptr;
+  close(toksrcmfil_fd);
+  toksrcmfil_fd= (-1);
 };      // end Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource
 
 bool
@@ -1989,8 +1998,8 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
 extern "C" void rps_run_test_repl_lexer(const std::string&);
 
 extern "C" int rps_keyword_lexer (Rps_CallFrame*,
-				  const std::string&keystr,
-				  Rps_ObjectRef obkw);
+                                  const std::string&keystr,
+                                  Rps_ObjectRef obkw);
 
 void
 rps_run_test_repl_lexer(const std::string& teststr)

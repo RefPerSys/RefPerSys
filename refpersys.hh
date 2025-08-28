@@ -3227,6 +3227,7 @@ class Rps_MemoryFileTokenSource : public Rps_TokenSource
   const char*toksrcmfil_line;  // pointer to start of current line
   const char*toksrcmfil_end; // the end of the file as mmap-ed
   const char*toksrcmfil_nextpage; // the next virtual memory page (page-aligned)
+  int toksrcmfil_fd;
 public:
   Rps_MemoryFileTokenSource(const std::string path);
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
