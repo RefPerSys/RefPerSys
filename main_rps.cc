@@ -1304,9 +1304,9 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
       memset (thrbuf, 0, sizeof(thrbuf));
       pthread_getname_np(pthread_self(), thrbuf, sizeof(thrbuf)-1);
       snprintf(threadbfr, sizeof(threadbfr),
-               // U+2045 LEFT SQUARE BRACKET WITH QUILL
+// U+2045 LEFT SQUARE BRACKET WITH QUILL
                "⁅%s:%d⁆"
-               // U+2046 RIGHT SQUARE BRACKET WITH QUILL
+// U+2046 RIGHT SQUARE BRACKET WITH QUILL
                , thrbuf,  static_cast<int>(rps_thread_id()));
     }
   RPS_ASSERT(threadbfr[0] != (char)0);
@@ -1552,6 +1552,20 @@ main (int argc, char** argv)
   static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
   if (versionwanted)
     rps_show_version();
+  {
+    static char prefbuf[rps_path_byte_size];
+    memset (prefbuf, 0, sizeof(prefbuf));
+    (void) snprintf(prefbuf, sizeof (prefbuf)-1,
+                    "%s/.config/refpersys_pref",
+                    getenv("HOME"));
+    if (access(prefbuf, R_OK))
+      RPS_FATALOUT("Missing preference file "
+                   << prefbuf << ": " << strerror(errno)
+                   << std::endl
+                   << "Copy then improve it from\n"
+                   << rps_topdirectory
+                   << "/etc/user-preferences-refpersys.txt");
+  }
   rps_parse_program_arguments(argc, argv);
   fflush(nullptr);
   if (helpwanted)
@@ -1632,7 +1646,7 @@ main (int argc, char** argv)
 #if RPS_USE_CURL
   rps_initialize_curl();
 #endif /*RPS_USE_CURL*/
-//// initialize the gccjit
+  //// initialize the gccjit
   rps_gccjit_initialize ();
   atexit(rps_gccjit_finalize);
   if (rps_my_load_dir.empty())
