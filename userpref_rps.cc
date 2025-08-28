@@ -310,7 +310,7 @@ rps_try_parsing_default_user_preferences(void)
   if (!h)
     RPS_FATALOUT("missing $HOME for default user preference (%s)"
                  << strerror(errno));
-  int s = snprintf(buf, sizeof(buf)-2, "%s/.config/refpersys-pref",
+  int s = snprintf(buf, sizeof(buf)-2, "%s/.config/refpersys_pref",
                    h);
   if (s>0 && s < (int)sizeof(buf)-4)
     {
