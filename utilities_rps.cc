@@ -963,7 +963,8 @@ rps_check_mtime_files(void)
           RPS_WARNOUT("rps_check_mtime_files: stat " << curfullpathstr << " failed: " << strerror(errno));
           continue;
         };
-      if (curstat.st_mtime > (time_t) rps_timelong)
+      if (curstat.st_mtime > (time_t) rps_timelong
+	  && (curstat.st_mode & S_IFMT) == S_IFREG)
         RPS_WARNOUT("rps_check_mtime_files: " << curfullpathstr.c_str()
                     << " is younger by "
                     << (curstat.st_mtime - (time_t) rps_timelong)
