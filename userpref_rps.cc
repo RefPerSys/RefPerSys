@@ -107,6 +107,8 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(mts->toksrcmfil_line >= mts->toksrcmfil_start
              && mts->toksrcmfil_line <  mts->toksrcmfil_end);
+  RPS_DEBUG_LOG(REPL, "rps_parse_user_preferences line:"
+		<< mts->toksrcmfil_line);
   int curlineno = mts->line();
   rps_userpref_ird = new INIReader(mts->toksrcmfil_line,
                                    mts->toksrcmfil_end - mts->toksrcmfil_line);
