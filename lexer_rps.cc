@@ -470,7 +470,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
                 << " [start@" << (void*)toksrcmfil_start
                 << ", end@" << (void*)toksrcmfil_end
 		<< ", fd#" << toksrcmfil_fd
-		<< ", mappedsize=" << mappedsize
+		<< ", mappedsize=" << mappedsize << ", fsiz=" << fsiz
                 << "]"
                 << " p." << position_str()
                 << std::endl << RPS_FULL_BACKTRACE(1, "constr MemoryFileTokenSource"));
@@ -1539,7 +1539,7 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
   RPS_ASSERT(strlen(delim)>0 && strlen(delim)<15);
   char endstr[24];
   memset(endstr, 0, sizeof(endstr));
-  snprintf(endstr, sizeof(endstr), ")%s\"", delim);
+  snprintf(endstr, sizeof(endstr)-1, ")%s\"", delim);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_raw_literal_string start L" << startlineno
                 << ",C" << startcolno
                 << "@" << toksrc_name
