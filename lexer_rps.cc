@@ -452,8 +452,12 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
     mappedsize = (mappedsize | ((1L<<logpgsiz)-1)) + 1;
   RPS_ASSERT(mappedsize % pgsiz == 0);
   int moreflags = (mappedsize>(2<<20))?(MAP_HUGE_2MB|MAP_HUGETLB):0;
+  RPS_DEBUG_LOG(REPL, "MemoryFileTokenSource path=" << path
+		<< " fd=" << fd << " fsiz=" << fsiz
+		<< " flags=" << (MAP_PRIVATE|moreflags)
+		<< " mappedsize=" << mappedsize);
   void* ad = mmap(nullptr, fsiz, PROT_READ, MAP_PRIVATE|moreflags,
-                  fd, mappedsize);
+                  fd, /*offset:*/0);
   if (ad == MAP_FAILED)
     RPS_FATALOUT("memory file source " << path << " mmap failure for fd#" << fd
                  << " " << (mappedsize>>10) << " kb " << strerror(errno));
