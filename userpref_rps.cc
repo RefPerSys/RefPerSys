@@ -79,6 +79,7 @@ void
 rps_set_user_preferences(char*path)
 {
   RPS_POSSIBLE_BREAKPOINT();
+  /// to set manually the REPL debugging use rps_add_debug_cstr("REPL") in GDB
   RPS_ASSERT(!access(path, R_OK));
   RPS_ASSERT(rps_is_main_thread());
   if (rps_userpref_mts)
@@ -86,11 +87,15 @@ rps_set_user_preferences(char*path)
                  << path << " but previously to "
                  << rps_userpref_mts->path());
   rps_userpref_mts = new  Rps_MemoryFileTokenSource(path);
-  while (rps_userpref_mts->get_line())
+  bool gotlin = rps_userpref_mts->get_line();
+  RPS_DEBUG_LOG(REPL, "userpref " << path << " mts@" << (void*)rps_userpref_mts << " gotlin=" << gotlin);
+  RPS_POSSIBLE_BREAKPOINT();
+  while (true)
     {
       const char*clp = rps_userpref_mts->curcptr();
       RPS_POSSIBLE_BREAKPOINT();
-      RPS_DEBUG_LOG(REPL, "clp=" << clp);
+      RPS_DEBUG_LOG(REPL, "clp=" << Rps_QuotedC_String(clp) << " line#" << rps_userpref_mts->line());
+      RPS_POSSIBLE_BREAKPOINT();
       if (!clp)
         break;
       else if (!strncmp(clp, RPS_USER_PREFERENCE_MAGIC,
@@ -112,6 +117,7 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
 {
   RPS_ASSERT(mts);
   RPS_POSSIBLE_BREAKPOINT();
+  /// to set manually the REPL debugging use rps_add_debug_cstr("REPL") in GDB
   RPS_ASSERT(mts->toksrcmfil_line >= mts->toksrcmfil_start
              && mts->toksrcmfil_line <  mts->toksrcmfil_end);
   RPS_DEBUG_LOG(REPL, "rps_parse_user_preferences line:"
