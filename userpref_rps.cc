@@ -123,20 +123,26 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   RPS_DEBUG_LOG(REPL, "rps_parse_user_preferences line:"
 		<< mts->toksrcmfil_line);
   int curlineno = mts->line();
+  bool parsedonce = false;
   rps_userpref_ird = new INIReader(mts->toksrcmfil_line,
                                    mts->toksrcmfil_end - mts->toksrcmfil_line);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(rps_userpref_ird != nullptr);
-  if (int pe = rps_userpref_ird->ParseError())
-    {
-      RPS_FATALOUT("failed to parse user preference "
-                   << mts->path() << ":" << pe+curlineno
-		   << " (pe:" << pe <<")");
-    };
-  bool parsedonce = !rps_userpref_is_parsed.exchange(true);
+  parsedonce = !rps_userpref_is_parsed.exchange(true);
   if (!parsedonce)
     RPS_FATALOUT("rps_parse_user_preferences called more than once for "
                  << mts->path());
+  if (int pe = rps_userpref_ird->ParseError())
+    {
+      RPS_WARNOUT("failed to parse user preference "
+                   << mts->path() << ":" << pe+curlineno
+		   << " (pe:" << pe <<")"
+		  << std::endl
+		  << RPS_FULL_BACKTRACE(1, "rps_parse_user_preferences/fail")
+		  << std::endl
+		  << mts->toksrcmfil_line);
+      return;
+    };
   RPS_INFORMOUT("rps_parse_user_preferences path " << mts->path());
   /// see also file etc/user-preferences-refpersys.txt as example
 } // end rps_parse_user_preferences
