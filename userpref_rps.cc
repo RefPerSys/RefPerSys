@@ -89,12 +89,19 @@ rps_set_user_preferences(char*path)
   while (rps_userpref_mts->get_line())
     {
       const char*clp = rps_userpref_mts->curcptr();
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(REPL, "clp=" << clp);
       if (!clp)
         break;
       else if (!strncmp(clp, RPS_USER_PREFERENCE_MAGIC,
-                        strlen(RPS_USER_PREFERENCE_MAGIC)))
+                        strlen(RPS_USER_PREFERENCE_MAGIC))) {
+	RPS_POSSIBLE_BREAKPOINT();
         break;
+      };
     };
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "before preferences "
+		<< rps_userpref_mts->curcptr());
   rps_parse_user_preferences(rps_userpref_mts);
   atexit(rps_delete_user_preferences);
 } // end  rps_set_user_preferences
@@ -112,6 +119,7 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   int curlineno = mts->line();
   rps_userpref_ird = new INIReader(mts->toksrcmfil_line,
                                    mts->toksrcmfil_end - mts->toksrcmfil_line);
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(rps_userpref_ird != nullptr);
   if (int pe = rps_userpref_ird->ParseError())
     {
