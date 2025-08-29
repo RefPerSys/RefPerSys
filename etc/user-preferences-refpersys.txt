@@ -2,7 +2,7 @@
 ### an example of user preferences file for http://refpersys.org/
 
 
-### copy it (e.g. to ~/.config/refpersys-preferences) and edit the
+### copy it (e.g. to ~/.config/refpersys_pref) and edit the
 ### copy before using it ....  see file userpref_rps.cc parsing this
 
 ### every line up to one with *REFPERSYS_USER_PREFERENCES is skipped.

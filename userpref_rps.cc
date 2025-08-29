@@ -114,7 +114,8 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   if (int pe = rps_userpref_ird->ParseError())
     {
       RPS_FATALOUT("failed to parse user preference "
-                   << mts->path() << ":" << pe+curlineno);
+                   << mts->path() << ":" << pe+curlineno
+		   << " (pe:" << pe <<")");
     };
   bool parsedonce = !rps_userpref_is_parsed.exchange(true);
   if (!parsedonce)
