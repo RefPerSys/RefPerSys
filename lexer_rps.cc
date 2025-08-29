@@ -451,7 +451,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   if (mappedsize & (( 1L<<logpgsiz)-1))
     mappedsize = (mappedsize | ((1L<<logpgsiz)-1)) + 1;
   RPS_ASSERT(mappedsize % pgsiz == 0);
-  int moreflags = (mappedsize>(2<<20))?(MAP_HUGE_2MB|MAP_HUGETLB):0;
+  int moreflags = (mappedsize>(2<<20))?(MAP_HUGETLB):0;
   RPS_DEBUG_LOG(REPL, "MemoryFileTokenSource path=" << path
 		<< " fd=" << fd << " fsiz=" << fsiz
 		<< " flags=" << (MAP_PRIVATE|moreflags)
