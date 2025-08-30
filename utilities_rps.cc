@@ -447,6 +447,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
     };
 } // end rps_emit_lgplv3_copyright_notice_AT
 
+#pragma message "perhaps some rps_emit_proprietary_copyright_notice is needed here"
 
 ////////////////
 
