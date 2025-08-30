@@ -428,7 +428,7 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
   RPS_ASSERT(paylgen);
   RPS_DEBUG_LOG (CODEGEN, "make_lightgen_code_object made " << RPS_OBJECT_DISPLAY(_f.oblightgen)
                  << std::endl
-                 <<  " from " << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
+                 <<  "… from " << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
 #warning probably incomplete Rps_PayloadLightningCodeGen::make_lightgen_code_object
   return _f.oblightgen;
 } // end Rps_PayloadLightningCodeGen::make_lightgen_code_object

@@ -1088,8 +1088,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " toksrc=" << *this);
       _f.res = get__namoid__token(&_, curp);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token namoid "
-                    << Rps_QuotedC_String(curp)
-                    << " toksrc=" << *this << " gives " << _f.res
+                    << Rps_QuotedC_String(curp) << std::endl
+                    << " toksrc=" << *this << std::endl
+		    << " gives " << _f.res
                     << std::endl
                     << RPS_FULL_BACKTRACE(1,"Rps_TokenSource::get_token"
                                           " namoid"));
@@ -1345,11 +1346,11 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("Rps_TokenSource::get_delimiter failing at " << startpos
               << " for " << startp << " in " << *this << std::endl
-              << " git " << rps_gitid << " timestamp " << rps_timestamp
+              << "… git " << rps_gitid << " timestamp " << rps_timestamp
               << " delimstr='"  << Rps_Cjson_String(delimstr)
               << "'" << " loopcnt=" << loopcnt
-              << std::endl << " host:" << rps_hostname()
-              << std::endl << " procversion:" << rps_get_proc_version()
+              << std::endl << "… host:" << rps_hostname()
+              << std::endl << "… procversion:" << rps_get_proc_version()
               << std::endl
               << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_delimiter-fail"));
   std::string failmsg {"Rps_TokenSource::get_delimiter failing at "};
