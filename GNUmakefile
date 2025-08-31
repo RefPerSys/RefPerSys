@@ -650,7 +650,8 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) -c -std=gnu++17 -g -O $< -o $@
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+                         -c $(REFPERSYS_COMPILER_FLAGS) $< -o $@
 
 ## for plugins, see do-build-refpersys-plugin.cc
 print-plugin-settings:
