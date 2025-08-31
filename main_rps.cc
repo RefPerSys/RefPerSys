@@ -1527,6 +1527,31 @@ main (int argc, char** argv)
   static_assert(sizeof(rps_progexe) > 80);
   if (!getenv("REFPERSYS_TOPDIR"))
     RPS_FATALOUT("missing $REFPERSYS_TOPDIR in environment");
+  /// read $REFPERSYS_TOPDIR/main_rps.cc which should be this file and
+  /// mention refpersys.org
+  {
+    char buf[rps_path_byte_size];
+    memset (buf, 0, sizeof(buf));
+    snprintf(buf, sizeof(buf)-1, "%s/" __FILE__, getenv("REFPERSYS_TOPDIR"));
+    FILE* srcf = fopen(buf, "r");
+    if (!srcf)
+      RPS_FATALOUT("failed to open "<< buf
+                   << " : " << strerror(errno));
+    bool foundrefpersysorg = false;
+    char linbuf[256];
+    do
+      {
+        memset(linbuf, 0, sizeof(linbuf));
+        if (!fgets(linbuf, sizeof(linbuf)-4, srcf))
+          break;
+        if (strstr(linbuf, "refpersys.org"))
+          foundrefpersysorg = true;
+      }
+    while (!foundrefpersysorg);
+    if (!foundrefpersysorg)
+      RPS_FATALOUT("file " << buf << " does not mention refpersys.org");
+    fclose(srcf);
+  }
   ///// read /proc/version which hopefully is GNU/Linux specific
   {
     FILE* procversf = fopen("/proc/version", "r");
