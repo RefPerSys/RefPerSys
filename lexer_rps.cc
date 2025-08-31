@@ -731,7 +731,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                             << " lexing keyword " << namestr
-                            << " from:"
+                            << " from:" << std::endl
                             <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token/keyw"));
               int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed);
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
