@@ -1023,6 +1023,7 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc) {
     RPS_ASSERT(gc != nullptr);
     rpscarbrepl_stack_visit(&carbstack, gc, &carbdata);
+    RPS_ASSERT(carbdata.cardata_magic == rps_magic_carbrepl_data);
     gc->mark_obj(carbdata.cardata_ob1);
     gc->mark_obj(carbdata.cardata_ob2);
     gc->mark_obj(carbdata.cardata_obdelim);
@@ -1059,6 +1060,8 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
   /// TODO: should probably use generated scanning routines
   /// the last statement should be the following cleanup
   rpscarbrepl_stack_cleanup(&carbstack);
+  RPS_POSSIBLE_BREAKPOINT();
+  memset ((void*)&carbdata, 0, sizeof(carbdata));
   RPS_POSSIBLE_BREAKPOINT();
 } // end rps_do_carburetta_tokensrc
 
