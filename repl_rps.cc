@@ -1791,8 +1791,10 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
       RPS_POSSIBLE_BREAKPOINT();
       RPS_WARNOUT("rps_do_one_repl_command command at "
                   << commandpos << std::endl
-                  << "Should start with an object or symbol but got "
+                  << "Should start with an object or symbol but got"
+		  << std::endl << "°lextokv "
                   << _f.lextokv << " of kind " << lextokz->lxkind()
+		  << " value " << _f.lexval
                   << std::endl
                   << RPS_FULL_BACKTRACE(1, "rps_do_one_repl_command/non-obj-cmd"));
       return;

@@ -708,6 +708,6 @@ main(int argc, char**argv, const char**env)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $RPS_TOPDIR && make do-build-refpersys-plugin" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && make do-build-refpersys-plugin" ;;
  ** End: ;;
  ****************/
