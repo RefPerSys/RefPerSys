@@ -1525,6 +1525,10 @@ main (int argc, char** argv)
   RPS_ASSERT(rps_stored_locale != nullptr);
   rps_stdout_istty = isatty(STDOUT_FILENO);
   static_assert(sizeof(rps_progexe) > 80);
+  if (!getenv("REFPERSYS_TOPDIR"))
+    RPS_FATALOUT("missing $REFPERSYS_TOPDIR in environment");
+  if (!getenv("REFPERSYS_HOME"))
+    RPS_WARNOUT("possible lack of $REFPERSYS_HOME in environment");
   ///// read /proc/version which hopefully is GNU/Linux specific
   {
     FILE* procversf = fopen("/proc/version", "r");
