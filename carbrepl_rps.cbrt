@@ -1057,8 +1057,6 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_do_carburetta_tokensrc°+pars"));
 #warning unimplemented rps_do_carburetta_tokensrc
-  /// TODO: should probably use generated scanning routines
-  /// the last statement should be the following cleanup
   rpscarbrepl_stack_cleanup(&carbstack);
   RPS_POSSIBLE_BREAKPOINT();
   memset ((void*)&carbdata, 0, sizeof(carbdata));
