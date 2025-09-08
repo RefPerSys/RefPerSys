@@ -95,6 +95,7 @@
 #include <FL/Fl_Tooltip.H>
 /// Fl_Flex.h is only in FLTK 1.4 not FLTK 1.3
 #include <FL/Fl_Flex.H>
+#include <FL/names.h>
 
 /// conventional strings
 extern "C" const char rps_fltk_gitid[];
@@ -468,8 +469,10 @@ Rps_FltkInputTextEditor::~Rps_FltkInputTextEditor()
 int
 Rps_FltkInputTextEditor::handle(int e)
 {
-  RPS_DEBUG_LOG(REPL, "this @" << (void*)this
-		<< "handle e=" << e);
+  RPS_DEBUG_LOG(REPL, "inp.tx. this @" << (void*)this
+		<< "handle e=" << e << ":" << fl_eventnames[e]
+		<< std::endl
+		<< RPS_FULL_BACKTRACE(1, "Rps_FltkInputTextEditor::handle"));
   int r= Fl_Text_Editor::handle(e);
   RPS_DEBUG_LOG(REPL, "this @" << (void*)this
 		<< "handled e=" << e << " r=" << r);
