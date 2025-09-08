@@ -5,9 +5,9 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the FLTK 1.4 graphical interface.  See
- *      also https://fltk.org - download FLTK source code and compile
- *      it with debugging enabled, see our README.md for more.
+ *      It has the code for the FLTK 1.4 or 1.5 graphical interface.
+ *      See also https://fltk.org/ - download FLTK source code and
+ *      compile it with debugging enabled, see our README.md for more.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -847,14 +847,15 @@ Rps_FltkMainWindow::fill_main_window(void)
   int textedity = menubar_h+label_h+1;
   const char*inputcolor = nullptr;
   inputcolor = rps_get_extra_arg("fltk_input_color");
-  if (!inputcolor) {
-    RPS_POSSIBLE_BREAKPOINT();
-    RPS_ASSERT(rps_has_parsed_user_preferences());
-    inputcolor = rps_userpref_get_string("fltk", "input_color", "ivory").c_str();
-  };
+  if (!inputcolor)
+    {
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_ASSERT(rps_has_parsed_user_preferences());
+      inputcolor = rps_userpref_get_string("fltk", "input_color", "ivory").c_str();
+    };
   _mainwin_inptextedit
     = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/textedity,
-                                        /*w:*/w(), /*h:*/texteditheight);
+                                  /*w:*/w(), /*h:*/texteditheight);
   if (inputcolor)
     {
       bool ok=false;
@@ -867,11 +868,11 @@ Rps_FltkMainWindow::fill_main_window(void)
         }
     }
   {
-    /// tooltip strings are not copied by FLTK, so should be in static memory 
+    /// tooltip strings are not copied by FLTK, so should be in static memory
     static char tooltipbuf[128];
     snprintf(tooltipbuf, sizeof(tooltipbuf)-1,
-	     "RefPerSys input text\n"
-	     "[%s:%d]\n", __FILE__, __LINE__);
+             "RefPerSys input text\n"
+             "[%s:%d]\n", __FILE__, __LINE__);
     _mainwin_inptextedit->tooltip(tooltipbuf);
   }
 #warning _mainwin_inptextedit should have a different background color
@@ -1300,6 +1301,7 @@ rps_fltk_initialize (int argc, char**argv)
   RPS_DEBUG_LOG(REPL, "rps_fltk_initialize showing mainwin@"
                 << (void*)rps_fltk_mainwin
                 << " DISPLAY=" << Rps_Cjson_String(getenv("DISPLAY"))
+                << " main_h=" << mainwin_h << " main_w=" << mainwin_w
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_fltk_initialize"));
   RPS_WARNOUT("incomplete rps_fltk_initialize " << titlebuf << std::endl
