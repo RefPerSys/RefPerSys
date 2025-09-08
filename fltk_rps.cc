@@ -352,6 +352,7 @@ public:
     destroy_datafunptr = nullptr;
     destroy_clos = nullptr;
   };
+  virtual int handle(int e);
   Rps_FltkInputTextEditor(int x, int y, int w, int h);
   virtual ~Rps_FltkInputTextEditor();
 };              // end  Rps_FltkInputTextEditor
@@ -464,6 +465,16 @@ Rps_FltkInputTextEditor::~Rps_FltkInputTextEditor()
   RPS_DEBUG_LOG(REPL, "destr this @" << (void*)this);
 } // end Rps_FltkInputTextEditor destructor
 
+int
+Rps_FltkInputTextEditor::handle(int e)
+{
+  RPS_DEBUG_LOG(REPL, "this @" << (void*)this
+		<< "handle e=" << e);
+  int r= Fl_Text_Editor::handle(e);
+  RPS_DEBUG_LOG(REPL, "this @" << (void*)this
+		<< "handled e=" << e << " r=" << r);
+  return r;
+} // end Rps_FltkInputTextEditor::handle
 ////////////////////////////////////////////////////////////////
 
 Rps_PayloadFltkWidget::Rps_PayloadFltkWidget(Rps_ObjectZone*owner, Fl_Widget*wid)
