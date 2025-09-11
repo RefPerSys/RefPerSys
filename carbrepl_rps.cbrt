@@ -636,7 +636,6 @@ replnt_expr: replnt_expr PLUS replnt_term            {
 replnt_expr: replnt_expr MINUS replnt_term           {
   _Pragma("message \"replnt_expr as replnt_expr MINUS replnt_term in carbrepl_rps.cbrt\"");
   static Rps_Id id_minus_delim;
-  _Pragma("message \"wrong Ids for MINUS\"");
   if (!id_minus_delim)
     id_minus_delim = Rps_Id("_3isfNUOsxXY02Bww6");  ///$minus!delim∈repl_delimiter
   static Rps_Id id_minus_binop;
@@ -668,9 +667,16 @@ replnt_expr: replnt_expr MINUS replnt_term           {
 replnt_term: replnt_factor                    {
   _Pragma("message \"replnt_term as replnt_factor in carbrepl_rps.cbrt\"");
   $$ = $0;
+  RPS_DEBUG_LOG(REPL, "replnt_term: replnt_factor $$=" << $0);
 }
 
 replnt_term: replnt_term ASTERISK replnt_factor      {
+  static Rps_Id id_mult_delim;
+  if (!id_mult_delim)
+    id_mult_delim = Rps_Id("_2uw3Se5dPOU00yhxpA");  ///$mult!delim∈repl_delimiter
+  static Rps_Id id_mult_commutop;
+  if (!id_mult_commutop)
+    id_mult_commutop = Rps_Id("_4QX7Cg3gDkd005b9b");  ///$mult!commutop∈repl_commutative_operator
   _Pragma("message \"replnt_term as replnt_term ASTERISK replnt_factor in carbrepl_rps.cbrt\"");
   //  $$ = $0 * $2;
   }
