@@ -678,7 +678,22 @@ replnt_term: replnt_term ASTERISK replnt_factor      {
   if (!id_mult_commutop)
     id_mult_commutop = Rps_Id("_4QX7Cg3gDkd005b9b");  ///$mult!commutop∈repl_commutative_operator
   _Pragma("message \"replnt_term as replnt_term ASTERISK replnt_factor in carbrepl_rps.cbrt\"");
-  //  $$ = $0 * $2;
+
+  carbdata.cardata_obdelim =
+    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
+                                              id_mult_delim); // $mult!delim∈repl_delimiter
+  carbdata.cardata_obop =
+    Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
+                                              id_mult_commutop); // $mult!commutop∈repl_commutative_operator
+  /// for the garbage collector we need to...
+  carbdata.cardata_vleft = $0;
+  carbdata.cardata_vright = $2;
+  carbdata.touch_carbdata();
+  _Pragma("message \"take inspiration from parsrepl_rps.cc function Rps_TokenSource::parse_sum\"");
+  $$ = carbdata.cardata_vinst
+    = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
+                        {carbdata.cardata_obop, $0, $2});  //  $$ = $0 * $2;
+  RPS_DEBUG_LOG(REPL, "term (as product) is " << $$);
   }
 
 replnt_term: replnt_term SLASH replnt_factor         {
@@ -688,7 +703,7 @@ replnt_term: replnt_term SLASH replnt_factor         {
     id_div_delim = Rps_Id("_3ak80l3pr9700M90pz"); //$div!delim∈repl_delimiter
   static Rps_Id id_div_binop;
   if (!id_div_binop)
-    id_minus_binop = Rps_Id("_0GTVGelTnCP01I0od2"); //$div!binop∈repl_binary_operator
+    id_div_binop = Rps_Id("_0GTVGelTnCP01I0od2"); //$div!binop∈repl_binary_operator
   //  $$ = $0 / $2;
   }
   
