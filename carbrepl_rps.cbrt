@@ -683,6 +683,12 @@ replnt_term: replnt_term ASTERISK replnt_factor      {
 
 replnt_term: replnt_term SLASH replnt_factor         {
   _Pragma("message \"replnt_term as replnt_term SLASH replnt_factor in carbrepl_rps.cbrt\"");
+  static Rps_Id id_div_delim;
+  if (!id_div_delim)
+    id_div_delim = Rps_Id("_3ak80l3pr9700M90pz"); //$div!delim∈repl_delimiter
+  static Rps_Id id_div_binop;
+  if (!id_div_binop)
+    id_minus_binop = Rps_Id("_0GTVGelTnCP01I0od2"); //$div!binop∈repl_binary_operator
   //  $$ = $0 / $2;
   }
   
