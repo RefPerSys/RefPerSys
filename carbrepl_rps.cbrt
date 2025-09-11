@@ -638,10 +638,10 @@ replnt_expr: replnt_expr MINUS replnt_term           {
   static Rps_Id id_minus_delim;
   _Pragma("message \"wrong Ids for MINUS\"");
   if (!id_minus_delim)
-    id_minus_delim = Rps_Id("_4ShDsOWk7al02eDRtM");  ///TODO: WRONG FIXME
+    id_minus_delim = Rps_Id("_3isfNUOsxXY02Bww6");  ///$minus!delim∈repl_delimiter
   static Rps_Id id_minus_binop;
   if (!id_minus_binop)
-    id_minus_binop = Rps_Id("_51jvc2mFhql03qwRG6");  ///TODO: WRONG FIXME
+    id_minus_binop = Rps_Id("_13ffyyJhGHI01ySLh");  ///$minus!binop∈repl_binary_operator
   carbdata.cardata_obdelim =
     Rps_ObjectRef::find_object_or_fail_by_oid(callframe,
                                               id_minus_delim); // "minus!delim"∈repl_delimiter
@@ -653,9 +653,18 @@ replnt_expr: replnt_expr MINUS replnt_term           {
   carbdata.cardata_vleft = $0;
   carbdata.cardata_vright = $2;
   carbdata.touch_carbdata();
-  // $$ = $0 - $2;
+  $$ = carbdata.cardata_vinst
+    = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
+                        {carbdata.cardata_obop, $0, $2});
+  RPS_DEBUG_LOG(REPL, "replnt_expr: replnt_expr MINUS replnt_term result is " << $$
+		<< " obdelim=" << carbdata.cardata_obdelim
+		<< " obop=" << carbdata.cardata_obop
+                << " left:" << $0 << " right:" << $2 << std::endl
+                << RPS_FULL_BACKTRACE(1, "replnt_expr: replnt_expr MINUS replnt_term"));
+  //FIXME:carbdata.cardata_vinst->put_persistent_metadata(<some-object>,<some-integer>);
+  carbdata.reset_carbdata();
 }
-  
+
 replnt_term: replnt_factor                    {
   _Pragma("message \"replnt_term as replnt_factor in carbrepl_rps.cbrt\"");
   $$ = $0;
