@@ -39,19 +39,17 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /// get repl_precedence attribute, conventionally values are small non-negative tagged integers
   _f.obreplprecedence = RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp); //repl_precedence∈symbol
   /// get the repl_operator superclass
-  _f.obclassoper =  RPS_ROOT_OB(_9j12Nhm4itk00YYUW7); //repl_operator∈class
+  _f.obclassoper =  RPS_ROOT_OB(_6vcJz35mTam01zYLjL); //repl_unary_operator∈class
+  RPS_ASSERT(_f.obclassoper->is_class());
 
 #error missing code in rpsplug_createmonoper.cc
 #if 0 && badcode
-  _f.obclassbinary =  RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br); //repl_binary_operator∈class
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassoper);
-  RPS_ASSERT(_f.obclassbinary);
   RPS_ASSERT(_f.obclassrepldelim);
   _f.obclassoper = _f.obclassbinary;
   /** we might improve and accept a subclass for the operator **/
-  RPS_ASSERT(_f.obclassoper->is_class());
-  RPS_ASSERT(_f.obclassbinary->is_class());
+  RPS_ASSERT(_f.obclassoper->is_class());;
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
@@ -63,7 +61,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (xtraprecedence && isdigit(xtraprecedence[0]))
     precedence = atoi (xtraprecedence);
   else
-    RPS_FATALOUT("failure: plugin " << plugin->plugin_name 
+    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with bad precedence " << precedence << " for argument " << Rps_QuotedC_String(plugarg));
   if (ispunct(plugarg[0]))
     {
@@ -72,8 +70,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
         allpunct = ispunct(*pc);
       argispunct = allpunct;
     }
-  else
-    if (isalpha(plugarg[0]))
+  else if (isalpha(plugarg[0]))
     {
       bool allident = true;
       for (const char*pc = plugarg; allident && *pc; pc++)
@@ -99,16 +96,18 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /** TODO:
    * we need to fill obnewoper and register it as a root or as a constant
    */
-  if (xtraname) {
-    _f.namestr = Rps_Value{std::string(xtraname)};
-    _f.obnewoper
+  if (xtraname)
+    {
+      _f.namestr = Rps_Value{std::string(xtraname)};
+      _f.obnewoper
       ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-		 _f.namestr);
-  }
-  if (precedence >= 0) {
-    _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
-			   Rps_Value::make_tagged_int(precedence));
-  }
+                 _f.namestr);
+    }
+  if (precedence >= 0)
+    {
+      _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
+                             Rps_Value::make_tagged_int(precedence));
+    }
 #endif
   /***
    *
@@ -121,7 +120,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_FATALOUT("rpsplug_createmonoper not implemented for "
                <<  Rps_QuotedC_String(plugarg)
                << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper)
-	       << " see rpsplug_thesetreploper.cc plugin");
+               << " see rpsplug_thesetreploper.cc plugin");
 #warning unimplemented rpsplug_createmonoper
 } // end rps_do_plugin
 
