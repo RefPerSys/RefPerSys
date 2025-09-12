@@ -81,7 +81,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
       argisident = allident;
     };
   if (!argispunct && !argisident)
-    RPS_FATALOUT("rpsplug_createnoncommutativeoperator with bad argument "
+    RPS_FATALOUT("rpsplug_createmonoper with bad argument "
                  <<  Rps_QuotedC_String(plugarg)
                  << " not identifier or all-delim");
   RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
