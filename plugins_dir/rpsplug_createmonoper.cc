@@ -34,22 +34,34 @@ rps_do_plugin(const Rps_Plugin* plugin)
   int precedence = -1;
   memset (argcopy, 0, MYARGMAXLEN);
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
+  if (!plugarg || plugarg[0]==(char)0)
+    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
+                 << " without argument; should be some non-empty string");
+  if (strlen(plugarg) >= MYARGMAXLEN-1)
+    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
+                 << " with too long argument " << Rps_QuotedC_String(plugarg));
   const char*xtraname = rps_get_extra_arg("name");
   const char*xtraprecedence = rps_get_extra_arg("precedence");
-  /// get repl_precedence attribute, conventionally values are small non-negative tagged integers
+  /// get repl_precedence attribute, conventionally values are small
+  /// non-negative tagged integers
   _f.obreplprecedence = RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp); //repl_precedence∈symbol
   /// get the repl_operator superclass
   _f.obclassoper =  RPS_ROOT_OB(_6vcJz35mTam01zYLjL); //repl_unary_operator∈class
   RPS_ASSERT(_f.obclassoper->is_class());
-
+  _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
+  RPS_ASSERT(_f.obclassoper);
+  /** we might improve and later accept a subclass for the operator **/
+  RPS_ASSERT(_f.obclassoper->is_class());
+  RPS_ASSERT(_f.obclassrepldelim);
+  RPS_ASSERT(_f.obclassrepldelim->is_class());
+  strncpy(argcopy, plugarg, MYARGMAXLEN);
+  
 #error missing code in rpsplug_createmonoper.cc
 #if 0 && badcode
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
-  RPS_ASSERT(_f.obclassoper);
-  RPS_ASSERT(_f.obclassrepldelim);
   _f.obclassoper = _f.obclassbinary;
   /** we might improve and accept a subclass for the operator **/
-  RPS_ASSERT(_f.obclassoper->is_class());;
+  RPS_ASSERT(_f.obclassoper->is_class());
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
