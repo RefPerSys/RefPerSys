@@ -55,12 +55,14 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_ASSERT(_f.obclassrepldelim);
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   strncpy(argcopy, plugarg, MYARGMAXLEN);
+  if (xtraprecedence && isdigit(xtraprecedence[0]))
+    precedence = atoi (xtraprecedence);
+  else
+    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
+                 << " with bad precedence " << precedence << " for argument " << Rps_QuotedC_String(plugarg));
   
 #error missing code in rpsplug_createmonoper.cc
 #if 0 && badcode
-  _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
-  _f.obclassoper = _f.obclassbinary;
-  /** we might improve and accept a subclass for the operator **/
   RPS_ASSERT(_f.obclassoper->is_class());
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
@@ -70,11 +72,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with too long argument " << Rps_QuotedC_String(plugarg));
   strncpy(argcopy, plugarg, MYARGMAXLEN);
-  if (xtraprecedence && isdigit(xtraprecedence[0]))
-    precedence = atoi (xtraprecedence);
-  else
-    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
-                 << " with bad precedence " << precedence << " for argument " << Rps_QuotedC_String(plugarg));
   if (ispunct(plugarg[0]))
     {
       bool allpunct = true;
