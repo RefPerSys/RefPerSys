@@ -648,10 +648,10 @@ main(int argc, char**argv, const char**env)
       std::clog << bp_progname << " : too wide build command " << buildcmd << std::endl;
       exit(EXIT_FAILURE);
     };
-  printf("%s [%s:%d] running GNU make in %s as \n  %s"
+  printf("%s [%s:%d|%.8s] running GNU make in %s as \n  %s"
          "\n (plugin binary %s, %d sources starting with %s)\n",
          bp_progname,
-         __FILE__, __LINE__-2,
+         __FILE__, __LINE__-2, bp_git_id,
          rps_topdirectory,
          buildcmd,  bp_plugin_binary,
          (int)bp_vect_cpp_sources.size(),
