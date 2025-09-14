@@ -445,6 +445,7 @@ bp_prog_options(int argc, char**argv)
       optind++;
     };        // end while(optind<argc)
   asm volatile ("nop; nop; nop; nop");
+  BP_NOP_BREAKPOINT();
   ////
   if (bp_vect_cpp_sources.empty())
     {
@@ -478,12 +479,14 @@ bp_prog_options(int argc, char**argv)
           exit(EXIT_FAILURE);
         }
       bp_srcdir.assign(duprp);
+      BP_NOP_BREAKPOINT();
       if (bp_verbose)
         {
           printf("%s defaulted plugin source directory to %s [%s:%d]\n",
                  bp_progname, bp_srcdir.c_str(), __FILE__, __LINE__-1);
         }
     };
+  BP_NOP_BREAKPOINT();
 } // end bp_prog_options
 
 
