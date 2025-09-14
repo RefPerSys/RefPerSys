@@ -22,7 +22,7 @@
 ///     ./do-build-refpersys-plugin --output=PLUGIN | -o PLUGIN #output generated .so
 ///     ./do-build-refpersys-plugin --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files
 ///     ./do-build-refpersys-plugin --shell=CMD | -S CMD #run shell command
-///     ./do-build-refpersys-plugin --plugin-src=DIRNAME | -s DIRNAME #plugin source directory
+///     ./do-build-refpersys-plugin --plugin-src=DIR_NAME | -s DIR_NAME #plugin source directory
 ///     ./do-build-refpersys-plugin --help | -h #this help
 ///     ./do-build-refpersys-plugin --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script
 ///
@@ -60,6 +60,10 @@
 #include <libgen.h>
 
 
+/// GDB debugging of C++ see https://www.youtube.com/watch?v=jc_uzRWSrvw
+
+
+
 //// www.gnu.org/software/guile/ version 3
 #include <libguile.h>
 ///
@@ -88,7 +92,7 @@ extern "C" {
   std::string bp_srcdir;  // plugin source directory
   void bp_initialize_guile_scheme(void);
 #warning bp_srcdir plugin source directory incompletely handled
-  // if only once C++ source given set bp_srcdir to its dirname
+  // if only once C++ source given set bp_srcdir to its dirname(3)
   std::string bp_objdir; // plugin object directory
   std::vector<std::string> bp_vect_cpp_sources; // vector of C++ sources
   std::string bp_temp_ninja;  // temporary generated file for ninja-build.org
@@ -140,7 +144,7 @@ struct option bp_options_arr[BP_MAX_OPTIONS] =
     .val= 'S',
   },
   {
-    .name= "plugin-source", // --plugin-source="DIR" | -s DIRNAME
+    .name= "plugin-source", // --plugin-source="DIR" | -s DIR_NAME
     .has_arg= required_argument,
     .flag= nullptr,
     .val= 's',
@@ -185,7 +189,7 @@ bp_usage(void)
   std::cout << '\t' << bp_progname << " --output=PLUGIN | -o PLUGIN #output generated .so" << std::endl;
   std::cout << '\t' << bp_progname << " --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files" << std::endl;
   std::cout << '\t' << bp_progname << " --shell=CMD | -S CMD #run shell command" << std::endl;
-  std::cout << '\t' << bp_progname << " --plugin-src=DIRNAME | -s DIRNAME #plugin source directory" << std::endl;
+  std::cout << '\t' << bp_progname << " --plugin-src=DIR_NAME | -s DIR_NAME #plugin source directory" << std::endl;
   std::cout << '\t' << bp_progname << " --guile=GUILE_CODE | -G GUILE_CODE #GUILE code for GNU make" << std::endl;
   std::cout << '\t' << bp_spaces << "if GUILE_CODE starts with a left-paren, space or semicolon, it is passed to the interpreter inside make"
             << std::endl;
@@ -212,7 +216,9 @@ bp_prog_options(int argc, char**argv)
 {
   int opt= 0;
   int ix= 0;
+  pthread_setname_np(pthread_self(), "bldrpsplug");
   bp_vect_cpp_sources.reserve(argc);
+  BP_NOP_BREAKPOINT();
   do
     {
       opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:G:", bp_options_ptr, &ix);
@@ -458,7 +464,11 @@ bp_prog_options(int argc, char**argv)
   // default the source directory to the directory of first C++ plugin source if none given
   if (bp_srcdir.empty())
     {
-      char*dn = dirname(const_cast<char*>(bp_vect_cpp_sources[0].c_str()));
+      //// dirname(3) is modifying the path!
+      char srcbuf[PATH_MAX];
+      memset(srcbuf, 0, sizeof(srcbuf));
+      strncpy(srcbuf, bp_vect_cpp_sources[0].c_str(), sizeof(srcbuf)-1);
+      char*dn = dirname(srcbuf);
       char rpbuf[PATH_MAX];
       memset(rpbuf, 0, sizeof(rpbuf));
       char*rp = realpath(dn, rpbuf);
