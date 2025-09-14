@@ -316,12 +316,13 @@ bp_prog_options(int argc, char**argv)
           if (!access(optarg, F_OK) && strlen(optarg)<sizeof(bufbak)-2)
             {
               int n = snprintf(bufbak, sizeof(bufbak), "%s~", optarg);
-              if (n >= (int)sizeof(bufbak)-2) {
-              std::clog << bp_progname
-                        << " : too long output "
-                        << optarg << std::endl;
-              exit(EXIT_FAILURE);
-              };
+              if (n >= (int)sizeof(bufbak)-2)
+                {
+                  std::clog << bp_progname
+                            << " : too long output "
+                            << optarg << std::endl;
+                  exit(EXIT_FAILURE);
+                };
               if (!rename(optarg, bufbak) && bp_verbose)
                 printf("%s renamed old plugin: %s -> %s\n", bp_progname, optarg, bufbak);
             };
@@ -381,8 +382,10 @@ bp_prog_options(int argc, char**argv)
   const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   while (optind < argc)
     {
+      BP_NOP_BREAKPOINT();
       std::string curarg=argv[optind];
       int srcix=1+(int)bp_vect_cpp_sources.size();
+      BP_NOP_BREAKPOINT();
       if (access(curarg.c_str(), R_OK))
         {
           int err= errno;
@@ -392,6 +395,7 @@ bp_prog_options(int argc, char**argv)
                   strerror(err), cwd, __FILE__, __LINE__-2);
           exit(EXIT_FAILURE);
         };
+      BP_NOP_BREAKPOINT();
       for (char c: curarg)
         {
           if (isspace(c) || !isprint(c))
@@ -403,13 +407,29 @@ bp_prog_options(int argc, char**argv)
               exit(EXIT_FAILURE);
             };
         }
+      BP_NOP_BREAKPOINT();
       {
         std::string realfile;
         char*rp = realpath(curarg.c_str(),nullptr);
+        BP_NOP_BREAKPOINT();
         if (rp && strcmp(rp, curarg.c_str()))
-          realfile.assign(rp);
+          /// the strdup below is a memory leak since never freed
+          /// but we dont care
+          {
+            char *duprp = strdup(rp);
+            BP_NOP_BREAKPOINT();
+            if (!duprp)
+              {
+                fprintf(stderr,
+                        "%s plugin source#%d %s failed to strdup (%s)",
+                        bp_progname, srcix, curarg.c_str(), strerror(errno));
+                exit (EXIT_FAILURE);
+              };
+            realfile.assign(duprp);
+          }
         else
           realfile = curarg;
+        BP_NOP_BREAKPOINT();
         if (bp_verbose)
           {
             printf("%s (:%d) adding plugin C++ source file#%d %s (@%p) really %s (@%p)\n",
@@ -448,7 +468,16 @@ bp_prog_options(int argc, char**argv)
                   __FILE__, __LINE__-2);
           exit(EXIT_FAILURE);
         };
-      bp_srcdir.assign(rp);
+      char* duprp = strdup(rp); // not freed
+      if (!duprp)
+        {
+          fprintf(stderr,
+                  "%s failed to strdup of %s (%s) [%s:%d]\n",
+                  bp_progname, rp, strerror(errno),
+                  __FILE__, __LINE__-2);
+          exit(EXIT_FAILURE);
+        }
+      bp_srcdir.assign(duprp);
       if (bp_verbose)
         {
           printf("%s defaulted plugin source directory to %s [%s:%d]\n",
@@ -601,13 +630,14 @@ main(int argc, char**argv, const char**env)
                     << " [" << __FILE__ << ":" << __LINE__ <<"]"
                     << std::endl;
         };
-      if (access(thecppsrc.c_str(), R_OK)) {
-        int e=errno;
-        std::clog << "#" << bp_progname << " missing single C++ source is "
-                  << thecppsrc << " " << strerror(e)
-                  << " [" << __FILE__ << ":" << __LINE__ <<"]"
-                  << std::endl;
-      }
+      if (access(thecppsrc.c_str(), R_OK))
+        {
+          int e=errno;
+          std::clog << "#" << bp_progname << " missing single C++ source is "
+                    << thecppsrc << " " << strerror(e)
+                    << " [" << __FILE__ << ":" << __LINE__ <<"]"
+                    << std::endl;
+        }
       BP_NOP_BREAKPOINT();
       if (bp_verbose)
         snprintf (buildcmd, sizeof(buildcmd)-1, "%s --trace -C %s "
@@ -660,15 +690,16 @@ main(int argc, char**argv, const char**env)
   BP_NOP_BREAKPOINT();
   int ex = system(buildcmd);
   sync ();
-  if (ex) {
-    char cwdbuf[256];
-    memset(cwdbuf, 0, sizeof(cwdbuf));
-    if (!getcwd(cwdbuf, sizeof(cwdbuf)-3) || cwdbuf[sizeof(cwdbuf)-3])
-      strcpy(cwdbuf, "./");
-    std::clog << bp_progname << " fail to run " << buildcmd << " in " << cwdbuf
-              << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
-    return ex;
-  };
+  if (ex)
+    {
+      char cwdbuf[256];
+      memset(cwdbuf, 0, sizeof(cwdbuf));
+      if (!getcwd(cwdbuf, sizeof(cwdbuf)-3) || cwdbuf[sizeof(cwdbuf)-3])
+        strcpy(cwdbuf, "./");
+      std::clog << bp_progname << " fail to run " << buildcmd << " in " << cwdbuf
+                << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
+      return ex;
+    };
   /// temporary files should be removed using at(1) utility in ten minutes
   /// see https://linuxize.com/post/at-command-in-linux/
   if (!bp_temp_ninja.empty() || symlkbuf[0])
