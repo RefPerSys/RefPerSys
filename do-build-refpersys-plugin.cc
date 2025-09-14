@@ -626,7 +626,7 @@ main(int argc, char**argv, const char**env)
                   bp_plugin_binary);
       // Nota Bene: we assume that both the plugin source and shared
       // object don't contain pathological characters, including
-      // quotes, spaces or backslashes.
+      // quotes, spaces, control-characters or backslashes.
     }
   else        // several C++ plugin sources; in that case the
     // GNUmakefile should know about them
