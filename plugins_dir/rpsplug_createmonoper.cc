@@ -133,9 +133,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
 #warning unimplemented rpsplug_createmonoper
 } // end rps_do_plugin
 
+
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin plugins_dir/rpsplug_createmonoper.cc -o /tmp/rpsplug_createmonoper.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v plugins_dir/rpsplug_createmonoper.cc -o /tmp/rpsplug_createmonoper.so" ;;
  ** End: ;;
  ****************/
