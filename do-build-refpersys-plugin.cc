@@ -212,6 +212,7 @@ bp_prog_options(int argc, char**argv)
 {
   int opt= 0;
   int ix= 0;
+  bp_vect_cpp_sources.reserve(argc);
   do
     {
       opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:G:", bp_options_ptr, &ix);
