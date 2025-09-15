@@ -32,6 +32,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
   bool argispunct = false;
   bool argisident = false;
   int precedence = -1;
+  const char*rooted = rps_get_extra_arg("rooted");
+  const char*constant = rps_get_extra_arg("constant");
+  bool isrooted = false;
+  bool isconstant = false;
   memset (argcopy, 0, MYARGMAXLEN);
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   if (!plugarg || plugarg[0]==(char)0)
@@ -40,6 +44,20 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (strlen(plugarg) >= MYARGMAXLEN-1)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with too long argument " << Rps_QuotedC_String(plugarg));
+  if (rooted)
+    {
+      if (!strcmp(rooted, "true"))
+	isrooted = true;
+      if (atoi(rooted) > 0)
+	isrooted = true;
+    }
+  else if (constant)
+    {
+      if (!strcmp(constant, "true"))
+	isconstant = true;
+      if (atoi(constant) > 0)
+	isconstant = true;
+    };
   const char*xtraname = rps_get_extra_arg("name");
   const char*xtraprecedence = rps_get_extra_arg("precedence");
   /// get repl_precedence attribute, conventionally values are small
