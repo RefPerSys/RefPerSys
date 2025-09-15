@@ -145,7 +145,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                <<  Rps_QuotedC_String(plugarg)
                << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper)
                << " see rpsplug_thesetreploper.cc plugin");
-#warning unimplemented rpsplug_createmonoper
+#warning incomplete rpsplug_createmonoper
 } // end rps_do_plugin
 
 
