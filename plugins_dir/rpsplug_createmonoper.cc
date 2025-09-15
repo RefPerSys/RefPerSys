@@ -61,8 +61,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with bad precedence " << precedence << " for argument " << Rps_QuotedC_String(plugarg));
   
-#error missing code in rpsplug_createmonoper.cc
-#if 0 && badcode
   RPS_ASSERT(_f.obclassoper->is_class());
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
@@ -117,7 +115,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
       _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
                              Rps_Value::make_tagged_int(precedence));
     }
-#endif
   /***
    *
    * A possible way of compiling this plugin might be to run:
