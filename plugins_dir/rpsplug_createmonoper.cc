@@ -9,6 +9,7 @@
  *             --plugin-arg=rpsplug_createmonoper:- \
  *             --extra=name=negate \
  *             --extra=precedence=8 \
+ *             --extra=comment='unary negation operator'
  *             --batch --dump=.
  *
  ****/
@@ -26,6 +27,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obclassrepldelim;
                            Rps_ObjectRef obreplprecedence;
                            Rps_Value strname;
+			   Rps_Value strcomment;
                 );
 #define MYARGMAXLEN 64
   char argcopy[MYARGMAXLEN];
@@ -34,6 +36,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   int precedence = -1;
   const char*rooted = rps_get_extra_arg("rooted");
   const char*constant = rps_get_extra_arg("constant");
+  const char*comment = rps_get_extra_arg("comment");
+  const char*xtraname = rps_get_extra_arg("name");
+  const char*xtraprecedence = rps_get_extra_arg("precedence");
   bool isrooted = false;
   bool isconstant = false;
   memset (argcopy, 0, MYARGMAXLEN);
@@ -58,8 +63,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
       if (atoi(constant) > 0)
 	isconstant = true;
     };
-  const char*xtraname = rps_get_extra_arg("name");
-  const char*xtraprecedence = rps_get_extra_arg("precedence");
   /// get repl_precedence attribute, conventionally values are small
   /// non-negative tagged integers
   _f.obreplprecedence = RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp); //repl_precedence∈symbol
@@ -132,6 +135,13 @@ rps_do_plugin(const Rps_Plugin* plugin)
     {
       _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
                              Rps_Value::make_tagged_int(precedence));
+    }
+  if (comment != nullptr)
+    {
+      _f.strcomment = Rps_StringValue(comment);
+      _f.obnewoper->put_attr(PS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+			     _f.strcomment);
+      
     }
   /***
    *
