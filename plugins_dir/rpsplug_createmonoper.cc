@@ -27,7 +27,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obclassrepldelim;
                            Rps_ObjectRef obreplprecedence;
                            Rps_Value strname;
-			   Rps_Value strcomment;
+                           Rps_Value strcomment;
                 );
 #define MYARGMAXLEN 64
   char argcopy[MYARGMAXLEN];
@@ -52,16 +52,16 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (rooted)
     {
       if (!strcmp(rooted, "true"))
-	isrooted = true;
+        isrooted = true;
       if (atoi(rooted) > 0)
-	isrooted = true;
+        isrooted = true;
     }
   else if (constant)
     {
       if (!strcmp(constant, "true"))
-	isconstant = true;
+        isconstant = true;
       if (atoi(constant) > 0)
-	isconstant = true;
+        isconstant = true;
     };
   /// get repl_precedence attribute, conventionally values are small
   /// non-negative tagged integers
@@ -81,7 +81,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   else
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with bad precedence " << precedence << " for argument " << Rps_QuotedC_String(plugarg));
-  
+
   RPS_ASSERT(_f.obclassoper->is_class());
   RPS_ASSERT(_f.obclassrepldelim->is_class());
   if (!plugarg || plugarg[0]==(char)0)
@@ -140,21 +140,39 @@ rps_do_plugin(const Rps_Plugin* plugin)
     {
       _f.strcomment = Rps_StringValue(comment);
       _f.obnewoper->put_attr(PS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
-			     _f.strcomment);
-      
+                             _f.strcomment);
     }
-  /***
-   *
-   * A possible way of compiling this plugin might be to run:
-   *
-    make one-plugin REFPERSYS_PLUGIN_SOURCE=$REFPERSYS_TOPDIR/plugins_dir/rpsplug_createmonoper.cc \
-                    REFPERSYS_PLUGIN_SHARED_OBJECT=/tmp/rpsplug_createmonoper.so
-   *
-   **/
-  RPS_FATALOUT("rpsplug_createmonoper not implemented for "
-               <<  Rps_QuotedC_String(plugarg)
-               << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper)
-               << " see rpsplug_thesetreploper.cc plugin");
+  if (isrooted)
+    {
+      rps_add_root_object (_f.obnewoper);
+      RPS_INFORMOUT("plugin " << plugin->plugin_name
+                    << " created root monadic REPL operator"
+                    << std::endl
+                    << RPS_DISPLAY_OBJECT(_f.obnewoper));
+      return;
+    }
+  else if (isconstant)
+    {
+      rps_add_constant_object(&_, _f.obnewoper);
+      RPS_INFORMOUT("plugin " << plugin->plugin_name
+                    << " created constant monadic REPL operator"
+                    << std::endl
+                    << RPS_DISPLAY_OBJECT(_f.obnewoper));
+      return;
+    }
+  else
+    /***
+     *
+     * A possible way of compiling this plugin might be to run:
+     *
+      make one-plugin REFPERSYS_PLUGIN_SOURCE=$REFPERSYS_TOPDIR/plugins_dir/rpsplug_createmonoper.cc \
+                      REFPERSYS_PLUGIN_SHARED_OBJECT=/tmp/rpsplug_createmonoper.so
+     *
+     **/
+    RPS_FATALOUT("rpsplug_createmonoper not implemented for "
+                 <<  Rps_QuotedC_String(plugarg)
+                 << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper)
+                 << " see rpsplug_thesetreploper.cc plugin");
 #warning incomplete rpsplug_createmonoper
 } // end rps_do_plugin
 
