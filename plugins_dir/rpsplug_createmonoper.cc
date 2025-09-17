@@ -148,7 +148,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
       RPS_INFORMOUT("plugin " << plugin->plugin_name
                     << " created root monadic REPL operator"
                     << std::endl
-                    << RPS_DISPLAY_OBJECT(_f.obnewoper));
+                    << RPS_OBJECT_DISPLAY(_f.obnewoper));
       return;
     }
   else if (isconstant)
@@ -157,7 +157,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
       RPS_INFORMOUT("plugin " << plugin->plugin_name
                     << " created constant monadic REPL operator"
                     << std::endl
-                    << RPS_DISPLAY_OBJECT(_f.obnewoper));
+                    << RPS_OBJECT_DISPLAY(_f.obnewoper));
       return;
     }
   else
