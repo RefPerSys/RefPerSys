@@ -139,7 +139,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (comment != nullptr)
     {
       _f.strcomment = Rps_StringValue(comment);
-      _f.obnewoper->put_attr(PS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+      _f.obnewoper->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
                              _f.strcomment);
     }
   if (isrooted)
