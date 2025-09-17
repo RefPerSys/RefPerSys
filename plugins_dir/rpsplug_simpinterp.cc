@@ -47,11 +47,17 @@ rps_do_plugin(const Rps_Plugin*plugin)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with bad script argument " << plugarg
                  << ":" << strerror(errno));
+  char* rpath = realpath(plugarg, nullptr);
+  if (!rpath)
+    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
+                 << " failed to realpath argument " << plugarg
+                 << " : " << strerror(errno));
   {
     struct stat plugstat= {};
-    if (stat(plugarg,&plugstat))
+    if (stat(rpath,&plugstat))
       RPS_FATALOUT("failure: plugin "  << plugin->plugin_name
                    << " cannot stat script argument " << plugarg
+                   << " really " << rpath
                    << ":" << strerror(errno));
     if ((plugstat.st_mode & S_IFMT) != S_IFREG)
       {
@@ -71,7 +77,7 @@ rps_do_plugin(const Rps_Plugin*plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do_build_refpersys-plugin plugins_dir/rpsplug_simpinterp.cc && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_simpinterp.so /tmp/" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v plugins_dir/rpsplug_simpinterp.cc && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_simpinterp.so /tmp/" ;;
  ** End: ;;
  ****************/
 
