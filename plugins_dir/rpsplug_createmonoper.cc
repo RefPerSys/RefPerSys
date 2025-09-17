@@ -126,10 +126,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
    */
   if (xtraname)
     {
-      _f.namestr = Rps_Value{std::string(xtraname)};
+      _f.strname = Rps_Value{std::string(xtraname)};
       _f.obnewoper
       ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-                 _f.namestr);
+                 _f.strname);
     }
   if (precedence >= 0)
     {
