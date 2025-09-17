@@ -68,10 +68,13 @@ rps_do_plugin(const Rps_Plugin*plugin)
         return;
       };
   }
-  Rps_MemoryFileTokenSource toksrc(plugarg);
-  RPS_WARNOUT("missing code:  plugin " <<  plugin->plugin_name
-              << " script " << plugarg);
+  {
+    Rps_MemoryFileTokenSource toksrc(rpath);
+    RPS_WARNOUT("missing code:  plugin " <<  plugin->plugin_name
+                << " script " << rpath);
 #warning a lot of missing code in rpsplug_simpinterp.cc
+  }
+  free (rpath);
 } // end rps_do_plugin
 
 /****************
