@@ -204,6 +204,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "To set for RefPerSys a named EXTRA argument to ARG.\n", ///
     /*group:*/0 ///
   },
+  /* ======= script file ======= */
+  {/*name:*/ "script", ///
+    /*key:*/ RPSPROGOPT_SCRIPT, ///
+    /*arg:*/ "SCRIPTFILE", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To run the given SCRIPTFILE.\n", ///
+    /*group:*/0 ///
+  },
   /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
   {/*name:*/ "interface-fifo", ///
     /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
