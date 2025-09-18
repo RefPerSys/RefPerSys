@@ -209,7 +209,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_SCRIPT, ///
     /*arg:*/ "SCRIPTFILE", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "To run the given SCRIPTFILE.\n", ///
+    /*doc:*/ "To run the given SCRIPTFILE after loading.\n"
+    " use --script=help to get more help about them\n", ///
     /*group:*/0 ///
   },
   /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */

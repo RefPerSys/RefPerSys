@@ -73,6 +73,9 @@ const char rps_utilities_timestamp[]= __TIMESTAMP__;
 
 extern "C" void rps_set_user_preferences(const char*path);
 
+extern "C" void rps_scripting_help(void);
+extern "C" void rps_scripting_add_script(const char*path);
+
 extern "C" char*rps_chdir_path_after_load;
 
 static bool rps_flag_pref_help;
@@ -1462,6 +1465,14 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         }
     }
     return 0;
+    case RPSPROGOPT_SCRIPT:
+      {
+	if (arg && !strcmp(arg, "help"))
+	  rps_scripting_help();
+	else if (arg)
+	  rps_scripting_add_script(arg);
+      }
+      return 0;
     case RPSPROGOPT_NO_TERMINAL:
     {
       rps_without_terminal_escape = true;
@@ -1480,8 +1491,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
               openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
             };
           RPS_INFORM("using syslog with daemon");
-          if (daemon(/*nochdir:*/1,
-                                 /*noclose:*/0))
+          if (daemon(/*nochdir:*/1,  /*noclose:*/0))
             RPS_FATAL("failed to daemon");
           rps_daemonized = true;
           const char*cw = getcwd(cwdbuf, sizeof(cwdbuf)-1);
