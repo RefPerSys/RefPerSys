@@ -53,11 +53,24 @@ const char rps_scripting_timestamp[]= __TIMESTAMP__;
 extern "C" void rps_scripting_help(void);
 extern "C" void rps_scripting_add_script(const char*);
 
+extern "C" const char rps_scripting_help_english_text[];
+
+const char rps_scripting_help_english_text[] =
+R"help(
+A script file is a textual file.
+All its initial lines before a line containing REFPERSYS_SCRIPT are ignored.
+Hence these initial lines could contain some shell script, etc.
+)help"
+  ;
+#warning more text needed inside rps_scripting_help_english_text
+
+
 
 void
 rps_scripting_help(void)
 {
-  RPS_FATAL("unimplemented rps_scripting_help");
+  RPS_FATALOUT("unimplemented rps_scripting_help" << std::endl
+	       << rps_scripting_help_english_text);
 #warning rps_scripting_help unimplemented
 } // end rps_scripting_help
 
