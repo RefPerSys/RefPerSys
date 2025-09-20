@@ -96,7 +96,7 @@ rps_scripting_add_script(const char*path)
     RPS_FATALOUT("adding script file " << rp << " from non main thread");
   rps_scripts_vector.push_back(rp);
   RPS_INFORMOUT("added script file #" << rps_scripts_vector.size()
-		<< " " << rp);
+		<< ": " << rp);
 } // end rps_scripting_add_script
 
 //// end of file scripting_rps.cc
