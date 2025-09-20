@@ -55,6 +55,10 @@ extern "C" void rps_scripting_add_script(const char*);
 
 extern "C" const char rps_scripting_help_english_text[];
 
+
+/// vector of real path to script files
+static std::vector<const char*> rps_scripts_vector;
+
 const char rps_scripting_help_english_text[] =
 R"help(
 A script file is a textual file.
@@ -78,8 +82,21 @@ rps_scripting_help(void)
 void
 rps_scripting_add_script(const char*path)
 {
-  RPS_FATALOUT("unimplemented rps_scripting_add_script path=" << path);
-#warning rps_scripting_add_script unimplemented
+  if (access(path, R_OK))
+    RPS_FATALOUT("script file " << Rps_QuotedC_String(path) << " is not accessible: "
+		 << strerror(errno));
+  char*rp = realpath(path, nullptr);
+  if (rp == path) /*same pointer*/
+    rp = strdup(path);
+  if (!rp)
+    RPS_FATALOUT("realpath(3) of "
+		 <<  Rps_QuotedC_String(path) << " failed: "
+		 << strerror(errno));
+  if (!rps_is_main_thread())
+    RPS_FATALOUT("adding script file " << rp << " from non main thread");
+  rps_scripts_vector.push_back(rp);
+  RPS_INFORMOUT("added script file #" << rps_scripts_vector.size()
+		<< " " << rp);
 } // end rps_scripting_add_script
 
 //// end of file scripting_rps.cc
