@@ -121,6 +121,16 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
 	      << rps_scripts_vector.size() << " scripts"
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_scripts_after_load"));
+  for (int ix=0; ix<rps_scripts_vector.size(); ix++) {
+    try {
+      rps_run_one_script_file(&_, ix);
+    } catch (std::exception& ex) {
+      RPS_FATALOUT("failed to run script#" << ix
+		   << " " << rps_scripts_vector[ix]
+		   << " got exception "
+		   << ex.what());
+    };
+  }
   /// TODO: loop on the script vector and handle exceptions
 #warning unimplemented rps_run_scripts_after_load
 } // end rps_run_scripts_after_load
@@ -132,7 +142,9 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
  {
    RPS_ASSERT(callframe && callframe->is_good_call_frame());
    RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size());
-   RPS_FATALOUT("unimplemented rps_run_one_script_file ix=" << ix);
+   const char*curpath = rps_scripts_vector[ix];
+   RPS_FATALOUT("unimplemented rps_run_one_script_file ix=" << ix
+		<< " curpath=" << curpath);
 #warning rps_run_one_script_file unimplemented
  } // end rps_run_one_script_file
 
