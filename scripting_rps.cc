@@ -140,6 +140,7 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
 
 
 
+////////////////
  void
  rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
  {
@@ -148,11 +149,17 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
    const char*curpath = rps_scripts_vector[ix];
    const std::string curpstr(curpath);
    Rps_MemoryFileTokenSource tsrc(curpstr);
+   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
+		 << " curpath=" << curpath);
+   RPS_POSSIBLE_BREAKPOINT();
    bool gotmagic=false;
    while (!gotmagic && tsrc.get_line()) {
      const char*clp = tsrc.curcptr();
      if (!clp)
        break;
+   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+		 << Rps_QuotedC_String(clp)
+		 << " @" << tsrc.position_str());
      RPS_POSSIBLE_BREAKPOINT();
      const char* magp = strstr(clp, rps_scripting_magic_string);
      if (magp) {
@@ -160,10 +167,12 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
        gotmagic= true;
      };
 #warning rps_run_one_script_file has missing code here
-     /* TODO: should use strstr */
-   }
+     RPS_POSSIBLE_BREAKPOINT();
+   };
+   RPS_POSSIBLE_BREAKPOINT();
    RPS_FATALOUT("unimplemented rps_run_one_script_file ix=" << ix
-		<< " curpath=" << curpath);
+		<< " curpath=" << curpath
+		<< " tsrc=" << tsrc);
 #warning rps_run_one_script_file unimplemented
  } // end rps_run_one_script_file
 
