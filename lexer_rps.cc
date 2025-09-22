@@ -503,12 +503,15 @@ bool
 Rps_MemoryFileTokenSource::get_line(void)
 {
   const char*c = toksrcmfil_line;
-  while (c<toksrcmfil_end && *c != '\n') c++;
+  while (c<toksrcmfil_end && *c != '\n')
+    c++;
+  RPS_POSSIBLE_BREAKPOINT();
   if (c<toksrcmfil_end && *c == '\n')
     {
       c++;
       starting_new_input_line();
     };
+  RPS_POSSIBLE_BREAKPOINT();
   return c > toksrcmfil_line;
 } // end Rps_MemoryFileTokenSource::get_line
 
