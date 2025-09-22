@@ -72,6 +72,9 @@ Hence these initial lines could contain some shell script, etc.
   ;
 #warning more text needed inside rps_scripting_help_english_text
 
+extern "C" const char  rps_scripting_magic_string[];
+
+const char rps_scripting_magic_string[] = "REFPERSYS_SCRIPT";
 
 
 void
@@ -145,10 +148,17 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
    const char*curpath = rps_scripts_vector[ix];
    const std::string curpstr(curpath);
    Rps_MemoryFileTokenSource tsrc(curpstr);
-   while (tsrc.get_line()) {
+   bool gotmagic=false;
+   while (!gotmagic && tsrc.get_line()) {
      const char*clp = tsrc.curcptr();
      if (!clp)
        break;
+     RPS_POSSIBLE_BREAKPOINT();
+     const char* magp = strstr(clp, rps_scripting_magic_string);
+     if (magp) {
+       RPS_POSSIBLE_BREAKPOINT();
+       gotmagic= true;
+     };
 #warning rps_run_one_script_file has missing code here
      /* TODO: should use strstr */
    }
