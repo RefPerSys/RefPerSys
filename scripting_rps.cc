@@ -56,6 +56,8 @@ extern "C" void rps_scripting_add_script(const char*);
 extern "C" const char rps_scripting_help_english_text[];
 
 
+extern "C" void rps_run_one_script_file(Rps_CallFrame*, int ix);
+
 /// vector of real path to script files
 static std::vector<const char*> rps_scripts_vector;
 
@@ -106,7 +108,7 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
 {
   if (rps_scripts_vector.empty())
     return;
-  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+  RPS_LOCALFRAME(rpskob_0XidDOU8sDm015tq4s /*=!running_script∈symbol*/,
 		 caller,
 		 Rps_Value strv;
 		);
@@ -117,5 +119,15 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
   /// TODO: loop on the script vector and handle exceptions
 #warning unimplemented rps_run_scripts_after_load
 } // end rps_run_scripts_after_load
+
+
+
+ void
+ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
+ {
+   RPS_ASSERT(callframe && callframe->is_good_call_frame());
+   RPS_FATALOUT("unimplemented rps_run_one_script_file ix=" << ix);
+#warning rps_run_one_script_file unimplemented
+ } // end rps_run_one_script_file
 
 //// end of file scripting_rps.cc
