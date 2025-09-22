@@ -327,17 +327,19 @@ extern "C" std::string rps_run_name;
 extern "C" std::string rps_stringprintf(const char*fmt, ...)
 __attribute__((format (printf, 1, 2))); // in utilities_rps.cc
 
+#define RPS_USE_CURL 0 // temporary,
+// see https://bugs.gentoo.org/939581 Invalid conversion from int to
+// CURLoption
+
+
+extern "C" void rps_run_scripts_after_load(void);
 
 extern "C" {
-
-#define RPS_USE_CURL 0 // temporary, see https://bugs.gentoo.org/939581 Invalid conversion from int to CURLoption 
 
 #if RPS_USE_CURL
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"
 #endif /*RPS_USE_CURL*/
-
-// before November 2024 we used GNU lightning from https://www.gnu.org/software/lightning
 
 
 };

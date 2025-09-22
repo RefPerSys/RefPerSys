@@ -770,9 +770,13 @@ rps_run_loaded_application(int &argc, char **argv)
               << std::endl
               << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/exc"));
         };
-    }
-  if (access(rps_gui_script_executable, X_OK))
-    RPS_WARNOUT("default GUI script " << rps_gui_script_executable << " is not executable");
+    };
+  ////
+  ////
+  if (rps_gui_script_executable[0]
+      && access(rps_gui_script_executable, X_OK))
+    RPS_WARNOUT("default GUI script " << rps_gui_script_executable
+		<< " is not executable");
   ////
   ////
   ////
@@ -783,7 +787,8 @@ rps_run_loaded_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application JSONRPC"));
       rps_jsonrpc_initialize();
     };
-  RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread " << rps_current_pthread_name()
+  RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread "
+		<< rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application ending"));
 } // end rps_run_loaded_application
