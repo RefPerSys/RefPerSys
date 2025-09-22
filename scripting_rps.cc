@@ -60,7 +60,7 @@ extern "C" const char rps_scripting_help_english_text[];
 static std::vector<const char*> rps_scripts_vector;
 
 const char rps_scripting_help_english_text[] =
-R"help(
+  R"help(
 A script file is a textual file.
 All its initial lines before a line containing REFPERSYS_SCRIPT are ignored.
 Hence these initial lines could contain some shell script, etc.
@@ -83,7 +83,8 @@ void
 rps_scripting_add_script(const char*path)
 {
   if (access(path, R_OK))
-    RPS_FATALOUT("script file " << Rps_QuotedC_String(path) << " is not accessible: "
+    RPS_FATALOUT("script file " << Rps_QuotedC_String(path)
+		 << " is not accessible: "
 		 << strerror(errno));
   char*rp = realpath(path, nullptr);
   if (rp == path) /*same pointer*/
