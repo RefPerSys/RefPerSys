@@ -58,6 +58,8 @@ extern "C" const char rps_scripting_help_english_text[];
 
 extern "C" void rps_run_one_script_file(Rps_CallFrame*, int ix);
 
+extern "C" const int rps_script_maxnum = 1024;
+
 /// vector of real path to script files
 static std::vector<const char*> rps_scripts_vector;
 
@@ -97,6 +99,9 @@ rps_scripting_add_script(const char*path)
 		 << strerror(errno));
   if (!rps_is_main_thread())
     RPS_FATALOUT("adding script file " << rp << " from non main thread");
+  if ((int) rps_scripts_vector.size() >  rps_script_maxnum)
+    RPS_FATALOUT ("too many " << rps_scripts_vector.size()
+		  << " script files (for " << rp << ")");
   rps_scripts_vector.push_back(rp);
   RPS_INFORMOUT("added script file #" << rps_scripts_vector.size()
 		<< ": " << rp);
@@ -126,6 +131,7 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
  rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
  {
    RPS_ASSERT(callframe && callframe->is_good_call_frame());
+   RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size());
    RPS_FATALOUT("unimplemented rps_run_one_script_file ix=" << ix);
 #warning rps_run_one_script_file unimplemented
  } // end rps_run_one_script_file
