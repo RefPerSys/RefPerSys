@@ -117,7 +117,7 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
 		 caller,
 		 Rps_Value strv;
 		);
-  RPS_WARNOUT("unimplemented rps_run_scripts_after_load for "
+  RPS_DEBUG_LOG(REPL, "starting rps_run_scripts_after_load for "
 	      << rps_scripts_vector.size() << " scripts"
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_scripts_after_load"));
@@ -131,8 +131,8 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
 		   << ex.what());
     };
   }
-  /// TODO: loop on the script vector and handle exceptions
-#warning unimplemented rps_run_scripts_after_load
+  RPS_DEBUG_LOG(REPL, "end rps_run_scripts_after_load for "
+		<< rps_scripts_vector.size() << " scripts");
 } // end rps_run_scripts_after_load
 
 
@@ -143,6 +143,15 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
    RPS_ASSERT(callframe && callframe->is_good_call_frame());
    RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size());
    const char*curpath = rps_scripts_vector[ix];
+   const std::string curpstr(curpath);
+   Rps_MemoryFileTokenSource tsrc(curpstr);
+   while (tsrc.get_line()) {
+     const char*clp = tsrc.curcptr();
+     if (!clp)
+       break;
+#warning rps_run_one_script_file has missing code here
+     /* TODO: should use strstr */
+   }
    RPS_FATALOUT("unimplemented rps_run_one_script_file ix=" << ix
 		<< " curpath=" << curpath);
 #warning rps_run_one_script_file unimplemented
