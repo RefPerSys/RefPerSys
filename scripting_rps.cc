@@ -100,4 +100,22 @@ rps_scripting_add_script(const char*path)
 		<< ": " << rp);
 } // end rps_scripting_add_script
 
+
+void
+rps_run_scripts_after_load(Rps_CallFrame* caller)
+{
+  if (rps_scripts_vector.empty())
+    return;
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 caller,
+		 Rps_Value strv;
+		);
+  RPS_WARNOUT("unimplemented rps_run_scripts_after_load for "
+	      << rps_scripts_vector.size() << " scripts"
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_scripts_after_load"));
+  /// TODO: loop on the script vector and handle exceptions
+#warning unimplemented rps_run_scripts_after_load
+} // end rps_run_scripts_after_load
+
 //// end of file scripting_rps.cc

@@ -332,7 +332,7 @@ __attribute__((format (printf, 1, 2))); // in utilities_rps.cc
 // CURLoption
 
 
-extern "C" void rps_run_scripts_after_load(void);
+extern "C" void rps_run_scripts_after_load(Rps_CallFrame*);
 
 extern "C" {
 

@@ -787,6 +787,7 @@ rps_run_loaded_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application JSONRPC"));
       rps_jsonrpc_initialize();
     };
+  rps_run_scripts_after_load(&_);
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread "
 		<< rps_current_pthread_name()
                 << std::endl
