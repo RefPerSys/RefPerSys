@@ -150,6 +150,8 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
   _f.tokenp = rps_make_lex_token_zone
               (this, _f.lexkindob, _f.lexval, _f.nstrv,
                toksrc_line, toksrc_col);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::make_token " << _f.tokenp
+		<< " srcv=" << _f.srcv);
 #warning Rps_TokenSource::make_token should probably use _f.srcv
   return _f.tokenp;
 } // end Rps_TokenSource::make_token
