@@ -148,7 +148,9 @@
 /// C++ wrapper)
 #include <gmpxx.h>
 
+#ifndef RPS_WITH_FLTK
 #define RPS_WITH_FLTK 1 /* could be 1 if using fltk.org graphical toolkit */
+#endif
 
 //// the generated/rpsdata.h contain only preprocessor #define-s and #undef
 //// it may undef RPS_WITH_FLTK. It has a pragma message
