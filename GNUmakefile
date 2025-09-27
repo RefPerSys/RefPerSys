@@ -60,7 +60,7 @@ RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
         print-gmake-features \
         one-plugin \
         lto-refpersys \
-        raw-refpersys \
+        raw-refpersys raw-objects \
         snapshot \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
@@ -156,6 +156,12 @@ all:
 	$(MAKE) plugins
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
+
+raw-objects:
+	$(error unimplemented raw-objects)
+
+raw-refpersys:
+	$(error unimplemented raw-refpersys)
 
 .SECONDARY:  __timestamp.c 
 	$(SYNC)
@@ -681,6 +687,9 @@ print-plugin-settings:
 	@printf "RPSPLUGIN_CXX_STANDARD='%s'\n" "$(REFPERSYS_CXX_STANDARD)"
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) $(shell pkg-config --cflags $(PKGLIST_refpersys))"
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
+	@printf "RPSPLUGIN_HUMAN_CPP_SOURCES='%s'\n" "$(REFPERSYS_HUMAN_CPP_SOURCES)"
+	@printf "RPSPLUGIN_GENERATED_CPP_SOURCES='%s'\n" "$(REFPERSYS_GENERATED_CPP_SOURCES)"
+	@printf "RPSPLUGIN_DUMPED_CPP_SOURCES='%s'\n" "$(REFPERSYS_DUMPED_CPP_SOURCES)"
 
 print-gmake-features:
 	@echo $(.FEATURES)
