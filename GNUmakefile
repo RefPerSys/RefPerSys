@@ -157,9 +157,15 @@ all:
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
 
+### raw-objects are the set of raw*.o files without FLTK interface
 raw-objects:
 	$(error unimplemented raw-objects)
 
+### raw-refpersys executable has no FLTK or other graphical user
+### interface code or library dependencies; it communicates using HTTP
+### or JSONRPC protocols with a program for graphical user interface
+### that program might be a graphical browser or some program
+### under https://github.com/bstarynk/misc-basile or elsewhere
 raw-refpersys:
 	$(error unimplemented raw-refpersys)
 
