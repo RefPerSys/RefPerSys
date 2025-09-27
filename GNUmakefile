@@ -99,6 +99,8 @@ REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_
 ### Dumped C++ sources which are written at dump time and needs to be git managed
 REFPERSYS_DUMPED_CPP_SOURCES := $(wildcard generated/*.cc)
 
+REFPERSYS_RAW_SOURCES := $(filter-out %fltk%, $(REFPERSYS_HUMAN_CPP_SOURCES) $(REFPERSYS_GENERATED_CPP_SOURCES) $(REFPERSYS_DUMPED_CPP_SOURCES))
+
 ### corresponding object files
 REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
 
@@ -159,7 +161,11 @@ objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __times
 
 ### raw-objects are the set of raw*.o files without FLTK interface
 raw-objects:
-	$(error unimplemented raw-objects)
+	@/usr/bin/printf "\n RefPerSys raw sources %s\n" \
+	   "$(REFPERSYS_RAW_SOURCES)"
+	@/usr/bin/printf "\n non-FLTK raw objects are %s\n" \
+          "$(patsubst %.cc, raw-%.o, $(REFPERSYS_RAW_SOURCES))"
+	$(warning unimplemented raw-objects)
 
 ### raw-refpersys executable has no FLTK or other graphical user
 ### interface code or library dependencies; it communicates using HTTP
