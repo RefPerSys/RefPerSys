@@ -101,7 +101,7 @@ REFPERSYS_DUMPED_CPP_SOURCES := $(wildcard generated/*.cc)
 
 REFPERSYS_RAW_SOURCES := $(filter-out %fltk%, $(REFPERSYS_HUMAN_CPP_SOURCES) $(REFPERSYS_GENERATED_CPP_SOURCES) $(REFPERSYS_DUMPED_CPP_SOURCES))
 
-REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, raw-%.o, $(REFPERSYS_RAW_SOURCES))
+REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, %.raw.o, $(REFPERSYS_RAW_SOURCES))
 
 ### corresponding object files
 REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
@@ -161,8 +161,8 @@ all:
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
 
-$(warning missing GNU make code for raw-%rps.o)
-### raw-objects are the set of raw*.o files without FLTK interface
+
+### raw-objects are the set of *rps.raw.o files without FLTK interface
 raw-objects: $(REFPERSYS_RAW_OBJECTS)
 
 ### raw-refpersys executable has no FLTK or other graphical user
@@ -183,13 +183,15 @@ __raw_timestamp.c: rps-generate-timestamp.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS
 	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-timestamp.sh $@ > $@
 
 #### TODO:fix it, so that make raw-objects work
-raw-%rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+%rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
-	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_RAW=1 \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
