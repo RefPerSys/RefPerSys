@@ -151,7 +151,7 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
               (this, _f.lexkindob, _f.lexval, _f.nstrv,
                toksrc_line, toksrc_col);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::make_token " << _f.tokenp
-		<< " srcv=" << _f.srcv);
+                << " srcv=" << _f.srcv);
 #warning Rps_TokenSource::make_token should probably use _f.srcv
   return _f.tokenp;
 } // end Rps_TokenSource::make_token
@@ -455,9 +455,9 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   RPS_ASSERT(mappedsize % pgsiz == 0);
   int moreflags = (mappedsize>(2<<20))?(MAP_HUGETLB):0;
   RPS_DEBUG_LOG(REPL, "MemoryFileTokenSource path=" << path
-		<< " fd=" << fd << " fsiz=" << fsiz
-		<< " flags=" << (MAP_PRIVATE|moreflags)
-		<< " mappedsize=" << mappedsize);
+                << " fd=" << fd << " fsiz=" << fsiz
+                << " flags=" << (MAP_PRIVATE|moreflags)
+                << " mappedsize=" << mappedsize);
   void* ad = mmap(nullptr, fsiz, PROT_READ, MAP_PRIVATE|moreflags,
                   fd, /*offset:*/0);
   if (ad == MAP_FAILED)
@@ -468,11 +468,11 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   toksrcmfil_end = (char*)ad + fsiz;
   toksrcmfil_fd = fd;
   RPS_DEBUG_LOG(REPL, "constr MemoryFileTokenSource@ " <<(void*)this
-		<< " " << *this
+                << " " << *this
                 << " [start@" << (void*)toksrcmfil_start
                 << ", end@" << (void*)toksrcmfil_end
-		<< ", fd#" << toksrcmfil_fd
-		<< ", mappedsize=" << mappedsize << ", fsiz=" << fsiz
+                << ", fd#" << toksrcmfil_fd
+                << ", mappedsize=" << mappedsize << ", fsiz=" << fsiz
                 << "]"
                 << " p." << position_str()
                 << std::endl << RPS_FULL_BACKTRACE(1, "constr MemoryFileTokenSource"));
@@ -488,7 +488,7 @@ Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
   RPS_DEBUG_LOG(CMD, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_ASSERT(toksrcmfil_start != nullptr && toksrcmfil_end != nullptr);
   if (munmap((void*)toksrcmfil_start,
-	     toksrcmfil_nextpage-toksrcmfil_start))
+             toksrcmfil_nextpage-toksrcmfil_start))
     RPS_FATALOUT("failed to munmap MemoryFileTokenSource@ " <<(void*)this
                  << " path " << toksrcmfil_path
                  << " from " << (void*)toksrcmfil_start
@@ -518,15 +518,23 @@ Rps_MemoryFileTokenSource::get_line(void)
 } // end Rps_MemoryFileTokenSource::get_line
 
 
+
 void
 Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
 #warning incomplete Rps_MemoryFileTokenSource::output
   out << "Rps_MemoryFileTokenSource#S" << unique_number()
-      << "(" << Rps_Cjson_String(name()) << ")"
-      << " path:" << Rps_Cjson_String(toksrcmfil_path)
-      // << " offset:" <<
-      << std::endl;
+      << "(" << Rps_Cjson_String(name()) << ")";
+  if (depth <= 1)
+    {
+      out << position_str();
+      out << ",P"  << Rps_Cjson_String(toksrcmfil_path);
+    }
+  else
+    {
+      out << "P"  << Rps_Cjson_String(toksrcmfil_path);
+    };
+  out << std::endl;
 } // end Rps_MemoryFileTokenSource::output
 
 void
@@ -1095,7 +1103,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token namoid "
                     << Rps_QuotedC_String(curp) << std::endl
                     << " toksrc=" << *this << std::endl
-		    << " gives " << _f.res
+                    << " gives " << _f.res
                     << std::endl
                     << RPS_FULL_BACKTRACE(1,"Rps_TokenSource::get_token"
                                           " namoid"));
