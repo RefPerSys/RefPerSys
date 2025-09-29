@@ -1242,12 +1242,14 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_set_debug_output_path(arg);
     }
     return 0;
+#if RPS_WITH_FLTK
     case RPSPROGOPT_FLTK:
     {
       RPS_DEBUG_LOG(PROGARG, "rps_parse1opt fltk arg=" << arg);
       rps_fltk_progoption(arg, state, side_effect);
     }
     return 0;
+#endif /*RPS_WITH_FLTK*/
     case RPSPROGOPT_LOADDIR:
     {
       rps_my_load_dir = std::string(arg);
@@ -2584,5 +2586,5 @@ rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr
 #warning TODO: use rps_indentnl once defined
 } // end rps_output_vector_string
 
-#pragma GCC "may need to define output of more vectors (of objects, values, ...) and indented output"
+#pragma message "may need to define output of more vectors (of objects, values, ...) and indented output"
 //// end of file utilities_rps.cc
