@@ -1063,7 +1063,7 @@ rps_repl_builtin_env_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, co
                  Rps_Value descrv;
                 );
   _f.obenv = obenvarg;
-  auto paylenv = _f.obenv->get_dynamic_payload< Rps_PayloadEnvironment>();
+  auto paylenv = _f.obenv->get_dynamic_payload<Rps_PayloadEnvironment>();
   RPS_INFORMOUT(std::endl << "environment object is " << _f.obenv
                 << Rps_Do_Output([&](std::ostream&outs)
   {
@@ -1086,7 +1086,7 @@ rps_repl_builtin_env_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, co
       outs << " [without environment payload]";
   })
       << std::endl);
-  rps_show_version();
+  //  rps_show_version();
 } // end rps_repl_builtin_env_command
 
 
