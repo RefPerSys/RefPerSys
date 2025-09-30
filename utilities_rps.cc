@@ -756,6 +756,8 @@ rps_show_version(void)
 {
   int nbfiles=0;
   int nbsubdirs=0;
+#warning rps_show_version is not thread-safe
+  //TODO: add a mutex here for serialization
   for (const char*const*pfiles=rps_files; *pfiles; pfiles++)
     nbfiles++;
   for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
