@@ -95,3 +95,17 @@ They are either predefined types (for `int` etc....) or user defined types.
 
 They all are created (once and for all each) with our
 plugins_dir/rpsplug_create_cplusplus_predefined_type.cc
+
+Some of them are indeed subclasses of *`cplusplus_primitive_type`* (so
+`_1XswYkom3Jm02YR3Vi`) but are also valid for direct machine code
+generation (see files `cppgen_rps.cc` and `lightgen_rps.cc` and
+`gccjit_rps.cc`). In other words the *`cplusplus_primitive_type`* is
+perhaps confusingly named. Instances of it includes:
+
+* *`_2c32kYjX53f04obwxm`* or `code_char`
+* *`_3NYlqvmSuTm024LDuD`* or `code_long`
+* *`_4nZ0jIKUbGr01OixPV`* or `code_int`
+* *`_4V1oeUOvmxo041XLTm`* or `code_intptr_t`
+
+The class *`cplusplus_enum_type`* (so `_8J6vNYtP5E800eCr5q`) represent
+enumeration types.
