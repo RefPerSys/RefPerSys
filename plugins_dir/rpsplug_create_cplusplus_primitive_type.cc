@@ -4,6 +4,10 @@
 // © Copyright 2024 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys C++ primitive type for C++ generation
 // and could be used by machine (GNU lightning) or libgccjit code generation
+// See files  cppgen_rps.cc, lightgen_rps.cc, gccjit_rps.cc
+
+
+
 /*****
       Once compiled, use it for example as:
       ./refpersys --plugin-after-load=/tmp/rpsplug_create_cplusplus_primitive_type.so \
@@ -11,8 +15,8 @@
       --extra=comment='the native int type' \
       --batch --dump=.
 
-      then update appropriately the rps_set_native_data_in_loader to force
-      native alignement and size
+      then update appropriately the rps_set_native_data_in_loader (in
+      file load_rps.cc) to force native alignement and size
 ****/
 
 
