@@ -36,9 +36,24 @@ if [ ! -f "refpersys.hh" ]; then
     exit 1
 fi
 
+/usr/bin/gmake refpersys
+
 if [ ! -x "refpersys" ]; then
     echo $0 script in REFPERSYS_TOPDIR $REFPERSYS_TOPDIR there is no refpersys executable > /dev/stderr
     exit 1
+fi
+
+
+#echo $0 script has $# argc
+
+if [ $# != 1 ]; then
+    echo $0 script in   REFPERSYS_TOPDIR $REFPERSYS_TOPDIR needs one argument could be --help
+    exit 2
+fi
+
+if [ "$1" = "--help" ]; then
+   echo $0 script needs an argument, either --help or the name or objid of some object
+   exit 0
 fi
 
 echo $0 script in  REFPERSYS_TOPDIR $REFPERSYS_TOPDIR is incomplete  > /dev/stderr
@@ -46,4 +61,4 @@ exit 1
 
 ## we probably want to compile then use plugins_dir/rpsplug_display.cc
 
-## should probably use getopts 
+## we dont use getopts 
