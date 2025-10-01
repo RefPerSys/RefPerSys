@@ -1902,6 +1902,10 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
                                         sizeof(long),
                                         alignof(long)
                                        );
+  ld->set_primitive_type_size_and_align(rpskob_2c32kYjX53f04obwxm, //code_char
+                                        sizeof(char),
+                                        alignof(char)
+                                       );
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
 
