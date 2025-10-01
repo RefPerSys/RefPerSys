@@ -1,17 +1,14 @@
 #!/bin/sh
-
-#
 # SPDX-License-Identifier: GPL-3.0-or-later
-# RefPerSys file gui-script-refpersys.sh - see refpersys.org
+# RefPerSys file tools/config.sh - see refpersys.org
 #
-#      Copyright 2022 The Reflective Persistent System Team
+#      (C) Copyright 2022 - 2025 The Reflective Persistent System Team
 #      <http://refpersys.org>
 #
 # Description:
 #
-#      This file is part of the Reflective Persistent System.  It may
-#      be started by the refpersys executable to provide some
-#      graphical user interface
+#      This file is part of the Reflective Persistent System.  Perhaps
+#      usable for configuration.
 #
 #
 # License:
