@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 #      © Copyright 2025 - 2025 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
@@ -36,7 +36,7 @@ if [ ! -f "refpersys.hh" ]; then
     exit 1
 fi
 
-/usr/bin/gmake -j4 refpersys >& $HOME/tmp/making-refpersys.out
+/usr/bin/gmake -j4 refpersys 2>&1 > $HOME/tmp/making-refpersys.out
 
 if [ ! -x "refpersys" ]; then
     echo $0 script in REFPERSYS_TOPDIR $REFPERSYS_TOPDIR there is no refpersys executable > /dev/stderr
@@ -58,13 +58,14 @@ fi
 
 
 ## we probably want to compile then use plugins_dir/rpsplug_display.cc
-/usr/bin/gmake do-build-refpersys-plugin >& $HOME/tmp/making-rps-plugin-builder.out
+/usr/bin/gmake do-build-refpersys-plugin 2>&1 > $HOME/tmp/making-rps-plugin-builder.out
 
  ./do-build-refpersys-plugin plugins_dir/rpsplug_display.cc -o plugins_dir/rpsplug_display.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_display.so /tmp/
-echo $0 script in  REFPERSYS_TOPDIR $REFPERSYS_TOPDIR is incomplete  > /dev/stderr
-exit 1
 
 ./refpersys --plugin-after-load=plugins_dir/rpsplug_display.so \
-            --batch --plugin-arg=rpsplug_display:$1
+            --batch --plugin-arg=rpsplug_display:$1 \
+	    --extra=from=$0 --extra=lineno=$LINENO
 
-## we dont use getopts 
+
+
+#### end of file RefPerSys/tools/display-refpersys.sh

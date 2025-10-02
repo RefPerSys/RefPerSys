@@ -40,6 +40,8 @@ rps_do_plugin(const Rps_Plugin*plugin)
                 );
   _f.ob = nullptr;
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
+  const char*from = rps_get_extra_arg("from");
+  const char*lineno = rps_get_extra_arg("lineno");
   RPS_DEBUG_LOG(REPL, "rps_do_plugin " << plugin->plugin_name
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, __FILE__ " plugin"));
@@ -47,15 +49,31 @@ rps_do_plugin(const Rps_Plugin*plugin)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument - expecting an object name or oid");
   _f.ob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg));
-  if (!_f.ob)
-    RPS_WARNOUT("in git " << rpsplug_display_shortgit << " "
-                << " build " << rpsplug_display_buildtimestamp
-                << " " << plugarg << " dont name any object");
+  if (from && from[0] && lineno && lineno[0])
+    {
+      if (!_f.ob)
+        RPS_WARNOUT("in git " << rpsplug_display_shortgit << " "
+                    << " build " << rpsplug_display_buildtimestamp
+                    << " from " << from << ":" << lineno
+                    << " " << plugarg << " dont name any object");
+      else
+        RPS_INFORMOUT("in git " << rpsplug_display_shortgit
+                      << " build " << rpsplug_display_buildtimestamp
+                      << " from " << from << ":" << lineno
+                      << " object " << plugarg << " is:"
+                      << RPS_OBJECT_DISPLAY(_f.ob));
+    }
   else
-    RPS_INFORMOUT("in git " << rpsplug_display_shortgit
+    {
+      RPS_WARNOUT("in git " << rpsplug_display_shortgit << " "
                   << " build " << rpsplug_display_buildtimestamp
-                  << " object " << plugarg << " is:"
-                  << RPS_OBJECT_DISPLAY(_f.ob));
+                  << " " << plugarg << " dont name any object");
+      else
+        RPS_INFORMOUT("in git " << rpsplug_display_shortgit
+                      << " build " << rpsplug_display_buildtimestamp
+                      << " object " << plugarg << " is:"
+                      << RPS_OBJECT_DISPLAY(_f.ob));
+    }
 } // end rps_do_plugin
 
 #pragma message "compiling " __FILE__ " at " __DATE__ "@" __TIME__
