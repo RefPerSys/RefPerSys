@@ -36,7 +36,7 @@ if [ ! -f "refpersys.hh" ]; then
     exit 1
 fi
 
-/usr/bin/gmake refpersys
+/usr/bin/gmake -j4 refpersys >& $HOME/tmp/making-refpersys.out
 
 if [ ! -x "refpersys" ]; then
     echo $0 script in REFPERSYS_TOPDIR $REFPERSYS_TOPDIR there is no refpersys executable > /dev/stderr
@@ -56,9 +56,15 @@ if [ "$1" = "--help" ]; then
    exit 0
 fi
 
+
+## we probably want to compile then use plugins_dir/rpsplug_display.cc
+/usr/bin/gmake do-build-refpersys-plugin >& $HOME/tmp/making-rps-plugin-builder.out
+
+ ./do-build-refpersys-plugin plugins_dir/rpsplug_display.cc -o plugins_dir/rpsplug_display.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_display.so /tmp/
 echo $0 script in  REFPERSYS_TOPDIR $REFPERSYS_TOPDIR is incomplete  > /dev/stderr
 exit 1
 
-## we probably want to compile then use plugins_dir/rpsplug_display.cc
+./refpersys --plugin-after-load=plugins_dir/rpsplug_display.so \
+            --batch --plugin-arg=rpsplug_display:$1
 
 ## we dont use getopts 
