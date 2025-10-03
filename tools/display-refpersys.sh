@@ -60,7 +60,7 @@ fi
 ## we probably want to compile then use plugins_dir/rpsplug_display.cc
 /usr/bin/gmake do-build-refpersys-plugin 2>&1 > $HOME/tmp/making-rps-plugin-builder.out
 
- ./do-build-refpersys-plugin plugins_dir/rpsplug_display.cc -o plugins_dir/rpsplug_display.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_display.so /tmp/
+ ./do-build-refpersys-plugin plugins_dir/rpsplug_display.cc -o plugins_dir/rpsplug_display.so --symlink=/tmp/rpsplug_display.so 2>&1 > $HOME/tmp/making-rpsplug_display.out 
 
 ./refpersys --plugin-after-load=plugins_dir/rpsplug_display.so \
             --batch --plugin-arg=rpsplug_display:$1 \
