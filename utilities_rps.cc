@@ -1046,15 +1046,19 @@ rps_early_initialization(int argc, char** argv)
   rps_argc = argc;
   rps_argv = argv;
   rps_progname = argv[0];
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    strcpy(cwdbuf, "./");
   /// dlopen to self
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
     {
       char *err = dlerror();
-      fprintf(stderr, "%s failed to dlopen whole program (%s)\n", rps_progname,
-              err);
-      syslog(LOG_ERR, "%s failed to dlopen whole program (%s)\n", rps_progname,
-             err);
+      fprintf(stderr, "%s failed to dlopen whole program (%s) in %s\n", rps_progname,
+              err, cwdbuf);
+      syslog(LOG_ERR, "%s failed to dlopen whole program (%s) in %s\n", rps_progname,
+             err, cwdbuf);
       exit(EXIT_FAILURE);
     };
   if (argc == 2 && !strcmp(argv[1], "--full-git"))   /// see also rps_parse1opt
@@ -1594,20 +1598,28 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_RUN_AFTER_LOAD:
     {
       if (rps_run_command_after_load)
-        RPS_FATALOUT("only one --run-after-load command can be given, not both " << rps_run_command_after_load
+        RPS_FATALOUT("only one --run-after-load command can be given, not both "
+		     << rps_run_command_after_load
                      << " and " << arg);
       rps_run_command_after_load = arg;
     }
     return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
+      char cwdbuf[rps_path_byte_size];
+      memset (cwdbuf, 0, sizeof(cwdbuf));
+      if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+	strcpy(cwdbuf, "./");
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
       if (!dlh)
-        RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror());
+        RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror()
+		     << " in " << cwdbuf);
       const char* bnplug = basename(arg);
       Rps_Plugin curplugin(bnplug, dlh);
-      RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size() << " from " << arg << " from process pid#" << (int)getpid()
-                    << " basenamed " << Rps_QuotedC_String(bnplug));
+      RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size()
+		    << " from " << arg << " from process pid#" << (int)getpid()
+                    << " basenamed " << Rps_QuotedC_String(bnplug)
+		    << " in " << cwdbuf);
       rps_plugins_vector.push_back(curplugin);
     }
     return 0;

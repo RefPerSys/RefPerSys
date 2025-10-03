@@ -879,6 +879,11 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
   RPS_ASSERT_CALLFRAME (callerframe);
   RPS_ASSERT(rps_is_main_thread());
   rps_edit_cplusplus_callframe = &_;
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    strcpy(cwdbuf, "./");
+  ///
   char tempfilprefix[80];
   memset (tempfilprefix, 0, sizeof(tempfilprefix));
   _f.tempob =
@@ -1047,8 +1052,10 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     // so it is dlopen-ed twice (once here, later by plugin loading) but we don't care!
     if (!tempdlh)
       RPS_FATALOUT("rps_edit_run_cplusplus_code failed to dlopen temporary C++ plugin "
-                   << tempsofilename << " : " << dlerror());
-    RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code did dlopen " << tempsofilename);
+                   << tempsofilename << " : " << dlerror()
+		   << " in " << cwdbuf);
+    RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code did dlopen " << tempsofilename
+		  << " in " << cwdbuf);
     Rps_Plugin templugin(tempsofilename, tempdlh);
     rps_plugins_vector.push_back(templugin);
   }
