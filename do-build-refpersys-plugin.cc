@@ -25,6 +25,7 @@
 ///     ./do-build-refpersys-plugin --plugin-src=DIR_NAME | -s DIR_NAME #plugin source directory
 ///     ./do-build-refpersys-plugin --help | -h #this help
 ///     ./do-build-refpersys-plugin --ninja=NINJAFILE | -N NINJAFILE #add to generated ninja-build script
+///     ./do-build-refpersys-plugin --symlink=SYMLINK  #add a symlink of plugin
 ///
 ///// The C++ plugin sources may contain comments driving the compilation
 
@@ -89,6 +90,7 @@ extern "C" {
   char**bp_argv_prog;
   const char** bp_env_prog;
   const char* bp_plugin_binary; // generated shared object
+  const char* bp_plugin_symlink; // generated symlink to plugin
   std::string bp_srcdir;  // plugin source directory
   void bp_initialize_guile_scheme(void);
 #warning bp_srcdir plugin source directory incompletely handled
@@ -150,6 +152,12 @@ struct option bp_options_arr[BP_MAX_OPTIONS] =
     .val= 's',
   },
   {
+    .name= "symlink",  // --symlink=SYMLINK | -L SYMLINK
+    .has_arg= required_argument,
+    .flag= nullptr,
+    .val= 'L',
+  },
+  {
     .name= nullptr,
     .has_arg= no_argument,
     .flag= nullptr,
@@ -187,6 +195,7 @@ bp_usage(void)
   std::cout << '\t' << bp_progname << " --version | -V #give also defaults" << std::endl;
   std::cout << '\t' << bp_progname << " --verbose | -v #verbose execution" << std::endl;
   std::cout << '\t' << bp_progname << " --output=PLUGIN | -o PLUGIN #output generated .so" << std::endl;
+  std::cout << '\t' << bp_progname << " --symlink=SYMLINK | -L SYMLINK #symlink the generated plugin .so" << std::endl;
   std::cout << '\t' << bp_progname << " --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files" << std::endl;
   std::cout << '\t' << bp_progname << " --shell=CMD | -S CMD #run shell command" << std::endl;
   std::cout << '\t' << bp_progname << " --plugin-src=DIR_NAME | -s DIR_NAME #plugin source directory" << std::endl;
@@ -221,7 +230,7 @@ bp_prog_options(int argc, char**argv)
   BP_NOP_BREAKPOINT();
   do
     {
-      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:G:", bp_options_ptr, &ix);
+      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:G:L:", bp_options_ptr, &ix);
       if (ix >= argc)
         break;
       switch (opt)
@@ -333,6 +342,11 @@ bp_prog_options(int argc, char**argv)
               if (!rename(optarg, bufbak) && bp_verbose)
                 printf("%s renamed old plugin: %s -> %s\n", bp_progname, optarg, bufbak);
             };
+        }
+        break;
+        case 'L':   // --symlink=SYMLINK
+        {
+          bp_plugin_symlink = optarg;
         }
         break;
         case 'S':   // --shell COMMAND
@@ -555,8 +569,6 @@ main(int argc, char**argv, const char**env)
   ///program options and improve GNUmakefile
   memset (bp_hostname, 0, sizeof(bp_hostname));
   gethostname(bp_hostname, sizeof(bp_hostname)-1);
-  char symlkbuf[384];
-  memset(symlkbuf, 0, sizeof(symlkbuf));
   if (argc<2)
     {
       bp_usage();
@@ -714,9 +726,44 @@ main(int argc, char**argv, const char**env)
                 << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
       return ex;
     };
+  char *rp = realpath(bp_plugin_binary, NULL);
+  if (!access(rp, R_OK) && bp_plugin_symlink)
+    {
+      char oldsymlink[384];
+      memset (oldsymlink, 0, sizeof(oldsymlink));
+      ssize_t rlsz = readlink(bp_plugin_symlink, oldsymlink, sizeof(oldsymlink)-1);
+      if (rlsz > 0 && (int)rlsz <  (int)sizeof(oldsymlink)-2 && !strcmp(oldsymlink, rp))
+        {
+          if (bp_verbose)
+            printf("%s: symlink %s -> %s already exists\n",
+                   bp_progname, bp_plugin_symlink, rp);
+          fflush(stdout);
+        }
+      else
+        {
+          int syok = 0;
+          if (!access(bp_plugin_symlink, R_OK))
+            std::clog << bp_progname << " fail to symlink "
+                      << bp_plugin_symlink << " -> " << rp
+                      << " (existing file)" << std::endl;
+          else
+            syok = symlink(rp, bp_plugin_symlink);
+          if (syok)
+            std::clog << bp_progname << " fail to symlink "
+                      << bp_plugin_symlink << " -> " << rp
+                      << " : " << strerror(errno) << std::endl;
+          else
+            {
+              if (bp_verbose)
+                printf("%s: symlinked %s -> %s\n",
+                       bp_progname, bp_plugin_symlink, rp);
+              fflush(stdout);
+            }
+        }
+    }
   /// temporary files should be removed using at(1) utility in ten minutes
   /// see https://linuxize.com/post/at-command-in-linux/
-  if (!bp_temp_ninja.empty() || symlkbuf[0])
+  if (!bp_temp_ninja.empty())
     {
       char atcmd[80];
       memset (atcmd, 0, sizeof(atcmd));
@@ -729,16 +776,11 @@ main(int argc, char**argv, const char**env)
           return 0;
         }
       fprintf (p, "/bin/rm -f '%s'\n", bp_temp_ninja.c_str());
-      if (symlkbuf[0])
-        fprintf(p, "/bin/rm -f '%s'\n", symlkbuf);
       pclose(p);
       if (bp_verbose)
         {
           printf("%s: will remove ninja temporary script %s in ten minutes thru /bin/at\n",
                  bp_progname, bp_temp_ninja.c_str());
-          if (symlkbuf[0])
-            printf("%s: will remove symlink %s in ten minutes thru /bin/at\n",
-                   bp_progname, symlkbuf);
         }
     }
   fflush(nullptr);
