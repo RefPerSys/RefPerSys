@@ -69,10 +69,12 @@
 #include <libguile.h>
 ///
 #define BP_HEAD_LINES_THRESHOLD 512
-#define BP_MAX_OPTIONS 32
+#define BP_MAX_OPTIONS 48
 
 /// a macro to ease GDB breakpoint
-#define BP_NOP_BREAKPOINT() do {asm volatile ("nop; nop; nop; nop");} while(0)
+#define BP_NOP_BREAKPOINT() do { \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop");}	\
+  while(0)
 
 #pragma message "compiling " __FILE__
 
@@ -231,8 +233,12 @@ bp_prog_options(int argc, char**argv)
   do
     {
       opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:G:L:", bp_options_ptr, &ix);
+      BP_NOP_BREAKPOINT();
+      if (opt == -1)
+	break;
       if (ix >= argc)
         break;
+      BP_NOP_BREAKPOINT();
       switch (opt)
         {
         case 'V':       // --version
@@ -395,12 +401,13 @@ bp_prog_options(int argc, char**argv)
         break;
         } // end switch opt
     }
-  while (opt > 0 && ix < argc);
+  while (opt > 0);
   fflush(nullptr);
-  asm volatile ("nop; nop; nop; nop");
-  char cwdbuf[256];
+  BP_NOP_BREAKPOINT();
+  char cwdbuf[384];
   memset(cwdbuf, 0, sizeof(cwdbuf));
   const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+  BP_NOP_BREAKPOINT();
   while (optind < argc)
     {
       BP_NOP_BREAKPOINT();
@@ -465,7 +472,6 @@ bp_prog_options(int argc, char**argv)
       }
       optind++;
     };        // end while(optind<argc)
-  asm volatile ("nop; nop; nop; nop");
   BP_NOP_BREAKPOINT();
   ////
   if (bp_vect_cpp_sources.empty())
