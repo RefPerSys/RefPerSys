@@ -82,7 +82,7 @@ ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
 REFPERSYS_CXX_STANDARD?= -std=gnu++2c
 
-CFLAGS?= -O -g -Wall $(RPS_LTO)
+CFLAGS?= -Og -g -Wall $(RPS_LTO)
 
 ### Human hand-written C++ sources
 REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
