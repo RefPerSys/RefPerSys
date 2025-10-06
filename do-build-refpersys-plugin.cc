@@ -73,7 +73,7 @@
 
 /// a macro to ease GDB breakpoint
 #define BP_NOP_BREAKPOINT() do { \
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop");}	\
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop");} \
   while(0)
 
 #pragma message "compiling " __FILE__
@@ -128,6 +128,12 @@ struct option bp_options_arr[BP_MAX_OPTIONS] =
     .has_arg= required_argument,
     .flag= nullptr,
     .val= 'o',
+  },
+  {
+    .name= "input",  // --input=C++-source | -i C++-source
+    .has_arg= required_argument,
+    .flag= nullptr,
+    .val= 'i',
   },
   {
     .name= "dirobj",  // --dirobj=OBJECT_DIR | -d OBJECT_DIR
@@ -196,6 +202,7 @@ bp_usage(void)
             << " <plugin-source-code> ... -o <plugin-shared-object>" << std::endl;
   std::cout << '\t' << bp_progname << " --version | -V #give also defaults" << std::endl;
   std::cout << '\t' << bp_progname << " --verbose | -v #verbose execution" << std::endl;
+  std::cout << '\t' << bp_progname << " --input=CXXSOURCE | -i CXXSOURCE #input C++ file" << std::endl;
   std::cout << '\t' << bp_progname << " --output=PLUGIN | -o PLUGIN #output generated .so" << std::endl;
   std::cout << '\t' << bp_progname << " --symlink=SYMLINK | -L SYMLINK #symlink the generated plugin .so" << std::endl;
   std::cout << '\t' << bp_progname << " --dirobj=OBJ_DIR | -d OBJ_DIR #directory for object files" << std::endl;
@@ -223,6 +230,73 @@ bp_usage(void)
 
 
 void
+bp_add_cplusplus_source(const char*path)
+{
+  assert(path);
+  if (access(path, R_OK))
+    {
+      std::clog << bp_progname
+                << " : failed to access input source " << path
+                << " - " << strerror(errno)
+                << std::endl;
+      exit (EXIT_FAILURE);
+    };
+  const char* dot = strrchr(path, '.');
+  if (!dot)
+    {
+      std::clog << bp_progname
+                << " :  input source " <<  path << " without dot"
+                << std::endl;
+      exit (EXIT_FAILURE);
+    };
+  if (strcmp(dot+1, "cc") && strcmp(dot+1, "cxx") && strcmp(dot+1, "cpp")
+      && !strcmp(dot+1, "C"))
+    {
+      std::clog << bp_progname
+                << " :  input source " <<  path << " has bad extension "
+                << (dot+1) << " expecting cc, cxx, cpp, C"
+                << std::endl;
+      exit (EXIT_FAILURE);
+    }
+  char* rsrc = realpath(path, nullptr);
+  FILE* filsrc = fopen(rsrc,"r");
+  if (!filsrc)
+    {
+      std::clog << bp_progname
+                << " : failed to open input source " << rsrc
+                << " - " << strerror(errno)
+                << std::endl;
+      exit(EXIT_FAILURE);
+    };
+  bool withspdx = false;
+  bool with2slash = false;
+  int nblin= 0;
+  do
+    {
+      char linbuf[256];
+      memset (linbuf, 0, sizeof(linbuf));
+      char* l = fgets(linbuf, sizeof(linbuf)-2, filsrc);
+      if (!l)
+        break;
+      nblin++;
+      if (strstr(linbuf, "//"))
+        with2slash = true;
+      else if (strstr(linbuf, "SPDX-"))
+        withspdx = true;
+    }
+  while (!feof(filsrc) && nblin<BP_HEAD_LINES_THRESHOLD);
+  fclose(filsrc);
+  if (!with2slash && !withspdx)
+    {
+      std::clog << bp_progname
+                << " : input source " << path << " really " << rsrc
+                << " has no C++ // comments or SPDX line in its first "
+                << BP_HEAD_LINES_THRESHOLD << " lines" << std::endl;
+    };
+  int srcix=1+(int)bp_vect_cpp_sources.size();
+} // end bp_add_cplusplus_source
+
+void
 bp_prog_options(int argc, char**argv)
 {
   int opt= 0;
@@ -232,10 +306,10 @@ bp_prog_options(int argc, char**argv)
   BP_NOP_BREAKPOINT();
   do
     {
-      opt = getopt_long(argc, argv, "Vhvs:o:N:S:d:G:L:", bp_options_ptr, &ix);
+      opt = getopt_long(argc, argv, "Vhvi:s:o:N:S:d:G:L:", bp_options_ptr, &ix);
       BP_NOP_BREAKPOINT();
       if (opt == -1)
-	break;
+        break;
       if (ix >= argc)
         break;
       BP_NOP_BREAKPOINT();
@@ -330,6 +404,9 @@ bp_prog_options(int argc, char**argv)
           bp_srcdir = dirpath;
         }
         break;
+        case 'i':   // --input=C++source
+          bp_add_cplusplus_source(optarg);
+          break;
         case 'o':   // --output=PLUGIN
         {
           char bufbak[384];
@@ -412,64 +489,9 @@ bp_prog_options(int argc, char**argv)
     {
       BP_NOP_BREAKPOINT();
       std::string curarg=argv[optind];
-      int srcix=1+(int)bp_vect_cpp_sources.size();
       BP_NOP_BREAKPOINT();
-      if (access(curarg.c_str(), R_OK))
-        {
-          int err= errno;
-          fprintf(stderr,
-                  "%s failed to access plugin source#%d %s (%s) cwd %s [%s:%d]\n",
-                  bp_progname, srcix, curarg.c_str(),
-                  strerror(err), cwd, __FILE__, __LINE__-2);
-          exit(EXIT_FAILURE);
-        };
-      BP_NOP_BREAKPOINT();
-      for (char c: curarg)
-        {
-          if (isspace(c) || !isprint(c))
-            {
-              fprintf(stderr,
-                      "%s bad plugin source#%d has forbidden character %0ux (%s) [%s:%d]\n",
-                      bp_progname, srcix, (unsigned)c, curarg.c_str(),
-                      __FILE__, __LINE__-2);
-              exit(EXIT_FAILURE);
-            };
-        }
-      BP_NOP_BREAKPOINT();
-      {
-        std::string realfile;
-        char*rp = realpath(curarg.c_str(),nullptr);
-        BP_NOP_BREAKPOINT();
-        if (rp && strcmp(rp, curarg.c_str()))
-          /// the strdup below is a memory leak since never freed
-          /// but we dont care
-          {
-            char *duprp = strdup(rp);
-            BP_NOP_BREAKPOINT();
-            if (!duprp)
-              {
-                fprintf(stderr,
-                        "%s plugin source#%d %s failed to strdup (%s)",
-                        bp_progname, srcix, curarg.c_str(), strerror(errno));
-                exit (EXIT_FAILURE);
-              };
-            realfile.assign(duprp);
-          }
-        else
-          realfile = curarg;
-        BP_NOP_BREAKPOINT();
-        if (bp_verbose)
-          {
-            printf("%s (:%d) adding plugin C++ source file#%d %s (@%p) really %s (@%p)\n",
-                   bp_progname, __LINE__ -1, srcix,
-                   curarg.c_str(), (void*) curarg.c_str(),
-                   realfile.c_str(),  (void*)realfile.c_str());
-            fflush(nullptr);
-          };
-        BP_NOP_BREAKPOINT();
-        bp_vect_cpp_sources.push_back(realfile);
-        /// dont bother freeing rp....
-      }
+      bp_add_cplusplus_source(curarg.c_str());
+      /// dont bother freeing rp....
       optind++;
     };        // end while(optind<argc)
   BP_NOP_BREAKPOINT();
@@ -545,6 +567,27 @@ bpscm_git_id(void)
   return scm_from_utf8_string(bp_git_id);
 } // end bpscm_git_id
 
+static SCM
+bpscm_nb_cppsources(void)
+{
+  return scm_from_int((int)bp_vect_cpp_sources.size());
+} // end bpscm_nb_cppsources
+
+static SCM
+bpscm_get_cpp_source(SCM rkv)
+{
+  if (scm_is_integer(rkv))
+    {
+      int32_t irk = scm_to_int32(rkv);
+      int32_t nbcpp = (int32_t)bp_vect_cpp_sources.size();
+      if (irk<0)
+        irk += nbcpp;
+      if (irk>0 && irk<nbcpp)
+        return  scm_from_utf8_string (bp_vect_cpp_sources[irk].c_str());
+    };
+  return  SCM_BOOL_F;
+} // end bpscm_get_cpp_source
+
 void
 bp_initialize_guile_scheme(void)
 {
@@ -554,6 +597,10 @@ bp_initialize_guile_scheme(void)
                       (scm_t_subr)bpscm_false1);
   scm_c_define_gsubr ("bpscm:git_id", /*nbreq:*/0, /*nbopt:*/0, /*nbrest:*/0,
                       (scm_t_subr)bpscm_git_id);
+  scm_c_define_gsubr ("bpscm:nb_cppsources", /*nbreq:*/0, /*nbopt:*/0, /*nbrest:*/0,
+                      (scm_t_subr)bpscm_nb_cppsources);
+  scm_c_define_gsubr ("bpscm:get_cpp_source", /*nbreq:*/1, /*nbopt:*/0, /*nbrest:*/0,
+                      (scm_t_subr)bpscm_get_cpp_source);
 } // end bp_initialize_guile_scheme
 
 ////////////////////////////////////////////////////////////////
@@ -602,7 +649,7 @@ main(int argc, char**argv, const char**env)
                 << " : " << strerror(errno) << std::endl;
       exit(EXIT_FAILURE);
     };
-  asm volatile ("nop; nop; nop; nop");
+  BP_NOP_BREAKPOINT();
   if (bp_verbose)
     {
       char cwdbuf[256];
@@ -613,9 +660,10 @@ main(int argc, char**argv, const char**env)
         {
           std::cout << ' ' << argv[ix];
         };
-      std::cout << " git " << bp_git_id << " in " << (cwd?cwd:"./") << std::endl;
+      std::cout << " git " << bp_git_id << " in "
+                << (cwd?cwd:"./") << std::endl;
     };
-  asm volatile ("nop; nop; nop; nop");
+  BP_NOP_BREAKPOINT();
   std::set<std::string> bp_base_src_set;
   if (bp_vect_cpp_sources.empty())
     {
