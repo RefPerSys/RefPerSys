@@ -259,6 +259,8 @@ bp_add_cplusplus_source(const char*path)
       exit (EXIT_FAILURE);
     }
   char* rsrc = realpath(path, nullptr);
+  if (rsrc==path)
+    rsrc = strdup(path);
   FILE* filsrc = fopen(rsrc,"r");
   if (!filsrc)
     {
@@ -293,7 +295,11 @@ bp_add_cplusplus_source(const char*path)
                 << " has no C++ // comments or SPDX line in its first "
                 << BP_HEAD_LINES_THRESHOLD << " lines" << std::endl;
     };
+  bp_vect_cpp_sources.push_back(rsrc);
   int srcix=1+(int)bp_vect_cpp_sources.size();
+  if (bp_verbose)
+    std::cout << bp_progname << " : input#" << srcix
+              << " is " << rsrc << std::endl;
 } // end bp_add_cplusplus_source
 
 void
