@@ -492,7 +492,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	@printf "RPS_MAKE is %s and MAKE is %s for refpersys plugin at=%s PATH=%s\n" \ "$(RPS_MAKE)" "$(MAKE)" "$@"  "$$PATH"
 #	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) /usr/bin/printenv
-#	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v $< -o $@
+#	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v -i $< -o $@
 	/usr/bin/printenv
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared  $(REFPERSYS_CODEGEN_FLAGS) \
 	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
