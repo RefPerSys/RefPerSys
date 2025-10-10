@@ -70,6 +70,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v -i plugins_dir/rpsplug_cplusplustypes.cc -o plugins_dir/rpsplug_cplusplustypes.so -L /tmp/rpsplug_cplusplustypes.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && \
+    ./do-build-refpersys-plugin -v	      \
+      -i plugins_dir/rpsplug_cplusplustypes.cc \
+      -o plugins_dir/rpsplug_cplusplustypes.so \
+      -L /tmp/rpsplug_cplusplustypes.so" ;;
  ** End: ;;
  *****************/

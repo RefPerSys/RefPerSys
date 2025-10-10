@@ -149,6 +149,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && make plugins_dir/rpsplug_createclass.so && /bin/ln -sv $(/bin/pwd)/plugins_dir/rpsplug_createclass.so /tmp/" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && \
+    ./do-build-refpersys-plugin -v	      \
+      -i plugins_dir/rpsplug_createclass.cc \
+      -o plugins_dir/rpsplug_createclass.so \
+      -L /tmp/rpsplug_createclass.so" ;;
  ** End: ;;
  ****************/

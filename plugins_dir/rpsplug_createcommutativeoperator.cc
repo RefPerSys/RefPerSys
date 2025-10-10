@@ -114,6 +114,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -i plugins_dir/rpsplug_createcommutativeoperator.cc -o /tmp/rpsplug_createcommutativeoperator.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && \
+ ./do-build-refpersys-plugin -i plugins_dir/rpsplug_createcommutativeoperator.cc \
+        -o  plugins_dir/rpsplug_createcommutativeoperator.so \
+        -L /tmp/rpsplug_createcommutativeoperator.so" ;;
  ** End: ;;
  ****************/
