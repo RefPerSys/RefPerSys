@@ -1,5 +1,5 @@
 // passed to RefPerSys commits after 29811e1cd643 (of Feb, 24, 2025)
-// GPLv3+ licensed
+// GPLv3+ licensed -*- c++ -*-
 // © Copyright 2025 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin names some C++ primitive types reifications
 /*****
@@ -29,7 +29,7 @@ rpscplusplustype(Rps_CallFrame*callframe, const char*obid, const char*cppname, i
   }
   else 
     _f.obty							
-      ->put_attr(rpskob_0fx0GtCX90Z03VI9mo, /*!cplusplus_name∈named_attribute*/	
+      ->put_attr(rpskob_0fx0GtCX90Z03VI9mo, //!cplusplus_name∈named_attribute
 		 _f.str);
   if (size > 0) 
     _f.obty							
@@ -68,12 +68,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
 }
 
 /****************
- **                           for Emacs...
- ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && \
-    ./do-build-refpersys-plugin -v	      \
-      -i plugins_dir/rpsplug_cplusplustypes.cc \
-      -o plugins_dir/rpsplug_cplusplustypes.so \
-      -L /tmp/rpsplug_cplusplustypes.so" ;;
- ** End: ;;
- *****************/
+ **                           for Emacs... ***/
+ // Local Variables: ;;
+ // compile-command: "cd $REFPERSYS_TOPDIR && \
+ //   ./do-build-refpersys-plugin -v	       \
+ //     -i plugins_dir/rpsplug_cplusplustypes.cc \
+ //     -o plugins_dir/rpsplug_cplusplustypes.so \
+ //     -L /tmp/rpsplug_cplusplustypes.so" ;;
+ // End: ;;
+ /*****************/

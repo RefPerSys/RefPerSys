@@ -1,4 +1,16 @@
-This refpersys/plugins/ directory will later contain *.so plugins that
-should be dlopen(3)-ed.  As documented, a plugin named
-rps_7GIB3ma21I200tfqDs-mod.so corresponds to the object of id
-_7GIB3ma21I200tfqDs, that is should be generated from that object.
+This plugins_dir/ directory contains C++ code of GPL licensed plugins
+should be dlopen(3)-ed. It could contain also shared libraries.
+
+See refpersys.org and github.com/RefPerSys/RefPerSys/
+
+There are two sorts of plugins: those handwritten and those generated.
+
+Several plugins are hand-written, and their C++17 or C++23 code (to be
+compiled by the GCC compiler on POSIX operating systems) is
+conventionally named rpsplug_*.cc .... Most of them being compiled by
+the do-build-refpersys-plugin utility whose C++ code is GPL licensed
+and in file do-build-refpersys-plugin.cc
+
+As documented, a plugin named rps_7GIB3ma21I200tfqDs-mod.so
+corresponds to the object of id _7GIB3ma21I200tfqDs, that is should be
+generated from that object.
