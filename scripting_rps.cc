@@ -170,9 +170,12 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
      RPS_POSSIBLE_BREAKPOINT();
    };
    RPS_POSSIBLE_BREAKPOINT();
-   RPS_FATALOUT("unimplemented rps_run_one_script_file ix=" << ix
-		<< " curpath=" << curpath
-		<< " tsrc=" << tsrc);
+   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
+	       << " curpath=" << curpath << (gotmagic?"GOTmagic":"NO!MAGIC")
+	       << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+	       << std::endl
+	       << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file"));
+   RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file unimplemented
  } // end rps_run_one_script_file
 
