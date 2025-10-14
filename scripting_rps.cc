@@ -75,6 +75,7 @@ Hence these initial lines could contain some shell script, etc.
 extern "C" const char  rps_scripting_magic_string[];
 
 const char rps_scripting_magic_string[] = "REFPERSYS_SCRIPT";
+#define RPS_SCRIPT_MAGIC_STR "REFPERSYS_SCRIPT"
 
 
 void
@@ -144,8 +145,11 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
  void
  rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
  {
+   char modline[64];
+   memset (modline, 0, sizeof(modline));
    RPS_ASSERT(callframe && callframe->is_good_call_frame());
    RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size());
+   RPS_ASSERT(!strcmp(rps_scripting_magic_string,  RPS_SCRIPT_MAGIC_STR));
    const char*curpath = rps_scripts_vector[ix];
    const std::string curpstr(curpath);
    Rps_MemoryFileTokenSource tsrc(curpstr);
@@ -163,8 +167,22 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
      RPS_POSSIBLE_BREAKPOINT();
      const char* magp = strstr(clp, rps_scripting_magic_string);
      if (magp) {
+       static_assert(sizeof(modline)>60);
        RPS_POSSIBLE_BREAKPOINT();
        gotmagic= true;
+       memset(modline, 0, sizeof(modline));
+       int p = -1;
+       int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%p", modline, &p);
+       if (n > 0 && isascii(modline[0]) && p>0) {
+	 RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+		       << Rps_QuotedC_String(clp)
+		       << " @" << tsrc.position_str()
+		       << " modline=" << modline);
+#warning should use modline cleverly
+	 if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
+#warning should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
+	 }
+       };
      };
 #warning rps_run_one_script_file has missing code here
      RPS_POSSIBLE_BREAKPOINT();
