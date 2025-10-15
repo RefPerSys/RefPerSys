@@ -34,7 +34,9 @@ exit $?
 
 ## for GDB use
 ## gdb --args ./refpersys -AREPL --script=test_dir/005script.bash --batch --run-name 005script
-## magic string REFPERSYS_SCRIPT carbon
+
+## magic string should not be commented
+REFPERSYS_SCRIPT carbon
 ## etc
 
 

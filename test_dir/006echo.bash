@@ -34,7 +34,9 @@ exit $?
 
 ## for GDB use
 ## gdb --args ./refpersys -AREPL --script=$(/usr/bin/realpath test_dir/006echo.bash) --batch --run-name 006echodbg
-## magic string REFPERSYS_SCRIPT echo
+
+## the magic string should not be commented!
+REFPERSYS_SCRIPT echo
 
 (This is from the tragedy le Cid of Corneille, in 1637 so public domain)
 
