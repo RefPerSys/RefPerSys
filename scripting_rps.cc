@@ -122,9 +122,9 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
 		 Rps_Value strv;
 		);
   RPS_DEBUG_LOG(REPL, "starting rps_run_scripts_after_load for "
-	      << rps_scripts_vector.size() << " scripts"
-	      << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_scripts_after_load"));
+		<< rps_scripts_vector.size() << " scripts"
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_run_scripts_after_load"));
   for (int ix=0; ix<rps_scripts_vector.size(); ix++) {
     try {
       rps_run_one_script_file(&_, ix);
@@ -142,59 +142,65 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
 
 
 ////////////////
- void
- rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
- {
-   char modline[64];
-   memset (modline, 0, sizeof(modline));
-   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-   RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size());
-   RPS_ASSERT(!strcmp(rps_scripting_magic_string,  RPS_SCRIPT_MAGIC_STR));
-   const char*curpath = rps_scripts_vector[ix];
-   const std::string curpstr(curpath);
-   Rps_MemoryFileTokenSource tsrc(curpstr);
-   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
-		 << " curpath=" << curpath);
-   RPS_POSSIBLE_BREAKPOINT();
-   bool gotmagic=false;
-   while (!gotmagic && tsrc.get_line()) {
-     const char*clp = tsrc.curcptr();
-     if (!clp)
-       break;
-   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
-		 << Rps_QuotedC_String(clp)
-		 << " @" << tsrc.position_str());
-     RPS_POSSIBLE_BREAKPOINT();
-     const char* magp = strstr(clp, rps_scripting_magic_string);
-     if (magp) {
-       static_assert(sizeof(modline)>60);
-       RPS_POSSIBLE_BREAKPOINT();
-       gotmagic= true;
-       memset(modline, 0, sizeof(modline));
-       int p = -1;
-       int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%p", modline, &p);
-       if (n > 0 && isascii(modline[0]) && p>0) {
-	 RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
-		       << Rps_QuotedC_String(clp)
-		       << " @" << tsrc.position_str()
-		       << " modline=" << modline);
+void
+rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
+{
+  char modline[64];
+  memset (modline, 0, sizeof(modline));
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size());
+  RPS_ASSERT(!strcmp(rps_scripting_magic_string,  RPS_SCRIPT_MAGIC_STR));
+  const char*curpath = rps_scripts_vector[ix];
+  const std::string curpstr(curpath);
+  Rps_MemoryFileTokenSource tsrc(curpstr);
+  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
+		<< " curpath=" << curpath);
+  RPS_POSSIBLE_BREAKPOINT();
+  bool gotmagic=false;
+  while (!gotmagic && tsrc.get_line()) {
+    const char*clp = tsrc.curcptr();
+    if (!clp)
+      break;
+    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+		  << Rps_QuotedC_String(clp)
+		  << " @" << tsrc.position_str());
+    RPS_POSSIBLE_BREAKPOINT();
+    const char* magp = strstr(clp, rps_scripting_magic_string);
+    if (magp) {
+      static_assert(sizeof(modline)>60);
+      RPS_POSSIBLE_BREAKPOINT();
+      gotmagic= true;
+      memset(modline, 0, sizeof(modline));
+      int p = -1;
+      int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%p", modline, &p);
+      if (n > 0 && isascii(modline[0]) && p>0) {
+	RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+		      << Rps_QuotedC_String(clp)
+		      << " @" << tsrc.position_str()
+		      << " modline=" << modline);
 #warning should use modline cleverly
-	 if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
+	if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
+	  RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
+		      << " curpath=" << curpath << " *CARBON* "
+		      << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+		      << std::endl
+		      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON"));
 #warning should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
-	 }
-       };
-     };
+	}
+      };
+    };
 #warning rps_run_one_script_file has missing code here
-     RPS_POSSIBLE_BREAKPOINT();
-   };
-   RPS_POSSIBLE_BREAKPOINT();
-   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
-	       << " curpath=" << curpath << (gotmagic?"GOTmagic":"NO!MAGIC")
-	       << " tsrc=" << tsrc << " @"  << tsrc.position_str()
-	       << std::endl
-	       << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file"));
-   RPS_POSSIBLE_BREAKPOINT();
+    RPS_POSSIBLE_BREAKPOINT();
+  };				// end while !gotmagic...
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
+	      << " curpath=" << curpath << " "
+	      << (gotmagic?"GOTmagic":"NO!MAGIC")
+	      << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file"));
+  RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file unimplemented
- } // end rps_run_one_script_file
+} // end rps_run_one_script_file
 
 //// end of file scripting_rps.cc
