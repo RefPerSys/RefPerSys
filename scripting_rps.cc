@@ -161,6 +161,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
     RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc);
     RPS_POSSIBLE_BREAKPOINT();
     const char*clp = tsrc.curcptr();
+    RPS_POSSIBLE_BREAKPOINT();
     if (!clp) {
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
 		    <<  " ¤eof @" << tsrc.position_str());
