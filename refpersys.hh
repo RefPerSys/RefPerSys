@@ -2946,6 +2946,7 @@ protected:
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public: //////
+  virtual bool reached_end(void) const =0;
   void set_keyword_lexing_fun(rps_keyword_lexing_sigt*fun);
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const
@@ -3132,6 +3133,7 @@ public:
   Rps_CinTokenSource();
   virtual ~Rps_CinTokenSource();
   virtual bool get_line(void);
+  virtual bool reached_end(void) const;
   virtual void display(std::ostream&out) const;
 };             // end Rps_CinTokenSource
 
@@ -3150,6 +3152,7 @@ public:
   };
   virtual ~Rps_StreamTokenSource();
   virtual bool get_line(void);
+  virtual bool reached_end(void) const;
   virtual void display(std::ostream&out) const;
 };             // end Rps_StreamTokenSource
 
@@ -3169,6 +3172,7 @@ public:
   {
     return toksrcstr_str;
   };
+  virtual bool reached_end(void) const;
   virtual void display(std::ostream&out) const;
 };          // end Rps_StringTokenSource
 
@@ -3243,6 +3247,7 @@ public:
     return toksrcmfil_path;
   };
   virtual void display(std::ostream&out) const;
+  virtual bool reached_end(void) const;
 };        // end Rps_MemoryFileTokenSource
 
 

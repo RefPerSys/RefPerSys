@@ -236,6 +236,8 @@ Rps_StreamTokenSource::display(std::ostream&out) const
 {
   output(out, 0, Rps_Value::debug_maxdepth);
   out << std::endl;
+  if (reached_end())
+    out <<  "°";
   display_current_line_with_cursor(out);
 } // end Rps_StreamTokenSource::display
 
@@ -257,6 +259,15 @@ Rps_StreamTokenSource::get_line(void)
   return true;
 } // end Rps_StreamTokenSource::get_line
 
+
+
+bool
+Rps_StreamTokenSource::reached_end(void) const
+{
+  if (toksrc_input_stream && toksrc_input_stream.eof())
+    return true;
+  return false;
+} // end Rps_StreamTokenSource::reached_end
 
 
 Rps_CinTokenSource::Rps_CinTokenSource()
@@ -291,10 +302,20 @@ Rps_CinTokenSource::get_line(void)
 } // end Rps_CinTokenSource::get_line
 
 
+bool
+Rps_CinTokenSource::reached_end(void) const
+{
+  if (std::cin && std::cin.eof())
+    return true;
+  return false;
+} // end Rps_StreamTokenSource::reached_end
+
 void
 Rps_CinTokenSource::display(std::ostream&out) const
 {
   output(out, 0, Rps_Value::debug_maxdepth);
+  if (reached_end())
+    out <<  "°";
   out << std::endl;
   display_current_line_with_cursor(out);
 } // end Rps_CinTokenSource::display
@@ -358,6 +379,15 @@ Rps_StringTokenSource::get_line()
 } // end Rps_StringTokenSource::get_line()
 
 
+
+bool
+Rps_StringTokenSource::reached_end(void) const
+{
+  if (toksrcstr_inp && toksrcstr_inp.eof())
+    return true;
+  return false;
+} // end Rps_StringTokenSource::reached_end
+
 void
 Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
@@ -399,6 +429,8 @@ Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdep
       << " str: " << Rps_QuotedC_String(toksrcstr_inp.str());
   if (depth == 0)
     out << " deq:" << token_dequeue();
+  if (reached_end())
+    out <<  "°";
   out << std::flush;
 }       // end Rps_StringTokenSource::output
 
@@ -520,6 +552,17 @@ Rps_MemoryFileTokenSource::get_line(void)
 } // end Rps_MemoryFileTokenSource::get_line
 
 
+bool
+Rps_MemoryFileTokenSource::reached_end(void) const
+{
+  const char*c = curcptr();
+  if (c)
+    return c >= toksrcmfil_start && c < toksrcmfil_end;
+  if (toksrcmfil_end)
+  return toksrcmfil_line >= toksrcmfil_start && toksrcmfil_line < toksrcmfil_end;
+  return true;
+} // end Rps_StringTokenSource::reached_end
+
 
 void
 Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
@@ -536,6 +579,8 @@ Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned max
     {
       out << "P"  << Rps_Cjson_String(toksrcmfil_path);
     };
+  if (reached_end())
+    out <<  "°";
   out << std::endl;
 } // end Rps_MemoryFileTokenSource::output
 
