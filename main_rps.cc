@@ -688,7 +688,7 @@ rps_run_loaded_application(int &argc, char **argv)
       RPS_DEBUG_LOG(REPL, "rps_run_loaded_application initializing FLTK");
       rps_fltk_initialize (argc, argv);
     };
-#endif /*RPS_WITH_FLTK*/  
+#endif /*RPS_WITH_FLTK*/
   //// running the given plugins after load - should happen after
   //// edition of C++ code
   if (!rps_plugins_vector.empty())
@@ -780,7 +780,7 @@ rps_run_loaded_application(int &argc, char **argv)
   if (rps_gui_script_executable[0]
       && access(rps_gui_script_executable, X_OK))
     RPS_WARNOUT("default GUI script " << rps_gui_script_executable
-		<< " is not executable");
+                << " is not executable");
   ////
   ////
   ////
@@ -793,7 +793,7 @@ rps_run_loaded_application(int &argc, char **argv)
     };
   rps_run_scripts_after_load(&_);
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread "
-		<< rps_current_pthread_name()
+                << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application ending"));
 } // end rps_run_loaded_application
@@ -1053,9 +1053,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     if (!tempdlh)
       RPS_FATALOUT("rps_edit_run_cplusplus_code failed to dlopen temporary C++ plugin "
                    << tempsofilename << " : " << dlerror()
-		   << " in " << cwdbuf);
+                   << " in " << cwdbuf);
     RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code did dlopen " << tempsofilename
-		  << " in " << cwdbuf);
+                  << " in " << cwdbuf);
     Rps_Plugin templugin(tempsofilename, tempdlh);
     rps_plugins_vector.push_back(templugin);
   }
@@ -1476,6 +1476,12 @@ rps_kill_wait_gui_process(void)
 /// registered to atexit....
 extern "C" void rps_exiting(void);
 
+/// useful at least for GDB
+extern "C" int rps_main_argc;
+extern "C" const char** rps_main_argv;
+
+int rps_main_argc;
+const char** rps_main_argv;
 
 void
 rps_exiting(void) //// called thru atexit
@@ -1522,6 +1528,8 @@ int
 main (int argc, char** argv)
 {
   rps_progname = argv[0];
+  rps_main_argc = argc;
+  rps_main_argv = const_cast<const char**>(argv);
   //// the double dash in the main thread name rps--main is temporary
   //// since rps_early_initialization is later setting it to rps-main
   pthread_setname_np(pthread_self(), "rps--main");
