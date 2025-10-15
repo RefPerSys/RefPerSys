@@ -22,6 +22,8 @@ if [ ! -x refpersys ]; then
     exit 1
 fi
 ./refpersys -AREPL --script=$0 --batch --run-name=005script
+exit $?
+
 ## for GDB use
 ## gdb --args ./refpersys -AREPL --script=test_dir/005script.bash --batch --run-name 005script
 ## magic string REFPERSYS_SCRIPT carbon

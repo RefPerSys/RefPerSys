@@ -17,16 +17,22 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+if [ -n "$REFPERSYS_TOPDIR" ]; then
+    cd  "$REFPERSYS_TOPDIR"  && /bin/pwd
+fi
+
 if [ ! -x refpersys ]; then
     echo 'no refpersys executable in ' $(/bin/pwd) > /dev/stderr
     exit 1
 fi
-./refpersys -AREPL --script=$0 --batch --run-name=006echo
+./refpersys -AREPL --script=$(/usr/bin/realpath $0) --batch --run-name=006echo
+exit $?
+
 ## for GDB use
-## gdb --args ./refpersys -AREPL --script=test_dir/006echo.bash --batch --run-name 005script
+## gdb --args ./refpersys -AREPL --script=$(/usr/bin/realpath test_dir/006echo.bash) --batch --run-name 005script
 ## magic string REFPERSYS_SCRIPT echo
 
-(This is from the tragedy le Cid of Corneille)
+(This is from the tragedy le Cid of Corneille, in 1637 so public domain)
 
 Ô rage ! Ô désespoir ! Ô vieillesse ennemie !
 N’ai-je donc tant vécu que pour cette infamie ?
