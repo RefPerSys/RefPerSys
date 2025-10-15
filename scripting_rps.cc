@@ -153,13 +153,20 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   const std::string curpstr(curpath);
   Rps_MemoryFileTokenSource tsrc(curpstr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
-		<< " curpath=" << curpath);
+		<< " curpath=" << curpath
+		<< std::endl << " … tsrc=" << tsrc);
   RPS_POSSIBLE_BREAKPOINT();
   bool gotmagic=false;
   while (!gotmagic && tsrc.get_line()) {
+    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc);
+    RPS_POSSIBLE_BREAKPOINT();
     const char*clp = tsrc.curcptr();
-    if (!clp)
+    if (!clp) {
+      RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+		    <<  " ¤eof @" << tsrc.position_str());
+      RPS_POSSIBLE_BREAKPOINT();
       break;
+    };
     RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
 		  << Rps_QuotedC_String(clp)
 		  << " @" << tsrc.position_str());
@@ -177,6 +184,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 		      << Rps_QuotedC_String(clp)
 		      << " @" << tsrc.position_str()
 		      << " modline=" << modline);
+	RPS_POSSIBLE_BREAKPOINT();
 #warning should use modline cleverly
 	if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
 	  RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
