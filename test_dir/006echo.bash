@@ -22,6 +22,10 @@ if [ -n "$REFPERSYS_TOPDIR" ]; then
 fi
 
 if [ ! -x refpersys ]; then
+    /usr/bin/gmake -j3 refpersys
+fi
+
+if [ ! -x refpersys ]; then
     echo 'no refpersys executable in ' $(/bin/pwd) > /dev/stderr
     exit 1
 fi
