@@ -185,7 +185,15 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 		      << " tsrc=" << tsrc << " @"  << tsrc.position_str()
 		      << std::endl
 		      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON"));
-#warning should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
+#warning rps_run_one_script_file in carbon mode should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
+	}
+	else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
+	  RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
+		      << " curpath=" << curpath << " *ECHO* "
+		      << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+		      << std::endl
+		      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/ECHO"));
+#warning rps_run_one_script_file should copy the rest of the file to std::cout in echo mode
 	}
       };
     };
