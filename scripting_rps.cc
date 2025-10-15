@@ -157,9 +157,13 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 		<< std::endl << " … tsrc=" << tsrc);
   RPS_POSSIBLE_BREAKPOINT();
   bool gotmagic=false;
-  while (!gotmagic && tsrc.get_line()) {
+  while (!gotmagic && tsrc.reached_end()) {
     RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc);
     RPS_POSSIBLE_BREAKPOINT();
+    if (!tsrc.get_line()) {
+      RPS_POSSIBLE_BREAKPOINT();
+      continue;
+    };
     const char*clp = tsrc.curcptr();
     RPS_POSSIBLE_BREAKPOINT();
     if (!clp) {
