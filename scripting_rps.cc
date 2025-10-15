@@ -48,7 +48,6 @@ const char rps_scripting_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_scripting_timestamp[];
 const char rps_scripting_timestamp[]= __TIMESTAMP__;
 
-#warning missing code in scripting_rps.cc
 
 extern "C" void rps_scripting_help(void);
 extern "C" void rps_scripting_add_script(const char*);
@@ -193,8 +192,16 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 		      << " tsrc=" << tsrc << " @"  << tsrc.position_str()
 		      << std::endl
 		      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/ECHO"));
-#warning rps_run_one_script_file should copy the rest of the file to std::cout in echo mode
-	}
+	  while (tsrc.get_line()) {
+	    const char*clp = tsrc.curcptr();
+	    if (!clp)
+	      break;
+	    RPS_DEBUG_LOG(REPL, "¤echo: clp=" << Rps_QuotedC_String(clp)
+			  << " @" << tsrc.position_str());
+	    std::cout << clp << std::flush;
+	  } // end while get_line in echo mode
+	  std::cout << std::endl;
+	} // end echo mode
       };
     };
 #warning rps_run_one_script_file has missing code here
