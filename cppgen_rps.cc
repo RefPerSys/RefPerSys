@@ -591,7 +591,7 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
   RPS_DEBUG_LOG(CODEGEN,
                 "Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
                 " generator=" << _f.obgenerator
-                << " module=" << _f.obgenerator
+                << " module=" << _f.obmodule
                 << " str=" << Rps_QuotedC_String(str));
   size_t ssz = str.size();
   if (ssz > maximal_comment_size)
@@ -647,6 +647,13 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
       //TODO: maybe we need to call u8_possible_linebreaks which
       //needs the current encoding
     };
+
+  RPS_DEBUG_LOG(CODEGEN,
+                "Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
+                " generator=" << _f.obgenerator
+                << " module=" << _f.obmodule
+                << " nbslash=" << nbslash
+                << " nblines=" << nblines);
   if (nblines==0)
     {
       cppgen_outcod << "//° " << str << eol_indent();
@@ -974,8 +981,8 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                         << " = " << _f.vcomp
                         << " is not declarable in C++ for generator "
                         << _f.obgenerator);
-	  else
-	    nbcompdcl++;
+          else
+            nbcompdcl++;
         }
       else
         {
@@ -990,15 +997,16 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                                       << " in obmodule=" << _f.obmodule
                                       << " obgenerator=" << _f.obgenerator);
         }
-    };	   // end for loop on components
-  if (nbcompdcl>0) {
-    cppgen_outcod << eol_indent()
-		  << "///¤¤¤¤ end of " << nbcompdcl << " declarations"
-		  << " in module " << _f.obmodule
-		  << " with generator " << _f.obgenerator
-		  << eol_indent()
-		  << eol_indent();
-  };
+    };     // end for loop on components
+  if (nbcompdcl>0)
+    {
+      cppgen_outcod << eol_indent()
+                    << "///¤¤¤¤ end of " << nbcompdcl << " declarations"
+                    << " in module " << _f.obmodule
+                    << " with generator " << _f.obgenerator
+                    << eol_indent()
+                    << eol_indent();
+    };
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_declarations
 
 void
@@ -1039,8 +1047,8 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
                         << " = " << _f.vcomp
                         << " is not implementable in C++ for generator "
                         << _f.obgenerator);
-	  else
-	    nbcompdef++;
+          else
+            nbcompdef++;
         }
       else
         {
@@ -1055,15 +1063,16 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
                                       << " obgenerator=" << _f.obgenerator);
         }
     };
-  if (nbcompdef>0) {
-    cppgen_outcod << eol_indent()
-		  << "///¤¤¤¤ end of " << nbcompdef
-		  << " implemented definitions"
-		  << " in module " << _f.obmodule
-		  << " with generator " << _f.obgenerator
-		  << eol_indent()
-		  << eol_indent();
-  };
+  if (nbcompdef>0)
+    {
+      cppgen_outcod << eol_indent()
+                    << "///¤¤¤¤ end of " << nbcompdef
+                    << " implemented definitions"
+                    << " in module " << _f.obmodule
+                    << " with generator " << _f.obgenerator
+                    << eol_indent()
+                    << eol_indent();
+    };
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_definitions
 
 
