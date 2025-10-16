@@ -1230,8 +1230,6 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           )
     {
       //// get__codechunk__token
-      int linestart = toksrc_line;
-      int colstart = toksrc_col;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1)
                     << "?  code_chunk starting at " << position_str() << curp);
       _f.res = get__codechunk__token(&_, curp);
