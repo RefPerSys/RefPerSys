@@ -165,6 +165,9 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
       continue;
     };
     const char*clp = tsrc.curcptr();
+    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file @"
+		  <<  tsrc.position_str()
+		  << " clp=" << Rps_QuotedC_String(clp));
     RPS_POSSIBLE_BREAKPOINT();
     if (!clp) {
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
