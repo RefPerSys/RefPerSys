@@ -532,8 +532,92 @@ unsigned rps_call_frame_depth(const Rps_CallFrame*callframe)
 } // end rps_call_frame_depth
 
 
+////................................................................
+////................................................................
+//// Managing todo at exit stuff
 
 
+
+extern "C" std::recursive_mutex rps_exit_recmutx;
+std::recursive_mutex rps_exit_recmutx;
+
+class Rps_exit_todo_cl
+{
+  bool _tdxit_is_c;
+  int _tdxit_rank;
+  union {
+    std::function<void(void*)> _tdxit_cppfun;
+    rps_exit_cfun_sig_t*_tdxit_ptrcfun;
+    intptr_t _tdxit_intptr;
+  };
+  void* _tdxit_first_data;
+  void* _tdxit_second_data;
+public:
+  Rps_exit_todo_cl() :
+    _tdxit_is_c(false),
+    _tdxit_rank(-1),
+    _tdxit_intptr(0),
+    _tdxit_first_data(nullptr),
+    _tdxit_second_data(nullptr)
+  {
+  };
+  ~Rps_exit_todo_cl();
+};        // end class Rps_exit_todo_cl
+
+extern "C" std::vector<Rps_exit_todo_cl*> rps_exit_vecptr;
+std::vector<Rps_exit_todo_cl*> rps_exit_vecptr;
+
+Rps_exit_todo_cl::~Rps_exit_todo_cl()
+{
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  bool is_c = _tdxit_is_c;
+  int rank = _tdxit_rank;
+  int vsiz = (int) rps_exit_vecptr.size();
+  std::function<void(void*)> cppfun;
+  rps_exit_cfun_sig_t*ptrcfun=nullptr;
+  void*first = nullptr;
+  void* second = nullptr;
+  if (is_c)
+    ptrcfun = _tdxit_ptrcfun;
+  else
+    cppfun = _tdxit_cppfun;
+  first = _tdxit_first_data;
+  second = _tdxit_second_data;
+  _tdxit_intptr = 0;
+  _tdxit_first_data = (nullptr);
+  _tdxit_second_data = (nullptr);
+  _tdxit_rank = -1;
+  if (rank>=0 && rank<vsiz
+      && rps_exit_vecptr[rank] == this)
+    {
+      rps_exit_vecptr[rank] = nullptr;
+      //// Once in a while shrink the rps_exit_vecptr vector
+      if (rank % 16 == 0)
+        {
+          bool needshrink = true;
+          for (int ix = rank; ix<vsiz && needshrink; ix++)
+            if (rps_exit_vecptr[ix])
+              needshrink = false;
+          if (needshrink)
+            rps_exit_vecptr.resize(rank);
+        };
+      if (is_c)
+        {
+          /// refpersys.hh has typedef void rps_exit_cfun_sig_t(void*, void*);
+          if (ptrcfun)
+            {
+              (*ptrcfun) (first, second);
+            }
+          else   /*is C++*/
+            {
+              if (cppfun)
+                cppfun(first);
+            };
+        };
+    }
+} // end destructor Rps_exit_todo_cl
+
+////////////////////////////////////////////////////////////////
 void
 rps_set_exit_code(std::uint8_t ex)
 {
