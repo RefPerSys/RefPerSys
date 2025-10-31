@@ -543,6 +543,10 @@ std::recursive_mutex rps_exit_recmutx;
 
 class Rps_exit_todo_cl
 {
+  friend void rps_do_at_exit_cpp(const std::function<void(void*)>& fun,
+				 void* data);
+  friend void rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun,
+				  void*data1, void*data2);
   bool _tdxit_is_c;
   int _tdxit_rank;
   union {
@@ -648,6 +652,7 @@ rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data)
   if (!fun)
     return;
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  Rps_exit_todo_cl newxitodo(fun, data);
   RPS_FATALOUT("unimplemented rps_do_at_exit_cpp");
 #warning rps_do_at_exit_cpp is unimplemented
 } // end rps_do_at_exit_cpp
