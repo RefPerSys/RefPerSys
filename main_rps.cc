@@ -561,6 +561,10 @@ public:
     _tdxit_second_data(nullptr)
   {
   };
+  Rps_exit_todo_cl(const std::function<void(void*)> cppfun,
+                   void*data=nullptr);
+  Rps_exit_todo_cl(rps_exit_cfun_sig_t*cfun,
+                   void*data1=nullptr, void*data2=nullptr);
   ~Rps_exit_todo_cl();
 };        // end class Rps_exit_todo_cl
 
@@ -617,16 +621,33 @@ Rps_exit_todo_cl::~Rps_exit_todo_cl()
     }
 } // end destructor Rps_exit_todo_cl
 
-////////////////////////////////////////////////////////////////
-void
-rps_set_exit_code(std::uint8_t ex)
+
+Rps_exit_todo_cl::Rps_exit_todo_cl(const std::function<void(void*)> cppfun,
+                                   void*data)
 {
-  rps_exit_atomic_code.store(ex);
-} // end rps_set_exit_code
+  RPS_ASSERT(cppfun);
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+#warning incomplete Rps_exit_todo_cl constructor with C++ function
+  RPS_FATALOUT("unimplemented Rps_exit_todo_cl constructor"
+               " with C++ function");
+} // end Rps_exit_todo_cl constructor with C++ function
+
+Rps_exit_todo_cl::Rps_exit_todo_cl(const rps_exit_cfun_sig_t*cfun,
+                                   void*data1, void*data2)
+{
+  RPS_ASSERT(cfun);
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+#warning incomplete Rps_exit_todo_cl constructor with C function
+  RPS_FATALOUT("unimplemented Rps_exit_todo_cl constructor"
+               " with C function");
+} // end Rps_exit_todo_cl constructor with C function
 
 void
 rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data)
 {
+  if (!fun)
+    return;
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
   RPS_FATALOUT("unimplemented rps_do_at_exit_cpp");
 #warning rps_do_at_exit_cpp is unimplemented
 } // end rps_do_at_exit_cpp
@@ -634,10 +655,20 @@ rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data)
 void
 rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun, void*data1, void*data2)
 {
+  if (!fun)
+    return;
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
   RPS_FATALOUT("unimplemented rps_do_at_exit_cfun");
 #warning rps_do_at_exit_cfun is unimplemented
 } // end rps_do_at_exit_cfun
 
+
+////////////////////////////////////////////////////////////////
+void
+rps_set_exit_code(std::uint8_t ex)
+{
+  rps_exit_atomic_code.store(ex);
+} // end rps_set_exit_code
 
 
 int rps_nbjobs = RPS_NBJOBS_MIN + 2;
