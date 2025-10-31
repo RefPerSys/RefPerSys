@@ -533,6 +533,9 @@ unsigned rps_call_frame_depth(const Rps_CallFrame*callframe)
 
 
 ////................................................................
+/// registered to atexit....
+extern "C" void rps_exiting(void);
+////................................................................
 ////................................................................
 //// Managing todo at exit stuff
 
@@ -544,18 +547,21 @@ std::recursive_mutex rps_exit_recmutx;
 class Rps_exit_todo_cl
 {
   friend void rps_do_at_exit_cpp(const std::function<void(void*)>& fun,
-				 void* data);
+                                 void* data);
   friend void rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun,
-				  void*data1, void*data2);
+                                  void*data1, void*data2);
+  friend void rps_exiting(void);
   bool _tdxit_is_c;
   int _tdxit_rank;
-  union {
+  union
+  {
     std::function<void(void*)> _tdxit_cppfun;
     rps_exit_cfun_sig_t*_tdxit_ptrcfun;
     intptr_t _tdxit_intptr;
   };
   void* _tdxit_first_data;
   void* _tdxit_second_data;
+  static void tdxit_do_at_exit(void);
 public:
   Rps_exit_todo_cl() :
     _tdxit_is_c(false),
@@ -646,15 +652,27 @@ Rps_exit_todo_cl::Rps_exit_todo_cl(const rps_exit_cfun_sig_t*cfun,
                " with C function");
 } // end Rps_exit_todo_cl constructor with C function
 
+////static method:
+void
+Rps_exit_todo_cl::tdxit_do_at_exit(void)
+{
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+} // end Rps_exit_todo_cl::tdxit_do_at_exit
+
 void
 rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data)
 {
   if (!fun)
     return;
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
-  Rps_exit_todo_cl newxitodo(fun, data);
-  RPS_FATALOUT("unimplemented rps_do_at_exit_cpp");
-#warning rps_do_at_exit_cpp is unimplemented
+  Rps_exit_todo_cl* pxitodo = new Rps_exit_todo_cl(fun, data);
+  if (!pxitodo)
+    RPS_FATALOUT("rps_do_at_exit_cpp failed to allocte Rps_exit_todo_cl");
+  int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(pxitodo);
+#warning review rps_do_at_exit_cpp
+  RPS_WARNOUT("incomplete rps_do_at_exit_cpp rank#" << rank
+              << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cpp"));
 } // end rps_do_at_exit_cpp
 
 void
@@ -663,8 +681,15 @@ rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun, void*data1, void*data2)
   if (!fun)
     return;
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
-  RPS_FATALOUT("unimplemented rps_do_at_exit_cfun");
-#warning rps_do_at_exit_cfun is unimplemented
+  Rps_exit_todo_cl* pxitodo = new Rps_exit_todo_cl(fun, data1, data2);
+  if (!pxitodo)
+    RPS_FATALOUT("rps_do_at_exit_cfun failed to allocte Rps_exit_todo_cl");
+  int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(pxitodo);
+#warning review rps_do_at_exit_cfun
+  RPS_WARNOUT("incomplete rps_do_at_exit_cfun rank#" << rank
+              << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cfun"));
+#warning review rps_do_at_exit_cfun
 } // end rps_do_at_exit_cfun
 
 
@@ -969,7 +994,7 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
            _f.tempob->oid().to_string().c_str());
   fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
   fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
-                 "                      << plugin->plugin_name << \" from \" << std::endl\n");
+           "                      << plugin->plugin_name << \" from \" << std::endl\n");
   fprintf (tfil, "                << RPS_FULL_BACKTRACE(1, \"temporary C++ plugin\"));\n");
   fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
   fprintf (tfil, //
@@ -1098,12 +1123,12 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                     << Rps_ShowCallFrame(&_)
                     << std::endl
                     << RPS_FULL_BACKTRACE(1,
-        "rps_edit_run_cplusplus_code *unchangedsize*"));
+                                          "rps_edit_run_cplusplus_code *unchangedsize*"));
       RPS_INFORMOUT("rps_edit_run_cplusplus_code should compile C++ code in " << tempcppfilename
                     << std::endl
                     << " - from "
                     << RPS_FULL_BACKTRACE(1,
-      "rps_edit_run_cplusplus_code")
+                                          "rps_edit_run_cplusplus_code")
                     << std::endl);
       std::string cwdpath;
       bool needchdir = false;
@@ -1407,7 +1432,7 @@ static void rps_close_debug_file(void)
       else
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
       fprintf(rps_debug_file, "gitid %s version %d.%d, built %s,\n"
-                              " on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+              " on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
               rps_gitid, rps_get_major_version(), rps_get_minor_version(),
               rps_timestamp, rps_hostname(),  rps_md5sum,
               rps_elapsed_real_time(), rps_process_cpu_time());
@@ -1608,8 +1633,6 @@ rps_kill_wait_gui_process(void)
     RPS_FATALOUT("GUI process failed with status " << guistatus);
 } // end rps_kill_wait_gui_process
 
-/// registered to atexit....
-extern "C" void rps_exiting(void);
 
 /// useful at least for GDB
 extern "C" int rps_main_argc;
@@ -1623,9 +1646,10 @@ rps_exiting(void) //// called thru atexit
 {
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+  Rps_exit_todo_cl::tdxit_do_at_exit();
   syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
-                   "… elapsed %.3f sec, CPU %.3f sec;\n"
-                   "%s%s%s%s",
+         "… elapsed %.3f sec, CPU %.3f sec;\n"
+         "%s%s%s%s",
          (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
          rps_get_major_version(), rps_get_minor_version(),
          rps_exit_atomic_code.load(),
@@ -1820,8 +1844,8 @@ main (int argc, char** argv)
                 << (rps_batch?"batch":"interactive")
                 << " (" << rps_nbjobs << " jobs)" << std::endl
                 <<             "… This is an open source inference engine software,\n"
-                 "…  GPLv3+ licensed, no warranty !\n"
-                 "…  See refpersys.org and https://www.gnu.org/licenses/ ....\n"
+                "…  GPLv3+ licensed, no warranty !\n"
+                "…  See refpersys.org and https://www.gnu.org/licenses/ ....\n"
                 << "fullgit " << rps_gitid << " branch " << rps_gitbranch
                 << std::endl
                 << RPS_OUT_PROGARGS(argc, argv) << std::endl);
