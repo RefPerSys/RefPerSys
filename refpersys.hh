@@ -736,9 +736,12 @@ extern "C" bool rps_without_terminal_escape;
   (rps_without_terminal_escape?"":"\033[5m")
 
 
-
-extern "C" void rps_set_exit_code(std::uint8_t); // in main_rps.cc
-
+////// Our thread-safe exit related functions are implemented in
+////// main_rps.cc
+extern "C" void rps_set_exit_code(std::uint8_t);
+extern "C" void rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data=nullptr);
+typedef void rps_exit_cfun_sig_t(void*d1, void*d2);
+extern "C" void rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun, void*data1=nullptr, void*data2=nullptr);
 /////////////////////////////////////////////////////// PLUGINS AFTER LOAD
 
 struct Rps_Plugin
@@ -2169,7 +2172,7 @@ class Rps_Random
           {
             std::random_device randev;
             auto s1=randev(), s2=randev(), s3=randev(), s4=randev(),
-                 s5=randev(), s6=randev(), s7=randev();
+                                                        s5=randev(), s6=randev(), s7=randev();
             std::seed_seq seq {s1,s2,s3,s4,s5,s6,s7};
             _rand_generator.seed(seq);
           }
