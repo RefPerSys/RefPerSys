@@ -470,12 +470,12 @@ int
 Rps_FltkInputTextEditor::handle(int e)
 {
   RPS_DEBUG_LOG(REPL, "inp.tx. this @" << (void*)this
-		<< "handle e=" << e << ":" << fl_eventnames[e]
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "Rps_FltkInputTextEditor::handle"));
+                << "handle e=" << e << ":" << fl_eventnames[e]
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "Rps_FltkInputTextEditor::handle"));
   int r= Fl_Text_Editor::handle(e);
   RPS_DEBUG_LOG(REPL, "this @" << (void*)this
-		<< "handled e=" << e << " r=" << r);
+                << "handled e=" << e << " r=" << r);
   return r;
 } // end Rps_FltkInputTextEditor::handle
 ////////////////////////////////////////////////////////////////
@@ -869,7 +869,7 @@ Rps_FltkMainWindow::fill_main_window(void)
     };
   _mainwin_inptextedit
     = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/textedity,
-                                  /*w:*/w(), /*h:*/texteditheight);
+                                        /*w:*/w(), /*h:*/texteditheight);
   if (inputcolor)
     {
       bool ok=false;
@@ -1335,7 +1335,7 @@ rps_fltk_color_of_name(const char*colorname)
       RPS_WARNOUT("no colorname to rps_fltk_color_of_name"
                   << std::endl
                   << RPS_FULL_BACKTRACE(1,
-                                        "rps_fltk_color_of_name/nil"));
+      "rps_fltk_color_of_name/nil"));
       return FL_BACKGROUND_COLOR;
     }
 #define RPS_TEST_COLOR(Name,Flcol) else if (!strcmp(colorname, #Name)) \
@@ -1354,7 +1354,7 @@ rps_fltk_color_of_name(const char*colorname)
                   << "' to rps_fltk_color_of_name"
                   << std::endl
                   << RPS_FULL_BACKTRACE(1,
-                                        "rps_fltk_color_of_name/nil"));
+      "rps_fltk_color_of_name/nil"));
       return FL_BACKGROUND_COLOR;
     }
 } // end rps_fltk_color_of_name

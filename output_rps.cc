@@ -204,12 +204,13 @@ Rps_Object_Display::output_display(std::ostream&out) const
     }
   //// °°°°°°°°°°° display physical attributes
   Rps_Value setphysattr = _dispobref->set_of_physical_attributes();
-  if (setphysattr.is_empty()) {
-    out << BOLD_esc
-        << "** no physical attributes **"
-        << NORM_esc << std::endl;
-    nbphysattr = 0;
-  }
+  if (setphysattr.is_empty())
+    {
+      out << BOLD_esc
+          << "** no physical attributes **"
+          << NORM_esc << std::endl;
+      nbphysattr = 0;
+    }
   else
     {
       RPS_ASSERT(setphysattr.is_set());

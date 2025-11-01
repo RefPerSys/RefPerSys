@@ -559,7 +559,7 @@ Rps_MemoryFileTokenSource::reached_end(void) const
   if (c)
     return c >= toksrcmfil_start && c < toksrcmfil_end;
   if (toksrcmfil_end)
-  return toksrcmfil_line >= toksrcmfil_start && toksrcmfil_line < toksrcmfil_end;
+    return toksrcmfil_line >= toksrcmfil_start && toksrcmfil_line < toksrcmfil_end;
   return true;
 } // end Rps_StringTokenSource::reached_end
 
@@ -1153,7 +1153,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " gives " << _f.res
                     << std::endl
                     << RPS_FULL_BACKTRACE(1,"Rps_TokenSource::get_token"
-                                          " namoid"));
+      " namoid"));
       return _f.res;
     } // end get__namoid__token
   //// literal single line strings are like in C++

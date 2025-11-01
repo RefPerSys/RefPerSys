@@ -99,14 +99,15 @@ rps_set_user_preferences(char*path)
       if (!clp)
         break;
       else if (!strncmp(clp, RPS_USER_PREFERENCE_MAGIC,
-                        strlen(RPS_USER_PREFERENCE_MAGIC))) {
-	RPS_POSSIBLE_BREAKPOINT();
-        break;
-      };
+                        strlen(RPS_USER_PREFERENCE_MAGIC)))
+        {
+          RPS_POSSIBLE_BREAKPOINT();
+          break;
+        };
     };
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "before preferences "
-		<< rps_userpref_mts->curcptr());
+                << rps_userpref_mts->curcptr());
   rps_parse_user_preferences(rps_userpref_mts);
   atexit(rps_delete_user_preferences);
 } // end  rps_set_user_preferences
@@ -121,7 +122,7 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   RPS_ASSERT(mts->toksrcmfil_line >= mts->toksrcmfil_start
              && mts->toksrcmfil_line <  mts->toksrcmfil_end);
   RPS_DEBUG_LOG(REPL, "rps_parse_user_preferences line:"
-		<< mts->toksrcmfil_line);
+                << mts->toksrcmfil_line);
   int curlineno = mts->line();
   bool parsedonce = false;
   rps_userpref_ird = new INIReader(mts->toksrcmfil_line,
@@ -135,12 +136,12 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   if (int pe = rps_userpref_ird->ParseError())
     {
       RPS_WARNOUT("failed to parse user preference "
-                   << mts->path() << ":" << pe+curlineno
-		   << " (pe:" << pe <<")"
-		  << std::endl
-		  << RPS_FULL_BACKTRACE(1, "rps_parse_user_preferences/fail")
-		  << std::endl
-		  << mts->toksrcmfil_line);
+                  << mts->path() << ":" << pe+curlineno
+                  << " (pe:" << pe <<")"
+                  << std::endl
+                  << RPS_FULL_BACKTRACE(1, "rps_parse_user_preferences/fail")
+                  << std::endl
+                  << mts->toksrcmfil_line);
       return;
     };
   RPS_INFORMOUT("rps_parse_user_preferences path " << mts->path());

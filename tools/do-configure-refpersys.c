@@ -602,7 +602,7 @@ rpsconf_test_cxx_compiler (const char *cxx)
     fprintf (mnf, "#include <vector>\n");
     fprintf (mnf, "#include <cassert>\n");
     fprintf (mnf, "extern\n"
-             " void show_str_vect(const std::vector<std::string>&);\n");
+                  " void show_str_vect(const std::vector<std::string>&);\n");
     fprintf (mnf, "\n\n");
     fprintf (mnf, "int main(int argc,char**argv) {\n");
     fprintf (mnf, "  std::vector<std::string> v;\n");
@@ -1249,7 +1249,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_preprocessor_argcount)
     {
       fprintf (f, "\n\n"
-               "# the given %d preprocessor flags for RefPerSys:\n",
+                  "# the given %d preprocessor flags for RefPerSys:\n",
                rpsconf_preprocessor_argcount);
       fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
       for (int i = 0; i < rpsconf_preprocessor_argcount; i++)
@@ -1268,7 +1268,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_compiler_argcount > 0)
     {
       fprintf (f, "\n\n"
-               "# the given %d compiler flags for RefPerSys:\n",
+                  "# the given %d compiler flags for RefPerSys:\n",
                rpsconf_compiler_argcount);
       fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
       for (int i = 0; i < rpsconf_compiler_argcount; i++)
@@ -1282,7 +1282,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   else
     {
       fprintf (f, "\n\n"
-               "# default compiler flags for RefPerSys [%s:%d]:\n",
+                  "# default compiler flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
       /// most Linux compilers accept -Wall (but intel proprietary
       /// compiler might reject -Wextra)
@@ -1327,7 +1327,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_linker_argcount > 0)
     {
       fprintf (f, "\n\n"
-               "# the given %d linker flags for RefPerSys:\n",
+                  "# the given %d linker flags for RefPerSys:\n",
                rpsconf_linker_argcount);
       fputs ("REFPERSYS_LINKER_FLAGS=", f);
       for (int i = 0; i < rpsconf_linker_argcount; i++)

@@ -360,7 +360,7 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-       "General Public License"
+                       "General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -433,7 +433,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-       "Lesser General Public License"
+                       "Lesser General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -970,7 +970,7 @@ rps_check_mtime_files(void)
           continue;
         };
       if (curstat.st_mtime > (time_t) rps_timelong
-	  && (curstat.st_mode & S_IFMT) == S_IFREG)
+          && (curstat.st_mode & S_IFMT) == S_IFREG)
         RPS_WARNOUT("rps_check_mtime_files: " << curfullpathstr.c_str()
                     << " is younger by "
                     << (curstat.st_mtime - (time_t) rps_timelong)
@@ -1474,13 +1474,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     }
     return 0;
     case RPSPROGOPT_SCRIPT:
-      {
-	if (arg && !strcmp(arg, "help"))
-	  rps_scripting_help();
-	else if (arg)
-	  rps_scripting_add_script(arg);
-      }
-      return 0;
+    {
+      if (arg && !strcmp(arg, "help"))
+        rps_scripting_help();
+      else if (arg)
+        rps_scripting_add_script(arg);
+    }
+    return 0;
     case RPSPROGOPT_NO_TERMINAL:
     {
       rps_without_terminal_escape = true;
@@ -1599,7 +1599,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
       if (rps_run_command_after_load)
         RPS_FATALOUT("only one --run-after-load command can be given, not both "
-		     << rps_run_command_after_load
+                     << rps_run_command_after_load
                      << " and " << arg);
       rps_run_command_after_load = arg;
     }
@@ -1609,17 +1609,17 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       char cwdbuf[rps_path_byte_size];
       memset (cwdbuf, 0, sizeof(cwdbuf));
       if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
-	strcpy(cwdbuf, "./");
+        strcpy(cwdbuf, "./");
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
       if (!dlh)
         RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror()
-		     << " in " << cwdbuf);
+                     << " in " << cwdbuf);
       const char* bnplug = basename(arg);
       Rps_Plugin curplugin(bnplug, dlh);
       RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size()
-		    << " from " << arg << " from process pid#" << (int)getpid()
+                    << " from " << arg << " from process pid#" << (int)getpid()
                     << " basenamed " << Rps_QuotedC_String(bnplug)
-		    << " in " << cwdbuf);
+                    << " in " << cwdbuf);
       rps_plugins_vector.push_back(curplugin);
     }
     return 0;
@@ -1852,7 +1852,7 @@ rps_schedule_files_postponed_removal(void)
     };
   if (rps_syslog_enabled)
     syslog(LOG_NOTICE, "RefPerSys will later remove %d files "
-           "(in five minutes, with /bin/at)",
+                       "(in five minutes, with /bin/at)",
            (int) rps_postponed_removed_files_vector.size());
   else
     RPS_INFORM("RefPerSys will later remove %d files "
@@ -1890,8 +1890,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s", filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
-         "… build %s pid %d on %s,\n"
-         "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
+                    "… build %s pid %d on %s,\n"
+                    "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
          filnam, lin, rps_shortgitid,
          rps_timestamp, (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
@@ -1909,10 +1909,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
     }
   if (!rps_syslog_enabled)
     fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
-            " RefPerSys gitid %s,\n"
-            "\t built timestamp %s,\n"
-            "\t on host %s, md5sum %s,\n"
-            "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
+                    " RefPerSys gitid %s,\n"
+                    "\t built timestamp %s,\n"
+                    "\t on host %s, md5sum %s,\n"
+                    "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
             ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
@@ -2015,10 +2015,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   fprintf(stderr, "RefPerSys (git %s run %s) fatal stop\n"
-          "… °aborting at %s:%d\n"
-	  "… invocation %s\n",
+                  "… °aborting at %s:%d\n"
+                  "… invocation %s\n",
           rps_shortgitid, rps_run_name.c_str(), filnam, lin,
-	 rps_program_invocation);
+          rps_program_invocation);
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   rps_schedule_files_postponed_removal();
@@ -2425,7 +2425,7 @@ rps_set_debug(const std::string &deblev)
       fprintf(stderr, "%s debugging options for git %s built at %s ...\n",
               rps_progname, rps_shortgitid, rps_timestamp);
       fprintf(stderr, "Comma separated debugging levels with -D<debug-level>\n"
-              "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
+                      "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
 
 #define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
       RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);

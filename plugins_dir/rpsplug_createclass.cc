@@ -52,16 +52,16 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (rooted)
     {
       if (!strcmp(rooted, "true"))
-	isrooted = true;
+        isrooted = true;
       else if (atoi(rooted) > 0)
-	isrooted = true;
+        isrooted = true;
     }
   else if (constant)
     {
       if (!strcmp(constant, "true"))
-	isconstant = true;
+        isconstant = true;
       else if (atoi(constant) > 0)
-	isconstant = true;
+        isconstant = true;
     };
   /* Check that plugarg is some new name */
   if (auto nob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg)))
@@ -124,19 +124,20 @@ rps_do_plugin(const Rps_Plugin* plugin)
     {
       rps_add_root_object(_f.obnewclass);
       RPS_INFORMOUT("rpsplug_createclass added new root class " <<
-		    RPS_OBJECT_DISPLAY(_f.obnewclass)
+                    RPS_OBJECT_DISPLAY(_f.obnewclass)
                     << " of hash " << _f.obnewclass->obhash()
                     << " named " << plugarg << " of super class "
-		    << _f.obsuperclass << " and symbol " << _f.obsymbol);
+                    << _f.obsuperclass << " and symbol " << _f.obsymbol);
     }
-  else if (isconstant) {
-    rps_add_constant_object(&_, _f.obnewclass);
-    RPS_INFORMOUT("rpsplug_createclass added new constant class " <<
-		  RPS_OBJECT_DISPLAY(_f.obnewclass)
-		  << " of hash " << _f.obnewclass->obhash()
-		  << " named " << plugarg << " of super class "
-		  << _f.obsuperclass << " and symbol " << _f.obsymbol);
-  }
+  else if (isconstant)
+    {
+      rps_add_constant_object(&_, _f.obnewclass);
+      RPS_INFORMOUT("rpsplug_createclass added new constant class " <<
+                    RPS_OBJECT_DISPLAY(_f.obnewclass)
+                    << " of hash " << _f.obnewclass->obhash()
+                    << " named " << plugarg << " of super class "
+                    << _f.obsuperclass << " and symbol " << _f.obsymbol);
+    }
   else
     {
       RPS_INFORMOUT("rpsplug_createclass added new class " << _f.obnewclass
@@ -150,7 +151,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
  **                           for Emacs...
  ** Local Variables: ;;
  ** compile-command: "cd $REFPERSYS_TOPDIR && \
-    ./do-build-refpersys-plugin -v	      \
+    ./do-build-refpersys-plugin -v        \
       -i plugins_dir/rpsplug_createclass.cc \
       -o plugins_dir/rpsplug_createclass.so \
       -L /tmp/rpsplug_createclass.so" ;;

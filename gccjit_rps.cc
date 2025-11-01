@@ -287,7 +287,7 @@ Rps_PayloadGccjit::locked_new_gccjit_array_type(struct gcc_jit_type* elemtype, i
 
 /// Opaque struct types are global but could have a location
 struct gcc_jit_struct*
-  Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const std::string&strname, struct gcc_jit_location*loc)
+Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const std::string&strname, struct gcc_jit_location*loc)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(!strname.empty());
@@ -295,7 +295,7 @@ struct gcc_jit_struct*
 }// end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
 
 struct gcc_jit_struct*
-  Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const std::string&strname, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const std::string&strname, struct gcc_jit_location* loc)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   return raw_new_gccjit_opaque_struct(strname,loc);
@@ -306,7 +306,7 @@ struct gcc_jit_struct*
 /// Opaque struct types are global; they could be defined by a
 /// RefPerSys object, but could have a location
 struct gcc_jit_struct*
-  Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const Rps_ObjectRef ob, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const Rps_ObjectRef ob, struct gcc_jit_location* loc)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(ob);
@@ -315,7 +315,7 @@ struct gcc_jit_struct*
 } // end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct
 
 struct gcc_jit_struct*
-  Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const Rps_ObjectRef ob, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const Rps_ObjectRef ob, struct gcc_jit_location* loc)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   struct gcc_jit_struct* newst= raw_new_gccjit_opaque_struct(ob, loc);

@@ -535,7 +535,7 @@ Rps_ClosureZone::make(Rps_ObjectRef connob, const std::initializer_list<Rps_Valu
   auto nbsons = valil.size();
   Rps_ClosureZone* cloz
     = Rps_QuasiZone::rps_allocate_with_wordgap<Rps_ClosureZone,unsigned,Rps_ObjectRef,Rps_ClosureTag>((nbsons*sizeof(Rps_Value)/sizeof(void*)),
-        (unsigned)nbsons, connob,  Rps_ClosureTag{});
+      (unsigned)nbsons, connob,  Rps_ClosureTag{});
   int ix=0;
   Rps_Value*sonarr = cloz->raw_data_sons();
   for (auto val: valil)
@@ -551,7 +551,7 @@ Rps_ClosureZone::make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec
   auto nbsons = valvec.size();
   Rps_ClosureZone* cloz
     = Rps_QuasiZone::rps_allocate_with_wordgap<Rps_ClosureZone,unsigned,Rps_ObjectRef,Rps_ClosureTag>((nbsons*sizeof(Rps_Value)/sizeof(void*)),
-        (unsigned)nbsons, connob, Rps_ClosureTag{});
+      (unsigned)nbsons, connob, Rps_ClosureTag{});
   int ix=0;
   Rps_Value*sonarr = cloz->raw_data_sons();
   for (auto val: valvec)

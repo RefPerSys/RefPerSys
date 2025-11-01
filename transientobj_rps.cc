@@ -131,7 +131,7 @@ Rps_PayloadUnixProcess::core_megabytes_limit(unsigned newlimit)
   if (pid >0)
     {
       struct rlimit newlim= {.rlim_cur=((newlimit>0)?(newlimit<<20):RLIM_INFINITY),
-               .rlim_max= RLIM_INFINITY
+                               .rlim_max= RLIM_INFINITY
       };
       struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
       (void)prlimit(pid, RLIMIT_CORE, &newlim, &oldlim);
@@ -149,7 +149,7 @@ Rps_PayloadUnixProcess::address_space_megabytes_limit(unsigned newlimit)
   if (pid >0)
     {
       struct rlimit newlim= {.rlim_cur=(newlimit?(newlimit<<20):RLIM_INFINITY),
-               .rlim_max= RLIM_INFINITY
+                               .rlim_max= RLIM_INFINITY
       };
       struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
       if (!prlimit(pid, RLIMIT_AS, &newlim, &oldlim))
@@ -170,7 +170,7 @@ Rps_PayloadUnixProcess::file_size_megabytes_limit(unsigned newlimit)
   if (pid >0)
     {
       struct rlimit newlim= {.rlim_cur=(newlimit?(newlimit<<20):RLIM_INFINITY),
-               .rlim_max= RLIM_INFINITY
+                               .rlim_max= RLIM_INFINITY
       };
       struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
       if (!prlimit(pid, RLIMIT_FSIZE, &newlim, &oldlim))
@@ -191,7 +191,7 @@ Rps_PayloadUnixProcess::nofile_limit(unsigned newlimit)
   if (pid >0)
     {
       struct rlimit newlim= {.rlim_cur=(newlimit?newlimit:RLIM_INFINITY),
-               .rlim_max= RLIM_INFINITY
+                               .rlim_max= RLIM_INFINITY
       };
       struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
       if (!prlimit(pid, RLIMIT_NOFILE, &newlim, &oldlim))
