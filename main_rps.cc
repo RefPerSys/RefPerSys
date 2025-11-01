@@ -592,9 +592,15 @@ Rps_exit_todo_cl::~Rps_exit_todo_cl()
   void*first = nullptr;
   void* second = nullptr;
   if (is_c)
-    ptrcfun = _tdxit_ptrcfun;
+    {
+      ptrcfun = _tdxit_ptrcfun;
+      _tdxit_ptrcfun = nullptr;
+    }
   else
-    cppfun = _tdxit_cppfun;
+    {
+      cppfun = _tdxit_cppfun;
+      _tdxit_cppfun = nullptr;
+    }
   first = _tdxit_first_data;
   second = _tdxit_second_data;
   _tdxit_intptr = 0;
@@ -621,6 +627,7 @@ Rps_exit_todo_cl::~Rps_exit_todo_cl()
           if (ptrcfun)
             {
               (*ptrcfun) (first, second);
+
             }
           else   /*is C++*/
             {
@@ -664,7 +671,7 @@ Rps_exit_todo_cl::Rps_exit_todo_cl(const rps_exit_cfun_sig_t*cfun,
               << RPS_FULL_BACKTRACE(1, "Rps_exit_todo_cl cfun"));
 } // end Rps_exit_todo_cl constructor with C function
 
-////static method:
+//// Static method, called at exit
 void
 Rps_exit_todo_cl::tdxit_do_at_exit(void)
 {
@@ -672,18 +679,41 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
   int xsiz = (int) rps_exit_vecptr.size();
   if (xsiz == 0)
     return;
-  for (int ix=0; ix<xsiz; ix++) {
-    Rps_exit_todo_cl* pxitodo = rps_exit_vecptr[ix];
-    rps_exit_vecptr[ix] = nullptr;
-    if (!pxitodo)
-      continue;
-    bool is_c = pxitodo->_tdxit_is_c;
-    int rank = pxitodo->_tdxit_rank;
-    if (rank>=0) {
-      RPS_ASSERT(rank==ix);
+  for (int ix=0; ix<xsiz; ix++)
+    {
+      Rps_exit_todo_cl* pxitodo = rps_exit_vecptr[ix];
+      rps_exit_vecptr[ix] = nullptr;
+      if (!pxitodo)
+        continue;
+      RPS_POSSIBLE_BREAKPOINT();
+      bool is_c = pxitodo->_tdxit_is_c;
+      int rank = pxitodo->_tdxit_rank;
+      if (rank>=0)
+        {
+          RPS_ASSERT(rank==ix);
+        };
+      if (is_c)
+        {
+          rps_exit_cfun_sig_t*ptrcfun = pxitodo->_tdxit_ptrcfun;
+          pxitodo->_tdxit_ptrcfun = nullptr;
+          if (ptrcfun)
+            {
+              (*ptrcfun) (pxitodo->_tdxit_first_data, pxitodo->_tdxit_second_data);
+            }
+        }
+      else  ///C++
+        {
+          std::function<void(void*)> cppfun = pxitodo->_tdxit_cppfun;
+          pxitodo->_tdxit_cppfun = nullptr;
+          if (cppfun)
+            {
+              cppfun(pxitodo->_tdxit_first_data);
+            }
+        }
+      pxitodo->_tdxit_first_data = nullptr;
+      pxitodo->_tdxit_second_data = nullptr;
+      delete pxitodo;
     };
-    delete pxitodo;
-  };
 #warning incomplete Rps_exit_todo_cl::tdxit_do_at_exit
 } // end Rps_exit_todo_cl::tdxit_do_at_exit
 
