@@ -533,7 +533,7 @@ unsigned rps_call_frame_depth(const Rps_CallFrame*callframe)
 
 
 ////................................................................
-/// registered to atexit....
+/// Registered to atexit.... but should not be called otherwise.
 extern "C" void rps_exiting(void);
 ////................................................................
 ////................................................................
@@ -634,22 +634,34 @@ Rps_exit_todo_cl::~Rps_exit_todo_cl()
 
 Rps_exit_todo_cl::Rps_exit_todo_cl(const std::function<void(void*)> cppfun,
                                    void*data)
+  :  _tdxit_is_c(false), _tdxit_rank(-1), _tdxit_cppfun(cppfun),
+     _tdxit_first_data(data), _tdxit_second_data(nullptr)
 {
   RPS_ASSERT(cppfun);
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
-#warning incomplete Rps_exit_todo_cl constructor with C++ function
-  RPS_FATALOUT("unimplemented Rps_exit_todo_cl constructor"
-               " with C++ function");
+  int vsiz = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(this);
+  _tdxit_rank = vsiz;
+#warning review Rps_exit_todo_cl constructor with C++ function
+  RPS_WARNOUT("review Rps_exit_todo_cl#" << vsiz << " constructor"
+              " with C++ function" << std::endl
+              << RPS_FULL_BACKTRACE(1, "Rps_exit_todo_cl cppfun"));
 } // end Rps_exit_todo_cl constructor with C++ function
 
 Rps_exit_todo_cl::Rps_exit_todo_cl(const rps_exit_cfun_sig_t*cfun,
                                    void*data1, void*data2)
+  :  _tdxit_is_c(true), _tdxit_rank(-1), _tdxit_ptrcfun(cfun),
+     _tdxit_first_data(data1), _tdxit_second_data(data2)
 {
   RPS_ASSERT(cfun);
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
-#warning incomplete Rps_exit_todo_cl constructor with C function
-  RPS_FATALOUT("unimplemented Rps_exit_todo_cl constructor"
-               " with C function");
+  int vsiz = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(this);
+  _tdxit_rank = vsiz;
+#warning review Rps_exit_todo_cl constructor with C function
+  RPS_WARNOUT("review Rps_exit_todo_cl#" << vsiz << " constructor"
+              " with C function" << std::endl
+              << RPS_FULL_BACKTRACE(1, "Rps_exit_todo_cl cfun"));
 } // end Rps_exit_todo_cl constructor with C function
 
 ////static method:
@@ -994,7 +1006,7 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
            _f.tempob->oid().to_string().c_str());
   fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
   fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
-           "                      << plugin->plugin_name << \" from \" << std::endl\n");
+                 "                      << plugin->plugin_name << \" from \" << std::endl\n");
   fprintf (tfil, "                << RPS_FULL_BACKTRACE(1, \"temporary C++ plugin\"));\n");
   fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
   fprintf (tfil, //
@@ -1123,12 +1135,12 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                     << Rps_ShowCallFrame(&_)
                     << std::endl
                     << RPS_FULL_BACKTRACE(1,
-                                          "rps_edit_run_cplusplus_code *unchangedsize*"));
+        "rps_edit_run_cplusplus_code *unchangedsize*"));
       RPS_INFORMOUT("rps_edit_run_cplusplus_code should compile C++ code in " << tempcppfilename
                     << std::endl
                     << " - from "
                     << RPS_FULL_BACKTRACE(1,
-                                          "rps_edit_run_cplusplus_code")
+      "rps_edit_run_cplusplus_code")
                     << std::endl);
       std::string cwdpath;
       bool needchdir = false;
@@ -1432,7 +1444,7 @@ static void rps_close_debug_file(void)
       else
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
       fprintf(rps_debug_file, "gitid %s version %d.%d, built %s,\n"
-              " on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+                              " on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
               rps_gitid, rps_get_major_version(), rps_get_minor_version(),
               rps_timestamp, rps_hostname(),  rps_md5sum,
               rps_elapsed_real_time(), rps_process_cpu_time());
@@ -1648,8 +1660,8 @@ rps_exiting(void) //// called thru atexit
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   Rps_exit_todo_cl::tdxit_do_at_exit();
   syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
-         "… elapsed %.3f sec, CPU %.3f sec;\n"
-         "%s%s%s%s",
+                   "… elapsed %.3f sec, CPU %.3f sec;\n"
+                   "%s%s%s%s",
          (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
          rps_get_major_version(), rps_get_minor_version(),
          rps_exit_atomic_code.load(),
@@ -1844,8 +1856,8 @@ main (int argc, char** argv)
                 << (rps_batch?"batch":"interactive")
                 << " (" << rps_nbjobs << " jobs)" << std::endl
                 <<             "… This is an open source inference engine software,\n"
-                "…  GPLv3+ licensed, no warranty !\n"
-                "…  See refpersys.org and https://www.gnu.org/licenses/ ....\n"
+                 "…  GPLv3+ licensed, no warranty !\n"
+                 "…  See refpersys.org and https://www.gnu.org/licenses/ ....\n"
                 << "fullgit " << rps_gitid << " branch " << rps_gitbranch
                 << std::endl
                 << RPS_OUT_PROGARGS(argc, argv) << std::endl);
