@@ -669,6 +669,21 @@ void
 Rps_exit_todo_cl::tdxit_do_at_exit(void)
 {
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  int xsiz = (int) rps_exit_vecptr.size();
+  if (xsiz == 0)
+    return;
+  for (int ix=0; ix<xsiz; ix++) {
+    Rps_exit_todo_cl* pxitodo = rps_exit_vecptr[ix];
+    rps_exit_vecptr[ix] = nullptr;
+    if (!pxitodo)
+      continue;
+    bool is_c = pxitodo->_tdxit_is_c;
+    int rank = pxitodo->_tdxit_rank;
+    if (rank>=0) {
+      RPS_ASSERT(rank==ix);
+    };
+    delete pxitodo;
+  };
 #warning incomplete Rps_exit_todo_cl::tdxit_do_at_exit
 } // end Rps_exit_todo_cl::tdxit_do_at_exit
 
