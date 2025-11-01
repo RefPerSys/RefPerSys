@@ -669,6 +669,7 @@ void
 Rps_exit_todo_cl::tdxit_do_at_exit(void)
 {
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+#warning incomplete Rps_exit_todo_cl::tdxit_do_at_exit
 } // end Rps_exit_todo_cl::tdxit_do_at_exit
 
 void
