@@ -568,16 +568,32 @@ void
 Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
 #warning incomplete Rps_MemoryFileTokenSource::output
+  const std::string curname = name();
   out << "Rps_MemoryFileTokenSource#S" << unique_number()
-      << "(" << Rps_Cjson_String(name()) << ")";
+      << "(" << Rps_Cjson_String(curname) << ")";
+  RPS_POSSIBLE_BREAKPOINT();
+  bool eqnp = curname.compare(toksrcmfil_path) == 0;
+  RPS_POSSIBLE_BREAKPOINT();
   if (depth <= 1)
     {
       out << position_str();
-      out << ",P"  << Rps_Cjson_String(toksrcmfil_path);
+      if (eqnp)
+        out << "¤=";
+      else
+        {
+          RPS_POSSIBLE_BREAKPOINT();
+          out << ",P"  << Rps_Cjson_String(toksrcmfil_path);
+        }
     }
   else
     {
-      out << "P"  << Rps_Cjson_String(toksrcmfil_path);
+      if (eqnp)
+        out << "¤=";
+      else
+        {
+          RPS_POSSIBLE_BREAKPOINT();
+          out << "P"  << Rps_Cjson_String(toksrcmfil_path);
+        }
     };
   if (reached_end())
     out <<  "°";
