@@ -159,8 +159,11 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                 << std::endl << " … tsrc=" << tsrc);
   RPS_POSSIBLE_BREAKPOINT();
   bool gotmagic=false;
+  int loopcnt=0;
   while (!gotmagic && tsrc.reached_end()) {
-      RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc);
+    loopcnt++;
+    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+		  << " start loop#" << loopcnt);
       RPS_POSSIBLE_BREAKPOINT();
       if (!tsrc.get_line()) {
           RPS_POSSIBLE_BREAKPOINT();
@@ -169,16 +172,19 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
       const char*clp = tsrc.curcptr();
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file @"
                     <<  tsrc.position_str()
+		    << " loop#" << loopcnt
                     << " clp=" << Rps_QuotedC_String(clp));
       RPS_POSSIBLE_BREAKPOINT();
       if (!clp) {
           RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+			<< " loop#" << loopcnt
                         <<  " ¤eof @" << tsrc.position_str());
           RPS_POSSIBLE_BREAKPOINT();
           break;
         };
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
                     << Rps_QuotedC_String(clp)
+		    << " loop#" << loopcnt
                     << " @" << tsrc.position_str());
       RPS_POSSIBLE_BREAKPOINT();
       const char* magp = strstr(clp, rps_scripting_magic_string);
@@ -193,7 +199,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
               RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
                             << Rps_QuotedC_String(clp)
                             << " @" << tsrc.position_str()
-                            << " modline=" << modline);
+                            << " modline=" << modline
+			    << " loop#" << loopcnt);
               RPS_POSSIBLE_BREAKPOINT();
 #warning should use modline cleverly
               if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
@@ -201,6 +208,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
                               << " curpath=" << curpath << " *CARBON* "
                               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+			      << " loop#" << loopcnt
                               << std::endl
                               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON"));
 #warning rps_run_one_script_file in carbon mode should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
@@ -210,6 +218,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
                               << " curpath=" << curpath << " *ECHO* "
                               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+			      << " loop#" << loopcnt
                               << std::endl
                               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/ECHO"));
                   while (tsrc.get_line()) {
@@ -217,6 +226,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                       if (!clp)
                         break;
                       RPS_DEBUG_LOG(REPL, "¤echo: clp=" << Rps_QuotedC_String(clp)
+				    << " outloop#" << loopcnt
                                     << " @" << tsrc.position_str());
                       std::cout << clp << std::flush;
                     } // end while get_line in echo mode
@@ -225,12 +235,17 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
             };
         };
 #warning rps_run_one_script_file has missing code here
+      RPS_DEBUG_LOG(REPL, "rps_run_one_script_file endloop @"
+                    <<  tsrc.position_str()
+		    << " loop#" << loopcnt
+		    << (gotmagic?" GOTMAGIC":" noMAGIC"));
       RPS_POSSIBLE_BREAKPOINT();
     };				// end while !gotmagic...
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
               << " curpath=" << curpath << " "
               << (gotmagic?"GOTmagic":"NO!MAGIC")
+	      << " loop#" << loopcnt
               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file"));
