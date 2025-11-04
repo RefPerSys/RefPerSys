@@ -194,7 +194,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
           gotmagic= true;
           memset(modline, 0, sizeof(modline));
           int p = -1;
-          int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%p", modline, &p);
+          int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%n",
+			 modline, &p);
           if (n > 0 && isascii(modline[0]) && p>0) {
               RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
                             << Rps_QuotedC_String(clp)
@@ -242,7 +243,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
       RPS_POSSIBLE_BREAKPOINT();
     };				// end while !gotmagic...
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
+  RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix <<std::endl
               << " curpath=" << curpath << " "
               << (gotmagic?"GOTmagic":"NO!MAGIC")
 	      << " loop#" << loopcnt
