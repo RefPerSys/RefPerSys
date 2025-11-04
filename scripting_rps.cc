@@ -197,6 +197,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
               RPS_POSSIBLE_BREAKPOINT();
 #warning should use modline cleverly
               if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
+                  RPS_POSSIBLE_BREAKPOINT();
                   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
                               << " curpath=" << curpath << " *CARBON* "
                               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
@@ -205,6 +206,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 #warning rps_run_one_script_file in carbon mode should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
                 }
               else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
+                  RPS_POSSIBLE_BREAKPOINT();
                   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
                               << " curpath=" << curpath << " *ECHO* "
                               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
@@ -233,7 +235,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file"));
   RPS_POSSIBLE_BREAKPOINT();
-#warning rps_run_one_script_file unimplemented
+#warning rps_run_one_script_file incompletely unimplemented
 } // end rps_run_one_script_file
 
 //// end of file scripting_rps.cc
