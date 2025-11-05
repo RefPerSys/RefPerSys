@@ -160,8 +160,11 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   RPS_POSSIBLE_BREAKPOINT();
   bool gotmagic=false;
   int loopcnt=0;
+  bool gotlin = tsrc.get_line();
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
                 << " tsrc=" << tsrc
+		<< (gotlin?" got line": " noline")
+		<< " curcptr=" << Rps_QuotedC_String(tsrc.curcptr())
 		<< ((tsrc.reached_end())?" reachedEND": " notEND"));
   while (!gotmagic && tsrc.reached_end()) {
     loopcnt++;
