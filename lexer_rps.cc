@@ -552,6 +552,14 @@ Rps_MemoryFileTokenSource::get_line(void)
 } // end Rps_MemoryFileTokenSource::get_line
 
 
+/// for GDB mostly
+extern "C" const char* rps_toksrc_curcptr(const Rps_TokenSource&tksrc);
+const char*
+rps_toksrc_curcptr(const Rps_TokenSource&tksrc)
+{
+  return tksrc.curcptr();
+} // end rps_toksrc_curcptr
+
 bool
 Rps_MemoryFileTokenSource::reached_end(void) const
 {
