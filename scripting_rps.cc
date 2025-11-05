@@ -160,10 +160,14 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   RPS_POSSIBLE_BREAKPOINT();
   bool gotmagic=false;
   int loopcnt=0;
+  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
+                << " tsrc=" << tsrc
+		<< ((tsrc.reached_end())?" reachedEND": " notEND"));
   while (!gotmagic && tsrc.reached_end()) {
     loopcnt++;
     RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
-		  << " start loop#" << loopcnt);
+		  << " start loop#" << loopcnt
+		  << " curcptr=" << Rps_QuotedC_String(tsrc.curcptr()));
       RPS_POSSIBLE_BREAKPOINT();
       if (!tsrc.get_line()) {
           RPS_POSSIBLE_BREAKPOINT();
