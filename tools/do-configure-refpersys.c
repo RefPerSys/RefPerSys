@@ -2043,7 +2043,7 @@ rpsconf_cc_set (const char *cc)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "make -C $REFPERSYS_TOPDIR/. do-configure-refpersys" ;;
+ ** compile-command: "make -C $REFPERSYS_TOPDIR/ tools/do-configure-refpersys" ;;
  ** End: ;;
  ****************/
 
