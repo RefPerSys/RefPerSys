@@ -16,3 +16,10 @@ break exit
 break carbrepl_rps_issue
 #break rps_small_quick_tests_after_load
 set max-value-size 67108864
+# askubuntu.com/questions/152191/
+python
+import psutil
+import os
+print("** RPS/GDB/Python pid ",  os.getpid(),
+      " running ", psutil.Process(os.getpid()), " **\n")
+end
