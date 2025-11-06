@@ -82,7 +82,9 @@ rps_do_plugin(const Rps_Plugin*plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v -i plugins_dir/rpsplug_display.cc -o plugins_dir/rpsplug_display.so && /bin/ln -svf $(/bin/pwd)/plugins_dir/rpsplug_display.so /tmp/" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v \
+     -i plugins_dir/rpsplug_display.cc -o plugins_dir/rpsplug_display.so \
+     -L /tmp/rpsplug_display.so" ;;
  ** End: ;;
  ****************/
 
