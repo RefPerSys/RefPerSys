@@ -21,5 +21,7 @@ python
 import psutil
 import os
 print("** RPS/GDB/Python pid ",  os.getpid(),
-      " running ", psutil.Process(os.getpid()), " **\n")
+    " running ", psutil.Process(os.getpid()), " **\n")
+#from os.getenv("REFPERSYS_TOPDIR") import tools/rpspygdb.py
+#
 end
