@@ -77,6 +77,10 @@ rps_do_plugin(const Rps_Plugin*plugin)
   free (rpath);
 } // end rps_do_plugin
 
+#warning see https://piumarta.com/software/maru/original/boot-eval.c
+#warning see https://github.com/GollyTicker/Mini-LISP
+#warning see https://github.com/arichel/PicoScheme
+#warning see https://github.com/mzazon/coreinterpreter/
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
