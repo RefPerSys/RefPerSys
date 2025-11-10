@@ -62,6 +62,7 @@ extern "C" const int rps_script_maxnum = 1024;
 /// vector of real path to script files
 static std::vector<const char*> rps_scripts_vector;
 
+
 const char rps_scripting_help_english_text[] =
   R"help(
 A script file is a textual file.
@@ -126,7 +127,11 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
                 << rps_scripts_vector.size() << " scripts"
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_scripts_after_load"));
-  for (int ix=0; ix<rps_scripts_vector.size(); ix++) {
+  for (int ix=0;
+       ix<(int)rps_scripts_vector.size();
+       ix++) {
+      RPS_ASSERT(rps_scripts_vector.size() <= rps_script_maxnum);
+      RPS_POSSIBLE_BREAKPOINT();
       try {
           rps_run_one_script_file(&_, ix);
         } catch (std::exception& ex) {
@@ -149,7 +154,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   char modline[64];
   memset (modline, 0, sizeof(modline));
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size());
+  RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size()
+             && ix <= rps_script_maxnum);
   RPS_ASSERT(!strcmp(rps_scripting_magic_string,  RPS_SCRIPT_MAGIC_STR));
   const char*curpath = rps_scripts_vector[ix];
   const std::string curpstr(curpath);
@@ -187,9 +193,20 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
       if (!clp) {
           RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
                         << " loop#" << loopcnt
-                        <<  " ¤eof @" << tsrc.position_str());
+                        <<  " ¤maybe-eof @" << tsrc.position_str());
           RPS_POSSIBLE_BREAKPOINT();
-          break;
+          if (tsrc.get_line()) {
+              clp = tsrc.curcptr();
+              RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+                            << " loop#" << loopcnt << " got-line "
+                            << " clp=" << Rps_QuotedC_String(clp));
+            }
+          else {
+              RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+                            << " loop#" << loopcnt << " eof "
+			    << (tsrc.reached_end()?" reached-end":" °notReachedEnd"));
+              break;
+            }
         };
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
                     << Rps_QuotedC_String(clp)
