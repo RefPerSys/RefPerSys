@@ -377,6 +377,15 @@ extern "C" const char rps_carbrepl_shortgitid[];
                << RPS_FULL_BACKTRACE(1, "token_action SLASH"));    \
  }
 //
+%token STARAT
+%token_action { _Pragma("message \"token_action for STARAT\""); \
+  /* should assign $$ for COMMA */ \
+  RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc); \
+  RPS_FATALOUT("STARAT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+               << RPS_FULL_BACKTRACE(1, "token_action STARAT"));      \
+ }
+
 
 %grammar%
 %params Rps_TokenSource* tksrc, Rps_CallFrame* callframe, rps_carbrepl_data_st&carbdata
@@ -1262,6 +1271,9 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   RPS_CARBURETTA_DELIM
     (rpskob_68wsAiJhJj1025DIs1, //!!$rightbrace!delim∈repl_delimiter 
      RPSCARBREPL_RIGHTBRACE);
+  RPS_CARBURETTA_DELIM
+    (rpskob_6X1MXqp9J5v02Q7Usl, //!!$star_at!delim∈repl_delimiter 
+     RPSCARBREPL_STARAT);
 #undef RPS_CARBURETTA_DELIM
   /////
   ///////////////////////////////////
