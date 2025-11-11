@@ -5,11 +5,11 @@
 // This plugin installs a REPL delimiter
 /*****
  * Once compiled, use it for example as:
- * ./refpersys --plugin-after-load=/tmp/rpsplug_createdelim.so \
- *             --plugin-arg=rpsplug_createdelim:++ \
- *             --extra=name=plusplus \
- *             --extra=precedence=8 \
- *             --batch --dump=.
+ ./refpersys --plugin-after-load=/tmp/rpsplug_createdelim.so \
+             --plugin-arg=rpsplug_createdelim:++ \
+             --extra=name=plusplus \
+             --extra=precedence=8 \
+             --batch --dump=.
  *
  *
  * See also carbrepl_rps.cbrt file, its routine
