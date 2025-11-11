@@ -11,6 +11,9 @@
  *             --extra=precedence=8 \
  *             --batch --dump=.
  *
+ *
+ * See also carbrepl_rps.cbrt file, its routine
+ * rps_initialize_carburetta_after_load ...
  ****/
 
 #include "refpersys.hh"
@@ -133,6 +136,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v plugins_dir/rpsplug_createdelim.cc -o plugins_dir/rpsplug_createdelim.so -L /tmp/rpsplug_createdelim.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && \
+     ./do-build-refpersys-plugin -v plugins_dir/rpsplug_createdelim.cc \
+     -o plugins_dir/rpsplug_createdelim.so \
+     -L /tmp/rpsplug_createdelim.so" ;;
  ** End: ;;
  ****************/

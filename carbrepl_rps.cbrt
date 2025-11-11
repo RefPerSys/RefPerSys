@@ -1223,7 +1223,8 @@ rps_carburetta_fill_keyword(Rps_ObjectRef obkeyw, int num, int line)
   else
     RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter good keyword "
                   << obkeyw
-                  << " delimiter#" <<num << ":" << rpscarbrepl_symbol_names_[num]
+                  << " delimiter#" <<num << ":"
+		  << rpscarbrepl_symbol_names_[num]
                   << " from " << __FILE__ << ":" << line);
 } // end rps_carburetta_fill_keyword
 
@@ -1233,7 +1234,8 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
 {
   RPS_ASSERT(ld);
   ///////////////////////////////////
-  ///// fill the delimiters constants
+  ///// Fill the delimiters constants.  More could be added using ...
+  ///// ... our plugins_dir/rpsplug_createdelim.cc ...
 #define RPS_CARBURETTA_DELIM(Ob,Num) \
   rps_carburetta_fill_delimiter((Ob),(Num),__LINE__)
   RPS_CARBURETTA_DELIM
