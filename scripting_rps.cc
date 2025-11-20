@@ -217,6 +217,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
           RPS_DEBUG_LOG(REPL, "rps_run_one_script_file °NULL-clp"
                         << " loop#" << loopcnt
                         << " @" << tsrc.position_str()
+			<< " " << (tsrc.reached_end()?"°atend":"°notend")
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file °NULL-clp"));
 	  usleep(12345);	// temporary code to slow down
