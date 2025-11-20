@@ -204,7 +204,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
           else {
               RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
                             << " loop#" << loopcnt << " eof "
-			    << (tsrc.reached_end()?" reached-end":" °notReachedEnd"));
+                            << (tsrc.reached_end()?" reached-end":" °notReachedEnd"));
               break;
             }
         };
@@ -213,6 +213,17 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                     << " loop#" << loopcnt
                     << " @" << tsrc.position_str());
       RPS_POSSIBLE_BREAKPOINT();
+      if (!clp) {
+          RPS_DEBUG_LOG(REPL, "rps_run_one_script_file °NULL-clp"
+                        << " loop#" << loopcnt
+                        << " @" << tsrc.position_str()
+                        << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file °NULL-clp"));
+	  usleep(12345);	// temporary code to slow down
+				// debugging output
+          RPS_POSSIBLE_BREAKPOINT();
+#warning rps_run_one_script_file incomplete when clp is null
+        };
       const char* magp = strstr(clp, rps_scripting_magic_string);
       if (magp) {
           static_assert(sizeof(modline)>60);
