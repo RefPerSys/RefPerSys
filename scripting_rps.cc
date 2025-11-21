@@ -174,7 +174,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                 << " curcptr=" << Rps_QuotedC_String(tsrc.curcptr())
                 << ((tsrc.reached_end())?" reachedEND": " notEND"));
   RPS_POSSIBLE_BREAKPOINT();
-  while (!gotmagic && tsrc.reached_end()) {
+  while (!gotmagic && !tsrc.reached_end()) {
       loopcnt++;
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
                     << " start loop#" << loopcnt
