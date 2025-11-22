@@ -35,6 +35,8 @@ exit $?
 
 ## for GDB use
 ## gdb --args ./refpersys -AREPL --script=$(/usr/bin/realpath test_dir/006echo.bash) --batch --run-name 006echodbg
+## e.g.
+## cgdb  --args ./refpersys -AREPL --script=$REFPERSYS_TOPDIR/test_dir/006echo.bash --batch --run-name 006echocgdb
 
 ## the magic string should not be commented!
 REFPERSYS_SCRIPT echo
