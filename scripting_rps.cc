@@ -217,11 +217,11 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
           RPS_DEBUG_LOG(REPL, "rps_run_one_script_file °NULL-clp"
                         << " loop#" << loopcnt
                         << " @" << tsrc.position_str()
-			<< " " << (tsrc.reached_end()?"°atend":"°notend")
+                        << " " << (tsrc.reached_end()?"°atend":"°notend")
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file °NULL-clp"));
-	  usleep(12345);	// temporary code to slow down
-				// debugging output
+          usleep(12345);	// temporary code to slow down
+          // debugging output
           RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file incomplete when clp is null
         };
@@ -251,6 +251,12 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                               << std::endl
                               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON"));
 #warning rps_run_one_script_file in carbon mode should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+                                << Rps_QuotedC_String(clp)
+                                << " @" << tsrc.position_str()
+                                << " carbon mode"
+                                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON")
+                                << " loop#" << loopcnt);
                 }
               else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
                   RPS_POSSIBLE_BREAKPOINT();
@@ -260,7 +266,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                               << " loop#" << loopcnt
                               << std::endl
                               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/ECHO"));
-                  while (tsrc.get_line()) {
+                  while (tsrc.get_line() && !tsrc.reached_end()) {
                       const char*clp = tsrc.curcptr();
                       if (!clp)
                         break;
@@ -270,6 +276,12 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                       std::cout << clp << std::flush;
                     } // end while get_line in echo mode
                   std::cout << std::endl;
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+                                << Rps_QuotedC_String(clp)
+                                << " @" << tsrc.position_str()
+                                << " echo mode"
+                                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/ECHO")
+                                << " loop#" << loopcnt);
                 } // end echo mode
             };
         };
