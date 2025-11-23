@@ -26,3 +26,5 @@ doc/design-ideas/refpersys-design.pdf
 doc/design-ideas/refpersys-design.aux
 bispprepl_rps.yyp.output
 do-scan-pkgconfig
+.kilocodemodes
+.vscode/settings.json
