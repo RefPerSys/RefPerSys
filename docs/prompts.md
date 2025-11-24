@@ -1,5 +1,9 @@
 ## Primary Documentation Prompt
 
+This documentation has been initially written (in November 2025)
+by Daniel Jue https://www.linkedin.com/in/danieljue/
+
+
 ```
 You are a senior software architect tasked with creating comprehensive technical documentation for a large C++ codebase. Your goal is to produce thorough English-language documentation that captures the complete system architecture, implementation patterns, and design philosophy.
 
