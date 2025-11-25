@@ -305,7 +305,8 @@ rpsconf_temporary_textual_file (const char *prefix,
   return res;
 }       /* end rpsconf_temporary_textual_file */
 
-/// return a malloced path to a temporary binary file in the current directory
+/// Return a malloced path to a temporary binary file in the current
+/// directory
 char *
 rpsconf_temporary_binary_file (const char *prefix, const char *suffix,
                                int lineno)
@@ -960,7 +961,10 @@ rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
 }       /* end  rpsconf_try_cxx_compiler_for_libgccjit */
 #endif /*RPSCONF_WITHOUT_GCCJIT */
 
-
+void
+rpsconf_emit_from_testdir(FILE* fconf, const char*testdir)
+{
+} /* end rpsconf_emit_from_testdir */
 
 void
 rpsconf_try_then_set_fltkconfig (const char *fc)
@@ -1383,6 +1387,19 @@ rpsconf_emit_configure_refpersys_mk (void)
     {
       fprintf (f, "\n### no libgccjit include directory\n");
     }
+  ////
+#warning need code review to emit tests
+#if 0
+  {
+    char testdir[RPSCONF_PATH_MAXLEN];
+    memset (testdir, 0, sizeof(testdir));
+    snprintf(testdir, sizeof(testdir)-1,
+             "%s/test_dir");
+    fprintf (f, "\n\n### emitted tests from test directory %s\n",
+             testdir);
+    rpsconf_emit_from_testdir(f, testdir);
+  }
+#endif
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
