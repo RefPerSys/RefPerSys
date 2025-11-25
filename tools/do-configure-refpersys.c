@@ -48,6 +48,7 @@
 #include <stdbool.h>
 #include <dlfcn.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #ifndef RPSCONF_WITHOUT_NCURSES
 #include "ncurses.h"
@@ -961,10 +962,103 @@ rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
 }       /* end  rpsconf_try_cxx_compiler_for_libgccjit */
 #endif /*RPSCONF_WITHOUT_GCCJIT */
 
-void
-rpsconf_emit_from_testdir(FILE* fconf, const char*testdir)
+int
+rpsconf_compare_duped_name (const void *p1, const void *p2)
 {
-} /* end rpsconf_emit_from_testdir */
+  if (p1 == p2)
+    return 0;
+  if (!p1)
+    return -1;
+  if (!p2)
+    return +1;
+  const char **ps1 = p1;
+  const char **ps2 = p2;
+  return strcmp (*ps1, *ps2);
+}       /* end rpsconf_compare_duped_name */
+
+void
+rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
+{
+  DIR *tdirh = NULL;
+  struct dirent *dent = NULL;
+  char **tarr = NULL;
+  int siztarr = 0;
+  int cntarr = 0;
+  fprintf (fconf, "#emitting tests from %s [%s:%d]\n", testdir,
+           __FILE__, __LINE__ - 1);
+  tdirh = opendir (testdir);
+  if (!tdirh)
+    {
+      fprintf (stderr, "%s: failed to opendir %s (%s)\n",
+               rpsconf_prog_name, testdir, strerror (errno));
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  int loopcnt = 0;
+  while ((dent = readdir (tdirh)) != NULL)
+    {
+      if (++loopcnt > 1024 * 1000)
+        {
+          fprintf (stderr, "%s: too many %d entries in test-dir %s\n",
+                   rpsconf_prog_name, loopcnt, testdir);
+          rpsconf_failed = true;
+          exit (EXIT_FAILURE);
+        };
+      if (dent->d_type == DT_REG && isdigit (dent->d_name[0])
+          && strlen (dent->d_name) + 2 < RPSCONF_PATH_MAXLEN)
+        {
+          if (!strchr (dent->d_name, '.'))
+            continue;
+          bool goodname = true;
+          for (const char *pc = dent->d_name; *pc && goodname; pc++)
+            {
+              if (!isalnum (*pc) && *pc != '+' && *pc != '-'
+                  && *pc != '_' && *pc != '.')
+                goodname = false;
+            };
+          if (!goodname)
+            continue;
+          if (siztarr + 1 >= cntarr)
+            {
+              int newsiz = (10 + (4 * cntarr) / 3) | 0xf;
+              char **newtarr = calloc (newsiz, sizeof (char *));
+              char **oldtarr = tarr;
+              if (!newtarr)
+                {
+                  fprintf (stderr, "%s: calloc [%s:%d] for %d pointers failed"
+                                   " for test-dir %s (%s)\n",
+                           rpsconf_prog_name, __FILE__, __LINE__ - 1,
+                           newsiz, testdir, strerror (errno));
+                  rpsconf_failed = true;
+                  exit (EXIT_FAILURE);
+                };
+              memcpy (newtarr, tarr, cntarr * sizeof (tarr[0]));
+              tarr = newtarr;
+              if (oldtarr)
+                free (oldtarr);
+            };
+          char *dupname = strdup (dent->d_name);
+          if (!dupname)
+            {
+              fprintf (stderr, "%s: strdup(%s) [%s:%d] failed"
+                               " for test-dir %s (%s)\n",
+                       rpsconf_prog_name, dent->d_name, __FILE__,
+                       __LINE__ - 2, testdir, strerror (errno));
+              rpsconf_failed = true;
+              exit (EXIT_FAILURE);
+            };
+          tarr[cntarr++] = dupname;
+        }     /* end if dent is a file starting with a digit */
+    };
+  closedir (tdirh);
+  qsort (tarr, cntarr, sizeof (tarr[0]), rpsconf_compare_duped_name);
+  fprintf (fconf, "\n\n######### emitting %d tests in %s [%s:%d]\n",
+           cntarr, testdir, __FILE__, __LINE__ - 1);
+#warning missing emission in rpsconf_emit_from_testdir
+  /* TODO: emit .PHONY: test-target for every test */
+  /* TODO: emit the testing command */
+  free (tarr);
+}       /* end rpsconf_emit_from_testdir */
 
 void
 rpsconf_try_then_set_fltkconfig (const char *fc)
@@ -1388,17 +1482,15 @@ rpsconf_emit_configure_refpersys_mk (void)
       fprintf (f, "\n### no libgccjit include directory\n");
     }
   ////
-#warning need code review to emit tests
-  assert(rpsconf_cwd_buf != NULL);
-  assert(isprint(rpsconf_cwd_buf[0]));
+  assert (rpsconf_cwd_buf != NULL);
+  assert (isprint (rpsconf_cwd_buf[0]));
   {
     char testdir[RPSCONF_PATH_MAXLEN];
-    memset (testdir, 0, sizeof(testdir));
-    snprintf(testdir, sizeof(testdir)-1,
-             "%s/test_dir", rpsconf_cwd_buf);
-    fprintf (f, "\n\n### emitted tests from test directory %s\n",
-             testdir);
-    rpsconf_emit_from_testdir(f, testdir);
+    memset (testdir, 0, sizeof (testdir));
+    snprintf (testdir, sizeof (testdir) - 1, "%s/test_dir", rpsconf_cwd_buf);
+    fprintf (f, "\n\n### emitted tests [%s:%d] from test directory %s\n",
+             __FILE__, __LINE__, testdir);
+    rpsconf_emit_from_testdir (f, testdir);
   }
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
@@ -1749,7 +1841,7 @@ main (int argc, char **argv)
     {
       rpsconf_builder_email =
         rpsconf_readline ("email of person building "
-			  "(e.g. alan.turing@princeton.edu):");
+                        "(e.g. alan.turing@princeton.edu):");
       bool goodemail = rpsconf_builder_email != NULL
                        && isalnum (rpsconf_builder_email[0]);
       const char *pc = rpsconf_builder_email;
