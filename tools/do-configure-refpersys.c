@@ -1389,17 +1389,17 @@ rpsconf_emit_configure_refpersys_mk (void)
     }
   ////
 #warning need code review to emit tests
-#if 0
+  assert(rpsconf_cwd_buf != NULL);
+  assert(isprint(rpsconf_cwd_buf[0]));
   {
     char testdir[RPSCONF_PATH_MAXLEN];
     memset (testdir, 0, sizeof(testdir));
     snprintf(testdir, sizeof(testdir)-1,
-             "%s/test_dir");
+             "%s/test_dir", rpsconf_cwd_buf);
     fprintf (f, "\n\n### emitted tests from test directory %s\n",
              testdir);
     rpsconf_emit_from_testdir(f, testdir);
   }
-#endif
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
@@ -1748,8 +1748,8 @@ main (int argc, char **argv)
   if (rpsconf_builder_person)
     {
       rpsconf_builder_email =
-        rpsconf_readline
-        ("email of person building (e.g. alan.turing@princeton.edu):");
+        rpsconf_readline ("email of person building "
+			  "(e.g. alan.turing@princeton.edu):");
       bool goodemail = rpsconf_builder_email != NULL
                        && isalnum (rpsconf_builder_email[0]);
       const char *pc = rpsconf_builder_email;
