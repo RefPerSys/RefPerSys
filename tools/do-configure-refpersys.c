@@ -1054,8 +1054,35 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
   qsort (tarr, cntarr, sizeof (tarr[0]), rpsconf_compare_duped_name);
   fprintf (fconf, "\n\n######### emitting %d tests in %s [%s:%d]\n",
            cntarr, testdir, __FILE__, __LINE__ - 1);
+  long bol = ftell (fconf); // begin of line
+  const long desired_line_width = 72;
+  fprintf (fconf, ".PHONY: ");
+  for (int i = 0; i < cntarr; i++)
+    {
+      if (ftell (fconf) - bol > desired_line_width)
+        {
+          if (fputs (" \\\n", fconf) < 0)
+            {
+              fprintf (stderr, "%s: fputs [%s:%d] failed"
+                               " for test-dir %s i=%d (%s)\n",
+                       rpsconf_prog_name, __FILE__,
+                       __LINE__ - 2, testdir, i, strerror (errno));
+              rpsconf_failed = true;
+              exit (EXIT_FAILURE);
+            };
+          bol = ftell (fconf);
+        };
+      if (i + 1 < cntarr)
+        {
+          fprintf (fconf, " %s", tarr[i]);
+        }
+      else
+        {
+          // last line
+          fprintf (fconf, " %s\n", tarr[i]);
+        }
+    };
 #warning missing emission in rpsconf_emit_from_testdir
-  /* TODO: emit .PHONY: test-target for every test */
   /* TODO: emit the testing command */
   free (tarr);
 }       /* end rpsconf_emit_from_testdir */
