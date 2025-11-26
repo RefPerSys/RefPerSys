@@ -971,10 +971,25 @@ rpsconf_compare_duped_name (const void *p1, const void *p2)
     return -1;
   if (!p2)
     return +1;
-  const char **ps1 = p1;
-  const char **ps2 = p2;
+  const char *const *ps1 = (const char *const *) p1;
+  const char *const *ps2 = (const char *const *) p2;
   return strcmp (*ps1, *ps2);
 }       /* end rpsconf_compare_duped_name */
+
+/// generate in buf of bufsiz the phony test name
+void
+rpsconf_generate_testname (char *buf, size_t bufsiz, const char *testfile)
+{
+  assert (testfile != NULL);
+  assert (buf != NULL);
+  assert (bufsiz > 16 && bufsiz <= RPSCONF_PATH_MAXLEN + 1);
+  assert (isalnum (testfile[0]));
+  assert (strlen (testfile) < RPSCONF_PATH_MAXLEN);
+  const char *curdot = strchr (testfile, '.');
+  assert (curdot != NULL);
+  snprintf (buf, bufsiz - 1,
+            "test-%.*s", (int) (curdot - testfile) - 1, testfile);
+}       /* end rpsconf_generate_testname */
 
 void
 rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
@@ -1052,13 +1067,20 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
     };
   closedir (tdirh);
   qsort (tarr, cntarr, sizeof (tarr[0]), rpsconf_compare_duped_name);
-  fprintf (fconf, "\n\n######### emitting %d tests in %s [%s:%d]\n",
+  fprintf (fconf, "\n\n## emitting %d phony tests in %s [%s:%d]\n",
            cntarr, testdir, __FILE__, __LINE__ - 1);
   long bol = ftell (fconf); // begin of line
   const long desired_line_width = 72;
   fprintf (fconf, ".PHONY: ");
   for (int i = 0; i < cntarr; i++)
     {
+      const char *curtst = tarr[i];
+      const char *curdot = strchr (curtst, '.');
+      assert (curdot != NULL);
+      char testnamebuf[RPSCONF_PATH_MAXLEN + 8];
+      memset (testnamebuf, 0, sizeof (testnamebuf));
+      rpsconf_generate_testname (testnamebuf, sizeof (testnamebuf) - 1,
+                                 curtst);
       if (ftell (fconf) - bol > desired_line_width)
         {
           if (fputs (" \\\n", fconf) < 0)
@@ -1074,16 +1096,18 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
         };
       if (i + 1 < cntarr)
         {
-          fprintf (fconf, " %s", tarr[i]);
+          fprintf (fconf, " %s", testnamebuf);
         }
       else
         {
           // last line
-          fprintf (fconf, " %s\n", tarr[i]);
+          fprintf (fconf, " %s\n", testnamebuf);
         }
     };
 #warning missing emission in rpsconf_emit_from_testdir
-  /* TODO: emit the testing command */
+  /* TODO: emit the testing commands */
+  fprintf (fconf, "\n\n## emitting %d test commands in %s [%s:%d]\n",
+           cntarr, testdir, __FILE__, __LINE__ - 1);
   free (tarr);
 }       /* end rpsconf_emit_from_testdir */
 
@@ -1512,7 +1536,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   assert (rpsconf_cwd_buf != NULL);
   assert (isprint (rpsconf_cwd_buf[0]));
   {
-    char testdir[RPSCONF_PATH_MAXLEN];
+    char testdir[RPSCONF_PATH_MAXLEN + 10];
     memset (testdir, 0, sizeof (testdir));
     snprintf (testdir, sizeof (testdir) - 1, "%s/test_dir", rpsconf_cwd_buf);
     fprintf (f, "\n\n### emitted tests [%s:%d] from test directory %s\n",
