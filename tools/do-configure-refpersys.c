@@ -1104,10 +1104,24 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
           fprintf (fconf, " %s\n", testnamebuf);
         }
     };
-#warning missing emission in rpsconf_emit_from_testdir
-  /* TODO: emit the testing commands */
+  fflush (fconf);
+  /* Emit the testing commands */
   fprintf (fconf, "\n\n## emitting %d test commands in %s [%s:%d]\n",
            cntarr, testdir, __FILE__, __LINE__ - 1);
+  for (int i = 0; i < cntarr; i++)
+    {
+      const char *curtst = tarr[i];
+      const char *curdot = strchr (curtst, '.');
+      assert (curdot != NULL);
+      char testnamebuf[RPSCONF_PATH_MAXLEN + 8];
+      memset (testnamebuf, 0, sizeof (testnamebuf));
+      rpsconf_generate_testname (testnamebuf, sizeof (testnamebuf) - 1,
+                                 curtst);
+      fprintf (fconf, "\n\n### test #%d: %s\n", (i + 1), testnamebuf);
+      fprintf (fconf, "%s: refpersys test_dir/%s\n", testnamebuf, curtst);
+      fprintf (fconf, "\t%s\n\n", curtst);
+    }
+  fflush (fconf);
   free (tarr);
 }       /* end rpsconf_emit_from_testdir */
 
