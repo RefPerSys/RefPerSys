@@ -988,7 +988,7 @@ rpsconf_generate_testname (char *buf, size_t bufsiz, const char *testfile)
   const char *curdot = strchr (testfile, '.');
   assert (curdot != NULL);
   snprintf (buf, bufsiz - 1,
-            "test-%.*s", (int) (curdot - testfile) - 1, testfile);
+            "test-%.*s", (int) (curdot - testfile), testfile);
 }       /* end rpsconf_generate_testname */
 
 void
@@ -1119,7 +1119,7 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
                                  curtst);
       fprintf (fconf, "\n\n### test #%d: %s\n", (i + 1), testnamebuf);
       fprintf (fconf, "%s: refpersys test_dir/%s\n", testnamebuf, curtst);
-      fprintf (fconf, "\t%s\n\n", curtst);
+      fprintf (fconf, "\ttest_dir/%s\n\n", curtst);
     }
   fflush (fconf);
   free (tarr);
