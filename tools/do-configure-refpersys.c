@@ -982,7 +982,7 @@ rpsconf_generate_testname (char *buf, size_t bufsiz, const char *testfile)
 {
   assert (testfile != NULL);
   assert (buf != NULL);
-  assert (bufsiz > 16 && bufsiz <= RPSCONF_PATH_MAXLEN + 1);
+  assert (bufsiz > 16 && bufsiz <= RPSCONF_PATH_MAXLEN + 32);
   assert (isalnum (testfile[0]));
   assert (strlen (testfile) < RPSCONF_PATH_MAXLEN);
   const char *curdot = strchr (testfile, '.');
