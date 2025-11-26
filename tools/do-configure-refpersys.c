@@ -1121,6 +1121,8 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
       fprintf (fconf, "%s: refpersys test_dir/%s\n", testnamebuf, curtst);
       fprintf (fconf, "\ttest_dir/%s\n\n", curtst);
     }
+  fprintf (fconf, "\n## end of %d test commands in %s [%s:%d]\n\n",
+           cntarr, testdir, __FILE__, __LINE__ - 1);
   fflush (fconf);
   free (tarr);
 }       /* end rpsconf_emit_from_testdir */
