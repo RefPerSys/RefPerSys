@@ -1121,9 +1121,9 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
       fprintf (fconf, "\n\n### test #%d: %s <%s:%d>\n", (i + 1),
                testnamebuf, __FILE__, __LINE__ - 1);
       fprintf (fconf,
-               "%s: refpersys %s | $REFPERSYS_DIRECTORY/refpersys.hh \n",
+               "%s: refpersys test_dir/%s | $REFPERSYS_DIRECTORY/refpersys.hh \n",
                testnamebuf, curtst);
-      fprintf (fconf, "\t$REFPERSYS_DIR/test_dir/%s\n\n", curtst);
+      fprintf (fconf, "\t$REFPERSYS_DIRECTORY/test_dir/%s\n\n", curtst);
     }
   fprintf (fconf, "\n## end of %d test commands in %s [%s:%d]\n\n",
            cntarr, testdir, __FILE__, __LINE__ - 1);
