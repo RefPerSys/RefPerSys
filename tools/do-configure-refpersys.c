@@ -1004,8 +1004,9 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
   tdirh = opendir (testdir);
   if (!tdirh)
     {
-      fprintf (stderr, "%s: failed to opendir %s (%s)\n",
-               rpsconf_prog_name, testdir, strerror (errno));
+      fprintf (stderr, "%s: failed to opendir %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, testdir, strerror (errno),
+               __FILE__, __LINE__ - 2);
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1096,12 +1097,12 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
         };
       if (i + 1 < cntarr)
         {
-          fprintf (fconf, " %s", testnamebuf);
+          fprintf (fconf, "   %s", testnamebuf);
         }
       else
         {
           // last line
-          fprintf (fconf, " %s\n", testnamebuf);
+          fprintf (fconf, "   %s\n", testnamebuf);
         }
     };
   fflush (fconf);
@@ -1117,9 +1118,12 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
       memset (testnamebuf, 0, sizeof (testnamebuf));
       rpsconf_generate_testname (testnamebuf, sizeof (testnamebuf) - 1,
                                  curtst);
-      fprintf (fconf, "\n\n### test #%d: %s\n", (i + 1), testnamebuf);
-      fprintf (fconf, "%s: refpersys test_dir/%s\n", testnamebuf, curtst);
-      fprintf (fconf, "\ttest_dir/%s\n\n", curtst);
+      fprintf (fconf, "\n\n### test #%d: %s <%s:%d>\n", (i + 1),
+               testnamebuf, __FILE__, __LINE__ - 1);
+      fprintf (fconf,
+               "%s: refpersys %s | $REFPERSYS_DIRECTORY/refpersys.hh \n",
+               testnamebuf, curtst);
+      fprintf (fconf, "\t$REFPERSYS_DIR/test_dir/%s\n\n", curtst);
     }
   fprintf (fconf, "\n## end of %d test commands in %s [%s:%d]\n\n",
            cntarr, testdir, __FILE__, __LINE__ - 1);
@@ -1399,10 +1403,11 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f, "# DO NOT EDIT but use make config\n");
   fprintf (f, "# generated from %s:%d in %s\n", __FILE__, __LINE__,
            rpsconf_cwd_buf);
-  fprintf (f, "# see refpersys.org\n");
+  fprintf (f, "# see refpersys.org\n\n");
   fprintf (f, "# generated at %s## on %s git %s\n\n",
            ctime (&nowt), rpsconf_host_name, RPSCONF_GIT_ID);
   fprintf (f, "#  generated from %s:%d\n", __FILE__, __LINE__);
+  fprintf (f, "REFPERSYS_DIRECTORY=%s\n", rpsconf_cwd_buf);
   fprintf (f, "REFPERSYS_CONFIGURED_GITID=%s\n\n", RPSCONF_GIT_ID);
   //// emit C compiler
   fprintf (f, "\n\n" "# the C compiler for RefPerSys:\n");
