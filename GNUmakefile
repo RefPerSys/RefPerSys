@@ -175,7 +175,8 @@ raw-refpersys: raw-objects __raw_timestamp.o |  GNUmakefile _config-refpersys.mk
 	-@echo Linking $@
 	$(REFPERSYS_CXX) -rdynamic -o $@ $(REFPERSYS_RAW_OBJECTS) \
               $(RPS_LIBBACKTRACE) \
-              -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
+              -L/usr/local/lib -rpath /usr/local/lib:$LD_LIBRARY_PATH \
+               $(REFPERSYS_NEEDED_LIBRARIES) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	-@echo Linked $@
 
@@ -224,6 +225,7 @@ lto-refpersys:
 	      $(RPS_LIBBACKTRACE) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
+              -rpath /usr/local/lib:$LD_LIBRARY_PATH \
                $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
