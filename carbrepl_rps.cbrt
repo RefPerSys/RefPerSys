@@ -265,11 +265,42 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1,                            \
+               << RPS_FULL_BACKTRACE(1,                                 \
                                           "token_action KEYW_PUT"));    \
  }
  
+%token KEYW_LET
+%token_action { _Pragma("message \"token_action for KEYW_LET\"");       \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_LET tksrc=" << *tksrc);    \
+  /* should assign $$ for KEYW_LET */                                   \
+  RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1,  "token_action KEYW_LET"));     \
+ }
+ 
 
+%token KEYW_DEFINE
+%token_action { _Pragma("message \"token_action for KEYW_DEFINE\"");    \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_DEFINE tksrc=" << *tksrc); \
+  /* should assign $$ for KEYW_DEFINE */                                \
+  RPS_FATALOUT("KEYW_DEFINE token_action is incomplete tksrc=" << tksrc \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_DEFINE"));   \
+ }
+ 
+
+%token KEYW_DO
+%token_action { _Pragma("message \"token_action for KEYW_DO\"");        \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_DO tksrc=" << *tksrc);     \
+  /* should assign $$ for KEYW_DO */                                    \
+  RPS_FATALOUT("KEYW_DEFINE token_action is incomplete tksrc=" << tksrc \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_DO"));       \
+ }
+ 
 %token DOT
 %token_action { _Pragma("message \"token_action for DOT\""); \
   /* should assign $$ for DOT */ \
@@ -1286,6 +1317,12 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   RPS_CARBURETTA_KEYWORD(rpskob_7X9eGs8601M021nMue, RPSCARBREPL_KEYW_OBJECT); //$object∈symbol
   /// keyword `put`
   RPS_CARBURETTA_KEYWORD(rpskob_7oLVM0fd4a5020iEEM, RPSCARBREPL_KEYW_PUT); //$put∈symbol
+  /// keyword `let`
+  RPS_CARBURETTA_KEYWORD(rpskob_6WwOXKVFFBC03obqki, RPSCARBREPL_KEYW_LET); //$let∈symbol
+  /// keyword `define`
+  RPS_CARBURETTA_KEYWORD(rpskob_8Z5o3cF6CsP02Iy81d, RPSCARBREPL_KEYW_DEFINE); //$define∈symbol
+  /// keyword `do`
+  RPS_CARBURETTA_KEYWORD(rpskob_9wxka7OAIaG00LS3Db, RPSCARBREPL_KEYW_DO); //$do∈symbol
   /// 
 #undef RPS_CARBURETTA_KEYWORD
   ///////////////////////////////////
