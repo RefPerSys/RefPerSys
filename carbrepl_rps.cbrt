@@ -6,7 +6,8 @@
  *      This file is part of the Reflective Persistent System.
  *      It is its Carburetta grammar and parser
  *      see https://carburetta.com/
- *      It should be processed by at least carburetta 0.8.27 (mid-july 2025)
+ *      It should be processed by at least carburetta 0.8.27
+ *      (mid-july 2025)
  *
  * Author(s):
  *      Basile Starynkevitch, France   <basile@starynkevitch.net>
@@ -44,7 +45,7 @@ constexpr unsigned rps_magic_carbrepl_data = 696140743; // 0x297e43c7
 struct rps_carbrepl_data_st {
   unsigned cardata_magic;       // always  rps_magic_carbrepl_data
   unsigned cardata_touchline;
-  double cardata_mtime;		// elapsed realtime
+  double cardata_mtime;         // elapsed realtime
   intptr_t cardata_i;
   double cardata_d;
   std::string cardata_str;
@@ -254,9 +255,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1,                            \
-                                          "token_action KEYW_OBJECT")); \
- }
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_OBJECT")); }
 
 %token KEYW_PUT
 %token_action { _Pragma("message \"token_action for KEYW_PUT\"");       \
@@ -265,9 +264,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1,                                 \
-                                          "token_action KEYW_PUT"));    \
- }
+               << RPS_FULL_BACKTRACE(1,   "token_action KEYW_PUT"));  }
  
 %token KEYW_LET
 %token_action { _Pragma("message \"token_action for KEYW_LET\"");       \
@@ -276,8 +273,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1,  "token_action KEYW_LET"));     \
- }
+               << RPS_FULL_BACKTRACE(1,  "token_action KEYW_LET"));  }
  
 
 %token KEYW_DEFINE
@@ -287,8 +283,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_DEFINE token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1, "token_action KEYW_DEFINE"));   \
- }
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_DEFINE"));  }
  
 
 %token KEYW_DO
@@ -298,8 +293,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_DEFINE token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1, "token_action KEYW_DO"));       \
- }
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_DO"));  }
  
 %token DOT
 %token_action { _Pragma("message \"token_action for DOT\""); \
@@ -320,102 +314,115 @@ extern "C" const char rps_carbrepl_shortgitid[];
                << RPS_FULL_BACKTRACE(1, "token_action COMMA"));      \
  }
 
+
+/// the assign token is := 
 %token ASSIGN
-%token_action {_Pragma("message \"token_action for ASSIGN\""); \
-  /* should assign $$ for ASSIGN */ \
-  RPS_DEBUG_LOG(REPL, "token_action for ASSIGN tksrc=" << *tksrc); \
-  RPS_FATALOUT("ASSIGN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action ASSIGN"));   \
- }
+%token_action {_Pragma("message \"token_action for ASSIGN\"");          \
+  /* should assign $$ for ASSIGN */                                     \
+  RPS_DEBUG_LOG(REPL, "token_action for ASSIGN tksrc=" << *tksrc);      \
+  RPS_FATALOUT("ASSIGN token_action is incomplete tksrc="               \
+               << tksrc << " sym=" << sym                               \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action ASSIGN")); }
 
+/// the left parenthesis is (
 %token LEFTPAREN
-%token_action {_Pragma("message \"token_action for LEFTPAREN\""); \
-  /* should assign $$ for LEFTPAREN */ \
-  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc); \
-  RPS_FATALOUT("LEFTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action LEFTPAREN"));        \
- }
+%token_action {_Pragma("message \"token_action for LEFTPAREN\"");       \
+  /* should assign $$ for LEFTPAREN */                                  \
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc);   \
+  RPS_FATALOUT("LEFTPAREN token_action is incomplete tksrc=" << tksrc   \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action LEFTPAREN"));  }
 
+
+// the right parenthesis is )
 %token RIGHTPAREN
-%token_action {_Pragma("message \"token_action for RIGHTPAREN\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc); \
-  /* should assign $$ for RIGHTPAREN */ \
-  RPS_FATALOUT("RIGHTPAREN token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action RIGHTPAREN"));       \
- }
+%token_action {_Pragma("message \"token_action for RIGHTPAREN\"");      \
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc);  \
+  /* should assign $$ for RIGHTPAREN */                                 \
+  RPS_FATALOUT("RIGHTPAREN token_action is incomplete tksrc=" << tksrc  \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action RIGHTPAREN"));   }
 //
 
-
+//// the left brace is {
 %token LEFTBRACE
-%token_action {_Pragma("message \"token_action for LEFTBRACE\""); \
-  /* should assign $$ for LEFTBRACE */ \
-  RPS_DEBUG_LOG(REPL, "token_action for LEFTBRACE tksrc=" << *tksrc); \
-  RPS_FATALOUT("LEFTBRACE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action LEFBRACE"));        \
- }
+%token_action {_Pragma("message \"token_action for LEFTBRACE\"");       \
+  /* should assign $$ for LEFTBRACE */                                  \
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTBRACE tksrc=" << *tksrc);   \
+  RPS_FATALOUT("LEFTBRACE token_action is incomplete tksrc="            \
+               << tksrc << " sym=" << sym                               \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action LEFTBRACE"));   }
 
+
+//// the right brace is }
 %token RIGHTBRACE
-%token_action {_Pragma("message \"token_action for RIGHTBRACE\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for RIGHTBRACE tksrc=" << *tksrc); \
-  /* should assign $$ for RIGHTBRACE */ \
-  RPS_FATALOUT("RIGHTBRACE token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action RIGHTBRACE"));       \
- }
+%token_action {_Pragma("message \"token_action for RIGHTBRACE\"");      \
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTBRACE tksrc=" << *tksrc);  \
+  /* should assign $$ for RIGHTBRACE */                                 \
+  RPS_FATALOUT("RIGHTBRACE token_action is incomplete tksrc=" << tksrc  \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action RIGHTBRACE"));  }
 //
-
+//// the + token
 %token PLUS 
-%token_action {_Pragma("message \"token_action for PLUS\""); \
-  /* should assign $$ PLUS */ \
-  RPS_DEBUG_LOG(REPL, "token_action for PLUS tksrc=" << *tksrc); \
-  RPS_FATALOUT("PLUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action PLUS"));     \
- }
+%token_action {_Pragma("message \"token_action for PLUS\"");            \
+  /* should assign $$ PLUS */                                           \
+  RPS_DEBUG_LOG(REPL, "token_action for PLUS tksrc=" << *tksrc);        \
+  RPS_FATALOUT("PLUS token_action is incomplete tksrc=" << tksrc        \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action PLUS"));  }
 //
 
+
+//// the - token (should not be immediately followed by a digit)
 %token MINUS 
-%token_action {_Pragma("message \"token_action for MINUS\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for MINUS tksrc=" << tksrc); \
-  /* should assign $$ MINUS */ \
-  RPS_FATALOUT("MINUS token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action MINUS"));    \
- }
+%token_action {_Pragma("message \"token_action for MINUS\"");           \
+  RPS_DEBUG_LOG(REPL, "token_action for MINUS tksrc=" << tksrc);        \
+  /* should assign $$ MINUS */                                          \
+  RPS_FATALOUT("MINUS token_action is incomplete tksrc=" << tksrc       \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action MINUS"));   }
 //
 
-
+//// the * token (not followed by @)
 %token ASTERISK 
-%token_action {_Pragma("message \"token_action for ASTERISK\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc); \
-  /* should assign $$ ASTERISK */ \
-  RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action ASTERISK")); \
- }
+%token_action {_Pragma("message \"token_action for ASTERISK\"");        \
+  RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc);    \
+  /* should assign $$ ASTERISK */                                       \
+  RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc    \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
+               << RPS_FULL_BACKTRACE(1, "token_action ASTERISK")); }
 //
 
+
+///// the / token
 %token SLASH 
 %token_action {_Pragma("message \"token_action for SLASH\""); \
   RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc); \
   /* should assign $$ SLASH */ \
-  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
+  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc
+	       << " sym=" << sym		       \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action SLASH"));    \
- }
+               << RPS_FULL_BACKTRACE(1, "token_action SLASH")); }
 //
+
+///// the *@ token
 %token STARAT
-%token_action { _Pragma("message \"token_action for STARAT\""); \
-  /* should assign $$ for COMMA */ \
-  RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc); \
-  RPS_FATALOUT("STARAT token_action is incomplete tksrc=" << tksrc << " sym=" << sym \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
-               << RPS_FULL_BACKTRACE(1, "token_action STARAT"));      \
- }
+%token_action { _Pragma("message \"token_action for STARAT\"");		\
+  /* should assign $$ for COMMA */					\
+  RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc);	\
+  RPS_FATALOUT("STARAT token_action is incomplete tksrc=" << tksrc	\
+	       << " sym=" << sym					\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+               << RPS_FULL_BACKTRACE(1, "token_action STARAT")); }
 
 
 %grammar%
@@ -514,7 +521,7 @@ replnt_input: replnt_command replnt_input {
 replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
    RPS_DEBUG_LOG(REPL, "display carburetta command $2 is:" << $2
-		 << RPS_FULL_BACKTRACE(1, "display carburetta command"));
+                 << RPS_FULL_BACKTRACE(1, "display carburetta command"));
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    RPS_POSSIBLE_BREAKPOINT();
@@ -665,8 +672,8 @@ replnt_expr: replnt_expr PLUS replnt_term            {
     = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
                         {carbdata.cardata_obop, $0, $2});
   RPS_DEBUG_LOG(REPL, "replnt_expr: replnt_expr PLUS replnt_term result is " << $$
-		<< " obdelim=" << carbdata.cardata_obdelim
-		<< " obop=" << carbdata.cardata_obop
+                << " obdelim=" << carbdata.cardata_obdelim
+                << " obop=" << carbdata.cardata_obop
                 << " left:" << $0 << " right:" << $2 << std::endl
                 << RPS_FULL_BACKTRACE(1, "replnt_expr: replnt_expr PLUS replnt_term"));
   //FIXME:carbdata.cardata_vinst->put_persistent_metadata(<some-object>,<some-integer>);
@@ -696,8 +703,8 @@ replnt_expr: replnt_expr MINUS replnt_term           {
     = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
                         {carbdata.cardata_obop, $0, $2});
   RPS_DEBUG_LOG(REPL, "replnt_expr: replnt_expr MINUS replnt_term result is " << $$
-		<< " obdelim=" << carbdata.cardata_obdelim
-		<< " obop=" << carbdata.cardata_obop
+                << " obdelim=" << carbdata.cardata_obdelim
+                << " obop=" << carbdata.cardata_obop
                 << " left:" << $0 << " right:" << $2 << std::endl
                 << RPS_FULL_BACKTRACE(1, "replnt_expr: replnt_expr MINUS replnt_term"));
   //FIXME:carbdata.cardata_vinst->put_persistent_metadata(<some-object>,<some-integer>);
@@ -1129,11 +1136,11 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
                 << ":" <<  RPS_CARBREPL_SYMBOL_NAME(r)
                 << " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv) << std::endl
                 << " tksrc=" << *tksrc << std::endl
-		<< " carbdata: {v1=" << carbdata.cardata_v1
-		<< ", v2=" <<  carbdata.cardata_v2
-		<< ", ob1=" << carbdata.cardata_ob1
-		<< ", ob2=" << carbdata.cardata_ob2
-		<< "}" 
+                << " carbdata: {v1=" << carbdata.cardata_v1
+                << ", v2=" <<  carbdata.cardata_v2
+                << ", ob1=" << carbdata.cardata_ob1
+                << ", ob2=" << carbdata.cardata_ob2
+                << "}" 
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_do_carburetta_tokensrc°+pars"));
   RPS_POSSIBLE_BREAKPOINT();
@@ -1264,7 +1271,7 @@ rps_carburetta_fill_keyword(Rps_ObjectRef obkeyw, int num, int line)
     RPS_DEBUG_LOG(REPL, "rps_carburetta_fill_delimiter good keyword "
                   << obkeyw
                   << " delimiter#" <<num << ":"
-		  << rpscarbrepl_symbol_names_[num]
+                  << rpscarbrepl_symbol_names_[num]
                   << " from " << __FILE__ << ":" << line);
 } // end rps_carburetta_fill_keyword
 
@@ -1362,15 +1369,15 @@ rps_carbrepl_symname_at(int symnum, int lin) {
 
 int
 rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
-			    const std::string&keystr,
-			    Rps_ObjectRef obkwarg)
+                            const std::string&keystr,
+                            Rps_ObjectRef obkwarg)
 {
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-	/*prev:*/callerframe,
-		 Rps_ObjectRef obkeyw;
-		 Rps_Value cval;
-		);
+        /*prev:*/callerframe,
+                 Rps_ObjectRef obkeyw;
+                 Rps_Value cval;
+                );
   _f.obkeyw = obkwarg;
   RPS_ASSERT(_f.obkeyw);
   std::lock_guard<std::recursive_mutex> gu(*_f.obkeyw->objmtxptr());
@@ -1380,21 +1387,21 @@ rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
     numkeyw = _f.cval.as_int();
     const char*keywname = RPS_CARBREPL_SYMBOL_NAME(numkeyw);
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_keyword_lexer keystr=" << keystr
-		  << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
-		  <<  " cval=" << _f.cval << ":" <<  keywname);
+                  << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
+                  <<  " cval=" << _f.cval << ":" <<  keywname);
     if (keywname && !strncmp(keywname, "KEYW_", sizeof("KEYW_")-1)) {
       RPS_DEBUG_LOG(REPL, "rps_carbrepl_keyword_lexer got keyword#" << numkeyw
-		    << " keystr=" << keystr
-		    << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
-		    <<  " cval=" << _f.cval << ":" <<  keywname
-		    << RPS_FULL_BACKTRACE(1, "rps_carbrepl_keyword_lexer"));
+                    << " keystr=" << keystr
+                    << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
+                    <<  " cval=" << _f.cval << ":" <<  keywname
+                    << RPS_FULL_BACKTRACE(1, "rps_carbrepl_keyword_lexer"));
     return numkeyw;
     }
   };
   RPS_FATALOUT("corrupted rps_carbrepl_keyword_lexer keystr="
                << keystr
                << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
-	       << " cval=" << _f.cval << ":" <<  RPS_CARBREPL_SYMBOL_NAME(numkeyw));
+               << " cval=" << _f.cval << ":" <<  RPS_CARBREPL_SYMBOL_NAME(numkeyw));
   return -1;
 } // end rps_carbrepl_keyword_lexer
 
