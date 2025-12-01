@@ -2,7 +2,9 @@
 // passed to commits after 306c6f5f688a (in august 2025) of RefPerSys
 // GPLv3+ licensed
 // © Copyright 2025 Basile Starynkevitch <basile@starynkevitch.net>
-// This plugin installs a noncommutative REPL operator
+
+// This plugin rpsplug_createnoncommutativeoperator.cc installs a
+// noncommutative REPL operator
 /*****
  * Once compiled, use it for example as:
  * ./refpersys --plugin-after-load=/tmp/rpsplug_createnoncommutativeoperator.so \
