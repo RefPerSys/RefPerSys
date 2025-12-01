@@ -405,12 +405,12 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 ///// the / token
 %token SLASH 
-%token_action {_Pragma("message \"token_action for SLASH\""); \
-  RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc); \
-  /* should assign $$ SLASH */ \
-  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc
-	       << " sym=" << sym		       \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+%token_action {_Pragma("message \"token_action for SLASH\"");		\
+  RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc);	\
+  /* should assign $$ SLASH */						\
+  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc	\
+	       << " sym=" << sym					\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
                << RPS_FULL_BACKTRACE(1, "token_action SLASH")); }
 //
 
@@ -578,16 +578,18 @@ replnt_atom: replnt_object {
 replnt_atom: replnt_set {
 _Pragma("message \"replnt_atom as replnt_set in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
- $$ = Rps_SetValue($0);
+ //// the set should be computed at evaluation time, not parsing time!
+ $$ = ($0);
  RPS_DEBUG_LOG(REPL, "atom is set " << $$);
 }
 
-%type replnt_set: Rps_SetValue
+%type replnt_set: Rps_InstanceValue
 
 replnt_set: LEFTBRACE replnt_objectseq RIGHTBRACE {
-_Pragma("message \"replnt_set in carbrepl_rps.cbrt\"");
- RPS_POSSIBLE_BREAKPOINT();
- $$ = Rps_SetValue($1);
+  _Pragma("message \"replnt_set in carbrepl_rps.cbrt\"");
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "set $1: " << $1);
+  //$$ = Rps_SetValue($1);
   RPS_DEBUG_LOG(REPL, "set " << $$);
 }
 
