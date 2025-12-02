@@ -383,15 +383,23 @@ See also some files from
 ### Build instructions
 
 You need a recent C99 compiler e.g. `gcc` (at least  [GCC
-12](https://gcc.gnu.org/gcc-12/)). Check with `gcc --version`.
+14](https://gcc.gnu.org/gcc-14/)) and preferably Check with `gcc --version`.
 
 You need a recent C++17 compiler such as `g++` (We use 
-[GCC 13](https://gcc.gnu.org/gcc-13/) or [GCC 14](https://gcc.gnu.org/gcc-14/)
+[GCC 14](https://gcc.gnu.org/gcc-14/) or [GCC 15](https://gcc.gnu.org/gcc-15/)
 and sometimes [`clang++`](http://clang.llvm.org/) whose warnings are different. 
 Look into, and perhaps improve, our `GNUmakefile`. Check with `g++ --version`. Build using `make -j 3` or more.
- 
+
+You need [GNU lightning](https://www.gnu.org/software/lightning/)
+2.2.3 built from source (a newer one might not work).
+
+Our `GNUmakefile` could be slightly buggy for parallel build (you need
+[GNU make](https://www.gnu.org/software/make/) version 4 with
+[GNU guile](https://www.gnu.org/software/guile/) version 3 enabled.
+
+
 You may need the [ninja](https://ninja-build.org/) build utility; in commit 559ea329f46a and before 
-it is used by our `do-refpersys-build-plugin` utility.
+it  could be used by our `do-refpersys-build-plugin` utility.
 
 You need the `glibmm` from GTK suite. And some `gtkmm` for some RefPerSys plugins.
 
@@ -451,6 +459,181 @@ have *many* of them) and might be quite unsuitable for programs having
 references](https://en.wikipedia.org/wiki/Circular_reference), and
 reflexive programs have lots of them.
 
+### dependencies in start of december 2025
+
+`ldd refpersys` is giving (on commit bafe97f4bb8d, Debian/Sid/x86-64)
+
+```
+   linux-vdso.so.1 (0x00007fd6d2850000)
+   libbacktrace.so.0 => /lib/x86_64-linux-gnu/libbacktrace.so.0 (0x00007fd6d27ed000)
+   libfltk.so.1.4 => /usr/local/lib/libfltk.so.1.4 (0x00007fd6d22b0000)
+   libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007fd6d2154000)
+   liblightning.so.2 => /usr/local/lib/liblightning.so.2 (0x00007fd6d27a5000)
+   libunistring.so.5 => /lib/x86_64-linux-gnu/libunistring.so.5 (0x00007fd6d1f6c000)
+   libgmp.so.10 => /lib/x86_64-linux-gnu/libgmp.so.10 (0x00007fd6d1ed4000)
+   libgccjit.so.0 => /usr/local/lib/libgccjit.so.0 (0x00007fd6cf200000)
+   libINIReader.so.0 => /lib/x86_64-linux-gnu/libINIReader.so.0 (0x00007fd6d279a000)
+   libjsoncpp.so.26 => /lib/x86_64-linux-gnu/libjsoncpp.so.26 (0x00007fd6d1e96000)
+   libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fd6cee00000)
+   libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fd6d1da6000)
+   libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fd6d276b000)
+   libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd6cec0a000)
+   /lib64/ld-linux-x86-64.so.2 (0x00007fd6d2852000)
+   libXrender.so.1 => /lib/x86_64-linux-gnu/libXrender.so.1 (0x00007fd6d1d99000)
+   libXft.so.2 => /lib/x86_64-linux-gnu/libXft.so.2 (0x00007fd6cf1e5000)
+   libfontconfig.so.1 => /lib/x86_64-linux-gnu/libfontconfig.so.1 (0x00007fd6cf18e000)
+   libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x00007fd6ceac2000)
+   libatomic.so.1 => /lib/x86_64-linux-gnu/libatomic.so.1 (0x00007fd6cf183000)
+   libpcre2-8.so.0 => /lib/x86_64-linux-gnu/libpcre2-8.so.0 (0x00007fd6cf0d4000)
+   libopcodes-2.45.50-system.20251201.so => /lib/x86_64-linux-gnu/libopcodes-2.45.50-system.20251201.so (0x00007fd6ce9d5000)
+   libbfd-2.45.50-system.20251201.so => /lib/x86_64-linux-gnu/libbfd-2.45.50-system.20251201.so (0x00007fd6ce874000)
+   libisl.so.23 => /lib/x86_64-linux-gnu/libisl.so.23 (0x00007fd6ce676000)
+   libmpc.so.3 => /lib/x86_64-linux-gnu/libmpc.so.3 (0x00007fd6cf0ae000)
+   libmpfr.so.6 => /lib/x86_64-linux-gnu/libmpfr.so.6 (0x00007fd6ce5a6000)
+   libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007fd6cf08e000)
+   libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007fd6ce4dc000)
+   libinih.so.1 => /lib/x86_64-linux-gnu/libinih.so.1 (0x00007fd6cf089000)
+   libfreetype.so.6 => /lib/x86_64-linux-gnu/libfreetype.so.6 (0x00007fd6ce40c000)
+   libexpat.so.1 => /lib/x86_64-linux-gnu/libexpat.so.1 (0x00007fd6ce3df000)
+   libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x00007fd6ce3b4000)
+   libsframe.so.2 => /lib/x86_64-linux-gnu/libsframe.so.2 (0x00007fd6cf07f000)
+   libbz2.so.1.0 => /lib/x86_64-linux-gnu/libbz2.so.1.0 (0x00007fd6ce3a1000)
+   libpng16.so.16 => /lib/x86_64-linux-gnu/libpng16.so.16 (0x00007fd6ce366000)
+   libbrotlidec.so.1 => /lib/x86_64-linux-gnu/libbrotlidec.so.1 (0x00007fd6ce358000)
+   libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x00007fd6cf07a000)
+   libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x00007fd6ce350000)
+   libbrotlicommon.so.1 => /lib/x86_64-linux-gnu/libbrotlicommon.so.1 (0x00007fd6ce32d000)
+```
+
+and `./refpersys --version` gives
+
+```
+RefPerSys 0.6, an open source Artificial Intelligence system
+	  symbolic inference engine - work in progress...
+version information:
+ major version: 0
+ minor version: 6
+ program name: ./refpersys
+ build time: Tue 02 Dec 2025 09:11:08 PM CET
+ top directory: /home/basile/RefPerSys
+ gitid: bafe97f4bb8d6f4f508d2224a8a91169eaa1b5c9+
+ short-gitid: bafe97f4bb8d+
+ gitbranch: master
+ last git tag: heads/master
+ last git commit: bafe97f4bb8d redumped with g++-15 from Debian/Sid
+ md5sum of 245 source files: 07956c45bc2cff1aca493f0d25931178
+ with 20 subdirectories.
+ GNU glibc: 2.41
+ Glib: 2.86.2
+ executable: /home/basile/RefPerSys/refpersys
+ FLTK (see fltk.org) ABI version:10400
+ FLTK API version:10401
+ GCCJIT version:16.0.0
+
+ Gnu multi-precision library version: 6.3.0
+ default GUI script: /home/basile/RefPerSys/gui-script-refpersys.sh
+ Read Eval Print Loop: REPL git bafe97f4bb8d6f4f508d2224a8a91169eaa1b5c9+
+ JSONCPP: 1.9.6
+ GPP preprocessor command: /usr/bin/gpp
+ GPP preprocessor path: /usr/bin/gpp
+ GPP preprocessor version: GPP 2.28
+ made with: /home/basile/RefPerSys/GNUmakefile
+ running on: rimski.lesours
+ /proc/version:
+ Linux version 6.17.9+deb14-amd64 (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-15 (Debian 15.2.0-9) 15.2.0, GNU ld (GNU Binutils for Debian) 2.45) #1 SMP PREEMPT_DYNAMIC Debian 6.17.9-1 (2025-11-26)
+
+This executable was built by Basile Starynkevitch of email basile@starynkevitch.net
+See refpersys.org and code on github.com/RefPerSys/RefPerSys
+Compiled by g++-15 (Debian 15.2.0-9) 15.2.0 as /usr/bin/x86_64-linux-gnu-g++-15
+with -I/usr/local/include -O2 -g -fPIC -g2 -Wall -Wextra -Wnull-dereference 
+** RefPerSys INFORM! utilities_rps.cc:595: void rps_show_version_handwritten_source_files() showing versions of 245 handwritten source files (git bafe97f4bb8d+ from utilities_rps.cc)
+
+#¤ agenda_rps.cc        git bafe97f4bb built Dec  2 2025#¤ backtrace_rps.cc     git bafe97f4bb built Dec  2 2025
+#¤ carbrepl_rps.cbrt    git bafe97f4bb built Dec  2 2025#¤ cmdrepl_rps.cc       git bafe97f4bb built Dec  2 2025
+#¤ cppgen_rps.cc        git bafe97f4bb built Dec  2 2025#¤ dump_rps.cc          git bafe97f4bb built Dec  2 2025
+#¤ eventloop_rps.cc     git bafe97f4bb built Dec  2 2025#¤ fltk_rps.cc          git bafe97f4bb built Dec  2 2025
+#¤ garbcoll_rps.cc      git bafe97f4bb built Dec  2 2025#¤ gccjit_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ lexer_rps.cc         git bafe97f4bb built Dec  2 2025#¤ lightgen_rps.cc      git bafe97f4bb built Dec  2 2025
+#¤ load_rps.cc          git bafe97f4bb built Dec  2 2025#¤ magicattrs_rps.cc    git bafe97f4bb built Dec  2 2025
+#¤ main_rps.cc          git bafe97f4bb built Dec  2 2025#¤ morevalues_rps.cc    git bafe97f4bb built Dec  2 2025
+#¤ objects_rps.cc       git bafe97f4bb built Dec  2 2025#¤ output_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ parsrepl_rps.cc      git bafe97f4bb built Dec  2 2025#¤ primes_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ repl_rps.cc          git bafe97f4bb built Dec  2 2025#¤ scalar_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ scripting_rps.cc     git bafe97f4bb built Dec  2 2025#¤ strbufdict_rps.cc    git bafe97f4bb built Dec  2 2025
+#¤ suparsrepl_rps.cc    git bafe97f4bb built Dec  2 2025#¤ transientobj_rps.cc  git bafe97f4bb built Dec  2 2025
+#¤ userpref_rps.cc      git bafe97f4bb built Dec  2 2025#¤ utilities_rps.cc     git bafe97f4bb built Dec  2 2025
+#¤ values_rps.cc        git bafe97f4bb built Dec  2 2025 in: /home/basile/RefPerSys
+ C++ compiler: g++-15 (Debian 15.2.0-9) 15.2.0
+ free software license: GPLv3+, see https://gnu.org/licenses/gpl.html
++++++ there is no WARRANTY, to the extent permitted by law ++++
+***** see also refpersys.org *****
+and github.com/RefPerSys/RefPerSys commit bafe97f4bb8d+
+
+RefPerSys outside of EMACS git bafe97f4bb8d+ tty stderr tty stdout utilities_rps.cc:1085
+
+** STARTING RefPerSys git bafe97f4bb8d+ on rimski.lesours pid#353101 in /home/basile/RefPerSys at 2025, Dec, 12/02/25 21:14:25.47 CET
+** RefPerSys INFORM! utilities_rps.cc:1211: void rps_early_initialization(int, char**) done early initialization of RefPerSys process 353101 on host rimski.lesours git bafe97f4bb8d+
+RefPerSys 0.6, an open source Artificial Intelligence system
+	  symbolic inference engine - work in progress...
+version information:
+ major version: 0
+ minor version: 6
+ program name: ./refpersys
+ build time: Tue 02 Dec 2025 09:11:08 PM CET
+ top directory: /home/basile/RefPerSys
+ gitid: bafe97f4bb8d6f4f508d2224a8a91169eaa1b5c9+
+ short-gitid: bafe97f4bb8d+
+ gitbranch: master
+ last git tag: heads/master
+ last git commit: bafe97f4bb8d redumped with g++-15 from Debian/Sid
+ md5sum of 245 source files: 07956c45bc2cff1aca493f0d25931178
+ with 20 subdirectories.
+ GNU glibc: 2.41
+ Glib: 2.86.2
+ executable: /home/basile/RefPerSys/refpersys
+ FLTK (see fltk.org) ABI version:10400
+ FLTK API version:10401
+ GCCJIT version:16.0.0
+
+ Gnu multi-precision library version: 6.3.0
+ default GUI script: /home/basile/RefPerSys/gui-script-refpersys.sh
+ Read Eval Print Loop: REPL git bafe97f4bb8d6f4f508d2224a8a91169eaa1b5c9+
+ JSONCPP: 1.9.6
+ GPP preprocessor command: /usr/bin/gpp
+ GPP preprocessor path: /usr/bin/gpp
+ GPP preprocessor version: GPP 2.28
+ made with: /home/basile/RefPerSys/GNUmakefile
+ running on: rimski.lesours
+ /proc/version:
+ Linux version 6.17.9+deb14-amd64 (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-15 (Debian 15.2.0-9) 15.2.0, GNU ld (GNU Binutils for Debian) 2.45) #1 SMP PREEMPT_DYNAMIC Debian 6.17.9-1 (2025-11-26)
+
+This executable was built by Basile Starynkevitch of email basile@starynkevitch.net
+See refpersys.org and code on github.com/RefPerSys/RefPerSys
+Compiled by g++-15 (Debian 15.2.0-9) 15.2.0 as /usr/bin/x86_64-linux-gnu-g++-15
+with -I/usr/local/include -O2 -g -fPIC -g2 -Wall -Wextra -Wnull-dereference 
+** RefPerSys INFORM! utilities_rps.cc:595: void rps_show_version_handwritten_source_files() showing versions of 245 handwritten source files (git bafe97f4bb8d+ from utilities_rps.cc)
+
+#¤ agenda_rps.cc        git bafe97f4bb built Dec  2 2025#¤ backtrace_rps.cc     git bafe97f4bb built Dec  2 2025
+#¤ carbrepl_rps.cbrt    git bafe97f4bb built Dec  2 2025#¤ cmdrepl_rps.cc       git bafe97f4bb built Dec  2 2025
+#¤ cppgen_rps.cc        git bafe97f4bb built Dec  2 2025#¤ dump_rps.cc          git bafe97f4bb built Dec  2 2025
+#¤ eventloop_rps.cc     git bafe97f4bb built Dec  2 2025#¤ fltk_rps.cc          git bafe97f4bb built Dec  2 2025
+#¤ garbcoll_rps.cc      git bafe97f4bb built Dec  2 2025#¤ gccjit_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ lexer_rps.cc         git bafe97f4bb built Dec  2 2025#¤ lightgen_rps.cc      git bafe97f4bb built Dec  2 2025
+#¤ load_rps.cc          git bafe97f4bb built Dec  2 2025#¤ magicattrs_rps.cc    git bafe97f4bb built Dec  2 2025
+#¤ main_rps.cc          git bafe97f4bb built Dec  2 2025#¤ morevalues_rps.cc    git bafe97f4bb built Dec  2 2025
+#¤ objects_rps.cc       git bafe97f4bb built Dec  2 2025#¤ output_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ parsrepl_rps.cc      git bafe97f4bb built Dec  2 2025#¤ primes_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ repl_rps.cc          git bafe97f4bb built Dec  2 2025#¤ scalar_rps.cc        git bafe97f4bb built Dec  2 2025
+#¤ scripting_rps.cc     git bafe97f4bb built Dec  2 2025#¤ strbufdict_rps.cc    git bafe97f4bb built Dec  2 2025
+#¤ suparsrepl_rps.cc    git bafe97f4bb built Dec  2 2025#¤ transientobj_rps.cc  git bafe97f4bb built Dec  2 2025
+#¤ userpref_rps.cc      git bafe97f4bb built Dec  2 2025#¤ utilities_rps.cc     git bafe97f4bb built Dec  2 2025
+#¤ values_rps.cc        git bafe97f4bb built Dec  2 2025 in: /home/basile/RefPerSys
+ C++ compiler: g++-15 (Debian 15.2.0-9) 15.2.0
+ free software license: GPLv3+, see https://gnu.org/licenses/gpl.html
++++++ there is no WARRANTY, to the extent permitted by law ++++
+***** see also refpersys.org *****
+and github.com/RefPerSys/RefPerSys commit bafe97f4bb8d+
+```
 
 ### Garbage collection ideas
 
