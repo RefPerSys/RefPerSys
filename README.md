@@ -562,6 +562,9 @@ Collection
 Techniques](https://www3.nd.edu/~dthain/courses/cse40243/spring2006/gc-survey.pdf)
 old paper, then read the [GC handbook](http://gchandbook.org/)
 
+
+On energy consumption, se https://github.com/blubrom/MLCA
+
 ## useful and relevant libraries
 
 We already need the following libraries:
