@@ -59,7 +59,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (xtraprecedence && isdigit(xtraprecedence[0]))
     precedence = atoi (xtraprecedence);
   else
-    RPS_FATALOUT("failure: plugin " << plugin->plugin_name 
+    RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with bad precedence " << precedence << " for argument " << Rps_QuotedC_String(plugarg));
   if (ispunct(plugarg[0]))
     {
@@ -68,8 +68,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
         allpunct = ispunct(*pc);
       argispunct = allpunct;
     }
-  else
-    if (isalpha(plugarg[0]))
+  else if (isalpha(plugarg[0]))
     {
       bool allident = true;
       for (const char*pc = plugarg; allident && *pc; pc++)
@@ -95,16 +94,18 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /** TODO:
    * we need to fill obnewoper and register it as a root or as a constant
    */
-  if (xtraname) {
-    _f.namestr = Rps_Value{std::string(xtraname)};
-    _f.obnewoper
+  if (xtraname)
+    {
+      _f.strname = Rps_Value{std::string(xtraname)};
+      _f.obnewoper
       ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
-		 _f.namestr);
-  }
-  if (precedence >= 0) {
-    _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
-			   Rps_Value::make_tagged_int(precedence));
-  }
+                 _f.strname);
+    }
+  if (precedence >= 0)
+    {
+      _f.obnewoper->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
+                             Rps_Value::make_tagged_int(precedence));
+    }
   /***
    *
    * A possible way of compiling this plugin might be to run:
@@ -113,16 +114,16 @@ rps_do_plugin(const Rps_Plugin* plugin)
                     REFPERSYS_PLUGIN_SHARED_OBJECT=/tmp/rpsplug_createnoncommutativeoperator.so
    *
    **/
-  RPS_FATALOUT("rpsplug_createnoncommutativeoperator not implemented for "
+  RPS_FATALOUT("rpsplug_createbuiltin not implemented for "
                <<  Rps_QuotedC_String(plugarg)
                << " but created " << RPS_OBJECT_DISPLAY(_f.obnewoper)
-	       << " see rpsplug_thesetreploper.cc plugin");
-#warning unimplemented rpsplug_createnoncommutativeoperator
+               << " see rpsplug_createbuiltin.cc plugin");
+#warning unimplemented rpsplug_createbuiltin.cc
 } // end rps_do_plugin
 
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin plugins_dir/rpsplug_createnoncommutativeoperator.cc -o /tmp/rpsplug_createnoncommutativeoperator.so" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && ./do-build-refpersys-plugin -v -i plugins_dir/rpsplug_createbuiltin.cc -o /tmp/rpsplug_createbuiltin.so" ;;
  ** End: ;;
  ****************/
