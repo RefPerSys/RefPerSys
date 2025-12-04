@@ -37,6 +37,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   memset (argcopy, 0, MYARGMAXLEN);
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*xtraname = rps_get_extra_arg("name");
+  const char*xtraprecedence = rps_get_extra_arg("precedence");
   /// get the repl_operator superclass
   _f.obclassoper =  RPS_ROOT_OB(_9j12Nhm4itk00YYUW7); //repl_operator∈class
   _f.obclassbinary =  RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br); //repl_binary_operator∈class
