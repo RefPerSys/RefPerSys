@@ -491,6 +491,20 @@ bp_prog_options(int argc, char**argv)
   memset(cwdbuf, 0, sizeof(cwdbuf));
   const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   BP_NOP_BREAKPOINT();
+  if (!cwd) {
+    fprintf(stderr,
+	    "%s failed to getcwd %s [%s:%d]\n",
+	    bp_progname, strerror(errno),
+	    __FILE__, __LINE__-2);
+    fflush(stderr);
+    exit(EXIT_FAILURE);
+  };
+  if (cwd && bp_verbose) {
+    printf("%s running in %s git %15s [%s:%d]\n",
+	   bp_progname, cwd, bp_git_id, __FILE__, __LINE__-1);
+    fflush(stdout);
+    BP_NOP_BREAKPOINT();
+  };
   while (optind < argc)
     {
       BP_NOP_BREAKPOINT();
