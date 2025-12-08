@@ -78,6 +78,13 @@ FMT=/usr/bin/fmt
 ASTYLE=/usr/bin/astyle
 ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
+
+
+.DEFAULT_GOAL: all
+
+all: refpersys
+	@echo successfully made all target from GNUmakefile
+
 -include _config-refpersys.mk
 
 REFPERSYS_CXX_STANDARD?= -std=gnu++2c
