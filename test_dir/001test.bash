@@ -18,6 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 rps_scriptname=$0
+
+echo -n $0 " : "; /usr/bin/pstree -a -A -C age -s $$
+
 if [ -z "$REFPERSYS_TOPDIR" ]; then
     printf "%s: without REFPERSYS_TOPDIR\n" $rps_scriptname > /dev/stderr
     exit 1
@@ -29,7 +32,7 @@ if [ ! -f "refpersys.hh" ]; then
 fi
 make -j3 refpersys || exit 1
 rps_persistore="$(/usr/bin/realpath persistore)"
-if /bin/grep -rl prepare_cplusplus_generation persistore/ ; then
+if /bin/grep -rl prepare_cplusplus_generation $rps_persistore ; then
     printf "%s: already known prepare_cplusplus_generation in %s\n" \
 	   $rps_scriptname $rps_persistore ;
     exit 0
@@ -49,4 +52,7 @@ fi
 
 printf "%s: the store in %s contains prepare_cplusplus_generation\n" \
        $rps_scriptname $rps_persistore
-exit 0
+
+/usr/bin/pstree -a -A $$
+
+exit 0 
