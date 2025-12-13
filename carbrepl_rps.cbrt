@@ -108,6 +108,9 @@ static void rps_carbrepl_destructor_replnt_set(Rps_Value&val, int lin);
 static void rps_carbrepl_constructor_replnt_expr(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_expr(Rps_Value&val, int lin);
 
+static void rps_carbrepl_constructor_replnt_action(Rps_Value&val, int lin);
+static void rps_carbrepl_destructor_replnt_action(Rps_Value&val, int lin);
+
 static void rps_carbrepl_constructor_replnt_factor(Rps_Value&val, int lin);
 static void rps_carbrepl_destructor_replnt_factor(Rps_Value&val, int lin);
 
@@ -430,7 +433,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %nt replnt_input replnt_command
 %nt replnt_atom replnt_object replnt_expr replnt_term replnt_factor
 %nt replnt_value replnt_set replnt_objectseq replnt_restobjectseq
-
+%nt replnt_action
 
 %type replnt_objectseq: Rps_ObjectVector
 
@@ -478,10 +481,19 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 
 
+%type replnt_action: Rps_Value
+%constructor rps_carbrepl_constructor_replnt_action($$,__LINE__);
+%destructor rps_carbrepl_destructor_replnt_action($$,__LINE__);
+%visit {_Pragma("message \"visit code for replnt_action\""); \
+  RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+
+
+
 %type replnt_term: Rps_Value
 %constructor rps_carbrepl_constructor_replnt_term($$,__LINE__);
 %destructor rps_carbrepl_destructor_replnt_term($$,__LINE__);
-%visit {_Pragma("message \"visit code for replnt_term\"");RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
+%visit {_Pragma("message \"visit code for replnt_term\""); \
+  RPS_ASSERT(visitgc);$$.gc_mark(*visitgc);}
 
 
 
@@ -542,6 +554,34 @@ replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_ex
    RPS_POSSIBLE_BREAKPOINT();
    $$ = 1;
 }
+
+replnt_command: ATSIGN KEYW_DO replnt_action {
+   _Pragma("message \"replnt_command as KEYW_DO replnt_action in carbrepl_rps.cbrt\"");
+   RPS_DEBUG_LOG(REPL, "do carburetta action $2 is:" << $2 );
+   RPS_POSSIBLE_BREAKPOINT();
+   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+   RPS_ASSERT(tksrc != nullptr);
+   $$ = $2;
+}
+
+
+replnt_action: replnt_expr {
+   _Pragma("message \"replnt_action in carbrepl_rps.cbrt\"");
+   RPS_DEBUG_LOG(REPL, "do carburetta action $0 is:" << $0 );
+   RPS_POSSIBLE_BREAKPOINT();
+   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+   RPS_ASSERT(tksrc != nullptr);
+   $$ = $0;
+}
+
+replnt_action: error {
+  RPS_POSSIBLE_BREAKPOINT();
+   _Pragma("message \"replnt_action incomplete in carbrepl_rps.cbrt\"");
+  RPS_WARNOUT("missing code for action tksrc=" << tksrc);
+  RPS_POSSIBLE_BREAKPOINT();
+  $$ = 0;
+}
+
 
 replnt_command: error {
   RPS_POSSIBLE_BREAKPOINT();
@@ -880,6 +920,24 @@ rps_carbrepl_constructor_replnt_term(Rps_Value&val, int lin)
   val = nullptr;
   _Pragma("message \"rps_carbrepl_constructor_replnt_term\"");
 } // end rps_carbrepl_constructor_replnt_term
+
+void
+rps_carbrepl_constructor_replnt_action(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_constructor_replnt_action\"");
+} // end rps_carbrepl_constructor_replnt_action
+
+void
+rps_carbrepl_destructor_replnt_action(Rps_Value&val, int lin)
+{
+  RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  val = nullptr;
+  _Pragma("message \"rps_carbrepl_destructor_replnt_action\"");
+} // end rps_carbrepl_replnt_destructor_replnt_term
 
 void
 rps_carbrepl_destructor_replnt_term(Rps_Value&val, int lin)
