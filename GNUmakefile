@@ -51,10 +51,12 @@ RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 # Carburetta is a parser generator on github.com/kingletbv/carburetta
 RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
 
+## see https://lists.debian.org/debian-user-french/2025/12/msg00005.html
+RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 ## REFPERSYS_LTO is by convention for link-time optimization flags
 
 #                                                                
-.DEFAULT_GOAL: refpersys
+
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
         print-gmake-features \

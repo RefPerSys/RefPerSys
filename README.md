@@ -71,7 +71,7 @@ in commit 559ea329f46a28 (nov. 2024).
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
 
-**Don't expect (RefPerSys)[http://refpersys.org/] to be a mature project.** It is not in August 2025.
+**Don't expect (RefPerSys)[http://refpersys.org/] to be a mature project.** It is not in December 2025.
 
 ## environment variables
 
@@ -391,7 +391,14 @@ and sometimes [`clang++`](http://clang.llvm.org/) whose warnings are different.
 Look into, and perhaps improve, our `GNUmakefile`. Check with `g++ --version`. Build using `make -j 3` or more.
 
 You need [GNU lightning](https://www.gnu.org/software/lightning/)
-2.2.3 built from source (a newer one might not work).
+(2.2.3 or later) built from source. I (Basile S.) used:
+```
+## configuration of GNU lightning
+./configure  --with-gnu-ld --enable-disassembler \
+    --enable-devel-disassembler --enable-devel-get-jit-size \
+    --disable-silent-rules 'CFLAGS=-O2 -g2' 
+```
+then ran `libtool --finish /usr/local/lib` and `ldconfig`
 
 Our `GNUmakefile` could be slightly buggy for parallel build (you need
 [GNU make](https://www.gnu.org/software/make/) version 4 with
