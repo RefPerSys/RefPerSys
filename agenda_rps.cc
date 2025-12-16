@@ -461,18 +461,19 @@ void
 rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
                Rps_Id spacid, unsigned lineno)
 {
+  std::lock_guard<std::recursive_mutex> gu(Rps_Agenda::agenda_mtx_);
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_ASSERT(spacid);
   RPS_ASSERT(lineno>0);
-  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn))   // the agenda
+  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn))   // the_agenda
     {
       RPS_POSSIBLE_BREAKPOINT();
       RPS_FATALOUT("in space " << spacid << " line " << lineno
                    << " obz=" << Rps_ObjectRef(obz)
-                   << " the_agenda is RPS_ROOT_OB(_1aGtWm38Vw701jDhZn)");
+                   << " the_agenda should be _1aGtWm38Vw701jDhZn");
     }
   auto paylagenda = obz->put_new_plain_payload<Rps_PayloadAgenda>();
   RPS_ASSERT(paylagenda);
@@ -499,8 +500,10 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
                 << " spacid=" << spacid
                 << " lineno=" << lineno
                 << RPS_FULL_BACKTRACE(1, "rpsldpy_agenda"));
-#warning incomplete rpsldpy_agenda
 } // end of rpsldpy_agenda
+
+
+
 
 Rps_PayloadAgenda::~Rps_PayloadAgenda()
 {
