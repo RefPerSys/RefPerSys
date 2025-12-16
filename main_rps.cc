@@ -670,8 +670,8 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
   int xsiz = (int) rps_exit_vecptr.size();
   RPS_DEBUG_LOG(REPL, "exiting, todo xsiz=" << xsiz << std::endl
-		<< RPS_FULL_BACKTRACE(1,
-				      "Rps_exit_todo_cl::tdxit_do_at_exit"));
+                << RPS_FULL_BACKTRACE(1,
+                                      "Rps_exit_todo_cl::tdxit_do_at_exit"));
   if (xsiz == 0)
     return;
   for (int ix=0; ix<xsiz; ix++)
@@ -699,7 +699,7 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
       else  ///C++
         {
           std::function<void(void*)> cppfun = pxitodo->_tdxit_cppfun;
-	  RPS_ASSERT(!pxitodo->_tdxit_second_data);
+          RPS_ASSERT(!pxitodo->_tdxit_second_data);
           pxitodo->_tdxit_cppfun = nullptr;
           if (cppfun)
             {
@@ -1699,6 +1699,11 @@ rps_exiting(void) //// called thru atexit
 {
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+  RPS_DEBUG_LOG(REPL, "rps_exiting in " << mycwd << " pid " << getpid()
+                << " shortgit " << rps_shortgitid
+                << " thread " <<  rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_exiting < tdxit_do_at_exit"));
   Rps_exit_todo_cl::tdxit_do_at_exit();
   syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
                    "… elapsed %.3f sec, CPU %.3f sec;\n"
