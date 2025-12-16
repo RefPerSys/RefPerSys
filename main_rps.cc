@@ -649,10 +649,6 @@ Rps_exit_todo_cl::Rps_exit_todo_cl(const std::function<void(void*)> cppfun,
   int vsiz = (int) rps_exit_vecptr.size();
   rps_exit_vecptr.push_back(this);
   _tdxit_rank = vsiz;
-#warning review Rps_exit_todo_cl constructor with C++ function
-  RPS_WARNOUT("review Rps_exit_todo_cl#" << vsiz << " constructor"
-              " with C++ function" << std::endl
-              << RPS_FULL_BACKTRACE(1, "Rps_exit_todo_cl cppfun"));
 } // end Rps_exit_todo_cl constructor with C++ function
 
 Rps_exit_todo_cl::Rps_exit_todo_cl(const rps_exit_cfun_sig_t*cfun,
@@ -665,18 +661,17 @@ Rps_exit_todo_cl::Rps_exit_todo_cl(const rps_exit_cfun_sig_t*cfun,
   int vsiz = (int) rps_exit_vecptr.size();
   rps_exit_vecptr.push_back(this);
   _tdxit_rank = vsiz;
-#warning review Rps_exit_todo_cl constructor with C function
-  RPS_WARNOUT("review Rps_exit_todo_cl#" << vsiz << " constructor"
-              " with C function" << std::endl
-              << RPS_FULL_BACKTRACE(1, "Rps_exit_todo_cl cfun"));
 } // end Rps_exit_todo_cl constructor with C function
 
-//// Static method, called at exit
+//// Static method, called at exit and registered thru at_exit
 void
 Rps_exit_todo_cl::tdxit_do_at_exit(void)
 {
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
   int xsiz = (int) rps_exit_vecptr.size();
+  RPS_DEBUG_LOG(REPL, "exiting, todo xsiz=" << xsiz << std::endl
+		<< RPS_FULL_BACKTRACE(1,
+				      "Rps_exit_todo_cl::tdxit_do_at_exit"));
   if (xsiz == 0)
     return;
   for (int ix=0; ix<xsiz; ix++)
@@ -704,6 +699,7 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
       else  ///C++
         {
           std::function<void(void*)> cppfun = pxitodo->_tdxit_cppfun;
+	  RPS_ASSERT(!pxitodo->_tdxit_second_data);
           pxitodo->_tdxit_cppfun = nullptr;
           if (cppfun)
             {
@@ -714,7 +710,6 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
       pxitodo->_tdxit_second_data = nullptr;
       delete pxitodo;
     };
-#warning incomplete Rps_exit_todo_cl::tdxit_do_at_exit
 } // end Rps_exit_todo_cl::tdxit_do_at_exit
 
 void
