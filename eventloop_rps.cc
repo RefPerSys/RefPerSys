@@ -100,7 +100,7 @@ struct event_loop_data_st rps_eventloopdata;
 /// for debugging purposes, a string explaining the rps_eventloopdata
 extern "C" std::string rps_eventloop_explstring(void);
 
-static std::mutex rps_jsonrpc_mtx; /// common mutex for below buffers
+static std::recursive_mutex rps_jsonrpc_mtx; /// common mutex for below buffers
 #warning TODO: maybe command and response should use std::stringstream?
 static std::stringbuf rps_jsonrpc_cmdbuf; /// buffer for commands written to JSONRPC GUI process
 static std::stringbuf rps_jsonrpc_rspbuf; /// buffer for responses read from JSONRPC GUI process
@@ -684,6 +684,8 @@ rps_event_loop(void)
   int nbfdpoll = 0; /// number of polled file descriptors, second argument to poll(2)
   long pollcount = 0;
   double startelapsedtime = rps_elapsed_real_time();
+  double informelapsedtime = 0.0;
+  const double informperiod = 300.0; // five minutes
   double startcputime = rps_process_cpu_time();
   RPS_DEBUG_LOG(REPL, "rps_event_loop starting elapsedtime=" << startelapsedtime
                 << " cputime=" << startcputime
@@ -803,7 +805,7 @@ rps_event_loop(void)
                rps_jsonrpc_rspbuf; by convention a double newline or a
                formfeed is ending the JSON message. */
             {
-              std::lock_guard<std::mutex> gu(rps_jsonrpc_mtx);
+              std::lock_guard<std::recursive_mutex> gu(rps_jsonrpc_mtx);
 #warning oldbufsiz need a code review
               std::size_t oldbufsiz= rps_jsonrpc_rspbuf.in_avail();
               std::size_t oldprevix = (oldbufsiz>0)?(oldbufsiz-1):0;
@@ -863,15 +865,19 @@ rps_event_loop(void)
             int nbr = read(fd, (void*)&timbuf, sizeof(timbuf));
             if (nbr>0)
               {
-                RPS_DEBUG_LOG(REPL, "eventloop read " << nbr << " bytes on timerfd, so " << (nbr/sizeof(std::uint64_t)) << " int64s: "
+                RPS_DEBUG_LOG(REPL, "eventloop read " << nbr
+                              << " bytes on timerfd, so "
+                              << (nbr/sizeof(std::uint64_t)) << " int64s: "
                               << Rps_Do_Output([=](std::ostream& out)
                 {
-                  for (int ix=0; ix< (int) (nbr/sizeof(std::uint64_t)); ix++)
+                  for (int ix=0;
+                       ix< (int) (nbr/sizeof(std::uint64_t));
+                       ix++)
                     out << ' ' << timbuf[ix];
                 }
                                               )
                     << std::flush);
-              }
+              };
 #warning some missing code to handle timerfd...
           };
         };
@@ -987,12 +993,27 @@ rps_event_loop(void)
       errno = 0;
       int respoll = poll(pollarr, nbfdpoll, 20 + (rps_poll_delay_millisec*(debugpoll?4:1)));
       pollcount++;
+      if (informperiod > 1.0
+          &&  rps_elapsed_real_time() - informelapsedtime > informperiod)
+        {
+          informelapsedtime = rps_elapsed_real_time();
+          RPS_INFORMOUT("rps_eventloop pollcount#" << pollcount
+                        << " loopcnt#" << loopcnt
+                        << " respoll=" << respoll
+                        << " cumul.alloc=" << Rps_QuasiZone::cumulative_allocated_wordcount()
+                        << " elapsed real: " << informelapsedtime
+                        << std::endl
+                        << RPS_FULL_BACKTRACE(1,
+                                              "rps_event_loop inform")
+                        << std::endl);
+        };
       if (pollcount %2 && debugpoll)
         snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
       RPS_DEBUG_LOG(REPL, "rps_event_loop pollcount#"  << pollcount ///
                     << " respoll=" << respoll
                     << " nbfdpoll=" << nbfdpoll
                     << " elapsed time:" << rps_elapsed_real_time());
+
       if (respoll>0)
         {
           if (debugpoll)
