@@ -1226,6 +1226,9 @@ handle_self_pipe_byte_rps(unsigned char b)
     };
 } // end handle_self_pipe_byte_rps
 
+#warning we need some code using Rps_PayloadUnixProcess::_unixproc_closure
+
+
 bool
 rps_event_loop_is_running(void)
 {

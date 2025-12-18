@@ -6114,8 +6114,7 @@ class Rps_PayloadUnixProcess : public Rps_Payload
 #pragma message "Rps_PayloadUnixProcess may need cooperation with agenda."
   /*** TODO:
    *
-   *   Perhaps we need a field containing a Rps_ClosureValue to handle
-   * termination of that process in the agenda?
+   *   Ensure that _unixproc_closure is used in the agenda code.
    *
    * The agenda machinery needs to handle unix process termination and
    * SIGCHLD signal.
