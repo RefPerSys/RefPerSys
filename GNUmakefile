@@ -84,7 +84,8 @@ ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
 .DEFAULT_GOAL: all
 
--include _config-refpersys.mk
+REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
+include $(REFPERSYS_CONFIG_MAKE)
 
 REFPERSYS_CXX_STANDARD?= -std=gnu++2c
 
