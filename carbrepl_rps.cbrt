@@ -245,9 +245,29 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_DISPLAY token_action is incomplete tksrc="          \
                << tksrc << " sym=" << sym                                \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                   \
-               << RPS_FULL_BACKTRACE(1,                             \
-                                          "token_action KEYW_DISPLAY")); \
- }
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_DISPLAY")); }
+
+%token KEYW_BEGIN
+%token_action { _Pragma("message \"token_action for KEYW_BEGIN\"");    \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_BEGIN tksrc=" << *tksrc   \
+                << " sym=" << sym << "::"                              \
+                << RPS_CARBREPL_SYMBOL_NAME(sym));                     \
+  /* should assign $$ for KEYW_BEGIN */                                \
+  RPS_FATALOUT("KEYW_BEGIN token_action is incomplete tksrc="          \
+               << tksrc << " sym=" << sym                              \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                 \
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_BEGIN")); }
+
+%token KEYW_END
+%token_action { _Pragma("message \"token_action for KEYW_END\"");    \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_END tksrc=" << *tksrc   \
+                << " sym=" << sym << "::"                            \
+                << RPS_CARBREPL_SYMBOL_NAME(sym));                   \
+  /* should assign $$ for KEYW_END */                                \
+  RPS_FATALOUT("KEYW_END token_action is incomplete tksrc="          \
+               << tksrc << " sym=" << sym                            \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)               \
+               << RPS_FULL_BACKTRACE(1, "token_action KEYW_END")); }
 
 %token KEYW_OBJECT
 %token_action { _Pragma("message \"token_action for KEYW_OBJECT\"");    \
@@ -267,7 +287,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_FATALOUT("KEYW_OBJECT token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1,   "token_action KEYW_PUT"));  }
+               << RPS_FULL_BACKTRACE(1,   "token_action KEYW_PUT")); }
  
 %token KEYW_LET
 %token_action { _Pragma("message \"token_action for KEYW_LET\"");       \
@@ -313,7 +333,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   /* should assign $$ for COMMA */ \
   RPS_DEBUG_LOG(REPL, "token_action for COMMA tksrc=" << *tksrc); \
   RPS_FATALOUT("COMMA token_action is incomplete tksrc=" << tksrc \
-	       << " sym=" << sym				  \
+               << " sym=" << sym                                  \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
                << RPS_FULL_BACKTRACE(1, "token_action COMMA"));  }
 
@@ -408,23 +428,23 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 ///// the / token
 %token SLASH 
-%token_action {_Pragma("message \"token_action for SLASH\"");		\
-  RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc);	\
-  /* should assign $$ SLASH */						\
-  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc	\
-	       << " sym=" << sym					\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+%token_action {_Pragma("message \"token_action for SLASH\"");           \
+  RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc);       \
+  /* should assign $$ SLASH */                                          \
+  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc       \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action SLASH")); }
 //
 
 ///// the *@ token
 %token STARAT
-%token_action { _Pragma("message \"token_action for STARAT\"");		\
-  /* should assign $$ for COMMA */					\
-  RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc);	\
-  RPS_FATALOUT("STARAT token_action is incomplete tksrc=" << tksrc	\
-	       << " sym=" << sym					\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+%token_action { _Pragma("message \"token_action for STARAT\"");         \
+  /* should assign $$ for COMMA */                                      \
+  RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc);      \
+  RPS_FATALOUT("STARAT token_action is incomplete tksrc=" << tksrc      \
+               << " sym=" << sym                                        \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action STARAT")); }
 
 
@@ -448,7 +468,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
                   << " sym:" << sym                                     \
                   << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)               \
                   << std::endl                                          \
-                  << RPS_FULL_BACKTRACE(1, "¤+on_next_token"));		\
+                  << RPS_FULL_BACKTRACE(1, "¤+on_next_token"));         \
     RPS_POSSIBLE_BREAKPOINT();                                          \
     _Pragma("message \"FIXME the value of next token\"");               \
     int ntk = rps_carbrepl_next_token(callframe, tksrc, sym,            \
@@ -458,7 +478,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
                   << ntk << "::" << RPS_CARBREPL_SYMBOL_NAME(ntk)       \
                   << " sym:" << sym                                     \
                   << std::endl                                          \
-                  << RPS_FULL_BACKTRACE(1, "¤-on_next_token"));		\
+                  << RPS_FULL_BACKTRACE(1, "¤-on_next_token"));         \
     return ntk; }
 
 
@@ -572,6 +592,9 @@ replnt_action: replnt_expr {
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    $$ = $0;
+}
+
+replnt_action: ATSIGN KEYW_DO {
 }
 
 replnt_action: error {
@@ -1390,6 +1413,8 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   RPS_CARBURETTA_KEYWORD(rpskob_8Z5o3cF6CsP02Iy81d, RPSCARBREPL_KEYW_DEFINE); //$define∈symbol
   /// keyword `do`
   RPS_CARBURETTA_KEYWORD(rpskob_9wxka7OAIaG00LS3Db, RPSCARBREPL_KEYW_DO); //$do∈symbol
+  RPS_CARBURETTA_KEYWORD(rpskob_2nZjMTYKroQ00VmfKc, RPSCARBREPL_KEYW_BEGIN); //$begin∈symbol
+  RPS_CARBURETTA_KEYWORD(rpskob_9iNXvyeEY9r03Znyaj, RPSCARBREPL_KEYW_END); //$end∈symbol
   /// 
 #undef RPS_CARBURETTA_KEYWORD
   ///////////////////////////////////
