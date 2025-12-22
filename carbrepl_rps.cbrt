@@ -186,16 +186,15 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token STRING
 %type STRING: std::string
 %token_action { _Pragma("message \"token_action for STRING\"");         \
-  /*  assign $$ for STRING */                                   \
+  /*  assign $$ for STRING */						\
   RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc        \
                 << " cardata_str="                                      \
                 << Rps_QuotedC_String(carbdata.cardata_str));           \
   $$ = carbdata.cardata_str;                                            \
-  RPS_FATALOUT("STRING token_action is incomplete tksrc=" << tksrc      \
-               << " sym=" << sym                                        \
+  RPS_WARNOUT("STRING token_action is incomplete tksrc=" << tksrc	\
+	      << "$$:" << $$ << " sym=" << sym                          \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1, "token_action STRING"));   \
- }
+               << RPS_FULL_BACKTRACE(1, "token_action STRING")); }
 
 %token NAME
 %type NAME: std::string
@@ -208,8 +207,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                 << " cardata_str=" << carbdata.cardata_str              \
                << std::endl                                             \
-               << RPS_FULL_BACKTRACE(1, "token_action NAME"));     \
- }
+               << RPS_FULL_BACKTRACE(1, "token_action NAME"));  }
 
 %token OID
 %type OID: Rps_Id
@@ -440,7 +438,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 ///// the *@ token
 %token STARAT
 %token_action { _Pragma("message \"token_action for STARAT\"");         \
-  /* should assign $$ for COMMA */                                      \
+  /* should assign $$ for STARAT */                                     \
   RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc);      \
   RPS_FATALOUT("STARAT token_action is incomplete tksrc=" << tksrc      \
                << " sym=" << sym                                        \
@@ -594,13 +592,19 @@ replnt_action: replnt_expr {
    $$ = $0;
 }
 
+
+//// very probably this grammar rule is incomplete
 replnt_action: ATSIGN KEYW_DO {
+  RPS_POSSIBLE_BREAKPOINT();
+  _Pragma("message \"replnt_action incomplete for @DO in carbrepl_rps.cbrt\"");
+  RPS_WARNOUT("missing code for @DO replnt_action tksrc=" << tksrc);
+  RPS_POSSIBLE_BREAKPOINT();
 }
 
 replnt_action: error {
   RPS_POSSIBLE_BREAKPOINT();
-   _Pragma("message \"replnt_action incomplete in carbrepl_rps.cbrt\"");
-  RPS_WARNOUT("missing code for action tksrc=" << tksrc);
+  _Pragma("message \"replnt_action incomplete in carbrepl_rps.cbrt\"");
+  RPS_WARNOUT("missing code for `error` replnt_action tksrc=" << tksrc);
   RPS_POSSIBLE_BREAKPOINT();
   $$ = 0;
 }
