@@ -10,6 +10,9 @@ break abort
 break rps_fatal_stop_at
 break std::terminate
 break exit
+break rps_run_scripts_after_load
+break rps_run_one_script_file
+
 ## carbrepl_rps_issue is a global label defined by asm code
 ## in file carbrepl_rps.cbrt function rps_carbrepl_next_token
 ## commit b12db4cdd434227 in mid-may 2025
