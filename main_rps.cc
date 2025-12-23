@@ -117,7 +117,7 @@ struct argp_option rps_progoptions[] =
 
   /* ======= batch ======= */
   {/*name:*/ "batch", ///
-    /*key:*/ RPSPROGOPT_BATCH, ///
+    /*key:*/ RPSPROGOPT_BATCH, ///   -B
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run in batch mode, that is without any user interface "
@@ -126,7 +126,7 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= run a REPL command after load ======= */
   {/*name:*/ "command", ///
-    /*key:*/ RPSPROGOPT_COMMAND, ///
+    /*key:*/ RPSPROGOPT_COMMAND, ///   -c
     /*arg:*/ "REPL_COMMAND", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run the given REPL_COMMAND;\n"
@@ -155,7 +155,7 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= debug flags ======= */
   {/*name:*/ "debug", ///
-    /*key:*/ RPSPROGOPT_DEBUG, ///
+    /*key:*/ RPSPROGOPT_DEBUG, ///  -d
     /*arg:*/ "DEBUGFLAGS", ///
     /*flags:*/ 0, ///
     /*doc:*/ "To set RefPerSys comma separated debug flags, pass --debug=help to get their list.\n"
@@ -164,7 +164,7 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= debug after load flags ======= */
   {/*name:*/ "debug-after-load", ///
-    /*key:*/ RPSPROGOPT_DEBUG_AFTER_LOAD, ///
+    /*key:*/ RPSPROGOPT_DEBUG_AFTER_LOAD, /// -A
     /*arg:*/ "DEBUGFLAGS", ///
     /*flags:*/ 0, ///
     /*doc:*/ "To set RefPerSys comma separated debug flags after the sucessful load.\n", ///
@@ -180,7 +180,7 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= dump into given directory ======= */
   {/*name:*/ "dump", ///
-    /*key:*/ RPSPROGOPT_DUMP, ///
+    /*key:*/ RPSPROGOPT_DUMP, ///   -D
     /*arg:*/ "DUMPDIR", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Dump the persistent state to given DUMPDIR directory.\n", ///
@@ -189,7 +189,7 @@ struct argp_option rps_progoptions[] =
 #if RPS_WITH_FLTK
   /* ======= FLTK GUI library ======= */
   {/*name:*/ "fltk", ///
-    /*key:*/ RPSPROGOPT_FLTK, ///
+    /*key:*/ RPSPROGOPT_FLTK, ///  -F
     /*arg:*/ "GUIPREFERENCES", ///
     /*flags:*/ OPTION_ARG_OPTIONAL, ///
     /*doc:*/ "pass, if GUIPREFERENCES is given,"
@@ -201,7 +201,7 @@ struct argp_option rps_progoptions[] =
   /* ======= extra argument ======= */
   {/*name:*/ "extra", ///
     /*key:*/ RPSPROGOPT_EXTRA_ARG, ///
-    /*arg:*/ "EXTRA=ARG", ///
+    /*arg:*/ "EXTRA=ARG", /// -X
     /*flags:*/ 0, ///
     /*doc:*/ "To set for RefPerSys a named EXTRA argument to ARG.\n", ///
     /*group:*/0 ///
