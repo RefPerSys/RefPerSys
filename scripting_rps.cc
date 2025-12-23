@@ -105,6 +105,7 @@ rps_scripting_add_script(const char*path)
 #warning should rps_do_at_exit_cpp "free(rp)" in rps_scripting_add_script
   if (!rps_is_main_thread())
     RPS_FATALOUT("adding script file " << rp << " from non main thread");
+  RPS_POSSIBLE_BREAKPOINT();
   if ((int) rps_scripts_vector.size() >  rps_script_maxnum)
     RPS_FATALOUT ("too many " << rps_scripts_vector.size()
                   << " script files (for " << rp << ")");

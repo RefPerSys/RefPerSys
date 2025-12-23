@@ -564,10 +564,12 @@ bool
 Rps_MemoryFileTokenSource::reached_end(void) const
 {
   const char*c = curcptr();
+  RPS_POSSIBLE_BREAKPOINT();
   if (c)
     return c >= toksrcmfil_start && c < toksrcmfil_end;
   if (toksrcmfil_end)
-    return toksrcmfil_line >= toksrcmfil_start && toksrcmfil_line < toksrcmfil_end;
+    return toksrcmfil_line >= toksrcmfil_start
+      && toksrcmfil_line < toksrcmfil_end;
   return true;
 } // end Rps_StringTokenSource::reached_end
 
