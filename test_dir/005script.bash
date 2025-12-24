@@ -29,6 +29,7 @@ if [ ! -x refpersys ]; then
     echo 'no refpersys executable in ' $(/bin/pwd) > /dev/stderr
     exit 1
 fi
+
 ./refpersys -AREPL --script=$0 --batch --run-name=005script
 exit $?
 
