@@ -133,11 +133,12 @@ rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
   if (!parsedonce)
     RPS_FATALOUT("rps_parse_user_preferences called more than once for "
                  << mts->path());
+  RPS_POSSIBLE_BREAKPOINT();
   if (int pe = rps_userpref_ird->ParseError())
     {
       RPS_WARNOUT("failed to parse user preference "
                   << mts->path() << ":" << pe+curlineno
-                  << " (pe:" << pe <<")"
+                  << " (parserr:" << pe <<")"
                   << std::endl
                   << RPS_FULL_BACKTRACE(1, "rps_parse_user_preferences/fail")
                   << std::endl
