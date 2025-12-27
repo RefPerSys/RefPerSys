@@ -189,7 +189,8 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
 
 
 //// callable from GDB
-const char*Rps_TokenSource::cur_cptr(void) const {
+const char*Rps_TokenSource::cur_cptr(void) const
+{
   return curcptr();
 };
 
@@ -237,6 +238,8 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
   RPS_DEBUG_LOG(CMD, "constr °StreamTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StreamTokenSource::Rps_StreamTokenSource
 
+
+
 void
 Rps_StreamTokenSource::display(std::ostream&out) const
 {
@@ -258,7 +261,6 @@ Rps_StreamTokenSource::~Rps_StreamTokenSource()
 bool
 Rps_StreamTokenSource::get_line(void)
 {
-  std::getline( toksrc_input_stream, toksrc_linebuf);
   if (!toksrc_input_stream && toksrc_linebuf.empty())
     return false;
   starting_new_input_line();
@@ -275,6 +277,17 @@ Rps_StreamTokenSource::reached_end(void) const
   return false;
 } // end Rps_StreamTokenSource::reached_end
 
+void
+Rps_StreamTokenSource::fill_current_line_buffer(void)
+{
+  std::getline(toksrc_input_stream, toksrc_linebuf);
+} // end Rps_StreamTokenSource::fill_current_line_buffer
+
+void
+Rps_CinTokenSource::fill_current_line_buffer(void)
+{
+  std::getline(std::cin, toksrc_linebuf);
+} // end Rps_CinTokenSource::fill_current_line_buffer
 
 Rps_CinTokenSource::Rps_CinTokenSource()
   : Rps_TokenSource("-")
@@ -300,7 +313,6 @@ Rps_CinTokenSource::~Rps_CinTokenSource()
 bool
 Rps_CinTokenSource::get_line(void)
 {
-  std::getline(std::cin, toksrc_linebuf);
   if (!std::cin && toksrc_linebuf.empty())
     return false;
   starting_new_input_line();
@@ -376,7 +388,6 @@ bool
 Rps_StringTokenSource::get_line()
 {
   RPS_POSSIBLE_BREAKPOINT();
-  std::getline(toksrcstr_inp, toksrc_linebuf);
   if (!toksrcstr_inp && toksrc_linebuf.empty())
     return false;
   starting_new_input_line();
@@ -384,7 +395,11 @@ Rps_StringTokenSource::get_line()
   return true;
 } // end Rps_StringTokenSource::get_line()
 
-
+void
+Rps_StringTokenSource::fill_current_line_buffer(void)
+{
+  std::getline(toksrcstr_inp, toksrc_linebuf);
+} // end Rps_StringTokenSource::fill_current_line_buffer
 
 bool
 Rps_StringTokenSource::reached_end(void) const
@@ -520,6 +535,16 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   RPS_DEBUG_LOG(CMD, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
 };                              // end Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource
 
+void
+Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
+{
+  toksrc_linebuf.clear();
+  ///  std::getline(toksrc_input_stream,toksrc_linebuf);
+  RPS_FATALOUT("unimplemented Rps_MemoryFileTokenSource::fill_current_line_buffer "
+               << *this);
+#warning unimplemented Rps_MemoryFileTokenSource::fill_current_line_buffer
+} // end Rps_MemoryTokenSource::fill_current_line_buffer
+
 Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
 {
   RPS_POSSIBLE_BREAKPOINT();
@@ -579,7 +604,7 @@ Rps_MemoryFileTokenSource::reached_end(void) const
     return c >= toksrcmfil_start && c < toksrcmfil_end;
   if (toksrcmfil_end)
     return toksrcmfil_line >= toksrcmfil_start
-      && toksrcmfil_line < toksrcmfil_end;
+           && toksrcmfil_line < toksrcmfil_end;
   return true;
 } // end Rps_StringTokenSource::reached_end
 

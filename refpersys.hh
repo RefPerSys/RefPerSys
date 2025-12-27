@@ -2921,6 +2921,7 @@ class Rps_TokenSource           // this is *not* a value .....
   static std::atomic<unsigned> toksrc_instance_count_;
 protected:
   void restart_token_source(void);
+  virtual void fill_current_line_buffer(void) =0;
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
   std::string toksrc_linebuf;
@@ -2940,6 +2941,7 @@ protected:
   {
     toksrc_col=0;
     toksrc_line++;
+    fill_current_line_buffer();
   };
   void advance_cursor_bytes(unsigned nb)
   {
@@ -3125,6 +3127,7 @@ inline std::ostream& operator << (std::ostream&out, Rps_TokenSource& toksrc)
 
 class Rps_CinTokenSource : public Rps_TokenSource
 {
+  virtual void fill_current_line_buffer(void);
 public:
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
   {
@@ -3145,6 +3148,7 @@ public:
 class Rps_StreamTokenSource : public Rps_TokenSource
 {
   std::ifstream toksrc_input_stream;
+  virtual void fill_current_line_buffer(void);
 public:
   Rps_StreamTokenSource(std::string path);
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
@@ -3166,6 +3170,7 @@ class Rps_StringTokenSource : public Rps_TokenSource
 {
   std::istringstream toksrcstr_inp;
   const std::string toksrcstr_str;
+  virtual void fill_current_line_buffer(void);
 public:
   Rps_StringTokenSource(std::string inpstr, std::string name);
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
@@ -3241,6 +3246,7 @@ class Rps_MemoryFileTokenSource : public Rps_TokenSource
   const char*toksrcmfil_end; // the end of the file as mmap-ed
   const char*toksrcmfil_nextpage; // the next virtual memory page (page-aligned)
   int toksrcmfil_fd;
+  virtual void fill_current_line_buffer(void);
 public:
   Rps_MemoryFileTokenSource(const std::string path);
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
