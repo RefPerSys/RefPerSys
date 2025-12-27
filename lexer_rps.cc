@@ -454,6 +454,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
     toksrcmfil_end(nullptr), toksrcmfil_nextpage(nullptr),
     toksrcmfil_fd(-1)
 {
+  RPS_POSSIBLE_BREAKPOINT();
   int fd= open(path.c_str(), O_RDONLY);
   if (fd<0)
     RPS_FATALOUT("cannot open memory file token source " << path
@@ -499,6 +500,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   toksrcmfil_nextpage = (char*)ad + mappedsize;
   toksrcmfil_end = (char*)ad + fsiz;
   toksrcmfil_fd = fd;
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "constr MemoryFileTokenSource@ " <<(void*)this
                 << " " << *this
                 << " [start@" << (void*)toksrcmfil_start
@@ -514,6 +516,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
 
 Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
 {
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this
                 << " p." << position_str());
   RPS_DEBUG_LOG(LOWREP, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
@@ -531,6 +534,7 @@ Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
   toksrcmfil_nextpage=nullptr;
   close(toksrcmfil_fd);
   toksrcmfil_fd= (-1);
+  RPS_POSSIBLE_BREAKPOINT();
 };      // end Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource
 
 bool
