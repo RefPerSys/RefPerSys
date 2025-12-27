@@ -2961,6 +2961,7 @@ public: //////
       return toksrc_linebuf.c_str()+toksrc_col;
     return nullptr;
   };                            // end Rps_TokenSource::curcptr
+  const char*cur_cptr(void) const; // same as above curcptr
   /// Gives the previous ASCII character or 0 if none or not-ASCII.
   /// UTF-8 uses bytes with a most significant bit of 1 for every
   /// multi-byte character.

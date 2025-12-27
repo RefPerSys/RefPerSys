@@ -187,6 +187,12 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
   out << "↑" << std::endl;
 } // end Rps_TokenSource::display_current_line_with_cursor
 
+
+//// callable from GDB
+const char*Rps_TokenSource::cur_cptr(void) const {
+  return curcptr();
+};
+
 Rps_TokenSource::~Rps_TokenSource()
 {
   RPS_DEBUG_LOG(REPL, "~Rps_TokenSource " << toksrc_name << " @" << this
