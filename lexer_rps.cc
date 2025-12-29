@@ -540,9 +540,25 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
 {
   toksrc_linebuf.clear();
   ///  std::getline(toksrc_input_stream,toksrc_linebuf);
-  RPS_FATALOUT("unimplemented Rps_MemoryFileTokenSource::fill_current_line_buffer "
-               << *this);
-#warning unimplemented Rps_MemoryFileTokenSource::fill_current_line_buffer
+  const char* pc = curcptr();
+  const char* beg = pc;
+  const char* end = toksrcmfil_end;
+  const char* eol = nullptr;
+  for (pc; pc && pc < end; pc++)
+    {
+      if (*pc == '\n')
+        {
+          eol = pc;
+          break;
+        };
+    };
+  if (!eol)
+    eol = end;
+  if (beg && eol)
+    {
+      toksrc_linebuf = std::string(beg, eol-beg);
+      toksrcmfil_line = beg;
+    };
 } // end Rps_MemoryTokenSource::fill_current_line_buffer
 
 Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
