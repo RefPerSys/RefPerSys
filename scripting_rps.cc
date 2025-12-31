@@ -159,6 +159,12 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
              && ix <= rps_script_maxnum);
   RPS_ASSERT(!strcmp(rps_scripting_magic_string,  RPS_SCRIPT_MAGIC_STR));
   const char*curpath = rps_scripts_vector[ix];
+  RPS_ASSERT(curpath != nullptr);
+  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
+                << " curpath=" << curpath
+		<< " thread:" << rps_current_pthread_name()
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "+rps_run_one_script_file"));
   const std::string curpstr(curpath);
   Rps_MemoryFileTokenSource tsrc(curpstr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
