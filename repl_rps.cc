@@ -1074,8 +1074,10 @@ rps_repl_builtin_env_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, co
         if (_f.descrv)
           outs << "descriptor:" << _f.descrv << std::endl;
         std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> outfun
-          = [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,Rps_Value value,void*d)
+          = [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,
+                Rps_Value value,void*d)
         {
+          RPS_ASSERT(cf && cf->is_good_call_frame());
           outs << "*" << obvar << "::" << value << std::endl;
           RPS_ASSERT(d == nullptr);
           return false;
