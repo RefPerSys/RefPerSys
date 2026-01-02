@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti, India    <abhishek@taranjali.org>
  *      Nimesh Neema, India            <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * You can consider RefPerSys as either GPLv3+ or LGPLv3+ licensed (at
@@ -483,7 +483,8 @@ extern "C" void rps_parse_program_arguments(int& argc, char**argv);
 
 extern "C" void rps_run_test_repl_lexer(const std::string&); // defined in file lexer_rps.cc
 
-/// actually, in function main we have something like  asm volatile ("rps_end_of_main: nop");
+/// actually, in function main we have something like:
+///              asm volatile ("rps_end_of_main: nop");
 extern "C" void rps_end_of_main(void);
 
 
