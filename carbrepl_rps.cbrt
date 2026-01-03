@@ -12,7 +12,7 @@
  * Author(s):
  *      Basile Starynkevitch, France   <basile@starynkevitch.net>
  *
- *      © Copyright 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2025 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License: GPLv3+ (file COPYING-GPLv3)
@@ -1396,7 +1396,8 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
 #undef RPS_CARBURETTA_DELIM
   /////
   ///////////////////////////////////
-  ///// fill the keywords constants
+  ///// fill the keywords constants.   More could be added using ...
+  ///// ... our plugins_dir/rpsplug_createsymbol.cc ...
 #define RPS_CARBURETTA_KEYWORD(Ob,Num) \
   rps_carburetta_fill_keyword((Ob),(Num),__LINE__)
   /// keyword `display`
@@ -1411,7 +1412,9 @@ rps_initialize_carburetta_after_load(Rps_Loader*ld)
   RPS_CARBURETTA_KEYWORD(rpskob_8Z5o3cF6CsP02Iy81d, RPSCARBREPL_KEYW_DEFINE); //$define∈symbol
   /// keyword `do`
   RPS_CARBURETTA_KEYWORD(rpskob_9wxka7OAIaG00LS3Db, RPSCARBREPL_KEYW_DO); //$do∈symbol
+  /// keyword `begin`
   RPS_CARBURETTA_KEYWORD(rpskob_2nZjMTYKroQ00VmfKc, RPSCARBREPL_KEYW_BEGIN); //$begin∈symbol
+  /// keyword `end`
   RPS_CARBURETTA_KEYWORD(rpskob_9iNXvyeEY9r03Znyaj, RPSCARBREPL_KEYW_END); //$end∈symbol
   /// 
 #undef RPS_CARBURETTA_KEYWORD
