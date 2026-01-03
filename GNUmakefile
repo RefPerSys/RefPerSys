@@ -7,11 +7,11 @@
 ##
 ## Author(s):
 ##      Basile STARYNKEVITCH, France, <basile@starynkevitch.net>
-##      Abhishek Chakravarti <abhishek@taranjali.org>
+##      Abhishek Chakravarti, Kolkota, India <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
 ##      Abdullah Siddiqui <siddiquiabdullah92@gmail.com>
 ##
-##      © Copyright 2019 - 2025 The Reflective Persistent System Team
+##      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
 ## License:
