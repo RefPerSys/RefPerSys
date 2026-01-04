@@ -216,7 +216,7 @@ __raw_timestamp.c: rps-generate-timestamp.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS
 	$(SYNC)
 
 snapshot: clean
-	$(MAKE) __timestamp.c
+	$(MAKE) __timestamp.c _carbrepl_rps.cc
 	/bin/tar -cjf $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
 
 lto-refpersys:
