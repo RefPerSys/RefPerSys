@@ -10,7 +10,7 @@
  * Author(s):
  *      Basile STARYNKEVITCH (France) <basile@starynkevitch.net>
  *
- *      © Copyright (C) 2025 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2025 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -96,7 +96,7 @@ rps_scripting_add_script(const char*path)
                  << strerror(errno));
   char*rp = realpath(path, nullptr);
   if (rp == path) /* Same pointer, we want it to be malloc-ed in all
-		    cases! */
+                    cases! */
     rp = strdup(path);
   if (!rp)
     RPS_FATALOUT("realpath(3) of "
@@ -162,10 +162,13 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   RPS_ASSERT(curpath != nullptr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
                 << " curpath=" << curpath
-		<< " thread:" << rps_current_pthread_name()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "+rps_run_one_script_file"));
+                << " thread:" << rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "+rps_run_one_script_file"));
   const std::string curpstr(curpath);
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callframe,
+                 Rps_ObjectRef obenv;);
   Rps_MemoryFileTokenSource tsrc(curpstr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
                 << " curpath=" << curpath
@@ -182,8 +185,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                 << ((tsrc.reached_end())?" reachedEND": " notEND"));
   RPS_POSSIBLE_BREAKPOINT();
   while (!gotmagic
-	 && gotlin
-	 && !tsrc.reached_end()) {
+         && gotlin
+         && !tsrc.reached_end()) {
       loopcnt++;
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
                     << " start loop#" << loopcnt
@@ -229,7 +232,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                         << " " << (tsrc.reached_end()?"°atend":"°notend")
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file °NULL-clp"));
-          usleep(12345);	// temporary code to slow down
+          usleep(12345);        // temporary code to slow down
           // debugging output
           RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file incomplete when clp is null
@@ -253,12 +256,18 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 #warning should use modline cleverly
               if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
                   RPS_POSSIBLE_BREAKPOINT();
+                  _f.obenv = rps_get_first_repl_environment();
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+                                << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
                   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
                               << " curpath=" << curpath << " *CARBON* "
                               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
                               << " loop#" << loopcnt
+                              << std::endl << " *obenv=" << std::endl
+                              << RPS_OBJECT_DISPLAY(_f.obenv)
                               << std::endl
                               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON"));
+                  rps_do_carburetta_command(&_, _f.obenv, &tsrc);
 #warning rps_run_one_script_file in carbon mode should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
                   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
                                 << Rps_QuotedC_String(clp)
@@ -300,7 +309,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                     << " loop#" << loopcnt
                     << (gotmagic?" GOTMAGIC":" noMAGIC"));
       RPS_POSSIBLE_BREAKPOINT();
-    };				// end while !gotmagic...
+    };                          // end while !gotmagic...
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix <<std::endl
               << " curpath=" << curpath << " "
