@@ -535,7 +535,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 replnt_input: EOF {
   _Pragma("message \"replnt_input as EOF in carbrepl_rps.cbrt\"");
   RPS_ASSERT("empty replnt_input" && tksrc != nullptr);
-  RPS_DEBUG_LOG(REPL, "replnt_input as EOF tksrc=" << *tksrc); \
+  RPS_DEBUG_LOG(REPL, "replnt_input as EOF tksrc=" << *tksrc);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
   $$ = 0;
 }
@@ -544,6 +544,8 @@ replnt_input: replnt_command replnt_input {
    _Pragma("message \"replnt_input as replnt_command replnt_input in carbrepl_rps.cbrt\"");
    RPS_ASSERT("command replnt_input" && tksrc != nullptr);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+   RPS_DEBUG_LOG(REPL, "replnt_input as command:" << $1
+		 << " tksrc=" << *tksrc);
    RPS_ASSERT(tksrc != nullptr);
    $$ = $1 + 1;
 }
