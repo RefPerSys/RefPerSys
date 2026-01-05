@@ -373,9 +373,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 //// the left brace is {
 %token LEFTBRACE
 %token_action {_Pragma("message \"token_action for LEFTBRACE\"");       \
-  /* should assign $$ for LEFTBRACE */                                  \
-  RPS_DEBUG_LOG(REPL, "token_action for LEFTBRACE tksrc=" << *tksrc);   \
-  RPS_FATALOUT("LEFTBRACE token_action is incomplete tksrc="            \
+  $$ = RPSCARBREPL_LEFTBRACE;                                           \
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTBRACE tksrc=" << *tksrc  \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+		<< "/LEFTBRACE token_action is incomplete tksrc="	\
                << tksrc << " sym=" << sym                               \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action LEFTBRACE"));   }
@@ -384,9 +386,12 @@ extern "C" const char rps_carbrepl_shortgitid[];
 //// the right brace is }
 %token RIGHTBRACE
 %token_action {_Pragma("message \"token_action for RIGHTBRACE\"");      \
-  RPS_DEBUG_LOG(REPL, "token_action for RIGHTBRACE tksrc=" << *tksrc);  \
-  /* should assign $$ for RIGHTBRACE */                                 \
-  RPS_FATALOUT("RIGHTBRACE token_action is incomplete tksrc=" << tksrc  \
+  $$ = RPSCARBREPL_RIGHTBRACE;                                          \
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTBRACE tksrc=" << *tksrc  \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+		<< "/RIGHTBRACE token_action is incomplete tksrc=" \
+		<< tksrc						\
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action RIGHTBRACE"));  }
@@ -394,9 +399,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 //// the + token
 %token PLUS 
 %token_action {_Pragma("message \"token_action for PLUS\"");            \
-  /* should assign $$ PLUS */                                           \
-  RPS_DEBUG_LOG(REPL, "token_action for PLUS tksrc=" << *tksrc);        \
-  RPS_FATALOUT("PLUS token_action is incomplete tksrc=" << tksrc        \
+  $$ = RPSCARBREPL_PLUS;                                                \
+  RPS_DEBUG_LOG(REPL, "token_action for PLUS tksrc=" << *tksrc          \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+		"/PLUS token_action is incomplete tksrc=" << tksrc	\
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action PLUS"));  }
@@ -406,9 +413,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 //// the - token (should not be immediately followed by a digit)
 %token MINUS 
 %token_action {_Pragma("message \"token_action for MINUS\"");           \
-  RPS_DEBUG_LOG(REPL, "token_action for MINUS tksrc=" << tksrc);        \
-  /* should assign $$ MINUS */                                          \
-  RPS_FATALOUT("MINUS token_action is incomplete tksrc=" << tksrc       \
+  $$ = RPSCARBREPL_MINUS;                                               \
+  RPS_DEBUG_LOG(REPL, "token_action for MINUS tksrc=" << tksrc        \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+		<< "/MINUS token_action is incomplete tksrc=" << tksrc	\
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action MINUS"));   }
@@ -417,9 +426,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 //// the * token (not followed by @)
 %token ASTERISK 
 %token_action {_Pragma("message \"token_action for ASTERISK\"");        \
-  RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc);    \
-  /* should assign $$ ASTERISK */                                       \
-  RPS_FATALOUT("ASTERISK token_action is incomplete tksrc=" << tksrc    \
+  $$ = RPSCARBREPL_ASTERISK;                                            \
+  RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc    \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+		<< "/ASTERISK token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action ASTERISK")); }
@@ -429,9 +440,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 ///// the / token
 %token SLASH 
 %token_action {_Pragma("message \"token_action for SLASH\"");           \
-  RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc);       \
-  /* should assign $$ SLASH */                                          \
-  RPS_FATALOUT("SLASH token_action is incomplete tksrc=" << tksrc       \
+  $$ = RPSCARBREPL_SLASH;                                               \
+  RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc         \
+		<< "/SLASH token_action is incomplete tksrc=" << tksrc	\
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action SLASH")); }
@@ -440,9 +453,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
 ///// the *@ token
 %token STARAT
 %token_action { _Pragma("message \"token_action for STARAT\"");         \
-  /* should assign $$ for STARAT */                                     \
-  RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc);      \
-  RPS_FATALOUT("STARAT token_action is incomplete tksrc=" << tksrc      \
+  $$ = RPSCARBREPL_STARAT;                                              \
+  RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc        \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+		<< "/STARAT token_action is incomplete tksrc=" << tksrc	\
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action STARAT")); }
