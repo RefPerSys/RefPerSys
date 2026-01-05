@@ -325,21 +325,23 @@ extern "C" const char rps_carbrepl_shortgitid[];
  }
 
 %token COMMA
-%token_action { _Pragma("message \"token_action for COMMA\""); \
-  /* should assign $$ for COMMA */ \
-  RPS_DEBUG_LOG(REPL, "token_action for COMMA tksrc=" << *tksrc); \
-  RPS_FATALOUT("COMMA token_action is incomplete tksrc=" << tksrc \
-               << " sym=" << sym                                  \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym) \
+%token_action { _Pragma("message \"token_action for COMMA\"");          \
+  $$ =  RPSCARBREPL_COMMA;                                              \
+  RPS_DEBUG_LOG(REPL, "token_action for COMMA tksrc=" << *tksrc         \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$])		\
+                << " sym=" << sym					\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action COMMA"));  }
 
 
 /// the assign token is := 
 %token ASSIGN
 %token_action {_Pragma("message \"token_action for ASSIGN\"");          \
-  /* should assign $$ for ASSIGN */                                     \
-  RPS_DEBUG_LOG(REPL, "token_action for ASSIGN tksrc=" << *tksrc);      \
-  RPS_FATALOUT("ASSIGN token_action is incomplete tksrc="               \
+  $$ = RPSCARBREPL_ASSIGN;                                              \
+  RPS_DEBUG_LOG(REPL, "token_action for ASSIGN tksrc=" << *tksrc        \
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$])		\
                << tksrc << " sym=" << sym                               \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action ASSIGN")); }
@@ -347,9 +349,10 @@ extern "C" const char rps_carbrepl_shortgitid[];
 /// the left parenthesis is (
 %token LEFTPAREN
 %token_action {_Pragma("message \"token_action for LEFTPAREN\"");       \
-  /* should assign $$ for LEFTPAREN */                                  \
-  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc);   \
-  RPS_FATALOUT("LEFTPAREN token_action is incomplete tksrc=" << tksrc   \
+  $$ = RPSCARBREPL_LEFTPAREN;                                           \
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc	\
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]			\
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action LEFTPAREN"));  }
@@ -358,9 +361,10 @@ extern "C" const char rps_carbrepl_shortgitid[];
 // the right parenthesis is )
 %token RIGHTPAREN
 %token_action {_Pragma("message \"token_action for RIGHTPAREN\"");      \
-  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc);  \
-  /* should assign $$ for RIGHTPAREN */                                 \
-  RPS_FATALOUT("RIGHTPAREN token_action is incomplete tksrc=" << tksrc  \
+  $$ = RPSCARBREPL_RIGHTPAREN;                                          \
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc	\
+                << " $$=" << $$                                         \
+                << ":" << rpscarbrepl_symbol_names_[$$]		        \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action RIGHTPAREN"));   }
