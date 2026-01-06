@@ -169,6 +169,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callframe,
                  Rps_ObjectRef obenv;);
+  RPS_POSSIBLE_BREAKPOINT();
   Rps_MemoryFileTokenSource tsrc(curpstr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
                 << " curpath=" << curpath
@@ -190,6 +191,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
       loopcnt++;
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
                     << " start loop#" << loopcnt
+		    << " obenv=" << _f.obenv
                     << " curcptr=" << Rps_QuotedC_String(tsrc.curcptr()));
       RPS_POSSIBLE_BREAKPOINT();
       if (!(gotlin=tsrc.get_line())) {
@@ -200,6 +202,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file @"
                     <<  tsrc.position_str()
                     << " loop#" << loopcnt
+		    << " obenv=" << _f.obenv
                     << " clp=" << Rps_QuotedC_String(clp));
       RPS_POSSIBLE_BREAKPOINT();
       if (!clp) {
@@ -266,19 +269,22 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                               << std::endl << " *obenv=" << std::endl
                               << RPS_OBJECT_DISPLAY(_f.obenv)
                               << std::endl
-                              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON"));
+                              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON-cmd"));
                   rps_do_carburetta_command(&_, _f.obenv, &tsrc);
-#warning rps_run_one_script_file in carbon mode should use routines from carbrepl_rps.cbrt, probably  rps_do_carburetta_command
                   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
                                 << Rps_QuotedC_String(clp)
-                                << " @" << tsrc.position_str()
+                                << " @" << tsrc.position_str() << std::endl
+				<< RPS_OBJECT_DISPLAY(_f.obenv)
+				<< std::endl
                                 << " carbon mode"
-                                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON")
+                                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON+cmd")
                                 << " loop#" << loopcnt);
                 }
               else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
                   RPS_POSSIBLE_BREAKPOINT();
-                  RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
+		  RPS_INFORMOUT("rps_run_one_script_file/ECHO ix=" << ix
+				 << " curpath=" << curpath);
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/ECHO ix=" << ix
                               << " curpath=" << curpath << " *ECHO* "
                               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
                               << " loop#" << loopcnt
