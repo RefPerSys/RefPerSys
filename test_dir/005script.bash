@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-#  © Copyright (C) 2025 - 2025 The Reflective Persistent System Team
+#  © Copyright (C) 2025 - 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 
 # License:
@@ -40,6 +40,6 @@ exit $?
 REFPERSYS_SCRIPT carbon
 ## etc
 
-
+@display RefPerSys_system
 
 # end of file test_dir/005script.bash in refpersys
