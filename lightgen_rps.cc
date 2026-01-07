@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -35,6 +35,7 @@
  *
  * See
  *    https://lists.gnu.org/archive/html/lightning/2024-09/msg00010.html
+ * &  https://lists.gnu.org/archive/html/lightning/2026-01/msg00002.html
  ************************************************************************/
 
 #include "refpersys.hh"
@@ -46,7 +47,9 @@
 /// 3b0fff9206a458d7e11db of August 21, 2023) is required.
 
 
-/// GNU lightning
+/// GNU lightning could be unreliable in january 2026
+/// lists.gnu.org/archive/html/lightning/2026-01/msg00002.html
+
 extern "C" {
 #include "lightning.h"
 };
@@ -244,7 +247,8 @@ rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::
   auto payl = obz->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
   RPS_ASSERT(payl);
 #warning unimplemented rpsldpy_lightning_code_generator
-  RPS_WARNOUT("unimplemented rpsldpy_lightning_code_generator jv=" << jv << std::endl
+  RPS_WARNOUT("unimplemented rpsldpy_lightning_code_generator jv="
+	      << jv << std::endl
               << " spacid=" << spacid
               << " lineno=" << lineno << std::endl
               << " obz=" << RPS_OBJECT_DISPLAY(obz) << std::endl
@@ -426,9 +430,11 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
   _f.oblightgen =  Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
   auto paylgen =  _f.oblightgen->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
   RPS_ASSERT(paylgen);
-  RPS_DEBUG_LOG (CODEGEN, "make_lightgen_code_object made " << RPS_OBJECT_DISPLAY(_f.oblightgen)
+  RPS_DEBUG_LOG (CODEGEN, "make_lightgen_code_object made "
+		 << RPS_OBJECT_DISPLAY(_f.oblightgen)
                  << std::endl
-                 <<  "… from " << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
+                 <<  "… from "
+		 << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
 #warning probably incomplete Rps_PayloadLightningCodeGen::make_lightgen_code_object
   return _f.oblightgen;
 } // end Rps_PayloadLightningCodeGen::make_lightgen_code_object
