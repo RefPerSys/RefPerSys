@@ -539,6 +539,7 @@ void
 Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
 {
   toksrc_linebuf.clear();
+  RPS_POSSIBLE_BREAKPOINT();
   ///  std::getline(toksrc_input_stream,toksrc_linebuf);
   const char* pc = curcptr();
   const char* beg = pc;
