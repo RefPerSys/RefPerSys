@@ -328,7 +328,8 @@ _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-refpe
 	./do-scan-refpersys-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
 __timestamp.c: rps-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
-	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)" GPP is "$(REFPERSYS_GPP)" and "$(GPP)"
+	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)"
+	@echo REFPERSYS_GPP is "$(REFPERSYS_GPP)" and GPP is "$(GPP)"
 	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
