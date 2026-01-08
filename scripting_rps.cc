@@ -171,9 +171,12 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                  Rps_ObjectRef obenv;);
   RPS_POSSIBLE_BREAKPOINT();
   Rps_MemoryFileTokenSource tsrc(curpstr);
+  RPS_POSSIBLE_BREAKPOINT();
+  tsrc.fill_current_line_buffer();
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
                 << " curpath=" << curpath
-                << std::endl << " … tsrc=" << tsrc);
+                << std::endl << " … tsrc=" << tsrc
+		<< " curcptr=" << Rps_Cjson_String(tsrc.curcptr()));
   RPS_POSSIBLE_BREAKPOINT();
   bool gotmagic=false;
   int loopcnt=0;
