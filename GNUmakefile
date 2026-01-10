@@ -880,15 +880,15 @@ test-load: refpersys
 ## testing the carburetta-based command
 testcarb1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -dREPL,CMD -c "@display help" -B --run-name=testcarb1 || (echo testcarb1 failed; exit 1)
+	./refpersys  -AREPL,CMD -c "@display help" -B --run-name=testcarb1 || (echo testcarb1 failed; exit 1)
 
 testcarb2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -dREPL,CMD -c "@display 1 + 2 * 3" -B --run-name=testcarb2 || (echo testcarb2 failed; exit 1)
+	./refpersys  -AREPL,CMD -c "@display 1 + 2 * 3" -B --run-name=testcarb2 || (echo testcarb2 failed; exit 1)
 
 testcarb3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -dREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
+	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
 
 ## testing the FLTK graphical interface
 testfltk1: refpersys
