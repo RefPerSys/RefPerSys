@@ -560,6 +560,8 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
       toksrc_linebuf = std::string(beg, eol-beg);
       toksrcmfil_line = beg;
     };
+  RPS_POSSIBLE_BREAKPOINT();
+#warning the curcptr should be in toksrc_linebuf
 } // end Rps_MemoryTokenSource::fill_current_line_buffer
 
 Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
