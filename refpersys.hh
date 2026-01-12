@@ -918,10 +918,13 @@ void rps_set_debug_output_path(const char*filepath);
 /// newline before....
 void
 rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug dbgopt,
-                    const char *fmt, ...)
+                    const char *fmt, ...)  /// defined in main_rps.cc
 __attribute__ ((format (printf, 5, 6)));
 
-#warning we may want to define a std::ostream subclass for the debugging stream (with a singleton)
+/// TODO: consider defining some rps_debug_two_printf_at with two
+/// level of debugging, and perhaps some rps_debug_three_printf_at
+#warning we may define a std::ostream subclass for the debugging stream
+/// (with a singleton)
 
 #define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)    \
 do                                                             \
@@ -972,7 +975,7 @@ while (0)
         std::ostringstream _logstream_##fline;                  \
         _logstream_##fline << logmsg << std::flush;             \
         rps_debug_printf_at(fname, -fline, __FUNCTION__,        \
-          RPS_DEBUG_##dbgopt,                                   \
+                            RPS_DEBUG_##dbgopt,                 \
                             "%s",                               \
                             _logstream_##fline.str().c_str());  \
       }                                                         \
