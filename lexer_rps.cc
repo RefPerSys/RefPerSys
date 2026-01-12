@@ -224,7 +224,8 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
   int err = wordexp(path.c_str(), &wx, WRDE_SHOWERR);
   if (err)
     {
-      RPS_WARNOUT("stream token source for '" << Rps_Cjson_String(path) << "' failed: error#" << err);
+      RPS_WARNOUT("stream token source for '" << Rps_Cjson_String(path)
+		  << "' failed: error#" << err);
       throw std::runtime_error(std::string{"bad stream token source:"} + path);
     }
   if (wx.we_wordc == 0)
@@ -242,9 +243,12 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
   char* curword = wx.we_wordv[0];
   toksrc_input_stream.open(curword);
   set_name(std::string(curword));
-  RPS_DEBUG_LOG(REPL, "constr °StreamTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(LOWREP, "constr °StreamTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(CMD, "constr °StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "constr °StreamTokenSource@ " <<(void*)this
+		<< " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "constr °StreamTokenSource@ " <<(void*)this
+		<< " " << *this);
+  RPS_DEBUG_LOG(CMD, "constr °StreamTokenSource@ " <<(void*)this
+		<< " " << *this);
 } // end Rps_StreamTokenSource::Rps_StreamTokenSource
 
 
