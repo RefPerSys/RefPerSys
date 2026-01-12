@@ -160,7 +160,9 @@ const std::string
 Rps_TokenSource::position_str(int col) const
 {
   std::string colstr;
-  if (col<0)
+  if (toksrc_linebuf.empty())
+    colstr = "°";
+  else if (col<0)
     colstr = "<";
   else if (col > toksrc_linebuf.size())
     colstr = ">";
