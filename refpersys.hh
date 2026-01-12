@@ -921,21 +921,18 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
                     const char *fmt, ...)  /// defined in main_rps.cc
 __attribute__ ((format (printf, 5, 6)));
 
-/// TODO: consider defining some rps_debug_two_printf_at with two
-/// level of debugging, and perhaps some rps_debug_three_printf_at
 #warning we may define a std::ostream subclass for the debugging stream
 /// (with a singleton)
 
-#define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)    \
-do                                                             \
-  {                                                            \
-    if (RPS_DEBUG_ENABLED(dbgopt))                             \
-      rps_debug_printf_at(fname, fline,__FUNCTION__,           \
-        RPS_DEBUG_##dbgopt, fmt,                               \
-                          ##__VA_ARGS__);                      \
-  }                                                            \
+#define RPS_DEBUG_PRINTF_AT(Fnam,Fline,Dbgopt,Fmt, ...)	\
+do							\
+  {							\
+    if (RPS_DEBUG_ENABLED(Dbgopt))			\
+      rps_debug_printf_at(Fnam,Fline,__FUNCTION__,	\
+			  RPS_DEBUG_##Dbgopt,Fmt,	\
+                          ##__VA_ARGS__);		\
+  }							\
 while (0)
-
 
 #define RPS_DEBUG_PRINTF_AT_BIS(fname, fline, dbgopt, fmt, ...)  \
    RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ##__VA_ARGS__)
@@ -945,6 +942,32 @@ while (0)
 
 #define RPS_DEBUG_NLPRINTF(dbgopt, fmt, ...) \
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
+
+
+#define RPS_DEBUG_TWO_PRINTF_AT(Fnam,Flin,Dbg1,Dbg2,Fmt, ...)	\
+do								\
+  {								\
+    if (RPS_DEBUG_ENABLED(Dbg1))				\
+      rps_debug_printf_at(Fnam,Flin,__FUNCTION__,		\
+			  RPS_DEBUG_##Dbg1,Fmt,			\
+                          ##__VA_ARGS__);			\
+    else if (RPS_DEBUG_ENABLED(Dbg2))				\
+      rps_debug_printf_at(Fnam,Flin,__FUNCTION__,		\
+			  RPS_DEBUG_##Dbg2,Fmt,			\
+                          ##__VA_ARGS__);			\
+  }								\
+while (0)
+
+
+#define RPS_DEBUG_TWO_PRINTF_AT_BIS(Fnam,Line,Dbg1,Dbg2,Fmt, ...)	\
+  RPS_DEBUG_TWO_PRINTF_AT(Fnam,Lin,Dbg1,Dbg2,Fmt,##__VA_ARGS__)
+
+#define RPS_DEBUG_TWO_PRINTF(Dbg1,Dbg2,Fmt, ...)			\
+  RPS_DEBUG_TWO_PRINTF_AT_BIS(__FILE__, __LINE__,Dbg1,Dbg2,Fmt,##__VA_ARGS__)
+
+#define RPS_DEBUG_NLPRINTF(dbgopt, fmt, ...) \
+  RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
+
 
 
 #define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do     \
