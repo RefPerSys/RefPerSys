@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
  *      Nimesh Neema <nimeshneema@gmail.com> (India)
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -159,9 +159,16 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
 const std::string
 Rps_TokenSource::position_str(int col) const
 {
-  if (col<0) col = toksrc_col;
+  std::string colstr;
+  if (col<0)
+    colstr = "<";
+  else if (col > toksrc_linebuf.size())
+    colstr = ">";
+  else
+    colstr = std::to_string(col);
   std::ostringstream outs;
-  outs << "S" << unique_number() << ":L" << toksrc_line << ",C"  << col << std::flush;
+  outs << "S" << unique_number() << ":L" << toksrc_line << ",C"  << colstr
+       << std::flush;
   return outs.str();
 } // end Rps_TokenSource::position_str
 
