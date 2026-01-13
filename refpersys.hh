@@ -924,14 +924,14 @@ __attribute__ ((format (printf, 5, 6)));
 #warning we may define a std::ostream subclass for the debugging stream
 /// (with a singleton)
 
-#define RPS_DEBUG_PRINTF_AT(Fnam,Fline,Dbgopt,Fmt, ...)	\
-do							\
-  {							\
-    if (RPS_DEBUG_ENABLED(Dbgopt))			\
-      rps_debug_printf_at(Fnam,Fline,__FUNCTION__,	\
-			  RPS_DEBUG_##Dbgopt,Fmt,	\
-                          ##__VA_ARGS__);		\
-  }							\
+#define RPS_DEBUG_PRINTF_AT(Fnam,Fline,Dbgopt,Fmt, ...) \
+do                                                      \
+  {                                                     \
+    if (RPS_DEBUG_ENABLED(Dbgopt))                      \
+      rps_debug_printf_at(Fnam,Fline,__FUNCTION__,      \
+                          RPS_DEBUG_##Dbgopt,Fmt,       \
+                          ##__VA_ARGS__);               \
+  }                                                     \
 while (0)
 
 #define RPS_DEBUG_PRINTF_AT_BIS(fname, fline, dbgopt, fmt, ...)  \
@@ -944,25 +944,25 @@ while (0)
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
 
-#define RPS_DEBUG_TWO_PRINTF_AT(Fnam,Flin,Dbg1,Dbg2,Fmt, ...)	\
-do								\
-  {								\
-    if (RPS_DEBUG_ENABLED(Dbg1))				\
-      rps_debug_printf_at(Fnam,Flin,__FUNCTION__,		\
-			  RPS_DEBUG_##Dbg1,Fmt,			\
-                          ##__VA_ARGS__);			\
-    else if (RPS_DEBUG_ENABLED(Dbg2))				\
-      rps_debug_printf_at(Fnam,Flin,__FUNCTION__,		\
-			  RPS_DEBUG_##Dbg2,Fmt,			\
-                          ##__VA_ARGS__);			\
-  }								\
+#define RPS_DEBUG_TWO_PRINTF_AT(Fnam,Flin,Dbg1,Dbg2,Fmt, ...)   \
+do                                                              \
+  {                                                             \
+    if (RPS_DEBUG_ENABLED(Dbg1))                                \
+      rps_debug_printf_at(Fnam,Flin,__FUNCTION__,               \
+                          RPS_DEBUG_##Dbg1,Fmt,                 \
+                          ##__VA_ARGS__);                       \
+    else if (RPS_DEBUG_ENABLED(Dbg2))                           \
+      rps_debug_printf_at(Fnam,Flin,__FUNCTION__,               \
+                          RPS_DEBUG_##Dbg2,Fmt,                 \
+                          ##__VA_ARGS__);                       \
+  }                                                             \
 while (0)
 
 
-#define RPS_DEBUG_TWO_PRINTF_AT_BIS(Fnam,Line,Dbg1,Dbg2,Fmt, ...)	\
+#define RPS_DEBUG_TWO_PRINTF_AT_BIS(Fnam,Line,Dbg1,Dbg2,Fmt, ...)       \
   RPS_DEBUG_TWO_PRINTF_AT(Fnam,Lin,Dbg1,Dbg2,Fmt,##__VA_ARGS__)
 
-#define RPS_DEBUG_TWO_PRINTF(Dbg1,Dbg2,Fmt, ...)			\
+#define RPS_DEBUG_TWO_PRINTF(Dbg1,Dbg2,Fmt, ...)                        \
   RPS_DEBUG_TWO_PRINTF_AT_BIS(__FILE__, __LINE__,Dbg1,Dbg2,Fmt,##__VA_ARGS__)
 
 #define RPS_DEBUG_NLPRINTF(dbgopt, fmt, ...) \
@@ -970,18 +970,18 @@ while (0)
 
 
 
-#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do     \
-  {                                                             \
-    if (RPS_DEBUG_ENABLED(dbgopt))                              \
-      {                                                         \
-        std::ostringstream _logstream_##fline;                  \
-        _logstream_##fline << logmsg << std::flush;             \
-        rps_debug_printf_at(fname, fline, __FUNCTION__,         \
-          RPS_DEBUG_##dbgopt,                                   \
-          "%s",                                                 \
-          _logstream_##fline.str().c_str());                    \
-      }                                                         \
-  }                                                             \
+#define RPS_DEBUG_LOG_AT(Fname,Line,Dbgopt,Log)   do    \
+  {                                                     \
+    if (RPS_DEBUG_ENABLED(Dbgopt))                      \
+      {                                                 \
+        std::ostringstream _logstream_##Line;           \
+        _logstream_##Line << Log << std::flush;         \
+        rps_debug_printf_at(Fname,Line, __FUNCTION__,   \
+          RPS_DEBUG_##Dbgopt,                           \
+          "%s",                                         \
+          _logstream_##Line.str().c_str());             \
+      }                                                 \
+  }                                                     \
 while (0)
 
 #define RPS_DEBUG_LOG_AT_BIS(fname, fline, dbgopt, logmsg)  \
