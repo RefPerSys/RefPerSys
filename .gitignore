@@ -28,3 +28,4 @@ bispprepl_rps.yyp.output
 do-scan-pkgconfig
 .kilocodemodes
 .vscode/settings.json
+.gdb_history
