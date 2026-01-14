@@ -30,6 +30,8 @@ if [ ! -x refpersys ]; then
     exit 1
 fi
 
+echo running refpersys -AREPL --script=$0 --batch --run-name=005script
+
 ./refpersys -AREPL --script=$0 --batch --run-name=005script
 exit $?
 

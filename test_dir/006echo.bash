@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # file RefPerSys/test_dir/006echo.bash
-#  © Copyright (C) 2025 - 2025 The Reflective Persistent System Team
+#  © Copyright (C) 2025 - 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 
 # License:
@@ -30,6 +30,9 @@ if [ ! -x refpersys ]; then
     echo 'no refpersys executable in ' $(/bin/pwd) > /dev/stderr
     exit 1
 fi
+
+echo running refpersys -AREPL --script=$(/usr/bin/realpath $0) --batch --run-name=006echo
+
 ./refpersys -AREPL --script=$(/usr/bin/realpath $0) --batch --run-name=006echo
 exit $?
 
