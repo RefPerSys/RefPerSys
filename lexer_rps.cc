@@ -553,11 +553,11 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
 {
   toksrc_linebuf.clear();
   RPS_POSSIBLE_BREAKPOINT();
-  ///  std::getline(toksrc_input_stream,toksrc_linebuf);
-  const char* pc = curcptr();
+  const char* pc = toksrcmfil_line;
   const char* beg = pc;
   const char* end = toksrcmfil_end;
   const char* eol = nullptr;
+  RPS_POSSIBLE_BREAKPOINT();
   for (pc; pc && pc < end; pc++)
     {
       if (*pc == '\n')
@@ -566,11 +566,13 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
           break;
         };
     };
+  RPS_POSSIBLE_BREAKPOINT();
   if (!eol)
     eol = end;
   if (beg && eol)
     {
       toksrc_linebuf = std::string(beg, eol-beg);
+      RPS_POSSIBLE_BREAKPOINT();
       toksrcmfil_line = beg;
     };
   RPS_POSSIBLE_BREAKPOINT();
