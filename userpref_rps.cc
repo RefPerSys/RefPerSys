@@ -88,13 +88,21 @@ rps_set_user_preferences(char*path)
                  << rps_userpref_mts->path());
   rps_userpref_mts = new  Rps_MemoryFileTokenSource(path);
   bool gotlin = rps_userpref_mts->get_line();
+  int nbloop = 0;
   RPS_DEBUG_LOG(REPL, "userpref " << path << " mts@" << (void*)rps_userpref_mts << " gotlin=" << gotlin);
   RPS_POSSIBLE_BREAKPOINT();
   while (true)
     {
       const char*clp = rps_userpref_mts->curcptr();
+      nbloop++;
+      if (nbloop%128 == 0 && nbloop>1000) {
+	RPS_WARNOUT("userpref " << path << " nbloop=" << nbloop
+		    << RPS_FULL_BACKTRACE(1, "rps_set_user_preferences/loop"));
+      };
       RPS_POSSIBLE_BREAKPOINT();
-      RPS_DEBUG_LOG(REPL, "clp=" << Rps_QuotedC_String(clp) << " line#" << rps_userpref_mts->line());
+      RPS_DEBUG_LOG(REPL, "clp=" << Rps_QuotedC_String(clp)
+		    << " line#" << rps_userpref_mts->line()
+		    << " nbloop=" << nbloop);
       RPS_POSSIBLE_BREAKPOINT();
       if (!clp)
         break;
