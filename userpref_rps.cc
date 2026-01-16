@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
  *      Nimesh Neema <nimeshneema@gmail.com> (India)
  *
- *      © Copyright (C) 2024 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2024 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -89,7 +89,10 @@ rps_set_user_preferences(char*path)
   rps_userpref_mts = new  Rps_MemoryFileTokenSource(path);
   bool gotlin = rps_userpref_mts->get_line();
   int nbloop = 0;
-  RPS_DEBUG_LOG(REPL, "userpref " << path << " mts@" << (void*)rps_userpref_mts << " gotlin=" << gotlin);
+  RPS_DEBUG_LOG(REPL, "userpref " << path << " mts@"
+		<< (void*)rps_userpref_mts
+		<< *rps_userpref_mts
+		<< " gotlin=" << gotlin);
   RPS_POSSIBLE_BREAKPOINT();
   while (true)
     {
