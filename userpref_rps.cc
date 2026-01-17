@@ -98,7 +98,8 @@ rps_set_user_preferences(char*path)
     {
       const char*clp = rps_userpref_mts->curcptr();
       nbloop++;
-      if (nbloop%128 == 0 && nbloop>1000)
+      RPS_POSSIBLE_BREAKPOINT();
+      if (nbloop%64 == 0 && nbloop>=512)
         {
           RPS_POSSIBLE_BREAKPOINT();
           RPS_DEBUG_LOG(REPL, "mts=" << *rps_userpref_mts

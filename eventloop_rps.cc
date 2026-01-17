@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2022 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2022 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -137,11 +137,14 @@ rps_do_stop_event_loop(void)
                 <<  rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE(1, "rps_do_stop_event_loop"));
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_POSSIBLE_BREAKPOINT();
   rps_stop_event_loop_flag.store(true);
+#if RPS_WITH_FLTK
   if (rps_fltk_enabled ())
     {
       rps_fltk_stop();
     }
+#endif //RPS_WITH_FLTK
 } // end rps_do_stop_event_loop
 
 extern "C" void rps_jsonrpc_initialize(void);
@@ -235,10 +238,12 @@ rps_event_loop_add_input_fd_handler (int fd,
   rps_eventloopdata.eld_explarr[lastfd] = explanation;
   rps_eventloopdata.eld_datarr[lastfd] = data;
   rps_eventloopdata.eld_lastix = lastfd+1;
+#if RPS_WITH_FLTK
   if (rps_fltk_enabled())
     {
       rps_fltk_add_input_fd(fd, f, explanation, (int)lastfd);
     };
+#endif //RPS_WITH_FLTK
   RPS_DEBUG_LOG(REPL, "rps_event_loop_add_input_fd_handler fd#" << fd
                 << " f@" << (void*)f
                 << " expl:" << explanation
@@ -253,6 +258,7 @@ rps_event_loop_add_output_fd_handler (int fd,
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_POSSIBLE_BREAKPOINT();
   unsigned lastfd = rps_eventloopdata.eld_lastix;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
   rps_eventloopdata.eld_pollarr[lastfd].fd = fd;
@@ -260,14 +266,17 @@ rps_event_loop_add_output_fd_handler (int fd,
   rps_eventloopdata.eld_explarr[lastfd] = explanation;
   rps_eventloopdata.eld_datarr[lastfd] = data;
   rps_eventloopdata.eld_lastix = lastfd+1;
+#if RPS_WITH_FLTK
   if (rps_fltk_enabled())
     {
       rps_fltk_add_output_fd(fd, f, explanation, (int)lastfd);
     }
+#endif //RPS_WITH_FLTK
   RPS_DEBUG_LOG(REPL, "rps_event_loop_add_output_fd_handler fd#" << fd
                 << " f@" << (void*)f
                 << " expl:" << explanation
                 << " data@" << (void*)data);
+  RPS_POSSIBLE_BREAKPOINT();
 } // end rps_event_loop_add_output_fd_handler
 
 void
@@ -316,8 +325,10 @@ rps_event_loop_remove_input_fd_handler(int fd)
   memcpy (rps_eventloopdata.eld_datarr, new_datarr, newlastix*sizeof(new_datarr[0]));
   rps_eventloopdata.eld_lastix = newlastix;
   RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_input_fd_handler fd#" << fd);
+#if RPS_WITH_FLTK
   if (rps_fltk_enabled())
     rps_fltk_remove_input_fd(fd);
+#endif //RPS_WITH_FLTK
 } // end rps_event_loop_remove_input_fd_handler
 
 void
@@ -706,8 +717,10 @@ rps_event_loop(void)
     if (rps_poll_delay_millisec<=0)
       RPS_FATALOUT("the poll event loop has not being properly initialized");
   };
+#if RPS_WITH_FLTK
   if (rps_fltk_enabled ())
     RPS_FATALOUT("rps_event_loop incompatible with FLTK");
+#endif //RPS_WITH_FLTK
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/rps_curthread_callframe, //
                  /** locals **/
