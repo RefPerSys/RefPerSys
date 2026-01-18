@@ -274,6 +274,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                               << RPS_OBJECT_DISPLAY(_f.obenv)
                               << std::endl
                               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON-cmd"));
+		  RPS_POSSIBLE_BREAKPOINT();
                   rps_do_carburetta_command(&_, _f.obenv, &tsrc);
                   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
                                 << Rps_QuotedC_String(clp)
@@ -283,6 +284,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                                 << " carbon mode"
                                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file/CARBON+cmd")
                                 << " loop#" << loopcnt);
+		  RPS_POSSIBLE_BREAKPOINT();
                 }
               else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
                   RPS_POSSIBLE_BREAKPOINT();
