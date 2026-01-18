@@ -99,7 +99,7 @@ rps_set_user_preferences(char*path)
       const char*clp = rps_userpref_mts->curcptr();
       nbloop++;
       RPS_POSSIBLE_BREAKPOINT();
-      if (nbloop%64 == 0 && nbloop>=512)
+      if (nbloop%32 == 0 /* && nbloop>=512*/ )
         {
           RPS_POSSIBLE_BREAKPOINT();
           RPS_DEBUG_LOG(REPL, "mts=" << *rps_userpref_mts
@@ -111,7 +111,7 @@ rps_set_user_preferences(char*path)
         };
       RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(REPL, "clp=" << Rps_QuotedC_String(clp)
-                    << " line#" << rps_userpref_mts->line()
+                    << " mts=" << *rps_userpref_mts
                     << " nbloop=" << nbloop);
       RPS_POSSIBLE_BREAKPOINT();
       if (!clp)
@@ -119,6 +119,12 @@ rps_set_user_preferences(char*path)
       else if (!strncmp(clp, RPS_USER_PREFERENCE_MAGIC,
                         strlen(RPS_USER_PREFERENCE_MAGIC)))
         {
+          RPS_POSSIBLE_BREAKPOINT();
+          RPS_DEBUG_LOG(REPL, "¤gotmagic clp=" << Rps_QuotedC_String(clp)
+                        << " mts=" << *rps_userpref_mts
+                        << " line#" << rps_userpref_mts->line()
+                        << " nbloop=" << nbloop
+                        << " pos:" << rps_userpref_mts->position_str());
           RPS_POSSIBLE_BREAKPOINT();
           break;
         };
