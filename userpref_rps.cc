@@ -122,10 +122,22 @@ rps_set_user_preferences(char*path)
           RPS_POSSIBLE_BREAKPOINT();
           break;
         };
+      RPS_POSSIBLE_BREAKPOINT();
+      gotlin = rps_userpref_mts->get_line();
+      clp = rps_userpref_mts->curcptr();
+      RPS_DEBUG_LOG(REPL, "rps_set_user_preferences mts=" << *rps_userpref_mts
+                    << (gotlin?"got-line":"NO-LINE")
+                    << " clp=" << Rps_QuotedC_String(clp)
+                    << " line#" << rps_userpref_mts->line()
+                    << " nbloop=" << nbloop
+                    << " pos:" << rps_userpref_mts->position_str());
     };
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "before preferences "
-                << rps_userpref_mts->curcptr());
+                << rps_userpref_mts->curcptr()
+                << " line#" << rps_userpref_mts->line()
+                << " nbloop=" << nbloop
+                << " pos:" << rps_userpref_mts->position_str());
   rps_parse_user_preferences(rps_userpref_mts);
   atexit(rps_delete_user_preferences);
 } // end  rps_set_user_preferences
