@@ -114,6 +114,13 @@ rps_set_user_preferences(char*path)
                     << " mts=" << *rps_userpref_mts
                     << " nbloop=" << nbloop);
       RPS_POSSIBLE_BREAKPOINT();
+      if (rps_userpref_mts->line() > 128 && nbloop > 1024) {
+	RPS_POSSIBLE_BREAKPOINT();
+#warning temporary code added to debug github.com/RefPerSys/RefPerSys/issues/30
+	RPS_FATALOUT("too many lines for ¤issue#30 mts=" << *rps_userpref_mts
+		     << " nbloop#" << nbloop
+		     << " clp=" << Rps_QuotedC_String(clp));
+      };
       if (!clp)
         break;
       else if (!strncmp(clp, RPS_USER_PREFERENCE_MAGIC,
