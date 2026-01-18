@@ -64,10 +64,10 @@ static std::vector<const char*> rps_scripts_vector;
 
 
 const char rps_scripting_help_english_text[] =
-  R"help(
-A script file is a textual file.
-All its initial lines before a line containing REFPERSYS_SCRIPT are ignored.
-Hence these initial lines could contain some shell script, etc.
+  R"help(A script file is a textual file.  All its initial lines before a
+line containing REFPERSYS_SCRIPT are ignored.  Hence these initial
+lines could contain some shell script, etc.  That REFPERSYS_SCRIPT word
+should be followed by a short C-like identifier identifying the mode.
 )help"
   ;
 #warning more text needed inside rps_scripting_help_english_text
