@@ -99,7 +99,7 @@ rps_set_user_preferences(char*path)
       const char*clp = rps_userpref_mts->curcptr();
       nbloop++;
       RPS_POSSIBLE_BREAKPOINT();
-      if (nbloop%32 == 0 /* && nbloop>=512*/ )
+      if (nbloop%8 == 0 /* && nbloop>=512*/ )
         {
           RPS_POSSIBLE_BREAKPOINT();
           RPS_DEBUG_LOG(REPL, "mts=" << *rps_userpref_mts
@@ -144,6 +144,7 @@ rps_set_user_preferences(char*path)
                     << " line#" << rps_userpref_mts->line()
                     << " nbloop=" << nbloop
                     << " pos:" << rps_userpref_mts->position_str());
+      RPS_POSSIBLE_BREAKPOINT();
     };
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "before preferences "
