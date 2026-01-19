@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1750,6 +1750,7 @@ main (int argc, char** argv)
   //// the double dash in the main thread name rps--main is temporary
   //// since rps_early_initialization is later setting it to rps-main
   pthread_setname_np(pthread_self(), "rps--main");
+#warning should atexit(rps_unique_exit_handler)
   char*mylocale = nullptr;
   bool helpwanted = false;
   bool versionwanted = false;
