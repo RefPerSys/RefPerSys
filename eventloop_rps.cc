@@ -50,6 +50,9 @@ const char rps_eventloop_timestamp[]= __TIMESTAMP__;
 // default or initial delay to poll(2) in milliseconds.
 #define RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC 1600
 
+extern "C" std::atomic<std::uint8_t> rps_exit_atomic_code; // in main_rps.cc
+extern "C" void rps_exiting(void);
+
 enum self_pipe_code_en
 {
   SelfPipe__NONE=0,
@@ -65,6 +68,8 @@ enum self_pipe_code_en
 #define RPS_MAXPOLL_FD 128
 
 //extern "C" std::atomic<bool> rps_stop_event_loop_flag;
+
+extern "C" void rps_unique_exit_handler(void);
 
 std::atomic<bool> rps_stop_event_loop_flag;
 
@@ -1324,6 +1329,253 @@ rps_do_on_exit(std::function<void(void)>clos)
   std::lock_guard<std::recursive_mutex> rlock(rps_atonexit_mtx);
   rps_atexit_vec.push_back(clos);
 } // end of rps_on_exit
+
+extern "C" std::recursive_mutex rps_exit_recmutx;
+std::recursive_mutex rps_exit_recmutx;
+
+class Rps_exit_todo_cl
+{
+  friend void rps_do_at_exit_cpp(const std::function<void(void*)>& fun,
+                                 void* data);
+  friend void rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun,
+                                  void*data1, void*data2);
+  friend void rps_exiting(void);
+  bool _tdxit_is_c;
+  int _tdxit_rank;
+  union
+  {
+    std::function<void(void*)> _tdxit_cppfun;
+    rps_exit_cfun_sig_t*_tdxit_ptrcfun;
+    intptr_t _tdxit_intptr;
+  };
+  void* _tdxit_first_data;
+  void* _tdxit_second_data;
+  static void tdxit_do_at_exit(void);
+public:
+  Rps_exit_todo_cl() :
+    _tdxit_is_c(false),
+    _tdxit_rank(-1),
+    _tdxit_intptr(0),
+    _tdxit_first_data(nullptr),
+    _tdxit_second_data(nullptr)
+  {
+  };
+  Rps_exit_todo_cl(const std::function<void(void*)> cppfun,
+                   void*data=nullptr);
+  Rps_exit_todo_cl(rps_exit_cfun_sig_t*cfun,
+                   void*data1=nullptr, void*data2=nullptr);
+  ~Rps_exit_todo_cl();
+};        // end class Rps_exit_todo_cl
+
+extern "C" std::vector<Rps_exit_todo_cl*> rps_exit_vecptr;
+std::vector<Rps_exit_todo_cl*> rps_exit_vecptr;
+
+Rps_exit_todo_cl::~Rps_exit_todo_cl()
+{
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  bool is_c = _tdxit_is_c;
+  int rank = _tdxit_rank;
+  int vsiz = (int) rps_exit_vecptr.size();
+  std::function<void(void*)> cppfun;
+  rps_exit_cfun_sig_t*ptrcfun=nullptr;
+  void*first = nullptr;
+  void* second = nullptr;
+  if (is_c)
+    {
+      ptrcfun = _tdxit_ptrcfun;
+      _tdxit_ptrcfun = nullptr;
+    }
+  else
+    {
+      cppfun = _tdxit_cppfun;
+      _tdxit_cppfun = nullptr;
+    }
+  first = _tdxit_first_data;
+  second = _tdxit_second_data;
+  _tdxit_intptr = 0;
+  _tdxit_first_data = (nullptr);
+  _tdxit_second_data = (nullptr);
+  _tdxit_rank = -1;
+  if (rank>=0 && rank<vsiz
+      && rps_exit_vecptr[rank] == this)
+    {
+      rps_exit_vecptr[rank] = nullptr;
+      //// Once in a while shrink the rps_exit_vecptr vector
+      if (rank % 16 == 0)
+        {
+          bool needshrink = true;
+          for (int ix = rank; ix<vsiz && needshrink; ix++)
+            if (rps_exit_vecptr[ix])
+              needshrink = false;
+          if (needshrink)
+            rps_exit_vecptr.resize(rank);
+        };
+      if (is_c)
+        {
+          /// refpersys.hh has typedef void rps_exit_cfun_sig_t(void*, void*);
+          if (ptrcfun)
+            {
+              (*ptrcfun) (first, second);
+
+            }
+          else   /*is C++*/
+            {
+              if (cppfun)
+                cppfun(first);
+            };
+        };
+    }
+} // end destructor Rps_exit_todo_cl
+
+
+Rps_exit_todo_cl::Rps_exit_todo_cl(const std::function<void(void*)> cppfun,
+                                   void*data)
+  :  _tdxit_is_c(false), _tdxit_rank(-1), _tdxit_cppfun(cppfun),
+     _tdxit_first_data(data), _tdxit_second_data(nullptr)
+{
+  RPS_ASSERT(cppfun);
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  int vsiz = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(this);
+  _tdxit_rank = vsiz;
+} // end Rps_exit_todo_cl constructor with C++ function
+
+Rps_exit_todo_cl::Rps_exit_todo_cl(const rps_exit_cfun_sig_t*cfun,
+                                   void*data1, void*data2)
+  :  _tdxit_is_c(true), _tdxit_rank(-1), _tdxit_ptrcfun(cfun),
+     _tdxit_first_data(data1), _tdxit_second_data(data2)
+{
+  RPS_ASSERT(cfun);
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  int vsiz = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(this);
+  _tdxit_rank = vsiz;
+} // end Rps_exit_todo_cl constructor with C function
+
+//// Static method, called at exit and registered thru at_exit
+void
+Rps_exit_todo_cl::tdxit_do_at_exit(void)
+{
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  int xsiz = (int) rps_exit_vecptr.size();
+  RPS_DEBUG_LOG(REPL, "exiting, todo xsiz=" << xsiz << std::endl
+                << RPS_FULL_BACKTRACE(1,
+                                      "Rps_exit_todo_cl::tdxit_do_at_exit"));
+  if (xsiz == 0)
+    return;
+  for (int ix=0; ix<xsiz; ix++)
+    {
+      Rps_exit_todo_cl* pxitodo = rps_exit_vecptr[ix];
+      rps_exit_vecptr[ix] = nullptr;
+      if (!pxitodo)
+        continue;
+      RPS_POSSIBLE_BREAKPOINT();
+      bool is_c = pxitodo->_tdxit_is_c;
+      int rank = pxitodo->_tdxit_rank;
+      if (rank>=0)
+        {
+          RPS_ASSERT(rank==ix);
+        };
+      if (is_c)
+        {
+          rps_exit_cfun_sig_t*ptrcfun = pxitodo->_tdxit_ptrcfun;
+          pxitodo->_tdxit_ptrcfun = nullptr;
+          if (ptrcfun)
+            {
+              (*ptrcfun) (pxitodo->_tdxit_first_data, pxitodo->_tdxit_second_data);
+            }
+        }
+      else  ///C++
+        {
+          std::function<void(void*)> cppfun = pxitodo->_tdxit_cppfun;
+          RPS_ASSERT(!pxitodo->_tdxit_second_data);
+          pxitodo->_tdxit_cppfun = nullptr;
+          if (cppfun)
+            {
+              cppfun(pxitodo->_tdxit_first_data);
+            }
+        }
+      pxitodo->_tdxit_first_data = nullptr;
+      pxitodo->_tdxit_second_data = nullptr;
+      delete pxitodo;
+    };
+} // end Rps_exit_todo_cl::tdxit_do_at_exit
+
+void
+rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data)
+{
+  if (!fun)
+    return;
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  Rps_exit_todo_cl* pxitodo = new Rps_exit_todo_cl(fun, data);
+  if (!pxitodo)
+    RPS_FATALOUT("rps_do_at_exit_cpp failed to allocte Rps_exit_todo_cl");
+  int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(pxitodo);
+#warning review rps_do_at_exit_cpp
+  RPS_WARNOUT("incomplete rps_do_at_exit_cpp rank#" << rank
+              << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cpp"));
+} // end rps_do_at_exit_cpp
+
+void
+rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun, void*data1, void*data2)
+{
+  if (!fun)
+    return;
+  std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
+  Rps_exit_todo_cl* pxitodo = new Rps_exit_todo_cl(fun, data1, data2);
+  if (!pxitodo)
+    RPS_FATALOUT("rps_do_at_exit_cfun failed to allocte Rps_exit_todo_cl");
+  int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
+  rps_exit_vecptr.push_back(pxitodo);
+#warning review rps_do_at_exit_cfun
+  RPS_WARNOUT("incomplete rps_do_at_exit_cfun rank#" << rank
+              << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cfun"));
+#warning review rps_do_at_exit_cfun
+} // end rps_do_at_exit_cfun
+
+void
+rps_exiting(void) //// called thru atexit
+{
+  static char cwdbuf[rps_path_byte_size];
+  char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+  RPS_DEBUG_LOG(REPL, "rps_exiting in " << mycwd << " pid " << getpid()
+                << " shortgit " << rps_shortgitid
+                << " thread " <<  rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_exiting < tdxit_do_at_exit"));
+  RPS_POSSIBLE_BREAKPOINT();
+  Rps_exit_todo_cl::tdxit_do_at_exit();
+  rps_unique_exit_handler();
+  RPS_POSSIBLE_BREAKPOINT();
+  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
+                   "… elapsed %.3f sec, CPU %.3f sec;\n"
+                   "%s%s%s%s",
+         (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+         rps_get_major_version(), rps_get_minor_version(),
+         rps_exit_atomic_code.load(),
+         rps_elapsed_real_time(), rps_process_cpu_time(),
+         (rps_program_invocation?"invocation: ":""),
+         (rps_program_invocation?:""),
+         (rps_run_name.empty()?"":" run "),
+         rps_run_name.c_str());
+  if (!rps_syslog_enabled)
+    {
+      printf("RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
+             "… elapsed %.3f sec, CPU %.3f sec\n",
+             (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+             rps_get_major_version(), rps_get_minor_version(),
+             rps_exit_atomic_code.load(),
+             rps_elapsed_real_time(), rps_process_cpu_time());
+      if (rps_program_invocation)
+        printf("… invocation: %s\n", rps_program_invocation);
+      if (!rps_run_name.empty())
+        printf("… run: %s\n", rps_run_name.c_str());
+      fflush(stdout);
+    }
+} // end rps_exiting
+
+
 
 void
 rps_unique_exit_handler(void)
