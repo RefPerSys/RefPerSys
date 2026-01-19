@@ -566,7 +566,7 @@ rps_gccjit_initialize(void)
 
 static volatile std::atomic_flag rps_gccjit_finalized = ATOMIC_FLAG_INIT;
 
-/// the finalize routine is called thru at exit
+/// the finalize routine is called thru atexit
 void rps_gccjit_finalize(void)
 {
   if (std::atomic_flag_test_and_set(&rps_gccjit_finalized))
