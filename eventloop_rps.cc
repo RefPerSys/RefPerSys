@@ -1303,4 +1303,38 @@ rps_postpone_child_process(void)
   rps_self_pipe_write_byte(SelfPipe_Process);
 } // end rps_postpone_child_process
 
+
+
+static std::recursive_mutex rps_atonexit_mtx;
+static std::vector<std::function<void(void)>> rps_atexit_vec;
+void
+rps_atexit(typeof(void (void)) *xitfun)
+{
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(xitfun);
+  std::lock_guard<std::recursive_mutex> rlock(rps_atonexit_mtx);
+  rps_atexit_vec.push_back(xitfun);
+} // end of rps_atexit
+
+void
+rps_do_on_exit(std::function<void(void)>clos)
+{
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(clos);
+  std::lock_guard<std::recursive_mutex> rlock(rps_atonexit_mtx);
+  rps_atexit_vec.push_back(clos);
+} // end of rps_on_exit
+
+void
+rps_unique_exit_handler(void)
+{
+  RPS_POSSIBLE_BREAKPOINT();
+  std::lock_guard<std::recursive_mutex> rlock(rps_atonexit_mtx);
+  for (auto f: rps_atexit_vec)
+    {
+      f();
+    };
+  rps_atexit_vec.clear();
+} // end rps_unique_exit_handler
+
 /// end of file eventloop_rps.cc

@@ -148,6 +148,12 @@
 /// C++ wrapper)
 #include <gmpxx.h>
 
+// an atexit(3) wrapper - implemented in eventloop_rps.cc
+extern "C" void rps_atexit(typeof(void (void)) *function);
+extern "C" void rps_do_on_exit(std::function<void(void)>clos);
+// the registered unique exit handler - implemented in eventloop_rps.cc
+extern "C" void rps_unique_exit_handler(void);
+
 #ifndef RPS_WITH_FLTK
 #define RPS_WITH_FLTK 1 /* could be 1 if using fltk.org graphical toolkit */
 #endif
