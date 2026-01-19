@@ -2933,6 +2933,8 @@ extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_Object
 typedef int rps_keyword_lexing_sigt(Rps_CallFrame*callframe,
                                     const std::string&keystr,
                                     Rps_ObjectRef obkw);
+
+
 ////////////////////////////////// token sources are for lexing
 class Rps_TokenSource           // this is *not* a value .....
 {
@@ -2969,6 +2971,7 @@ protected:
   Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
   void starting_new_input_line(void)
   {
+    RPS_POSSIBLE_BREAKPOINT(); /// for issue#30
     toksrc_col=0;
     toksrc_line++;
     fill_current_line_buffer();
