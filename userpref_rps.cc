@@ -99,10 +99,19 @@ rps_set_user_preferences(char*path)
       const char*clp = rps_userpref_mts->curcptr();
       nbloop++;
       RPS_DEBUG_LOG(REPL, "clp=" << Rps_QuotedC_String(clp)
-		    << " nbloop=" << nbloop
-		    << std::endl
-		    << "… mts=" << *rps_userpref_mts);
+                    << " nbloop=" << nbloop
+                    << std::endl
+                    << "… mts=" << *rps_userpref_mts);
       RPS_POSSIBLE_BREAKPOINT();
+      if (clp && *clp=='#')
+        {
+          RPS_POSSIBLE_BREAKPOINT();
+          gotlin = rps_userpref_mts->get_line();
+          if (gotlin)
+            continue;
+          else
+            break;
+        };
       if (nbloop%8 == 0 /* && nbloop>=512*/ )
         {
           RPS_POSSIBLE_BREAKPOINT();
