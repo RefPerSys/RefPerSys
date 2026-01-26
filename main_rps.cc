@@ -1612,7 +1612,8 @@ main (int argc, char** argv)
   if (helpwanted)
     printf("%s preference example file is in\n"
            "… %s/etc/user-preferences-refpersys.txt\n"
-           "… so copy it to ~/.refpersysrc and improve it\n",
+           "… so copy it to ~/" REFPERSYS_DEFAULT_PREFERENCE_PATH
+	   " and improve it\n",
            rps_progname, rps_topdirectory);
   if (helpwanted || versionwanted)
     printf("%s minimal jobs or threads number %d, maximal %d, default %d\n",
