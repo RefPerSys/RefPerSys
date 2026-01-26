@@ -573,7 +573,10 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
     {
       toksrc_linebuf = std::string(beg, eol-beg);
       RPS_POSSIBLE_BREAKPOINT();
-      toksrcmfil_line = beg;
+      if (eol < toksrcmfil_end)
+	toksrcmfil_line = eol+1;
+      else
+	toksrcmfil_line = eol;
     };
   RPS_POSSIBLE_BREAKPOINT();
 #warning the curcptr should be in toksrc_linebuf
