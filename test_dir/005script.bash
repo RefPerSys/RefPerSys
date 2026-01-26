@@ -30,6 +30,9 @@ if [ ! -x refpersys ]; then
     exit 1
 fi
 
+## CPU soft and hard limits
+ulimit -S -t 5
+ulimit -H -t 8
 echo running refpersys -AREPL --script=$0 --batch --run-name=005script
 
 ./refpersys -AREPL --script=$0 --batch --run-name=005script
