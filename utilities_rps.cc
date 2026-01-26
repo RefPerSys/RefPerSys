@@ -1382,7 +1382,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       /// example argument: -U ~/myrefpersys.pref
       /// other example: --user-pref=$HOME/myrps.pref
     {
-      if (access(arg, R_OK))
+      RPS_POSSIBLE_BREAKPOINT();
+      if (!arg || !arg[0] || !strcmp(arg, ".") || !strcmp(arg, "/")) {
+	RPS_INFORMOUT("no user preferences");
+	return 0;
+      };
+      if (!access(arg, R_OK))
         rps_set_user_preferences(arg);
       else
         RPS_FATALOUT("missing user preferences file " << arg
