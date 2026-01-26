@@ -467,6 +467,7 @@ struct argp_option rps_progoptions[] =
     " color='black' or height=345 ...\n"
     "\nDefault preference file is"
     " $HOME/" REFPERSYS_DEFAULT_PREFERENCE_PATH "\n"
+    "Using . or / as a preference file is not having any.\n"
     , //
     /*group:*/0 ///
   },

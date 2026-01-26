@@ -80,6 +80,12 @@ rps_set_user_preferences(char*path)
 {
   RPS_POSSIBLE_BREAKPOINT();
   /// to set manually the REPL debugging use rps_add_debug_cstr("REPL") in GDB
+  if (!path || !path[0] || !strcmp(path, ".") || !strcmp(path, "/")) {
+    RPS_INFORMOUT("skipping user preferences given by "
+		  <<  Rps_QuotedC_String(path) << std::endl
+		  << RPS_FULL_BACKTRACE(1, "rps_set_user_preferences/skip"));
+    return;
+  };
   RPS_ASSERT(!access(path, R_OK));
   RPS_ASSERT(rps_is_main_thread());
   if (rps_userpref_mts)
