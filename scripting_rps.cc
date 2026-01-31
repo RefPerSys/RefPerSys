@@ -74,8 +74,8 @@ should be followed by a short C-like identifier identifying the mode.
 
 extern "C" const char  rps_scripting_magic_string[];
 
-const char rps_scripting_magic_string[] = "REFPERSYS_SCRIPT";
 #define RPS_SCRIPT_MAGIC_STR "REFPERSYS_SCRIPT"
+const char rps_scripting_magic_string[] = RPS_SCRIPT_MAGIC_STR;
 
 
 void
