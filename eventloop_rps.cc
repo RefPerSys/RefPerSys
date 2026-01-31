@@ -1475,6 +1475,7 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
       int rank = pxitodo->_tdxit_rank;
       if (rank>=0)
         {
+	  RPS_POSSIBLE_BREAKPOINT();
           RPS_ASSERT(rank==ix);
         };
       if (is_c)
@@ -1510,9 +1511,10 @@ rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data)
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
   Rps_exit_todo_cl* pxitodo = new Rps_exit_todo_cl(fun, data);
   if (!pxitodo)
-    RPS_FATALOUT("rps_do_at_exit_cpp failed to allocte Rps_exit_todo_cl");
+    RPS_FATALOUT("rps_do_at_exit_cpp failed to allocate Rps_exit_todo_cl");
   int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
   rps_exit_vecptr.push_back(pxitodo);
+  RPS_POSSIBLE_BREAKPOINT();
 #warning review rps_do_at_exit_cpp
   RPS_WARNOUT("incomplete rps_do_at_exit_cpp rank#" << rank
               << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cpp"));
@@ -1529,6 +1531,7 @@ rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun, void*data1, void*data2)
     RPS_FATALOUT("rps_do_at_exit_cfun failed to allocte Rps_exit_todo_cl");
   int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
   rps_exit_vecptr.push_back(pxitodo);
+  RPS_POSSIBLE_BREAKPOINT();
 #warning review rps_do_at_exit_cfun
   RPS_WARNOUT("incomplete rps_do_at_exit_cfun rank#" << rank
               << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cfun"));
