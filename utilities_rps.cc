@@ -565,6 +565,12 @@ rps_print_types_info(void)
 #undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
+  std::cout << "rps_addr2string@" << (void*)rps_addr2string
+	    << ":" << rps_addr2string((void*)rps_addr2string)
+	    << "Rps_QuasiZone::initialize@"
+	    << (void*)Rps_QuasiZone::initialize
+	    << ":" << rps_addr2string((void*)Rps_QuasiZone::initialize)
+	    << std::endl;
   std::cout << "@@°°@@ The tagged integer one hundred is "
             << Rps_Value::make_tagged_int(100)
             << std::endl
