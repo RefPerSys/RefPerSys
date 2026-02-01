@@ -567,6 +567,7 @@ rps_print_types_info(void)
   fflush(nullptr);
   std::cout << "rps_addr2string@" << (void*)rps_addr2string
 	    << ":" << rps_addr2string((void*)rps_addr2string)
+	    << std::endl
 	    << "Rps_QuasiZone::initialize@"
 	    << (void*)Rps_QuasiZone::initialize
 	    << ":" << rps_addr2string((void*)Rps_QuasiZone::initialize)

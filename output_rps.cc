@@ -328,11 +328,18 @@ rps_addr2string(void*ad)
         {
           if (inf.dli_fname != nullptr)
             {
-              snprintf(buf, sizeof(buf)-2,
-                       "¤%s+%#lx=%p",
-                       inf.dli_fname,
-                       (const char*)ad-(const char*)inf.dli_saddr,
-                       ad);
+              long d = (const char*)ad-(const char*)inf.dli_saddr;
+              if (d!=0)
+                snprintf(buf, sizeof(buf)-2,
+                         "¤%s+%#lx=%p",
+                         inf.dli_fname,
+                         d,
+                         ad);
+              else
+                snprintf(buf, sizeof(buf)-2,
+                         "¤%s=%p",
+                         inf.dli_fname,
+                         ad);
               return std::string(buf);
             }
           else
@@ -344,14 +351,21 @@ rps_addr2string(void*ad)
         }
       else
         {
+          long d = (const char*)ad-(const char*)inf.dli_saddr;
           if (inf.dli_fname != nullptr)
             {
-              snprintf(buf, sizeof(buf)-2,
-                       "°%s¤%s+%#lx=%p",
-                       inf.dli_fname,
-                       rps_demangled_name(inf.dli_sname).c_str(),
-                       (const char*)ad-(const char*)inf.dli_saddr,
-                       ad);
+              if (d!=0)
+                snprintf(buf, sizeof(buf)-2,
+                         "°%s¤%s+%#lx=%p",
+                         inf.dli_fname,
+                         rps_demangled_name(inf.dli_sname).c_str(),
+                         d,
+                         ad);
+              else
+                snprintf(buf, sizeof(buf)-2,
+                         "¤%s=%p",
+                         rps_demangled_name(inf.dli_sname).c_str(),
+                         ad);
               return std::string(buf);
             }
           else
@@ -359,7 +373,7 @@ rps_addr2string(void*ad)
               snprintf(buf, sizeof(buf)-2,
                        "¤%s+%#lx=%p",
                        rps_demangled_name(inf.dli_sname).c_str(),
-                       (const char*)ad-(const char*)inf.dli_saddr,
+                       d,
                        ad);
               return std::string(buf);
             };
