@@ -460,6 +460,9 @@ extern "C" bool rps_syslog_enabled; /// --syslog option
 /// Provides miscellaneous runtime information for RefPerSys.
 ///
 
+
+extern "C" const std::string rps_demangled_name(const char*name);
+
 extern "C" pid_t rps_gui_pid;
 
 /// a pair of Unix file descriptors, JSONRPC....
@@ -1162,6 +1165,9 @@ while (0)
 
 
 extern "C" void rps_show_version(void);
+
+
+extern "C" const std::string rps_addr2string(void*); //in output_rps.cc
 
 ///////////////////////////////////////////////////////////////////////////////
 // TIME ROUTINES
