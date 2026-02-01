@@ -1578,9 +1578,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       memset (extraname, 0, sizeof(extraname));
       if (sscanf(arg, "%72[A-Za-z0-9_]=%n", extraname, &eqnextpos) >= 1
           && isalpha(extraname[0])
-          && eqnextpos > 1 && arg[eqnextpos-1] == '='
-          && isalpha(extraname[0]))
+          && eqnextpos > 1 && arg[eqnextpos-1] == '=')
         {
+	  if (strlen(extraname) > sizeof(extraname)-10)
+	    RPS_WARNOUT("too long extraname " << extraname
+			<< " in " << arg);
           for (const char*n = extraname; *n; n++)
             if (!isalnum(*n) && *n != '_')
               RPS_FATALOUT("invalid extra named argument " << extraname);
