@@ -1401,7 +1401,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   time_t nowt = time (NULL);
   fprintf (f, "# generated _config-refpersys.mk for GNU make in refpersys\n");
   fprintf (f, "# DO NOT EDIT but use make config\n");
-  fprintf (f, "# generated from %s:%d in %s\n", __FILE__, __LINE__,
+  fprintf (f, "# generated from %s:%d\n# in %s\n", __FILE__, __LINE__,
            rpsconf_cwd_buf);
   fprintf (f, "# see refpersys.org\n\n");
   fprintf (f, "# generated at %s## on %s git %s\n\n",
@@ -1535,6 +1535,10 @@ rpsconf_emit_configure_refpersys_mk (void)
       fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", rpsconf_fltk_config);
       fprintf (f, "REFPERSYS_FLTK_SOURCE= fltk_rps.cc\n");
     }
+  else
+    {
+      fprintf(f, "\n### no fltk.org from %s:%d\n", __FILE__, __LINE__);
+    };
   ////
   fprintf (f, "\n### machine architecture\n");
   fprintf (f, "REFPERSYS_ARCH=%s\n", rpsconf_arch);
