@@ -152,12 +152,8 @@
 extern "C" void rps_atexit(typeof(void (void)) *function);
 extern "C" void rps_do_on_exit(std::function<void(void)>clos);
 
-#ifndef RPS_WITH_FLTK
-#define RPS_WITH_FLTK 1 /* could be 1 if using fltk.org graphical toolkit */
-#endif
-
 //// the generated/rpsdata.h contain only preprocessor #define-s and #undef
-//// it may undef RPS_WITH_FLTK. It has a pragma message
+//// it should undef RPS_WITH_FLTK. It has a pragma message
 //// it is simpler to not use it... (but needed in some files)
 #ifdef RPS_WITH_DATA
 #include "generated/rpsdata.h"
@@ -188,8 +184,6 @@ extern "C" const char* rps_locale(void);
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
 
-/// passed to rps_fltk_show_debug_message as the debug level for
-/// warning, inform, fatal
 constexpr int RPS_INFORM_MSG_LEVEL= -1;
 constexpr int RPS_WARNING_MSG_LEVEL= -2;
 constexpr int RPS_FATAL_MSG_LEVEL= -3;
@@ -214,53 +208,7 @@ typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 typedef void Rps_EventHandler_sigt(Rps_CallFrame*, int /*fd*/, void* /*data*/);
 
-#if RPS_WITH_FLTK
-extern "C" int rps_fltk_get_abi_version (void);
-extern "C" int rps_fltk_get_api_version (void);
-extern "C" void rps_fltk_initialize (int argc, char**argv);
-extern "C" void rps_fltk_progoption(char*arg, struct argp_state*, bool side_effect);
-extern "C" bool rps_fltk_enabled (void);
-extern "C" void rps_fltk_run (void);
-extern "C" void rps_fltk_stop (void);
-extern "C" void rps_fltk_flush (void);
-extern "C" void rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
-    Rps_Debug dbgopt, long dbgcount,
-    const char*msg);
-extern "C" void rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, long dbgcount,
-    const char*fmt, ...)
-__attribute__ ((format (printf, 5, 6)));
-/* add an input file descriptor event handler to FLTK event loop */
-extern "C" void rps_fltk_add_input_fd(int fd,
-                                      Rps_EventHandler_sigt* f,
-                                      const char* explanation,
-                                      int ix);
-/* add an output file descriptor event handler to FLTK event loop */
-extern "C" void rps_fltk_add_output_fd(int fd,
-                                       Rps_EventHandler_sigt* f,
-                                       const char* explanation,
-                                       int ix);
-/* remove an input file descriptor event handler from FLTK event loop */
-extern "C" void rps_fltk_remove_input_fd(int fd);
-/* remove an output file descriptor event handler from FLTK event loop */
-extern "C" void rps_fltk_remove_output_fd(int fd);
-/* emit the size and align */
-extern "C" void rps_fltk_emit_sizes(std::ostream&out);
-#else /*not RPS_WITH_FLTK*/
-#define rps_fltk_get_abi_version() 0
-#define rps_fltk_get_api_version() 0
-#define rps_fltk_initialize() do {}while(0)
-#define rps_fltk_progoption(Arg,State,SidEff) do {}while(0)
-#define rps_fltk_enabled() false
-#define rps_fltk_add_input_fd(Fd,Fun,Expl,Ix) do {}while(0)
-#define rps_fltk_add_output_fd(Fd,Fun,Expl,Ix) do {}while(0)
-#define rps_fltk_remove_input_fd(Fd) do{}while(0)
-#define rps_fltk_remove_output_fd(Fd) do{}while(0)
-#define rps_fltk_stop() do{}while(0)
-#define rps_fltk_run() do{}while(0)
-#define rps_fltk_flush() do{}while(0)
-#define rps_fltk_emit_sizes(Out) do{}while(0)
-#define rps_fltk_printf_inform_message(File,Lin,Funcname,Count,Fmt,...) do{}while(0)
-#endif
+
 
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
@@ -281,12 +229,6 @@ class Rps_PayloadPopenedFile;   // transient payload for popened command
 class Rps_PayloadCppStream;     // transient payload for C++ streams
 class Rps_PayloadGccJit;  //  payload for libgccjit
 // code generation
-#if RPS_WITH_FLTK
-class Rps_PayloadFltkThing;
-class Rps_PayloadFltkWidget;
-class Rps_PayloadFltkWindow;
-//TODO: add perhaps Rps_PayloadFltkWindow?
-#endif
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_ProtoCallFrame;
@@ -620,10 +562,6 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
               Fil, Lin, __PRETTY_FUNCTION__,                            \
               ##__VA_ARGS__);                                           \
   };                                                                    \
-    if (rps_fltk_enabled())                                             \
-      rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__,     \
-             rps_incremented_debug_counter(),                           \
-             "FATAL:" Fmt, ##__VA_ARGS__);                              \
   if (rps_debug_file && rps_debug_file != stderr)                       \
     fprintf(rps_debug_file,                                             \
             "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",          \
@@ -851,7 +789,6 @@ enum rps_progoption_en
   RPSPROGOPT_DEBUG_AFTER_LOAD='A',
   RPSPROGOPT_BATCH='B',
   RPSPROGOPT_DUMP='D',
-  RPSPROGOPT_FLTK='F',
   RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
   RPSPROGOPT_LOADDIR='L',
   RPSPROGOPT_COMMAND='c',
@@ -1039,13 +976,6 @@ while (0)
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
             ##__VA_ARGS__);                                     \
       fflush(stdout); };                                        \
-    if (rps_fltk_enabled())                                     \
-      rps_fltk_printf_inform_message                            \
-        (Fil,Lin,                                               \
-         __PRETTY_FUNCTION__,                                   \
-         rps_incremented_debug_counter(),                       \
-         Fmt,                                                   \
-         ##__VA_ARGS__);                                        \
 } while(0)
 
 #define RPS_INFORM_AT(Fil,Lin,Fmt,...) RPS_INFORM_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
@@ -1689,12 +1619,8 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  PaylLightCodeGen = -28,
-  PaylMachlearn = -27,
-  PaylFltkRefWidget = -26,
-  PaylFltkWidget = -25,
-  PaylFltkWindow = -24,
-  PaylFltkThing = -23,
+  PaylLightCodeGen = -24,
+  PaylMachlearn = -23,
   PaylCplusplusGen = -22,    // for C++ code generation
   PaylGccjit = -21,    // for GNU libgccjit code generation
   PaylEnviron = -20,         // for environments
@@ -2747,7 +2673,7 @@ std::string rps_glob_plain_file_path(const char*shellpat, const char*dirpath);
 //////////////////////////////////////////////////////////// immutable strings
 
 // compute a long hash in ht[0] and ht[1]. Return the number of UTF-8
-// character or else 0 if cstr with len bytes is not proper UTF-8. This is an important function, whose source code is shared in guifltk-refpersys
+// character or else 0 if cstr with len bytes is not proper UTF-8. This is an important function
 extern "C"
 int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len= -1);
 
@@ -2977,7 +2903,7 @@ protected:
   Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
   void starting_new_input_line(void)
   {
-    RPS_POSSIBLE_BREAKPOINT(); /// for issue#30
+    //    RPS_POSSIBLE_BREAKPOINT(); /// for issue#30
     toksrc_col=0;
     toksrc_line++;
     fill_current_line_buffer();

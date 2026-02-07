@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1362,35 +1362,10 @@ Rps_Dumper::write_generated_data_file(void)
   else
     *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 0" << std::endl;
   *pouts << std::endl << std::endl;
-  bool hasfltk = false;
-  if (rps_fltk_get_abi_version() > 0)
-    {
-      *pouts << "#define RPS_FLTK_ABI_VERSION " << rps_fltk_get_abi_version()
-             << std::endl;
-      hasfltk = true;
-    }
-  else
     {
       *pouts << "#undef RPS_FLTK_ABI_VERSION" << std::endl;
       *pouts << "#define RPS_WITHOUT_FLTK_ABI 1" << std::endl;
     }
-  if (rps_fltk_get_api_version() > 0)
-    {
-      *pouts << "#define RPS_FLTK_API_VERSION " << rps_fltk_get_api_version()
-             << std::endl;
-      hasfltk = true;
-    }
-  else
-    {
-      *pouts << "#undef RPS_FLTK_API_VERSION" << std::endl;
-      *pouts << "#define RPS_WITHOUT_FLTK_API 1" << std::endl;
-    }
-  if (hasfltk)
-    {
-      *pouts << "#define RPS_WITH_FLTK 1" << std::endl;
-      rps_fltk_emit_sizes(*pouts);
-    }
-  else
     {
       *pouts << "#undef RPS_WITH_FLTK" << std::endl;
     }

@@ -144,12 +144,6 @@ rps_do_stop_event_loop(void)
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_POSSIBLE_BREAKPOINT();
   rps_stop_event_loop_flag.store(true);
-#if RPS_WITH_FLTK
-  if (rps_fltk_enabled ())
-    {
-      rps_fltk_stop();
-    }
-#endif //RPS_WITH_FLTK
 } // end rps_do_stop_event_loop
 
 extern "C" void rps_jsonrpc_initialize(void);
@@ -243,12 +237,6 @@ rps_event_loop_add_input_fd_handler (int fd,
   rps_eventloopdata.eld_explarr[lastfd] = explanation;
   rps_eventloopdata.eld_datarr[lastfd] = data;
   rps_eventloopdata.eld_lastix = lastfd+1;
-#if RPS_WITH_FLTK
-  if (rps_fltk_enabled())
-    {
-      rps_fltk_add_input_fd(fd, f, explanation, (int)lastfd);
-    };
-#endif //RPS_WITH_FLTK
   RPS_DEBUG_LOG(REPL, "rps_event_loop_add_input_fd_handler fd#" << fd
                 << " f@" << (void*)f
                 << " expl:" << explanation
@@ -271,12 +259,6 @@ rps_event_loop_add_output_fd_handler (int fd,
   rps_eventloopdata.eld_explarr[lastfd] = explanation;
   rps_eventloopdata.eld_datarr[lastfd] = data;
   rps_eventloopdata.eld_lastix = lastfd+1;
-#if RPS_WITH_FLTK
-  if (rps_fltk_enabled())
-    {
-      rps_fltk_add_output_fd(fd, f, explanation, (int)lastfd);
-    }
-#endif //RPS_WITH_FLTK
   RPS_DEBUG_LOG(REPL, "rps_event_loop_add_output_fd_handler fd#" << fd
                 << " f@" << (void*)f
                 << " expl:" << explanation
@@ -330,10 +312,6 @@ rps_event_loop_remove_input_fd_handler(int fd)
   memcpy (rps_eventloopdata.eld_datarr, new_datarr, newlastix*sizeof(new_datarr[0]));
   rps_eventloopdata.eld_lastix = newlastix;
   RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_input_fd_handler fd#" << fd);
-#if RPS_WITH_FLTK
-  if (rps_fltk_enabled())
-    rps_fltk_remove_input_fd(fd);
-#endif //RPS_WITH_FLTK
 } // end rps_event_loop_remove_input_fd_handler
 
 void
@@ -471,8 +449,6 @@ rps_event_loop_remove_output_fd_handler(int fd)
           newlastix*sizeof(new_datarr[0]));
   rps_eventloopdata.eld_lastix = newlastix;
   RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_output_fd_handler fd#" << fd);
-  if (rps_fltk_enabled())
-    rps_fltk_remove_output_fd(fd);
 } // end rps_event_loop_remove_output_fd_handler
 
 bool
@@ -611,7 +587,6 @@ rps_initialize_event_loop(void)
   rps_eventloopdata.eld_prepollvect.clear();
   ///
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting "
-                << (rps_fltk_enabled()?"with FLTK":"without-fltk")
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop*start"));
   rps_initialize_pipe_to_self_in_event_loop();
@@ -622,7 +597,6 @@ rps_initialize_event_loop(void)
   if (rps_poll_delay_millisec==0)
     rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop ended "
-                << (rps_fltk_enabled()?"with FLTK":"without-fltk")
                 << " polldelay=" << rps_poll_delay_millisec << " ms"
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop*ended"));
@@ -722,10 +696,6 @@ rps_event_loop(void)
     if (rps_poll_delay_millisec<=0)
       RPS_FATALOUT("the poll event loop has not being properly initialized");
   };
-#if RPS_WITH_FLTK
-  if (rps_fltk_enabled ())
-    RPS_FATALOUT("rps_event_loop incompatible with FLTK");
-#endif //RPS_WITH_FLTK
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/rps_curthread_callframe, //
                  /** locals **/
@@ -758,7 +728,6 @@ rps_event_loop(void)
           RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt
                         << " elapsed:" << rps_elapsed_real_time()
                         << " thread:" << rps_current_pthread_name()
-                        << ((rps_fltk_enabled())?" with FLTK": " without-fltk")
                         << std::endl
                         << RPS_FULL_BACKTRACE(1, "rps_event_loop/looping"));
         }
