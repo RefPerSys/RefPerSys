@@ -1513,6 +1513,7 @@ main (int argc, char** argv)
   //// since rps_early_initialization is later setting it to rps-main
   pthread_setname_np(pthread_self(), "rps--main");
   char*mylocale = nullptr;
+  char*myuserpref = nullptr;
   bool helpwanted = false;
   bool versionwanted = false;
   _Pragma("message \"start of main\"");
@@ -1520,13 +1521,17 @@ main (int argc, char** argv)
     helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
     versionwanted = true;
-  //// if --locale is given then process it quicky
+  //// if --locale or --user-pref is given then process it quicky
   for (int lix=1; lix<argc; lix++)
     {
       if (!strcmp(argv[lix], "--locale") && lix+1<argc)
         mylocale = argv[lix+1];
       else if (!strncmp(argv[lix], "--locale=", strlen("--locale=")))
         mylocale = argv[lix]+strlen("--locale=");
+      else if (!strcmp(argv[lix], "--user-pref") && lix+1<argc)
+        myuserpref = argv[lix+1];
+      else if (!strncmp(argv[lix], "--user-pref=", strlen("--userpref=")))
+        myuserpref = argv[lix]+strlen("--locale=");
     }
   if (mylocale)
     {
@@ -1594,7 +1599,8 @@ main (int argc, char** argv)
   static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
   if (versionwanted)
     rps_show_version();
-  {
+  if (!myuserpref && strcmp(myuserpref, ".")
+      && strcmp(myuserpref, "/")) {
     static char prefbuf[rps_path_byte_size];
     memset (prefbuf, 0, sizeof(prefbuf));
     (void) snprintf(prefbuf, sizeof (prefbuf)-1,
@@ -1727,19 +1733,6 @@ main (int argc, char** argv)
   if (!rps_batch)
     {
       RPS_POSSIBLE_BREAKPOINT();
-#if RPS_WITH_FLTK
-      if (rps_fltk_enabled())
-        {
-          RPS_DEBUG_LOG(REPL, "main before calling rps_fltk_run"
-                        << std::endl
-                        << RPS_FULL_BACKTRACE(1, "main/fltk-run+"));
-          rps_fltk_run();
-          RPS_DEBUG_LOG(REPL, "main rps_fltk_run ended"
-                        << std::endl
-                        << RPS_FULL_BACKTRACE(1, "main/fltk-run-"));
-        }
-      else
-#endif /*RPS_WITH_FLTK*/
         {
           RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
                         << RPS_FULL_BACKTRACE(1, "main"));
