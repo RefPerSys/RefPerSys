@@ -81,7 +81,7 @@ rps_delete_user_preferences(void)
 } // end rps_delete_user_preferences
 
 static void
-rps_free_userpref(void*p1, void*p2 [[unused]])
+rps_free_userpref(void*p1, void* [[unused]])
 {
   free(p1);
 } // end rps_free_userpref
