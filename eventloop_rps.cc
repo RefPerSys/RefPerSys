@@ -1445,7 +1445,7 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
       if (rank>=0)
         {
 	  RPS_POSSIBLE_BREAKPOINT();
-          RPS_ASSERT(rank==ix);
+          RPS_ASSERTPRINTF(rank==ix, "rank=%d ix=%d", rank, ix);
         };
       if (is_c)
         {
