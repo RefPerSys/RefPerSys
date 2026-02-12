@@ -65,6 +65,7 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         lto-refpersys \
         raw-refpersys raw-objects \
         snapshot \
+	q6refpersys \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a \
@@ -90,6 +91,10 @@ REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
 include $(REFPERSYS_CONFIG_MAKE)
 
 REFPERSYS_CXX_STANDARD?= -std=gnu++2c
+
+## Qt6 - see www.qt.io - provides a meta object compiler
+## See also doc.qt.io/qt-6/moc.html
+REFPERSYS_QT6MOC ?= /usr/lib/qt6/libexec/moc
 
 CFLAGS?= -Og -g -Wall $(RPS_LTO)
 
@@ -690,6 +695,15 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
                          -c $(REFPERSYS_COMPILER_FLAGS) $< -o $@
+
+
+q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc |GNUmakefile
+	$(CXX) -rdynamic -fPIE -fPIC -g -O $(CXXFLAGS) -DGITID='"$(GIT_ID)"' \
+	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
+	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
+
+_q6refpersys-moc.cc: q6refpersys.cc |GNUmakefile
+	$(REFPERSYS_QT6MOC)  -DGITID='"$(GIT_ID)"'  q6refpersys.cc > $@
 
 ## for plugins, see do-build-refpersys-plugin.cc
 print-plugin-settings:
