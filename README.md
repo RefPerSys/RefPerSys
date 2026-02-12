@@ -39,6 +39,9 @@ They are on
 (many files, including `q6refpersys.cc` for
 [https://www.qt.io/product/qt6](Qt6) graphical toolkits.
 
+That could be extended to communicate (using JSONRPC protocol) with the
+RefPerSys engine.
+
 ## A research project
 
 The Reflective Persistent System language is a **research project**,

@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2024 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2024 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -292,7 +292,99 @@ Rps_Object_Display::output_display(std::ostream&out) const
   out << " " << BOLD_esc << "|-" << oidpref << "¤¤}" << NORM_esc << std::endl;
 } // end Rps_Object_Display::output_display
 
+extern "C" std::mutex rps_addr_mtx;
+std::mutex rps_addr_mtx;
 
+const std::string
+rps_demangled_name(const char*name)
+{
+  if (!name)
+    return std::string();
+  else if (isalpha(name[0]))
+    return std::string(name);
+  int status = -1;
+  const char*demangled  = abi::__cxa_demangle(name, nullptr, 0, &status);
+  if (demangled && demangled[0])
+    return std::string(demangled);
+  return std::string(name);
+} // end rps_demangled_name
+
+const std::string
+rps_addr2string(void*ad)
+{
+  if (ad == nullptr)
+    return "◎"; //U+25CE BULLSEYE
+  else if ((uintptr_t)ad == (uintptr_t)-1)
+    return "▼"; //U+25BC BLACK DOWN-POINTING TRIANGLE
+  std::lock_guard<std::mutex> addr_guard(rps_addr_mtx);
+  Dl_info inf;
+  memset ((void*)&inf, 0, sizeof(inf));
+  char buf[256];
+  memset (buf, 0, sizeof(buf));
+  int d = dladdr(ad, &inf);
+  if (d)   // dladdr succeeded
+    {
+      if (inf.dli_sname == nullptr && inf.dli_saddr == nullptr)
+        {
+          if (inf.dli_fname != nullptr)
+            {
+              long d = (const char*)ad-(const char*)inf.dli_saddr;
+              if (d!=0)
+                snprintf(buf, sizeof(buf)-2,
+                         "¤%s+%#lx=%p",
+                         inf.dli_fname,
+                         d,
+                         ad);
+              else
+                snprintf(buf, sizeof(buf)-2,
+                         "¤%s=%p",
+                         inf.dli_fname,
+                         ad);
+              return std::string(buf);
+            }
+          else
+            {
+              snprintf(buf, sizeof(buf)-2,
+                       "¤@%p", ad);
+              return std::string(buf);
+            }
+        }
+      else
+        {
+          long d = (const char*)ad-(const char*)inf.dli_saddr;
+          if (inf.dli_fname != nullptr)
+            {
+              if (d!=0)
+                snprintf(buf, sizeof(buf)-2,
+                         "°%s¤%s+%#lx=%p",
+                         inf.dli_fname,
+                         rps_demangled_name(inf.dli_sname).c_str(),
+                         d,
+                         ad);
+              else
+                snprintf(buf, sizeof(buf)-2,
+                         "¤%s=%p",
+                         rps_demangled_name(inf.dli_sname).c_str(),
+                         ad);
+              return std::string(buf);
+            }
+          else
+            {
+              snprintf(buf, sizeof(buf)-2,
+                       "¤%s+%#lx=%p",
+                       rps_demangled_name(inf.dli_sname).c_str(),
+                       d,
+                       ad);
+              return std::string(buf);
+            };
+        }
+    }
+  else   // dladdr failed
+    {
+      snprintf(buf, sizeof(buf), "@%p", ad);
+      return std::string(buf);
+    }
+} // end rps_addr2string
 
 #warning TODO: add or move code related to pretty output here
 

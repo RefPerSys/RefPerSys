@@ -30,13 +30,16 @@ if [ ! -x refpersys ]; then
     exit 1
 fi
 
-echo running refpersys -AREPL --script=$0 --batch --run-name=005script
+## CPU soft and hard limits
+ulimit -S -t 5
+ulimit -H -t 8
+echo running refpersys -AREPL --script=$0 --user-pref=. --batch --run-name=005script
 
-./refpersys -AREPL --script=$0 --batch --run-name=005script
+./refpersys -AREPL --script=$0 --user-pref=. --batch --run-name=005script
 exit $?
 
 ## for GDB use
-## gdb --args ./refpersys -AREPL --script=test_dir/005script.bash --batch --run-name 005script
+## gdb --args ./refpersys -AREPL --script=test_dir/005script.bash --user-pref=. --batch --run-name 005script
 
 ## magic string should not be commented
 REFPERSYS_SCRIPT carbon

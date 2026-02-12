@@ -4,7 +4,7 @@
 /// Description:
 ///     This file is part of the Reflective Persistent System.
 
-///      © Copyright 2024 - 2025 The Reflective Persistent System Team
+///      © Copyright 2024 - 2026 The Reflective Persistent System Team
 ///      team@refpersys.org & http://refpersys.org/
 ///
 /// Purpose: build-time configuration of the RefPerSys inference
@@ -1401,7 +1401,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   time_t nowt = time (NULL);
   fprintf (f, "# generated _config-refpersys.mk for GNU make in refpersys\n");
   fprintf (f, "# DO NOT EDIT but use make config\n");
-  fprintf (f, "# generated from %s:%d in %s\n", __FILE__, __LINE__,
+  fprintf (f, "# generated from %s:%d\n# in %s\n", __FILE__, __LINE__,
            rpsconf_cwd_buf);
   fprintf (f, "# see refpersys.org\n\n");
   fprintf (f, "# generated at %s## on %s git %s\n\n",
@@ -1533,7 +1533,12 @@ rpsconf_emit_configure_refpersys_mk (void)
     {
       fprintf (f, "\n# FLTK (see fltk.org) configurator\n");
       fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", rpsconf_fltk_config);
+      fprintf (f, "REFPERSYS_FLTK_SOURCE= fltk_rps.cc\n");
     }
+  else
+    {
+      fprintf(f, "\n### no fltk.org from %s:%d\n", __FILE__, __LINE__);
+    };
   ////
   fprintf (f, "\n### machine architecture\n");
   fprintf (f, "REFPERSYS_ARCH=%s\n", rpsconf_arch);
@@ -1948,10 +1953,14 @@ main (int argc, char **argv)
   if (!rpsconf_fltk_config)
     {
       printf ("\nFLTK is a graphical toolkit from www.fltk.org\n"
-              "\t providing a configurator script\n");
+              "\t providing a configurator script;\n"
+	      "\t its configurator is a program often named fltk-config\n"
+	      "\t An empty input or a dot character disable FLTK\n");
       fflush (stdout);
       rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
-      if (access (rpsconf_fltk_config, X_OK))
+      if (rpsconf_fltk_config && rpsconf_fltk_config[0]
+	  && strcmp(rpsconf_fltk_config, ".")
+	  && access (rpsconf_fltk_config, X_OK))
         {
           fprintf (stderr,
                    "%s bad FLTK configurator %s (%s) [%s:%d]\n",
@@ -1960,7 +1969,9 @@ main (int argc, char **argv)
                    strerror (errno), __FILE__, __LINE__ - 3);
           rpsconf_failed = true;
           exit (EXIT_FAILURE);
-        }
+        };
+      if (rpsconf_fltk_config && !strcmp(rpsconf_fltk_config, "."))
+	rpsconf_fltk_config = NULL;
     }
 
   if (access ("generated/rpsdata.h", R_OK))

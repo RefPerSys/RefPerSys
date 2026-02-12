@@ -573,7 +573,10 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
     {
       toksrc_linebuf = std::string(beg, eol-beg);
       RPS_POSSIBLE_BREAKPOINT();
-      toksrcmfil_line = beg;
+      if (eol < toksrcmfil_end)
+	toksrcmfil_line = eol+1;
+      else
+	toksrcmfil_line = eol;
     };
   RPS_POSSIBLE_BREAKPOINT();
 #warning the curcptr should be in toksrc_linebuf
@@ -1163,6 +1166,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                            Rps_ObjectRef obdelim;
                 );
   const char* curp = curcptr();
+  /// skip comment lines starting with #
+  while (curp && *curp == '#' && !reached_end() && col()==0) {
+    starting_new_input_line();
+    curp = curcptr();
+  };
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
                 << Rps_QuotedC_String(curp) << " at " << startpos << std::endl

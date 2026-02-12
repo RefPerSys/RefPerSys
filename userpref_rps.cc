@@ -57,6 +57,11 @@ const char rps_userpref_timestamp[]= __TIMESTAMP__;
 static INIReader* rps_userpref_ird;
 static std::atomic_bool rps_userpref_is_parsed;
 
+
+
+extern "C" const char*rps_userpref_path;
+const char* rps_userpref_path;
+
 extern "C" void rps_set_user_preferences(char*);
 
 extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts);
@@ -75,18 +80,38 @@ rps_delete_user_preferences(void)
   rps_userpref_ird = nullptr;
 } // end rps_delete_user_preferences
 
+static void
+rps_free_userpref(void*p1, void* [[unused]])
+{
+  free(p1);
+} // end rps_free_userpref
+
 void
 rps_set_user_preferences(char*path)
 {
   RPS_POSSIBLE_BREAKPOINT();
   /// to set manually the REPL debugging use rps_add_debug_cstr("REPL") in GDB
+  if (!path || !path[0] || !strcmp(path, ".") || !strcmp(path, "/"))
+    {
+      RPS_INFORMOUT("skipping user preferences given by "
+                    <<  Rps_QuotedC_String(path) << std::endl
+                    << RPS_FULL_BACKTRACE(1, "rps_set_user_preferences/skip"));
+      rps_userpref_path = nullptr;
+      return;
+    };
   RPS_ASSERT(!access(path, R_OK));
+  rps_userpref_path = strdup(path);
+  if (!rps_userpref_path)
+    RPS_FATALOUT("failed to strdup " << path);
+  rps_do_at_exit_cfun(rps_free_userpref,
+                      (void*)(rps_userpref_path),
+                      nullptr);
   RPS_ASSERT(rps_is_main_thread());
   if (rps_userpref_mts)
     RPS_FATALOUT("cannot set user preferences more than once, here to "
                  << path << " but previously to "
                  << rps_userpref_mts->path());
-  rps_userpref_mts = new  Rps_MemoryFileTokenSource(path);
+  rps_userpref_mts = new  Rps_MemoryFileTokenSource(rps_userpref_path);
   bool gotlin = rps_userpref_mts->get_line();
   int nbloop = 0;
   RPS_DEBUG_LOG(REPL, "userpref " << path << " mts@"
@@ -402,6 +427,8 @@ rps_try_parsing_default_user_preferences(void)
         {
           rps_set_user_preferences(buf);
         }
+      else
+        RPS_WARNOUT("no default user preference file " << buf);
     }
 } // end rps_try_parsing_default_user_preferences
 

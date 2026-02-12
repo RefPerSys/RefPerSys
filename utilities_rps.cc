@@ -565,6 +565,13 @@ rps_print_types_info(void)
 #undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
+  std::cout << "rps_addr2string@" << (void*)rps_addr2string
+	    << ":" << rps_addr2string((void*)rps_addr2string)
+	    << std::endl
+	    << "Rps_QuasiZone::initialize@"
+	    << (void*)Rps_QuasiZone::initialize
+	    << ":" << rps_addr2string((void*)Rps_QuasiZone::initialize)
+	    << std::endl;
   std::cout << "@@°°@@ The tagged integer one hundred is "
             << Rps_Value::make_tagged_int(100)
             << std::endl
@@ -1382,7 +1389,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       /// example argument: -U ~/myrefpersys.pref
       /// other example: --user-pref=$HOME/myrps.pref
     {
-      if (access(arg, R_OK))
+      RPS_POSSIBLE_BREAKPOINT();
+      if (!arg || !arg[0] || !strcmp(arg, ".") || !strcmp(arg, "/")) {
+	RPS_INFORMOUT("no user preferences");
+	return 0;
+      };
+      if (!access(arg, R_OK))
         rps_set_user_preferences(arg);
       else
         RPS_FATALOUT("missing user preferences file " << arg
@@ -1573,9 +1585,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       memset (extraname, 0, sizeof(extraname));
       if (sscanf(arg, "%72[A-Za-z0-9_]=%n", extraname, &eqnextpos) >= 1
           && isalpha(extraname[0])
-          && eqnextpos > 1 && arg[eqnextpos-1] == '='
-          && isalpha(extraname[0]))
+          && eqnextpos > 1 && arg[eqnextpos-1] == '=')
         {
+	  if (strlen(extraname) > sizeof(extraname)-10)
+	    RPS_WARNOUT("too long extraname " << extraname
+			<< " in " << arg);
           for (const char*n = extraname; *n; n++)
             if (!isalnum(*n) && *n != '_')
               RPS_FATALOUT("invalid extra named argument " << extraname);

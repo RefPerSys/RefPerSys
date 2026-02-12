@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1362,38 +1362,13 @@ Rps_Dumper::write_generated_data_file(void)
   else
     *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 0" << std::endl;
   *pouts << std::endl << std::endl;
-  bool hasfltk = false;
-  if (rps_fltk_get_abi_version() > 0)
-    {
-      *pouts << "#define RPS_FLTK_ABI_VERSION " << rps_fltk_get_abi_version()
-             << std::endl;
-      hasfltk = true;
-    }
-  else
-    {
-      *pouts << "#undef RPS_FLTK_ABI_VERSION" << std::endl;
-      *pouts << "#define RPS_WITHOUT_FLTK_ABI 1" << std::endl;
-    }
-  if (rps_fltk_get_api_version() > 0)
-    {
-      *pouts << "#define RPS_FLTK_API_VERSION " << rps_fltk_get_api_version()
-             << std::endl;
-      hasfltk = true;
-    }
-  else
-    {
-      *pouts << "#undef RPS_FLTK_API_VERSION" << std::endl;
-      *pouts << "#define RPS_WITHOUT_FLTK_API 1" << std::endl;
-    }
-  if (hasfltk)
-    {
-      *pouts << "#define RPS_WITH_FLTK 1" << std::endl;
-      rps_fltk_emit_sizes(*pouts);
-    }
-  else
-    {
-      *pouts << "#undef RPS_WITH_FLTK" << std::endl;
-    }
+  {
+    *pouts << "#undef RPS_FLTK_ABI_VERSION" << std::endl;
+    *pouts << "#define RPS_WITHOUT_FLTK_ABI 1" << std::endl;
+  }
+  {
+    *pouts << "#undef RPS_WITH_FLTK" << std::endl;
+  }
   /// emit a few GNU lightning constants (it is a runtime code generation
   /// library www.gnu.org/software/lightning/ ...)
   {
@@ -1968,17 +1943,26 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   //// dumpobject in Rps_Dumper.
 #warning we may want to make some temporary obdumper and keep it...
   Rps_Dumper dumper(realdirpath, &_);
-  RPS_INFORMOUT("start dumping into " << dumper.get_top_dir() << " " << (dumper.is_dumping_into_topdir()?"loaded directory":"other directory")
-                << " with temporary suffix " << dumper.get_temporary_suffix());
+  RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
+                << std::endl
+                << "… "
+                << (dumper.is_dumping_into_topdir()
+                    ?"the loaded directory":"other directory")
+                << std::endl
+                << "… with temporary suffix "
+                << dumper.get_temporary_suffix());
   try
     {
+      RPS_POSSIBLE_BREAKPOINT();
       if (realdirpath != cwdpath)
         {
           if (!std::filesystem::create_directories(realdirpath
               + "/persistore"))
             {
-              RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
+              RPS_WARNOUT("failed to make dump sub-directory "
+                          << realdirpath
                           << "/persistore:" << strerror(errno));
+              RPS_POSSIBLE_BREAKPOINT();
               throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath + "/persistore");
             }
           else

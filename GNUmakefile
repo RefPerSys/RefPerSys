@@ -69,8 +69,9 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a \
         test08 test09 test-load \
-        testcarb1 testcarb2 testcarb3 \
-	testfltk1 testfltk2 testfltk3 testfltk4
+        testcarb1 testcarb2 testcarb3
+
+
 
 SYNC=/bin/sync
 
@@ -231,7 +232,6 @@ lto-refpersys:
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
              $(REFPERSYS_DUMPED_CPP_OBJECTS) __timestamp.o \
 	      $(RPS_LIBBACKTRACE) \
-              $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               -rpath /usr/local/lib:$LD_LIBRARY_PATH \
                $(REFPERSYS_LINKER_FLAGS) \
@@ -353,8 +353,6 @@ refpersys: objects |  GNUmakefile _config-refpersys.mk
 	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
 	@echo RPS_LTO is $(RPS_LTO)
-	@echo FLTKconfig is  $(REFPERSYS_FLTKCONFIG)
-	@echo FLTK stuff is  $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags)
 	@echo REFPERSYS_NEEDED_LIBRARIES is $(REFPERSYS_NEEDED_LIBRARIES)
 	@echo REFPERSYS_HUMAN_CPP_OBJECTS is $(REFPERSYS_HUMAN_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	@echo REFPERSYS_DUMPED_CPP_OBJECTS is $(REFPERSYS_DUMPED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
@@ -369,7 +367,6 @@ refpersys: objects |  GNUmakefile _config-refpersys.mk
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
              __timestamp.o \
               $(RPS_LIBBACKTRACE) \
-              $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
@@ -635,7 +632,6 @@ raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
 	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
-               -DRPS_WITH_FLTK=0 \
                $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
@@ -686,44 +682,6 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
                -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       $< | /bin/sed 's:^#://#:g' | $(ASTYLE) $(ASTYLEFLAGS)  > $@
 
-fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefile _config-refpersys.mk
-	echo dollar-less-F is $(<F)
-	echo basename-dollar-less-F is $(basename $(<F))
-	echo pkglist-refpersys is $(PKGLIST_refpersys)
-	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) \
-            $(REFPERSYS_COMPILER_FLAGS) \
-               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
-	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
-               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-               -DRPS_HOST=\"$(RPS_HOST)\" \
-	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
-               -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
-               -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
-	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
-	       -c -o $@ $<
-	$(SYNC)
-
-fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefile _config-refpersys.mk
-	echo dollar-less-F is $(<F)
-	echo basename-dollar-less-F is $(basename $(<F))
-	echo pkglist-refpersys is $(PKGLIST_refpersys)
-	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
-	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) -C -E $(REFPERSYS_PREPRO_FLAGS) \
-            $(REFPERSYS_COMPILER_FLAGS) \
-               -MD -MFMake-dependencies/__$(basename $(@F)).ii.mkdep \
-	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
-               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_HOST=\"$(RPS_HOST)\" \
-	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
-            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
-            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
-	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
-	       $< | /bin/sed 's:^#://#:g'| $(ASTYLE) $(ASTYLEFLAGS)  > $@
 
 %.ii.o: %.ii | GNUmakefile  _config-refpersys.mk
 	echo dollar-less-F is $(<F)
@@ -760,7 +718,7 @@ indent:
 
 ## redump target
 redump: refpersys
-	./refpersys --dump=. --batch --run-name=$@
+	./refpersys --user-pref=. --dump=. --batch --run-name=$@
 	@if git diff -U1|grep '^[+-] ' | grep -v 'origitid|//: gen' ; then \
 	  printf "make redump changed in %s git %s\n" $$(pwd)  $(RPS_SHORTGIT_ID); \
           git diff ; \
@@ -772,7 +730,7 @@ redump: refpersys
 
 ## alternate redump target
 altredump:  ./refpersys
-	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
+	./refpersys --user-pref=. --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
 	$(SYNC)
 
 ################################################################
@@ -889,32 +847,6 @@ testcarb2: refpersys
 testcarb3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
-
-## testing the FLTK graphical interface
-testfltk1: refpersys
-	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=testfltk1 --run-delay=39s  \
-                    --fltk=$$HOME/fltk1-refpersys-pref \
-                    --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk1 failed; exit 1)
-	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
-
-testfltk2: refpersys
-	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory \
-                    --run-name=testfltk2 --pid-file=$(RPS_HOMETMP)/refpersys.pid  || (echo testfltk2 failed; exit 1)
-	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
-
-testfltk3: refpersys
-	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=testfltk3 --run-delay=29s  --fltk -bg lightpink \
-                    --pid-file=$(RPS_HOMETMP)/refpersys.pid || (echo testfltk3 failed; exit 1)
-	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
-
-testfltk4: refpersys
-	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=testfltk4 --run-delay=15m  --fltk -bg peachpuff \
-                     --echo="hello from $@" || (echo testfltk4 failed; exit 1)
-	@printf '\n\n\n////testfltk4 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 ########### show the testing commands
 showtests:

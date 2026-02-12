@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
  *      Nimesh Neema <nimeshneema@gmail.com> (India)
  *
- *      © Copyright (C) 2023 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -84,6 +84,9 @@ protected:
   static constexpr int cppgen_depth_threshold = 3;
   virtual ~Rps_PayloadCplusplusGen()
   {
+    RPS_DEBUG_LOG(CODEGEN, "-Rps_PayloadCplusplusGen owner=" << owner()
+		  << std::endl
+		  << RPS_FULL_BACKTRACE(1, "-Rps_PayloadCplusplusGen"));
     cppgen_outcod.clear();
     cppgen_includeset.clear();
     cppgen_datavect.clear();
@@ -199,6 +202,10 @@ Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen(Rps_ObjectZone*ob)
   : Rps_Payload(Rps_Type::PaylCplusplusGen,ob), cppgen_outcod(),
     cppgen_indentation(0), cppgen_path()
 {
+  RPS_ASSERT(ob != nullptr);
+  RPS_DEBUG_LOG(CODEGEN, "+Rps_PayloadCplusplusGen ob=" << ob
+		<< std::endl
+		<< RPS_FULL_BACKTRACE(1, "+Rps_PayloadCplusplusGen"));
 } // end Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen
 
 
