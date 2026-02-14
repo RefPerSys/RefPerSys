@@ -756,15 +756,18 @@ rpsconf_try_then_set_cxx_compiler (const char *cxx)
 void
 rpsconf_check_libgccjit_header (const char *jithpath)
 {
+  int olderr = 0;
+  olderr = errno;
   FILE *jithf = fopen (jithpath, "r");
   if (!jithf)
     {
       fprintf (stderr,
-               "%s fail to fopen '%s' [%s:%d]\n",
-               rpsconf_prog_name, jithpath, __FILE__, __LINE__ - 2);
+               "%s fail to fopen '%s' [%s:%d]\n(%s)",
+               rpsconf_prog_name, jithpath, __FILE__, __LINE__ - 2, strerror(errno));
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
+  olderr = errno;
   /**
      the libgccjit.h file is expected to contain the following sentences:
      embed GCC as a JIT-compiler
