@@ -767,7 +767,8 @@ rpsconf_check_libgccjit_header (const char *jithpath)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
-  olderr = errno;
+  errno = olderr;
+  ////////
   /**
      the libgccjit.h file is expected to contain the following sentences:
      embed GCC as a JIT-compiler
