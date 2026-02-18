@@ -1602,8 +1602,8 @@ main (int argc, char** argv)
   static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
   if (versionwanted)
     rps_show_version();
-  if (!myuserpref && strcmp(myuserpref, ".")
-      && strcmp(myuserpref, "/")) {
+  if (myuserpref && (!strcmp(myuserpref, ".")
+      && !strcmp(myuserpref, "/"))) {
     static char prefbuf[rps_path_byte_size];
     memset (prefbuf, 0, sizeof(prefbuf));
     (void) snprintf(prefbuf, sizeof (prefbuf)-1,
