@@ -51,7 +51,7 @@ RPS_ATSHARP := $(shell printf '@#')
 RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 # Carburetta is a parser generator on github.com/kingletbv/carburetta
 RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
-Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets
+Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
 ## see https://lists.debian.org/debian-user-french/2025/12/msg00005.html
 RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 ## REFPERSYS_LTO is by convention for link-time optimization flags
@@ -701,13 +701,13 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 
 
 q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc |GNUmakefile
-	$(CXX) -rdynamic -fPIE -fPIC -g -O $(CXXFLAGS) \
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
 	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
 
-_q6refpersys-moc.cc: q6refpersys.cc |GNUmakefile
-	$(REFPERSYS_QT6MOC)  -DGITID='"$(RPS_GIT_ID)"'   -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' q6refpersys.cc > $@
+_q6refpersys-moc.cc: tools/q6refpersys.cc |GNUmakefile
+	$(REFPERSYS_QT6MOC)  -DGITID='"$(RPS_GIT_ID)"'   -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' $< > $@
 
 ## for plugins, see do-build-refpersys-plugin.cc
 print-plugin-settings:
