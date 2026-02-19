@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /***
-    © Copyright 2024 - 2025 by Basile Starynkevitch
+    © Copyright 2024 - 2026 by Basile STARYNKEVITCH, France
    program released under GNU General Public License v3+
 
    This is free software; you can redistribute it and/or modify it under
@@ -108,13 +108,13 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
  const std::function<void(const Json::Value&res)>& resfun);
 
 #define MYQR_FATALOUT_AT_BIS(Fil,Lin,Out) do {  \
-    std::ostringstream outs##Lin;   \
-    outs##Lin << Out << std::flush;   \
-    qFatal("%s:%d: %s\n[git %s@%s] on %s",  \
-     Fil, Lin, outs##Lin.str().c_str(),   \
-     myqr_git_id, __DATE__" " __TIME__, \
-     myqr_host_name);     \
-    abort();          \
+    std::ostringstream outs##Lin;		\
+    outs##Lin << Out << std::flush;		\
+    qFatal("%s:%d: %s\n[git %s@%s] on %s",	\
+     Fil, Lin, outs##Lin.str().c_str(),		\
+     myqr_git_id, __DATE__" " __TIME__,		\
+     myqr_host_name);				\
+    abort();					\
   } while(0)
 
 #define MYQR_FATALOUT_AT(Fil,Lin,Out) \
