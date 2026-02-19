@@ -29,6 +29,7 @@
 
 #define UNUSED __attribute__((unused))
 extern "C" const char myqr_git_id[];
+extern "C" const char myqr_shortgitid[];
 extern "C" char myqr_host_name[64];
 
 #ifndef GITID
@@ -48,6 +49,7 @@ extern "C" char myqr_host_name[64];
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QSizePolicy>
+#include <QMessageBox>
 #include <QLabel>
 #include <QSocketNotifier>
 //#include <QJsonValue>
@@ -167,7 +169,7 @@ public:
   explicit MyqrMainWindow(QWidget*parent = nullptr);
   virtual ~MyqrMainWindow();
   static constexpr int minimal_width = 512;
-  static constexpr int minimal_height = 128;
+  static constexpr int minimal_height = 256;
   static constexpr int maximal_width = 2048;
   static constexpr int maximal_height = 1024;
 };        // end MyqrMainWindow
@@ -330,16 +332,21 @@ MyqrDisplayWindow::~MyqrDisplayWindow()
 void
 MyqrMainWindow::aboutQt()
 {
-  MYQR_DEBUGOUT("unimplemented MyqrMainWindow::aboutQt");
-#warning unimplemented MyqrMainWindow::aboutQt
+  QApplication::aboutQt();
 } // end MyqrDisplayWindow::aboutQt
 
 void
 MyqrMainWindow::about()
 {
-  MYQR_DEBUGOUT("unimplemented MyqrMainWindow::about");
-#warning unimplemented MyqrMainWindow::about
-} // end MyqrDisplayWindow::aboutQt
+  int ret =
+    QMessageBox::information(this,
+			     QString(myqr_progname),
+			     QString(" built "  __DATE__ "@" __TIME__ "\n")
+			     + QString("git id ")
+			     + QString(myqr_shortgitid));
+  MYQR_DEBUGOUT("incomplete MyqrMainWindow::about");
+#warning incomplete MyqrMainWindow::about
+} // end MyqrDisplayWindow::about
 
 void myqr_create_windows(const QString& geom);
 
@@ -847,6 +854,7 @@ main(int argc, char **argv)
 
 
 const char myqr_git_id[] = GITID;
+const char myqr_shortgitid[] = SHORT_GITID;
 char* myqr_progname;
 char myqr_host_name[sizeof(myqr_host_name)];
 std::string myqr_refpersys_topdir;
