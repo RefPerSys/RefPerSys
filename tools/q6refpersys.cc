@@ -411,6 +411,7 @@ myqr_readable_jsonrpc_cmd(void)
   memset (buf, 0, sizeof(buf));
   char errbuf[64];
   memset (errbuf, 0, sizeof(errbuf));
+  char*errmsg = nullptr;
   errno = 0;
   ssize_t rdcnt = read(myqr_jsonrpc_cmd_fd, buf, jrbufsize);
   int rderr = errno;
@@ -419,7 +420,7 @@ myqr_readable_jsonrpc_cmd(void)
                 << rdcnt << " bytes in buffer of " << jrbufsize);
   if (rdcnt < 0 && rderr > 0)
     {
-      strerror_r(rderr, errbuf, sizeof(errbuf));
+      errmsg = strerror_r(rderr, errbuf, sizeof(errbuf));
       assert(errbuf[0] != (char)0);
     };
   MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd got rdcnt=" << rdcnt
