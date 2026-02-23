@@ -138,11 +138,26 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
 extern "C" QApplication *myqr_app;
 
 extern "C" {
+  class MyqrJsonRpcFromRefPerSys;
   class MyqrMainWindow;
   class MyqrDisplayWindow;
 };
 
 
+typedef bool Myqr_Handler_jsonRpcFrom_sig (const unsigned long num,
+					   const Json::Value& request,
+					   Json::Value& reply,
+					   void*data);
+class MyqrJsonRpcFromRefPerSys {
+  static std::recursive_mutex myjr_mtx;
+  struct myjr_handler {
+    Myqr_Handler_jsonRpcFrom_sig* hdlr;
+    void* data;
+  };
+public:
+  static void register_handler(Myqr_Handler_jsonRpcFrom_sig*fct,
+			       void*data=nullptr);
+};				// end class MyqrJsonRpcFromRefPerSys
 
 ////////////////////////////////////////////////////////////////
 class MyqrMainWindow : public QMainWindow
@@ -169,7 +184,7 @@ public:
   explicit MyqrMainWindow(QWidget*parent = nullptr);
   virtual ~MyqrMainWindow();
   static constexpr int minimal_width = 512;
-  static constexpr int minimal_height = 256;
+  static constexpr int minimal_height = 360;
   static constexpr int maximal_width = 2048;
   static constexpr int maximal_height = 1024;
 };        // end MyqrMainWindow
