@@ -110,13 +110,13 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
  const std::function<void(const Json::Value&res)>& resfun);
 
 #define MYQR_FATALOUT_AT_BIS(Fil,Lin,Out) do {  \
-    std::ostringstream outs##Lin;		\
-    outs##Lin << Out << std::flush;		\
-    qFatal("%s:%d: %s\n[git %s@%s] on %s",	\
-     Fil, Lin, outs##Lin.str().c_str(),		\
-     myqr_git_id, __DATE__" " __TIME__,		\
-     myqr_host_name);				\
-    abort();					\
+    std::ostringstream outs##Lin;               \
+    outs##Lin << Out << std::flush;             \
+    qFatal("%s:%d: %s\n[git %s@%s] on %s",      \
+     Fil, Lin, outs##Lin.str().c_str(),         \
+     myqr_git_id, __DATE__" " __TIME__,         \
+     myqr_host_name);                           \
+    abort();                                    \
   } while(0)
 
 #define MYQR_FATALOUT_AT(Fil,Lin,Out) \
@@ -125,9 +125,9 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
 #define MYQR_FATALOUT(Out) MYQR_FATALOUT_AT(__FILE__,__LINE__,Out)
 
 #define MYQR_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {  \
-    if (myqr_debug)       \
-      std::clog << Fil << ":" << Lin << " " \
-    << Out << std::endl;    \
+    if (myqr_debug)                             \
+      std::clog << Fil << ":" << Lin << " "     \
+    << Out << std::endl;                        \
   } while(0)
 
 #define MYQR_DEBUGOUT_AT(Fil,Lin,Out) \
@@ -340,10 +340,10 @@ MyqrMainWindow::about()
 {
   int ret =
     QMessageBox::information(this,
-			     QString(myqr_progname),
-			     QString(" built "  __DATE__ "@" __TIME__ "\n")
-			     + QString("git id ")
-			     + QString(myqr_shortgitid));
+                             QString(myqr_progname),
+                             QString(" built "  __DATE__ "@" __TIME__ "\n")
+                             + QString("git id ")
+                             + QString(myqr_shortgitid));
   MYQR_DEBUGOUT("incomplete MyqrMainWindow::about");
 #warning incomplete MyqrMainWindow::about
 } // end MyqrDisplayWindow::about
@@ -650,15 +650,26 @@ myqr_start_refpersys(const std::string& refpersysprog,
 void
 myqr_process_jsonrpc_from_refpersys(const Json::Value&js)
 {
-  MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys got JSON"
-		<< std::endl
+  static std::atomic<unsigned int> cnt;
+  unsigned int num = ++cnt;
+  MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys got JSONRPC#" << num
+                << std::endl
                 << myqr_json2str(js));
   if (!js.isObject())
-    MYQR_FATALOUT("non object jsonrpc from refpersys " << std::endl
-		  << myqr_json2str(js));
-  if (js["jsonrpc"] != "2.0") 
-    MYQR_FATALOUT("invalid jsonrpc2 from refpersys " << std::endl
-		  << myqr_json2str(js));
+    MYQR_FATALOUT("non object jsonrpc#" << num
+                  << " from refpersys " << std::endl
+                  << myqr_json2str(js));
+  if (!js.isMember("jsonrpc") || js["jsonrpc"] != "2.0")
+    MYQR_FATALOUT("invalid jsonrpc2#" << num
+                  <<" from refpersys " << std::endl
+                  << myqr_json2str(js));
+  if (!js.isMember("method") || !js["method"].isString())
+    MYQR_FATALOUT("missing or bad method from JSONRPC#" << num
+                  << " refpersys " << std::endl
+                  << myqr_json2str(js));
+  const std::string methname = js["method"].asString();
+  MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys JSONRPC#" << num
+                << " methname=" << methname);
 #warning myqr_process_jsonrpc_from_refpersys unimplemented
   MYQR_FATALOUT("unimplemented myqr_process_jsonrpc_from_refpersys"
                 << std::endl
