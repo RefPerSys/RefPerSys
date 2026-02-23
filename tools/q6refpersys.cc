@@ -19,7 +19,7 @@
    graphical user toolkit for Linux; see https://www.qt.io/product/qt6
    ...) It is the interface to the RefPerSys inference engine on
    http://refpersys.org/ and communicates with the refpersys process
-   using some JSONRPC protocol on named fifos. In contrast to
+   using some JSONRPC2 protocol on named fifos. In contrast to
    refpersys itself, the q6refpersys process is short lived.
 
 ****/
@@ -99,7 +99,7 @@ extern "C" pid_t myqr_refpersys_pid;
 
 extern "C" std::string myqr_json2str(const Json::Value&jv);
 
-/// process the JSON recieved from refpersys
+/// process the JSONRPC2 message recieved from refpersys
 extern "C" void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
 
 
@@ -646,12 +646,19 @@ myqr_start_refpersys(const std::string& refpersysprog,
 
 
 
-/// process the JSON recieved from refpersys
+/// process the JSONRPC2 message recieved from refpersys
 void
 myqr_process_jsonrpc_from_refpersys(const Json::Value&js)
 {
-  MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys got JSON" << std::endl
+  MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys got JSON"
+		<< std::endl
                 << myqr_json2str(js));
+  if (!js.isObject())
+    MYQR_FATALOUT("non object jsonrpc from refpersys " << std::endl
+		  << myqr_json2str(js));
+  if (js["jsonrpc"] != "2.0") 
+    MYQR_FATALOUT("invalid jsonrpc2 from refpersys " << std::endl
+		  << myqr_json2str(js));
 #warning myqr_process_jsonrpc_from_refpersys unimplemented
   MYQR_FATALOUT("unimplemented myqr_process_jsonrpc_from_refpersys"
                 << std::endl
@@ -884,7 +891,7 @@ pid_t myqr_refpersys_pid;
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "make q6refpersys" ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR; make q6refpersys" ;;
  ** End: ;;
  **
  ****************/
