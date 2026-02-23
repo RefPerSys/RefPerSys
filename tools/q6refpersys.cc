@@ -23,6 +23,15 @@
    refpersys itself, the q6refpersys process is short lived.
 
 ****/
+
+
+//////// we may want to generate Qt6 C++ code which has to contain the
+//////// declarations then compile that code into a dlopen-ed plugin....
+
+////////
+extern "C" const int myqr_first_decl_line, myqr_last_decl_line;
+const int myqr_first_decl_line = __LINE__ -2;
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #endif
@@ -217,10 +226,15 @@ public:
   explicit MyqrDisplayWindow(QWidget*parent = nullptr);
   virtual ~MyqrDisplayWindow();
 };        // end MyqrDisplayWindow
-
+std::ostream& operator << (std::ostream&out, const QList<QString>&qslist);
 ////////////////////////////////////////////////////////////////
 extern "C" QProcess*myqr_refpersys_process;
 //=============================================================
+
+const int myqr_last_decl_line = __LINE__ + 1;
+////////
+
+
 
 std::ostream& operator << (std::ostream&out, const QList<QString>&qslist)
 {
