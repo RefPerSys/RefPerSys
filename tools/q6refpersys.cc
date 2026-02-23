@@ -144,20 +144,33 @@ extern "C" {
 };
 
 
+//// regarding JSONRPC v2.0 see www.jsonrpc.org/specification
+class MyqrJsonRpcData
+{
+  std::string data_name;
+public:
+  MyqrJsonRpcData(std::string name);
+  virtual ~MyqrJsonRpcData();
+}; // end MyqrJsonRpcData
+
 typedef bool Myqr_Handler_jsonRpcFrom_sig (const unsigned long num,
-					   const Json::Value& request,
-					   Json::Value& reply,
-					   void*data);
-class MyqrJsonRpcFromRefPerSys {
+    const Json::Value& request,
+    Json::Value& reply,
+    MyqrJsonRpcData*data);
+class MyqrJsonRpcFromRefPerSys
+{
   static std::recursive_mutex myjr_mtx;
-  struct myjr_handler {
+  struct myjr_handler
+  {
     Myqr_Handler_jsonRpcFrom_sig* hdlr;
-    void* data;
+    MyqrJsonRpcData* data;
   };
 public:
-  static void register_handler(Myqr_Handler_jsonRpcFrom_sig*fct,
-			       void*data=nullptr);
-};				// end class MyqrJsonRpcFromRefPerSys
+  static void register_handler(const std::string& methname,
+                               Myqr_Handler_jsonRpcFrom_sig*fct,
+                               MyqrJsonRpcData*data=nullptr);
+  static void forget_handler(const std::string& methname);
+};        // end class MyqrJsonRpcFromRefPerSys
 
 ////////////////////////////////////////////////////////////////
 class MyqrMainWindow : public QMainWindow
