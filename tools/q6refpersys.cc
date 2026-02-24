@@ -169,11 +169,12 @@ typedef bool Myqr_Handler_jsonRpcFrom_sig (const unsigned long num,
 class MyqrJsonRpcFromRefPerSys
 {
   static std::recursive_mutex myjr_mtx;
-  struct myjr_handler
+  struct myjr_handler_st
   {
     Myqr_Handler_jsonRpcFrom_sig* hdlr;
     MyqrJsonRpcData* data;
   };
+  static std::map<const std::string,myjr_handler_st> myjr_handler_map;
 public:
   static void register_handler(const std::string& methname,
                                Myqr_Handler_jsonRpcFrom_sig*fct,
@@ -238,14 +239,25 @@ extern std::ostream& operator << (std::ostream&out, const QList<QString>&qslist)
 const int myqr_last_decl_line = __LINE__ + 1;
 ////////
 
+std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
+std::map<const std::string,MyqrJsonRpcFromRefPerSys::myjr_handler_st>
+  MyqrJsonRpcFromRefPerSys::myjr_handler_map;
+
 
 void
 MyqrJsonRpcFromRefPerSys::register_handler(const std::string& methname,
     Myqr_Handler_jsonRpcFrom_sig*fct,
     MyqrJsonRpcData*data)
 {
-#warning unimplemented MyqrJsonRpcFromRefPerSys::register_handler
-  MYQR_FATALOUT("unimplemented register_handler methname=" << methname);
+  if (methname.empty() || !isalpha(methname[0]))
+    MYQR_FATALOUT("register_handler with invalid methname=" << methname);
+  if (!fct)
+    MYQR_FATALOUT("register_handler with methname=" << methname
+		  << " has no function");
+  std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
+  myjr_handler_st h{.hdlr=fct, .data=data};
+  myjr_handler_map.insert({methname, h});
+  MYQR_DEBUGOUT("register_handler for methname=" << methname);
 } // end of MyqrJsonRpcFromRefPerSys::register_handler
 
 
