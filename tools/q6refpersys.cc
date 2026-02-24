@@ -1,8 +1,8 @@
-// file misc-basile/q6refpersys.cc
+// file RefPerSys/tools/q6refpersys.cc
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /***
-    © Copyright 2024 - 2026 by Basile STARYNKEVITCH, France
+    © Copyright (C) 2024 - 2026 by Basile STARYNKEVITCH, France
    program released under GNU General Public License v3+
 
    This is free software; you can redistribute it and/or modify it under
@@ -231,9 +231,30 @@ std::ostream& operator << (std::ostream&out, const QList<QString>&qslist);
 extern "C" QProcess*myqr_refpersys_process;
 //=============================================================
 
+extern std::ostream& operator << (std::ostream&out, const QList<QString>&qslist);
+
+
+////////
 const int myqr_last_decl_line = __LINE__ + 1;
 ////////
 
+
+void
+MyqrJsonRpcFromRefPerSys::register_handler(const std::string& methname,
+    Myqr_Handler_jsonRpcFrom_sig*fct,
+    MyqrJsonRpcData*data)
+{
+#warning unimplemented MyqrJsonRpcFromRefPerSys::register_handler
+  MYQR_FATALOUT("unimplemented register_handler methname=" << methname);
+} // end of MyqrJsonRpcFromRefPerSys::register_handler
+
+
+void
+MyqrJsonRpcFromRefPerSys::forget_handler(const std::string& methname)
+{
+#warning unimplemented MyqrJsonRpcFromRefPerSys::forget_handler
+  MYQR_FATALOUT("unimplemented forget_handler methname=" << methname);
+} // end of MyqrJsonRpcFromRefPerSys::forget_handler
 
 
 std::ostream& operator << (std::ostream&out, const QList<QString>&qslist)
@@ -683,7 +704,8 @@ myqr_start_refpersys(const std::string& refpersysprog,
                 << " with arguments " << arglist
                 << " as pid " << pid);
   myqr_refpersys_pid = (pid_t) pid;
-  usleep (320*1024); /// hopefully let the refpersys process run a little bit...
+  usleep (320*1024);
+  /// hopefully let the refpersys process run a little bit...
 } // end myqr_start_refpersys
 
 
@@ -852,9 +874,11 @@ main(int argc, char **argv)
   QCommandLineOption geometry_opt{{"G", "geometry"},
     "Main window geometry is W*H,\n... e.g. --geometry 400x650", "WxH"};
   cli_parser.addOption(geometry_opt);
-  QCommandLineOption refpersys_opt{"start-refpersys",
-                                   "Start the given $REFPERSYS, defaulted to refpersys",
-                                   "REFPERSYS", QString("refpersys")};
+  QCommandLineOption
+  refpersys_opt{"start-refpersys",
+                "Starts the given $REFPERSYS, defaulted to refpersys\n"
+                "if a --jsonrpc was given the refpersys command gets them",
+                "REFPERSYS", QString("refpersys")};
   cli_parser.addOption(refpersys_opt);
   cli_parser.process(the_app);
   MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser);
