@@ -64,7 +64,7 @@ struct utsname rps_utsname;
 
 char rps_progexe[rps_path_byte_size];
 
-extern "C" 
+extern "C"
 std::atomic<std::uint8_t> rps_exit_atomic_code;
 
 std::atomic<std::uint8_t> rps_exit_atomic_code;
@@ -1587,12 +1587,12 @@ main (int argc, char** argv)
     ssize_t pxl = readlink("/proc/self/exe",
                            rps_progexe, sizeof(rps_progexe));
     if (pxl <= 0 || pxl >= (ssize_t) sizeof(rps_progexe)-2
-       || !rps_progexe[0])
+        || !rps_progexe[0])
       RPS_FATALOUT("failed to readlink /proc/self/exe (Linux specific):"
-		   << strerror(errno));
+                   << strerror(errno));
 #warning perhaps use a popen here
-      // maybe we want a popen of which of the realpath of argv[0]?
-      // strcpy(rps_progexe, "$(/usr/bin/which refpersys)");
+    // maybe we want a popen of which of the realpath of argv[0]?
+    // strcpy(rps_progexe, "$(/usr/bin/which refpersys)");
   }
   static_assert (sizeof(int64_t) == 8 && alignof(int64_t) == 8);
   static_assert (sizeof(int32_t) == 4 && alignof(int32_t) == 4);
@@ -1603,27 +1603,28 @@ main (int argc, char** argv)
   if (versionwanted)
     rps_show_version();
   if (myuserpref && (!strcmp(myuserpref, ".")
-      && !strcmp(myuserpref, "/"))) {
-    static char prefbuf[rps_path_byte_size];
-    memset (prefbuf, 0, sizeof(prefbuf));
-    (void) snprintf(prefbuf, sizeof (prefbuf)-1,
-                    "%s/.config/refpersys_pref",
-                    getenv("HOME"));
-    if (access(prefbuf, R_OK))
-      RPS_FATALOUT("Missing preference file "
-                   << prefbuf << ": " << strerror(errno)
-                   << std::endl
-                   << "Copy then improve it from\n"
-                   << rps_topdirectory
-                   << "/etc/user-preferences-refpersys.txt");
-  }
+                     || !strcmp(myuserpref, "/")))
+    {
+      static char prefbuf[rps_path_byte_size];
+      memset (prefbuf, 0, sizeof(prefbuf));
+      (void) snprintf(prefbuf, sizeof (prefbuf)-1,
+                      "%s/.config/refpersys_pref",
+                      getenv("HOME"));
+      if (access(prefbuf, R_OK))
+        RPS_FATALOUT("Missing preference file "
+                     << prefbuf << ": " << strerror(errno)
+                     << std::endl
+                     << "Copy then improve it from\n"
+                     << rps_topdirectory
+                     << "/etc/user-preferences-refpersys.txt");
+    }
   rps_parse_program_arguments(argc, argv);
   fflush(nullptr);
   if (helpwanted)
     printf("%s preference example file is in\n"
            "… %s/etc/user-preferences-refpersys.txt\n"
            "… so copy it to ~/" REFPERSYS_DEFAULT_PREFERENCE_PATH
-	   " and improve it\n",
+           " and improve it\n",
            rps_progname, rps_topdirectory);
   if (helpwanted || versionwanted)
     printf("%s minimal jobs or threads number %d, maximal %d, default %d\n",
@@ -1727,8 +1728,9 @@ main (int argc, char** argv)
     };
   atexit (rps_exiting);
   if (!rps_has_parsed_user_preferences())
-    rps_try_parsing_default_user_preferences();
-  RPS_ASSERT(rps_has_parsed_user_preferences());
+    {
+      rps_try_parsing_default_user_preferences();
+    };
   if (!rps_batch)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
@@ -1736,12 +1738,12 @@ main (int argc, char** argv)
   if (!rps_batch)
     {
       RPS_POSSIBLE_BREAKPOINT();
-        {
-          RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
-                        << RPS_FULL_BACKTRACE(1, "main"));
-          rps_event_loop();
-          RPS_DEBUG_LOG(REPL, "main after calling rps_event_loop");
-        };
+      {
+        RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
+                      << RPS_FULL_BACKTRACE(1, "main"));
+        rps_event_loop();
+        RPS_DEBUG_LOG(REPL, "main after calling rps_event_loop");
+      };
       RPS_DEBUG_LOG(REPL, "main before calling rps_run_after_event_loop");
       RPS_POSSIBLE_BREAKPOINT();
       rps_run_after_event_loop();
