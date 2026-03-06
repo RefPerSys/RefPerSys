@@ -39,8 +39,9 @@ They are on
 (many files, including `q6refpersys.cc` for
 [https://www.qt.io/product/qt6](Qt6) graphical toolkits.
 
-That could be extended to communicate (using JSONRPC protocol) with the
-RefPerSys engine.
+That could be extended to communicate (using JSONRPC protocol) with
+the RefPerSys engine. That `q6refpersys` has now (march 2026) its
+source code under `tools/`.
 
 ## A research project
 
