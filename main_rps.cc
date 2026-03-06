@@ -1533,8 +1533,8 @@ main (int argc, char** argv)
         mylocale = argv[lix]+strlen("--locale=");
       else if (!strcmp(argv[lix], "--user-pref") && lix+1<argc)
         myuserpref = argv[lix+1];
-      else if (!strncmp(argv[lix], "--user-pref=", strlen("--userpref=")))
-        myuserpref = argv[lix]+strlen("--locale=");
+      else if (!strncmp(argv[lix], "--user-pref=", strlen("--user-pref=")))
+        myuserpref = argv[lix]+strlen("--user-pref=");
     }
   if (mylocale)
     {
