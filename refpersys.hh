@@ -180,6 +180,9 @@ extern "C" const char* rps_locale(void);
   dbgmacro(PARSE_STRING)            \
   dbgmacro(PROGARG)                 \
   dbgmacro(REPL)                    \
+  dbgmacro(EXIT)                    \
+  dbgmacro(TMP1)                    \
+  dbgmacro(TMP2)                    \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
