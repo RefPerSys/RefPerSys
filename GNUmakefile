@@ -68,7 +68,7 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 	q6refpersys \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
-        test05 test06 test07 test07a \
+        test05 test06 test07 test07a test07x \
         test08 test09 test-load \
         testcarb1 testcarb2 testcarb3
 
@@ -838,6 +838,10 @@ test07: refpersys
 test07a: refpersys
 	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07a || (echo test07a failed; exit 1)
 	@printf '\n\n\n////test07a FINISHED¤\n'
+
+test07x: refpersys
+	./refpersys -AEXIT -B --run-name=test07x || (echo test07x failed; exit 1)
+	@printf '\n\n\n////test07x FINISHED¤\n'
 
 test08: refpersys
 	@echo missing test08 ; exit 1
