@@ -1563,13 +1563,16 @@ rps_unique_exit_handler(void)
   RPS_DEBUG_LOG(EXIT, "rps_unique_exit_handler pid " << getpid()
 		<<" shortgit " << rps_shortgitid << std::endl
 		<< RPS_FULL_BACKTRACE(1, "rps_unique_exit_handler"));
+  int cnt=0;
   for (auto f: rps_atexit_vec)
     {
+      cnt++;
+      RPS_DEBUG_LOG(EXIT, "rps_unique_exit_handler loop#" << cnt);
       f();
     };
   rps_atexit_vec.clear();
   RPS_DEBUG_LOG(EXIT, "rps_unique_exit_handler done pid " << getpid()
-		<< " shortgit " << rps_shortgitid);
+		<< " shortgit " << rps_shortgitid << " cnt " << cnt);
 } // end rps_unique_exit_handler
 
 /// end of file eventloop_rps.cc
