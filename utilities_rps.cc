@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -360,7 +360,7 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-                       "General Public License"
+       "General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -433,7 +433,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-                       "Lesser General Public License"
+       "Lesser General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -566,12 +566,12 @@ rps_print_types_info(void)
   putchar('\n');
   fflush(nullptr);
   std::cout << "rps_addr2string@" << (void*)rps_addr2string
-	    << ":" << rps_addr2string((void*)rps_addr2string)
-	    << std::endl
-	    << "Rps_QuasiZone::initialize@"
-	    << (void*)Rps_QuasiZone::initialize
-	    << ":" << rps_addr2string((void*)Rps_QuasiZone::initialize)
-	    << std::endl;
+            << ":" << rps_addr2string((void*)rps_addr2string)
+            << std::endl
+            << "Rps_QuasiZone::initialize@"
+            << (void*)Rps_QuasiZone::initialize
+            << ":" << rps_addr2string((void*)Rps_QuasiZone::initialize)
+            << std::endl;
   std::cout << "@@°°@@ The tagged integer one hundred is "
             << Rps_Value::make_tagged_int(100)
             << std::endl
@@ -1235,6 +1235,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                 << " arg:" << Rps_Cjson_String(arg)
                 << (side_effect?".":"")
                );
+  RPS_DEBUG_LOG(EXIT, "rps_parse1opt key#" << key
+                << (letterkey?"'":"")
+                << (letterkey? ((char)key) : ' ')
+                << " arg:" << Rps_Cjson_String(arg)
+                << (side_effect?".":"")
+               );
   if (side_effect)
     RPS_DEBUG_LOG(PROGARG, "rps_parse1opt "
                   << RPS_OUT_PROGARGS(state->argc, state->argv)
@@ -1390,10 +1396,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       /// other example: --user-pref=$HOME/myrps.pref
     {
       RPS_POSSIBLE_BREAKPOINT();
-      if (!arg || !arg[0] || !strcmp(arg, ".") || !strcmp(arg, "/")) {
-	RPS_INFORMOUT("no user preferences");
-	return 0;
-      };
+      if (!arg || !arg[0] || !strcmp(arg, ".") || !strcmp(arg, "/"))
+        {
+          RPS_INFORMOUT("no user preferences");
+          return 0;
+        };
       if (!access(arg, R_OK))
         rps_set_user_preferences(arg);
       else
@@ -1587,9 +1594,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           && isalpha(extraname[0])
           && eqnextpos > 1 && arg[eqnextpos-1] == '=')
         {
-	  if (strlen(extraname) > sizeof(extraname)-10)
-	    RPS_WARNOUT("too long extraname " << extraname
-			<< " in " << arg);
+          if (strlen(extraname) > sizeof(extraname)-10)
+            RPS_WARNOUT("too long extraname " << extraname
+                        << " in " << arg);
           for (const char*n = extraname; *n; n++)
             if (!isalnum(*n) && *n != '_')
               RPS_FATALOUT("invalid extra named argument " << extraname);
@@ -1854,7 +1861,9 @@ rps_schedule_files_postponed_removal(void)
       RPS_WARNOUT("missing /bin/at executable file " << strerror(errno));
       return;
     };
-  /// Redirection of /bin/at to /dev/null to remove the at warning:
+
+  RPS_DEBUG_LOG(EXIT, "rps_schedule_files_postponed_removal" << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_schedule_files_postponed_removal"));
   //// commands will be executed using /bin/sh
   /// the -M option never send mail to user
   FILE* pat = popen("/bin/at -M now + 5 minutes > /dev/null 2>&1", "w");
@@ -1866,7 +1875,7 @@ rps_schedule_files_postponed_removal(void)
     };
   if (rps_syslog_enabled)
     syslog(LOG_NOTICE, "RefPerSys will later remove %d files "
-                       "(in five minutes, with /bin/at)",
+           "(in five minutes, with /bin/at)",
            (int) rps_postponed_removed_files_vector.size());
   else
     RPS_INFORM("RefPerSys will later remove %d files "
@@ -1904,8 +1913,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s", filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
-                    "… build %s pid %d on %s,\n"
-                    "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
+         "… build %s pid %d on %s,\n"
+         "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
          filnam, lin, rps_shortgitid,
          rps_timestamp, (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
@@ -1923,10 +1932,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
     }
   if (!rps_syslog_enabled)
     fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
-                    " RefPerSys gitid %s,\n"
-                    "\t built timestamp %s,\n"
-                    "\t on host %s, md5sum %s,\n"
-                    "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
+            " RefPerSys gitid %s,\n"
+            "\t built timestamp %s,\n"
+            "\t on host %s, md5sum %s,\n"
+            "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
             ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
@@ -2029,8 +2038,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   fprintf(stderr, "RefPerSys (git %s run %s) fatal stop\n"
-                  "… °aborting at %s:%d\n"
-                  "… invocation %s\n",
+          "… °aborting at %s:%d\n"
+          "… invocation %s\n",
           rps_shortgitid, rps_run_name.c_str(), filnam, lin,
           rps_program_invocation);
   fflush(nullptr);
@@ -2439,7 +2448,7 @@ rps_set_debug(const std::string &deblev)
       fprintf(stderr, "%s debugging options for git %s built at %s ...\n",
               rps_progname, rps_shortgitid, rps_timestamp);
       fprintf(stderr, "Comma separated debugging levels with -D<debug-level>\n"
-                      "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
+              "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
 
 #define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
       RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
@@ -2543,9 +2552,14 @@ void
 rps_run_after_event_loop(void)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_aftevntloop_mtx);
+  int size = (int) rps_aftevntloop_vec.size();
+  RPS_DEBUG_LOG(EXIT, "rps_run_after_event_loop size=" << size
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_run_after_event_loop"));
   for (std::function<void(void)> f: rps_aftevntloop_vec)
     f();
   rps_aftevntloop_vec.clear();
+  RPS_DEBUG_LOG(EXIT, "rps_run_after_event_loop ending size=" << size);
 } // end rps_run_after_event_loop
 
 
