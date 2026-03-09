@@ -25,8 +25,12 @@
 ****/
 
 
-//////// we may want to generate Qt6 C++ code which has to contain the
-//////// declarations then compile that code into a dlopen-ed plugin....
+///// We may want to generate Qt6 temporary C++ code which has to
+///// contain the declarations then compile that code into a dlopen-ed
+///// plugin....  So we remember the first and last lines of this very
+///// C++ source file q6refpersys.cc to be replicated in generated C++
+///// code by this utility, to be compiled by it (in temporary C++
+///// files) into a temporary C++ plugin.
 
 ////////
 extern "C" const int myqr_first_decl_line, myqr_last_decl_line;
@@ -50,6 +54,7 @@ extern "C" char myqr_host_name[64];
 #include <QApplication>
 #include <QProcess>
 #include <QCommandLineParser>
+#include <QGenericPlugin>
 #include <QDebug>
 #include <QMainWindow>
 #include <QMenuBar>
@@ -152,6 +157,17 @@ extern "C" {
   class MyqrDisplayWindow;
 };
 
+
+//// Initiate the compilation of a vector of C++ lines into a Qt6
+//// plugin. the `name` identify somehows the plugin. The `data` is
+//// private to the compilation. If it succeeds the `handler` is
+//// called, and when it fails the `failer`gets called.
+extern "C" void myqr_initiate_cpp_compilation_to_plugin
+(const std::vector<std::string> &srcvec,
+ const QString& name,
+ void* data,
+ std::function<void(QGenericPlugin*,QString&,void*)> handler,
+ std::function<void(QString,void*)> failer);
 
 //// regarding JSONRPC v2.0 see www.jsonrpc.org/specification
 class MyqrJsonRpcData
@@ -639,7 +655,17 @@ myqr_have_jsonrpc(const std::string&jsonrpc)
                 << " cmd.fd#" << myqr_jsonrpc_cmd_fd << " out.fd#" << myqr_jsonrpc_out_fd);
 } // end myqr_have_jsonrpc
 
-
+void
+myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
+					const QString& name,
+					void* data,
+					std::function<void(QGenericPlugin*,QString&,void*)> handler,
+					std::function<void(QString,void*)> failer)
+{
+#warning unimplemented myqr_initiate_cpp_compilation_to_plugin
+  MYQR_FATALOUT("unimplemented myqr_initiate_cpp_compilation_to_plugin name="
+		<< name.toStdString());
+} // end myqr_initiate_cpp_compilation_to_plugin
 
 void
 myqr_start_refpersys(const std::string& refpersysprog,
