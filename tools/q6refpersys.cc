@@ -66,6 +66,7 @@ extern "C" char myqr_host_name[64];
 #include <QMessageBox>
 #include <QLabel>
 #include <QSocketNotifier>
+#include <QTemporaryFile>
 //#include <QJsonValue>
 #include <QtCore/QtCoreVersion>
 //#include <QJsonValue>
@@ -257,7 +258,7 @@ const int myqr_last_decl_line = __LINE__ + 1;
 
 std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
 std::map<const std::string,MyqrJsonRpcFromRefPerSys::myjr_handler_st>
-  MyqrJsonRpcFromRefPerSys::myjr_handler_map;
+MyqrJsonRpcFromRefPerSys::myjr_handler_map;
 
 
 void
@@ -269,7 +270,7 @@ MyqrJsonRpcFromRefPerSys::register_handler(const std::string& methname,
     MYQR_FATALOUT("register_handler with invalid methname=" << methname);
   if (!fct)
     MYQR_FATALOUT("register_handler with methname=" << methname
-		  << " has no function");
+                  << " has no function");
   std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
   myjr_handler_st h{.hdlr=fct, .data=data};
   myjr_handler_map.insert({methname, h});
@@ -657,14 +658,56 @@ myqr_have_jsonrpc(const std::string&jsonrpc)
 
 void
 myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
-					const QString& name,
-					void* data,
-					std::function<void(QGenericPlugin*,QString&,void*)> handler,
-					std::function<void(QString,void*)> failer)
+                                        const QString& name,
+                                        void* data,
+                                        std::function<void(QGenericPlugin*,QString&,void*)> handler,
+                                        std::function<void(QString,void*)> failer)
 {
-#warning unimplemented myqr_initiate_cpp_compilation_to_plugin
-  MYQR_FATALOUT("unimplemented myqr_initiate_cpp_compilation_to_plugin name="
-		<< name.toStdString());
+  QTemporaryFile* tfil = new QTemporaryFile(name);
+  int srclen = (int) srcvec.size();
+  MYQR_DEBUGOUT("starting myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString() << " pid:" << getpid()
+                << " tfil:" << tfil->fileName().toStdString()
+                << " srclen=" << srclen);
+  {
+    char inibuf[512];
+    memset (inibuf, 0, sizeof(inibuf));
+    snprintf(inibuf, sizeof(inibuf)-2,
+             "/" "/ temporary C++ file %.250s from %s pid %d git %s",
+             tfil->fileName().toStdString(), __FILE__,
+             getpid(), myqr_shortgitid);
+    tfil->write(inibuf);
+    tfil->write("\n");
+    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote first line "
+                  << inibuf);
+  };
+  for (int i= 0; i < srclen; i++)
+    {
+      std::string curlin = srcvec[i];
+      if (curlin.empty() || curlin[curlin.size()-1] != '\n')
+        curlin += '\n';
+      long l = tfil->write(curlin.c_str(), curlin.size());
+      MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote line#" << i
+                    << " " << curlin);
+      if (l < curlin.size())
+        MYQR_FATALOUT("failed to write line#" << i << " of " << l << " bytes");
+    };
+  {
+    char inibuf[512];
+    memset (inibuf, 0, sizeof(inibuf));
+    snprintf(inibuf, sizeof(inibuf)-2,
+             "/" "/ end of file %.250s from %s pid %d git %s - %d lines",
+             tfil->fileName().toStdString(), __FILE__,
+             getpid(), myqr_shortgitid, srclen);
+    tfil->write(inibuf);
+    tfil->write("\n");
+    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote last line "
+                  << inibuf);
+  };
+#warning incomplete myqr_initiate_cpp_compilation_to_plugin
+  MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString() << " file "
+		<< tfil->fileName().toStdString());
 } // end myqr_initiate_cpp_compilation_to_plugin
 
 void
