@@ -4,8 +4,8 @@
 This [free software](https://en.wikipedia.org/wiki/Free_software)
 project has its source code on https://github.com/RefPerSys/RefPerSys
 with an obsolete variant on https://gitlab.com/bstarynk/refpersys/
-which might not maintained in 2024. It is its own web site on
-http://refpersys.org/ where more details are given.
+which might not be well maintained in 2024 - 2026. It is its own web
+site on http://refpersys.org/ where more details are given.
 
 *RefPerSys* is aiming to become a free software symbolic artificial
 intelligence system or [inference
@@ -36,8 +36,8 @@ wanting to contribute.
 
 They are on
 [github.com/bstarynk/misc-basile](https://github.com/bstarynk/misc-basile/)
-(many files, including `q6refpersys.cc` for
-[https://www.qt.io/product/qt6](Qt6) graphical toolkits.
+(many files, including `q6refpersys.cc` used to be there for
+[https://www.qt.io/product/qt6](Qt6) graphical toolkits).
 
 That could be extended to communicate (using JSONRPC protocol) with
 the RefPerSys engine. That `q6refpersys` has now (march 2026) its
@@ -211,7 +211,7 @@ from the agenda, then running that tasklet.
 
 This free software project is
 [GPLv3+](https://www.gnu.org/licenses/gpl.html) licensed and
-© copyrighted (C) 2019 - 2025 by the RefPerSys team, currently made of:
+© copyrighted (C) 2019 - 2026 by the RefPerSys team, currently made of:
 
  *      Basile Starynkevitch <basile@starynkevitch.net>,
         8 rue de la Faïencerie
@@ -258,9 +258,9 @@ genuine C++ code than we do and will find our C++ code pityful. We
 just want our runtime to work, not to serve as an example of well
 written C++17 code.
 
-The prefered C++ compiler (in 2025Q2) for *RefPerSys* is
-[GCC](http://gcc.gnu.org/) version [14](https://gcc.gnu.org/gcc-14/) or
-(preferably in 2025Q3) [15](https://gcc.gnu.org/gcc-15).
+The prefered C++ compiler (in 2026Q1) for *RefPerSys* is
+[GCC](http://gcc.gnu.org/) version [15](https://gcc.gnu.org/gcc-15/) or
+a later snapshot.
 
 It could be worthwhile to sometimes compile *RefPerSys* with `clang++`
 (see http://clang.llvm.org/ for more). In practice `make clean` then
