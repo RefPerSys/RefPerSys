@@ -75,11 +75,32 @@ in commit 559ea329f46a28 (nov. 2024).
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
 
-**Don't expect (RefPerSys)[http://refpersys.org/] to be a mature project.** It is not in December 2025.
+**Don't expect (RefPerSys)[http://refpersys.org/] to be a mature
+  project.** It is not in spring 2026.
 
-## environment variables
+## environment variables and scripts
 
-Your `$EDITOR` should give a valid editor path (e.g. `/usr/bin/emacsclient` or `/usr/bin/gedit` or `/usr/bin/vim` ...)
+Your `$EDITOR` should give a valid editor path (e.g. `/usr/bin/emacsclient` or `/usr/bin/gedit` or `/usr/bin/vim` etc ...)
+
+Your `$PATH` should contain a script named `push-refpersys`
+(triggered by  `make gitpush`) inspired by
+
+```
+#!/bin/sh
+# example file ~/bin/push-refpersys
+# SPDX-License-Identifier: GPL-3.0-or-later
+echo $0 "$@" 
+REFPERSYS_SOURCEDIR=$1
+REFPERSYS_GITID=$2
+cd $REFPERSYS_SOURCEDIR
+/usr/bin/logger  --id=$$ -s -t $0 "$@" at $(/bin/date +%c) in $(/bin/pwd) sourcedir= $REFPERSYS_SOURCEDIR gitid= $REFPERSYS_GITID
+/bin/tar -czf ~/Backups/refpersys-$REFPERSYS_GITID.tar.bz2 -C .. \
+        $(/bin/basename $REFPERSYS_SOURCEDIR)
+
+```
+
+where you replace `~/Backups` by your appropriate directory.
+
 
 Your `$HOME` should be valid.
 
