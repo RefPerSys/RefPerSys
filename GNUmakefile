@@ -704,6 +704,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 
 q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-DSELF_FILE='"$(realpath $<)"' \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
 	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
