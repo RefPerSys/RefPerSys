@@ -36,6 +36,8 @@
 extern "C" const int myqr_first_decl_line, myqr_last_decl_line;
 const int myqr_first_decl_line = __LINE__ -2;
 
+extern "C" const char myqr_self_file[];
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #endif
@@ -124,6 +126,7 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
  const Json::Value& args,
  const std::function<void(const Json::Value&res)>& resfun);
 
+/// fatal unrecoverable errors
 #define MYQR_FATALOUT_AT_BIS(Fil,Lin,Out) do {  \
     std::ostringstream outs##Lin;               \
     outs##Lin << Out << std::flush;             \
@@ -138,6 +141,20 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
   MYQR_FATALOUT_AT_BIS(Fil,Lin,Out)
 
 #define MYQR_FATALOUT(Out) MYQR_FATALOUT_AT(__FILE__,__LINE__,Out)
+
+/// serious warnings
+#define MYQR_WARNOUT_AT_BIS(Fil,Lin,Out) do {   \
+    std::ostringstream outs##Lin;               \
+    outs##Lin << Out << std::flush;             \
+    qWarning("%s:%d: %s\n[git %s] on %s",       \
+     Fil, Lin, outs##Lin.str().c_str(),         \
+      myqr_shortgitid, myqr_host_name);         \
+  } while(0)
+
+#define MYQR_WARNOUT_AT(Fil,Lin,Out) \
+  MYQR_WARNOUT_AT_BIS(Fil,Lin,Out)
+
+#define MYQR_WARNOUT(Out) MYQR_WARNOUT_AT(__FILE__,__LINE__,Out)
 
 #define MYQR_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {  \
     if (myqr_debug)                             \
@@ -160,9 +177,11 @@ extern "C" {
 
 
 //// Initiate the compilation of a vector of C++ lines into a Qt6
-//// plugin. the `name` identify somehows the plugin. The `data` is
-//// private to the compilation. If it succeeds the `handler` is
-//// called, and when it fails the `failer`gets called.
+//// plugin; the prefix lines ( myqr_first_decl_line ⋯ ⋯
+//// myqr_last_decl_line) gets copied verbatim. The `name` identify
+//// somehows the plugin. The `data` is private to the compilation. If
+//// it succeeds the `handler` is called, and when it fails the
+//// `failer`gets called.
 extern "C" void myqr_initiate_cpp_compilation_to_plugin
 (const std::vector<std::string> &srcvec,
  const QString& name,
@@ -255,6 +274,8 @@ extern std::ostream& operator << (std::ostream&out, const QList<QString>&qslist)
 ////////
 const int myqr_last_decl_line = __LINE__ + 1;
 ////////
+
+const char myqr_self_file[] = SELF_FILE; /// defined in compilation command
 
 std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
 std::map<const std::string,MyqrJsonRpcFromRefPerSys::myjr_handler_st>
@@ -681,6 +702,53 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote first line "
                   << inibuf);
   };
+  //// copy the lines myqr_first_decl_line ⋯ myqr_last_decl_line of
+  //// this very file...
+  {
+    char slinbuf[512];
+    int maxwidth = 0;
+    memset (slinbuf, 0, sizeof(slinbuf));
+    FILE* selfil= fopen(myqr_self_file, "r");
+    if (!selfil)
+      MYQR_FATALOUT("failed to read self file " << myqr_self_file
+                    << " : " << strerror(errno));
+    int lineno=0;
+    do
+      {
+        memset (slinbuf, 0, sizeof(slinbuf));
+        char*curlin = fgets(slinbuf, sizeof(slinbuf)-2, selfil);
+        if (!curlin)
+          break;
+        lineno++;
+        int curwidth = strlen(curlin);
+        if (maxwidth < curwidth)
+          maxwidth = curwidth;
+        if (lineno >= myqr_first_decl_line && lineno<=  myqr_last_decl_line)
+          {
+            int wsiz = tfil->write(curlin);
+            if (wsiz<curwidth)
+              MYQR_FATALOUT("failed to copy line#" << lineno << std::endl
+                            << curlin);
+          };
+        if (lineno > myqr_last_decl_line)
+          break;
+      }
+    while (!feof(selfil));
+    if (maxwidth >= sizeof(slinbuf)-4)
+      {
+        MYQR_WARNOUT("maximum width of copied C++ lines is big " << maxwidth
+                     << " bytes");
+      };
+  }
+  //// the comment separating copied lines to own ones
+  {
+    char midbuf[512];
+    memset (midbuf, 0, sizeof(midbuf));
+    snprintf(midbuf, sizeof(midbuf)-2,
+             "\n\f\n/" "/ own C++ code file %.250s from %s pid %d git %s",
+             tfil->fileName().toStdString(), getpid(), myqr_shortgitid);
+  }
+  //// the own emitted lines
   for (int i= 0; i < srclen; i++)
     {
       std::string curlin = srcvec[i];
@@ -707,7 +775,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " file "
-		<< tfil->fileName().toStdString());
+                << tfil->fileName().toStdString());
 } // end myqr_initiate_cpp_compilation_to_plugin
 
 void
