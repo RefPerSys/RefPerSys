@@ -278,6 +278,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
 
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
+	$(RM) -vf core*
 #	$(RM) -v _gramrepl_rps.*
 	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
 	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
