@@ -1606,9 +1606,10 @@ main (int argc, char** argv)
   if (versionwanted)
     rps_show_version();
   RPS_POSSIBLE_BREAKPOINT();
-  if (myuserpref && (!strcmp(myuserpref, ".")
-                     || !strcmp(myuserpref, "/")))
+  if (myuserpref && strcmp(myuserpref, ".")
+                     && strcmp(myuserpref, "/"))
     {
+      RPS_POSSIBLE_BREAKPOINT();
       static char prefbuf[rps_path_byte_size];
       memset (prefbuf, 0, sizeof(prefbuf));
       (void) snprintf(prefbuf, sizeof (prefbuf)-1,
@@ -1623,6 +1624,9 @@ main (int argc, char** argv)
                      << rps_topdirectory
                      << "/etc/user-preferences-refpersys.txt");
     }
+  else {
+    RPS_INFORMOUT("disabled user preferences");
+  };
   rps_parse_program_arguments(argc, argv);
   fflush(nullptr);
   if (helpwanted)
