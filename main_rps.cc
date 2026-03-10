@@ -1516,6 +1516,7 @@ main (int argc, char** argv)
   char*myuserpref = nullptr;
   bool helpwanted = false;
   bool versionwanted = false;
+  bool disableduserpref = false;
   _Pragma("message \"start of main\"");
   if (argc>1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-?")))
     helpwanted = true;
@@ -1607,7 +1608,7 @@ main (int argc, char** argv)
     rps_show_version();
   RPS_POSSIBLE_BREAKPOINT();
   if (myuserpref && strcmp(myuserpref, ".")
-                     && strcmp(myuserpref, "/"))
+      && strcmp(myuserpref, "/"))
     {
       RPS_POSSIBLE_BREAKPOINT();
       static char prefbuf[rps_path_byte_size];
@@ -1624,9 +1625,11 @@ main (int argc, char** argv)
                      << rps_topdirectory
                      << "/etc/user-preferences-refpersys.txt");
     }
-  else {
-    RPS_INFORMOUT("disabled user preferences");
-  };
+  else
+    {
+      RPS_INFORMOUT("disabled user preferences");
+      disableduserpref = true;
+    };
   rps_parse_program_arguments(argc, argv);
   fflush(nullptr);
   if (helpwanted)
@@ -1736,7 +1739,7 @@ main (int argc, char** argv)
       RPS_INFORMOUT("after loading the current directory has changed to " << cwdbuf);
     };
   atexit (rps_exiting);
-  if (!rps_has_parsed_user_preferences())
+  if (!disableduserpref && !rps_has_parsed_user_preferences())
     {
       rps_try_parsing_default_user_preferences();
     };
