@@ -248,7 +248,7 @@ rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::
   RPS_ASSERT(payl);
 #warning unimplemented rpsldpy_lightning_code_generator
   RPS_WARNOUT("unimplemented rpsldpy_lightning_code_generator jv="
-	      << jv << std::endl
+              << jv << std::endl
               << " spacid=" << spacid
               << " lineno=" << lineno << std::endl
               << " obz=" << RPS_OBJECT_DISPLAY(obz) << std::endl
@@ -431,10 +431,10 @@ Rps_PayloadLightningCodeGen::make_lightgen_code_object(Rps_CallFrame*callframe, 
   auto paylgen =  _f.oblightgen->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
   RPS_ASSERT(paylgen);
   RPS_DEBUG_LOG (CODEGEN, "make_lightgen_code_object made "
-		 << RPS_OBJECT_DISPLAY(_f.oblightgen)
+                 << RPS_OBJECT_DISPLAY(_f.oblightgen)
                  << std::endl
                  <<  "… from "
-		 << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
+                 << RPS_FULL_BACKTRACE(1, "Rps_PayloadLightningCodeGen::make_lightgen_code_object"));
 #warning probably incomplete Rps_PayloadLightningCodeGen::make_lightgen_code_object
   return _f.oblightgen;
 } // end Rps_PayloadLightningCodeGen::make_lightgen_code_object

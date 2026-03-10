@@ -85,8 +85,8 @@ protected:
   virtual ~Rps_PayloadCplusplusGen()
   {
     RPS_DEBUG_LOG(CODEGEN, "-Rps_PayloadCplusplusGen owner=" << owner()
-		  << std::endl
-		  << RPS_FULL_BACKTRACE(1, "-Rps_PayloadCplusplusGen"));
+                  << std::endl
+                  << RPS_FULL_BACKTRACE(1, "-Rps_PayloadCplusplusGen"));
     cppgen_outcod.clear();
     cppgen_includeset.clear();
     cppgen_datavect.clear();
@@ -204,8 +204,8 @@ Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen(Rps_ObjectZone*ob)
 {
   RPS_ASSERT(ob != nullptr);
   RPS_DEBUG_LOG(CODEGEN, "+Rps_PayloadCplusplusGen ob=" << ob
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "+Rps_PayloadCplusplusGen"));
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "+Rps_PayloadCplusplusGen"));
 } // end Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen
 
 

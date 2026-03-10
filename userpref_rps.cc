@@ -101,7 +101,7 @@ rps_set_user_preferences(char*path)
     };
   if (access(path, R_OK))
     RPS_FATALOUT("unreadable user preference file " << Rps_QuotedC_String(path)
-		 << " : " << strerror(errno));
+                 << " : " << strerror(errno));
   rps_userpref_path = strdup(path);
   if (!rps_userpref_path)
     RPS_FATALOUT("failed to strdup " << path);
@@ -415,6 +415,7 @@ extern "C" void rps_try_parsing_default_user_preferences(void);
 void
 rps_try_parsing_default_user_preferences(void)
 {
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(!rps_has_parsed_user_preferences());
   static char buf[rps_path_byte_size];
   char*h = getenv("HOME");

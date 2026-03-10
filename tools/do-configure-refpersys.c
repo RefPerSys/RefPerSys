@@ -1958,13 +1958,13 @@ main (int argc, char **argv)
     {
       printf ("\nFLTK is a graphical toolkit from www.fltk.org\n"
               "\t providing a configurator script;\n"
-	      "\t its configurator is a program often named fltk-config\n"
-	      "\t An empty input or a dot character disable FLTK\n");
+              "\t its configurator is a program often named fltk-config\n"
+              "\t An empty input or a dot character disable FLTK\n");
       fflush (stdout);
       rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
       if (rpsconf_fltk_config && rpsconf_fltk_config[0]
-	  && strcmp(rpsconf_fltk_config, ".")
-	  && access (rpsconf_fltk_config, X_OK))
+          && strcmp(rpsconf_fltk_config, ".")
+          && access (rpsconf_fltk_config, X_OK))
         {
           fprintf (stderr,
                    "%s bad FLTK configurator %s (%s) [%s:%d]\n",
@@ -1975,7 +1975,7 @@ main (int argc, char **argv)
           exit (EXIT_FAILURE);
         };
       if (rpsconf_fltk_config && !strcmp(rpsconf_fltk_config, "."))
-	rpsconf_fltk_config = NULL;
+        rpsconf_fltk_config = NULL;
     }
 
   if (access ("generated/rpsdata.h", R_OK))

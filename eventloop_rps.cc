@@ -734,7 +734,7 @@ rps_event_loop(void)
       else
         RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt
                       << " elapsed:" << rps_elapsed_real_time()
-		      << " pid:" << (long)getpid());
+                      << " pid:" << (long)getpid());
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbfdpoll=0;
       struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
@@ -1444,7 +1444,7 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
       int rank = pxitodo->_tdxit_rank;
       if (rank>=0)
         {
-	  RPS_POSSIBLE_BREAKPOINT();
+          RPS_POSSIBLE_BREAKPOINT();
           RPS_ASSERTPRINTF(rank==ix, "rank=%d ix=%d", rank, ix);
         };
       if (is_c)
@@ -1516,7 +1516,7 @@ rps_exiting(void) //// called thru atexit
                 << " shortgit " << rps_shortgitid
                 << " thread " <<  rps_current_pthread_name()
                 << std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_exiting"));
+                << RPS_FULL_BACKTRACE(1, "rps_exiting"));
   RPS_DEBUG_LOG(REPL, "rps_exiting in " << mycwd << " pid " << getpid()
                 << " shortgit " << rps_shortgitid
                 << " thread " <<  rps_current_pthread_name()
@@ -1561,8 +1561,8 @@ rps_unique_exit_handler(void)
   RPS_POSSIBLE_BREAKPOINT();
   std::lock_guard<std::recursive_mutex> rlock(rps_atonexit_mtx);
   RPS_DEBUG_LOG(EXIT, "rps_unique_exit_handler pid " << getpid()
-		<<" shortgit " << rps_shortgitid << std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_unique_exit_handler"));
+                <<" shortgit " << rps_shortgitid << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_unique_exit_handler"));
   int cnt=0;
   for (auto f: rps_atexit_vec)
     {
@@ -1572,7 +1572,7 @@ rps_unique_exit_handler(void)
     };
   rps_atexit_vec.clear();
   RPS_DEBUG_LOG(EXIT, "rps_unique_exit_handler done pid " << getpid()
-		<< " shortgit " << rps_shortgitid << " cnt " << cnt);
+                << " shortgit " << rps_shortgitid << " cnt " << cnt);
 } // end rps_unique_exit_handler
 
 /// end of file eventloop_rps.cc
