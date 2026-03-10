@@ -99,7 +99,9 @@ rps_set_user_preferences(char*path)
       rps_userpref_path = nullptr;
       return;
     };
-  RPS_ASSERT(!access(path, R_OK));
+  if (access(path, R_OK))
+    RPS_FATALOUT("unreadable user preference file " << Rps_QuotedC_String(path)
+		 << " : " << strerror(errno));
   rps_userpref_path = strdup(path);
   if (!rps_userpref_path)
     RPS_FATALOUT("failed to strdup " << path);
