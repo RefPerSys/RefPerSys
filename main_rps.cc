@@ -1605,6 +1605,7 @@ main (int argc, char** argv)
   static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
   if (versionwanted)
     rps_show_version();
+  RPS_POSSIBLE_BREAKPOINT();
   if (myuserpref && (!strcmp(myuserpref, ".")
                      || !strcmp(myuserpref, "/")))
     {
@@ -1615,7 +1616,8 @@ main (int argc, char** argv)
                       getenv("HOME"));
       if (access(prefbuf, R_OK))
         RPS_FATALOUT("Missing preference file "
-                     << prefbuf << ": " << strerror(errno)
+                     << Rps_QuotedC_String(prefbuf) << ": " << strerror(errno)
+                     << " with myuserpref=" << Rps_QuotedC_String(myuserpref)
                      << std::endl
                      << "Copy then improve it from\n"
                      << rps_topdirectory
