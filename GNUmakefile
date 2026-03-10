@@ -59,7 +59,8 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 #                                                                
 
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
-        print-plugin-settings indent redump clean-plugins plugins \
+        print-plugin-settings indent \
+        redump altredump altdump clean-plugins plugins \
         print-gmake-features \
         one-plugin \
         lto-refpersys \
@@ -751,6 +752,13 @@ redump: refpersys
 altredump:  ./refpersys
 	./refpersys --user-pref=. --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
 	$(SYNC)
+
+### alternate dump to /tmp/altdumprefpersys
+altdump: ./refpersys
+	$(RM) -rf /tmp/altdumprefpersys
+	./refpersys --user-pref=. --dump=/tmp/altdumprefpersys --batch -AEXIT --run-name=$@ 2>&1
+	$(SYNC)
+
 
 ################################################################
 #### simple tests; the --run-name should start with test and not use $@ because of showtests target
