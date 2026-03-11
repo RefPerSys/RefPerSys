@@ -179,13 +179,15 @@ extern "C" {
 //// Initiate the compilation of a vector of C++ lines into a Qt6
 //// plugin; the prefix lines ( myqr_first_decl_line ⋯ ⋯
 //// myqr_last_decl_line) gets copied verbatim. The `name` identify
-//// somehows the plugin. The `data` is private to the compilation. If
-//// it succeeds the `handler` is called, and when it fails the
-//// `failer`gets called.
+//// somehows the plugin. The flag `needqtmoc` is set if the generated
+//// code needs to run Qt6 meta object protocol compiler.  The `data`
+//// is private to the compilation. If it succeeds the `handler` is
+//// called, and when it fails the `failer`gets called.
 extern "C" void myqr_initiate_cpp_compilation_to_plugin
 (const std::vector<std::string> &srcvec,
  const QString& name,
  void* data,
+ bool needqtmoc,
  std::function<void(QGenericPlugin*,QString&,void*)> handler,
  std::function<void(QString,void*)> failer);
 
@@ -681,6 +683,7 @@ void
 myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
                                         const QString& name,
                                         void* data,
+                                        bool needqtmoc,
                                         std::function<void(QGenericPlugin*,QString&,void*)> handler,
                                         std::function<void(QString,void*)> failer)
 {
@@ -689,7 +692,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
   MYQR_DEBUGOUT("starting myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " pid:" << getpid()
                 << " tfil:" << tfil->fileName().toStdString()
-                << " srclen=" << srclen);
+                << " srclen=" << srclen << " " << (needqtmoc?"need Qt MOC":"no Qt"));
   {
     char inibuf[512];
     memset (inibuf, 0, sizeof(inibuf));
@@ -769,9 +772,11 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
              getpid(), myqr_shortgitid, srclen);
     tfil->write(inibuf);
     tfil->write("\n");
+    tfil->flush();
     MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote last line "
                   << inibuf);
   };
+  /* Should start a compilation process using QProcess */
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " file "
