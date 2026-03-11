@@ -1476,15 +1476,30 @@ void
 rps_kill_wait_gui_process(void)
 {
   int guistatus = 0;
+  char exbuf[48]; // for /proc/<rps_gui_pid>/exe
+  char guibuf[rps_path_byte_size]; // the GUI executable path using /proc
+  memset(exbuf, 0, sizeof(exbuf));
+  memset(guibuf, 0, sizeof(guibuf));
+  snprintf(exbuf, sizeof(exbuf), "/proc/%d/exe", rps_gui_pid);
+  if (readlink(exbuf, guibuf, sizeof(guibuf)-1) < 0)
+    strcpy(guibuf, "??");
+  RPS_DEBUG_LOG(EXIT, "killing GUI process " << rps_gui_pid
+                << " running " << guibuf
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_kill_wait_gui_process"));
   if (kill(rps_gui_pid, SIGTERM))
-    RPS_WARNOUT("failed to SIGTERM the GUI process " << rps_gui_pid);
+    RPS_WARNOUT("refpersys failed to SIGTERM the GUI process " << rps_gui_pid
+                << " running " << guibuf
+                << " git " << rps_shortgitid);
   usleep(32*1024);
   (void) kill(rps_gui_pid, SIGKILL);
   usleep(32*1024);
   if (waitpid(rps_gui_pid, &guistatus, 0) == rps_gui_pid)
-    RPS_INFORMOUT("GUI process ended with status " << guistatus);
+    RPS_INFORMOUT("GUI process running " << guibuf << " ended with status " << guistatus);
   if (guistatus >0)
-    RPS_FATALOUT("GUI process failed with status " << guistatus);
+    RPS_FATALOUT("GUI process running " << guibuf << " failed with status " << guistatus);
+  RPS_DEBUG_LOG(EXIT, "did kill GUI process " << rps_gui_pid
+                << " running " << guibuf);
 } // end rps_kill_wait_gui_process
 
 
