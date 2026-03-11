@@ -996,8 +996,18 @@ main(int argc, char **argv)
         }
     }
   gethostname(myqr_host_name, sizeof(myqr_host_name)-1);
+  char parentbuf[384];
+  memset (parentbuf, 0, sizeof(parentbuf));
+  {
+    char exbuf[40];
+    memset (exbuf, 0, sizeof(exbuf));
+    snprintf(exbuf, sizeof(exbuf)-1, "/proc/%d/exe", (int)getppid());
+    if (readlink(exbuf, parentbuf, sizeof(parentbuf)-1) < 0)
+      strcpy(parentbuf, "??");
+  }
   MYQR_DEBUGOUT("starting " << myqr_progname << " on " << myqr_host_name
-                << " git " << myqr_git_id << " pid " << (int)getpid()
+                << " git " << myqr_shortgitid << " pid " << (int)getpid()
+                << " ppid=" << (int)getppid() << " running " << parentbuf
                 << " argc=" << argc
                 << " dynamic qVersion=" << qVersion());
   myqr_jsoncpp_reader_builder["collectComments"] = false;
