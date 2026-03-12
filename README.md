@@ -37,10 +37,11 @@ wanting to contribute.
 They are on
 [github.com/bstarynk/misc-basile](https://github.com/bstarynk/misc-basile/)
 (many files, including `q6refpersys.cc` used to be there for
-[https://www.qt.io/product/qt6](Qt6) graphical toolkits).
+[https://www.qt.io/product/qt6](Qt6) graphical toolkits; in March 2026
+it has been moved here).
 
-That could be extended to communicate (using JSONRPC protocol) with
-the RefPerSys engine. That `q6refpersys` has now (march 2026) its
+That could be extended to communicate (using a JSONRPC-like protocol)
+with the RefPerSys engine. That `q6refpersys` has now (march 2026) its
 source code under `tools/`.
 
 ## A research project

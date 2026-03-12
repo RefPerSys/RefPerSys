@@ -183,6 +183,13 @@ objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __times
 ### raw-objects are the set of *rps.raw.o files without FLTK interface
 raw-objects: $(REFPERSYS_RAW_OBJECTS)
 
+## Notice that near commit a4522ac97372ba (mid-March 2026) the
+## graphical interface is a separate Qt6 executable q6refpersys; that
+## executable communicates with the refpersys process using something
+## close to JSONRPC and may (later) recieve C++ code chunks to be
+## compiled (to some QGenericPlugin) and dlopen-ed.  For Qt6 see
+## https://doc.qt.io/qt-6/
+
 ### raw-refpersys executable has no FLTK or other graphical user
 ### interface code or library dependencies; it communicates using HTTP
 ### or JSONRPC protocols with a program for graphical user interface
