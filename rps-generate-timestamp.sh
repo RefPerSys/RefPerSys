@@ -78,6 +78,8 @@ fi
  git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
      echo $endgitid)  
 
+printf 'const char rps_qt6moc[] = "%s";\n' $(realpath $REFPERSYS_QT6MOC)
+
 printf 'const char rps_shortgitid[] = "%s";\n' "$(./rps-generate-gitid.sh -s)"
 
 printf 'const char rps_gitbranch[] = "%s";\n' "$(git branch --show-current)"
