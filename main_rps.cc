@@ -57,7 +57,7 @@ char rps_buffer_proc_version[rps_path_byte_size];
 #endif
 
 #if RPS_HAS_ARCH_86_64
-#pragma message "Compiling " __FILE__ " for 64 bits x86"
+#pragma message "Compiling " __FILE__ " for 64 bits x86/amd64"
 #endif
 
 struct utsname rps_utsname;
@@ -94,8 +94,12 @@ char*rps_pidfile_path;
 extern "C" std::atomic<long> rps_debug_atomic_counter;
 std::atomic<long> rps_debug_atomic_counter;
 
-const char* rps_get_proc_version(void)
+const char*
+rps_get_proc_version(void)
 {
+  RPS_ASSERT(rps_buffer_proc_version[0] != (char)0);
+  RPS_ASSERT(rps_buffer_proc_version[sizeof(rps_buffer_proc_version)-1]
+	     == (char)0);
   return rps_buffer_proc_version;
 } // end rps_get_proc_version
 
