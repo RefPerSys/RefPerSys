@@ -725,12 +725,12 @@ _q6refpersys-moc.cc: tools/q6refpersys.cc |GNUmakefile
 
 ## the q6refpersys may generate C++ code in file XXX.cc and compile it with
 ## make plain-q6rps-plugin Q6RPS_PLUGIN_SRC=XXX.cc QQRPS_PLUGIN_SHARED=YYY.so
-plain-q6rps-plugin:tools/q6refpersys.cc  __timestamp.o $(Q6RPS_PLUGIN_SRC) |GNUmakefile
+plain-q6rps-plugin: tools/q6refpersys.cc  $(Q6RPS_PLUGIN_SRC) |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $(Q6RPS_PLUGIN_SRC))"' \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES)) \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	-shared -o $(Q6RPS_PLUGIN_OUT)  \
+	-shared -o $(Q6RPS_PLUGIN_SHARED)  \
 	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES))
 
 
