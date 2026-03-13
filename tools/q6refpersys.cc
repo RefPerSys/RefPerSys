@@ -208,6 +208,7 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
 extern "C" QApplication *myqr_app;
 
 extern "C" {
+  class MyqrProcess;
   class MyqrJsonRpcFromRefPerSys;
   class MyqrMainWindow;
   class MyqrDisplayWindow;
@@ -260,6 +261,20 @@ public:
 };        // end class MyqrJsonRpcFromRefPerSys
 
 ////////////////////////////////////////////////////////////////
+class MyqrProcess : public QProcess
+{
+  Q_OBJECT;
+  mutable std::recursive_mutex _proc_mtx;
+  std::map<std::string,QObject*> _proc_map;
+public:
+  explicit MyqrProcess(QObject*parent = nullptr);
+  virtual ~MyqrProcess();
+public slots:
+  QObject*get(const std::string&) const;
+  virtual void put(const std::string&, QObject*);
+  virtual void remove(const std::string);
+}; // end MyqrProcess
+
 class MyqrMainWindow : public QMainWindow
 {
   Q_OBJECT;
@@ -508,6 +523,43 @@ MyqrMainWindow::about()
   MYQR_DEBUGOUT("incomplete MyqrMainWindow::about");
 #warning incomplete MyqrMainWindow::about
 } // end MyqrDisplayWindow::about
+
+MyqrProcess::MyqrProcess(QObject*parent)
+  : QProcess(parent), _proc_mtx(), _proc_map()
+{
+};
+
+MyqrProcess::~MyqrProcess()
+{
+  _proc_map.clear();
+};
+
+QObject*
+MyqrProcess::get(const std::string&nam) const
+{
+  if (nam.empty()) return nullptr;
+  auto gpr = std::lock_guard(_proc_mtx);
+  auto it = _proc_map.find(nam);
+  if (it != _proc_map.end())
+    return it->second;
+} // end MyqrProcess:get
+
+void
+MyqrProcess::put(const std::string&nam, QObject*obj)
+{
+  if (nam.empty()) return;
+  if (!obj) return;
+  auto gpr = std::lock_guard(_proc_mtx);
+  _proc_map.insert({nam,obj});
+} // end MyqrProcess::put
+
+void
+MyqrProcess::remove(const std::string nam)
+{
+  if (nam.empty()) return;
+  auto gpr = std::lock_guard(_proc_mtx);
+  _proc_map.erase(nam);
+} // end MyqrProcess::remove
 
 void myqr_create_windows(const QString& geom);
 
@@ -860,12 +912,11 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
                   << inibuf);
   };
   /* Should start a compilation process using QProcess */
-  QProcess* comproc = new QProcess();
+  MyqrProcess* comproc = new MyqrProcess();
   QProcessEnvironment compenv = QProcessEnvironment::systemEnvironment();
   comproc->setProgram(rps_gnu_make);
   comproc->setWorkingDirectory(rps_topdirectory);
   QStringList compargs;
-  compargs << "plain-q6rps-plugin";
   compenv.insert("Q6RPS_PLUGIN_SRC", tsrcfil->fileName());
   compenv.insert("Q6RPS_PLUGIN_SHARED", tfilso->fileName());
   /**
@@ -878,6 +929,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
   **/
   if (needqtmoc)
     {
+      compargs << "qt-q6rps-plugin";
 #warning unimplemented myqr_initiate_cpp_compilation_to_plugin for Qt6 moc
       MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                     << name.toStdString() << " file "
@@ -886,6 +938,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     }
   else
     {
+      compargs << "plain-q6rps-plugin";
     };
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
