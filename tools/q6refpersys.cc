@@ -725,6 +725,8 @@ myqr_have_jsonrpc(const std::string&jsonrpc)
                 << " cmd.fd#" << myqr_jsonrpc_cmd_fd << " out.fd#" << myqr_jsonrpc_out_fd);
 } // end myqr_have_jsonrpc
 
+constexpr int myqr_plugin_max_name_length=100;
+
 void
 myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
                                         const QString& name,
@@ -733,12 +735,34 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
                                         std::function<void(QGenericPlugin*,QString&,void*)> handler,
                                         std::function<void(QString,void*)> failer)
 {
+  MYQR_DEBUGOUT("starting myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString() << " pid:" << getpid());
+  int namlen = 0;
+  bool badname = false;
+  for (QChar c: name)
+    {
+      if (c=='/' || c=='\\' || c.isNull() || c.isSurrogate() || c.isSpace())
+        badname = true;
+      if (c=='-')
+        badname = (namlen==0);
+      if (!c.isPrint())
+        badname = true;
+      namlen++;
+    };
+  MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString() << " namlen:" << namlen
+                << " is " << (badname?"bad":"good"));
+  if (badname || namlen>myqr_plugin_max_name_length)
+    MYQR_FATALOUT("myqr_initiate_cpp_compilation_to_plugin name="
+                  << name.toStdString() << " of length " << namlen
+                  << "is bad");
   QTemporaryFile* tfil = new QTemporaryFile(name);
   int srclen = (int) srcvec.size();
-  MYQR_DEBUGOUT("starting myqr_initiate_cpp_compilation_to_plugin name="
-                << name.toStdString() << " pid:" << getpid()
+  MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString()
                 << " tfil:" << tfil->fileName().toStdString()
-                << " srclen=" << srclen << " " << (needqtmoc?"need Qt MOC":"no Qt"));
+                << " srclen=" << srclen << " "
+                << (needqtmoc?"need Qt MOC":"no_Qt6moc"));
   {
     char inibuf[512];
     memset (inibuf, 0, sizeof(inibuf));
@@ -826,7 +850,12 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
   QProcess* comproc = new QProcess();
   comproc->setProgram(rps_gnu_make);
   comproc->setWorkingDirectory(rps_topdirectory);
-  /* TODO: improve our GNUmakefile for q6refpersys plugins */
+  /**
+   * Our GNUmakefile is building plain q6refpersys plugins (not
+   * needing Qt6 moc tool) with
+   *
+   * make plain-q6rps-plugin Q6RPS_PLUGIN_SRC=⋯ Q6RPS_PLUGIN_SHARED=⋯
+  **/
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " file "
