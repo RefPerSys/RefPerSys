@@ -99,7 +99,7 @@ rps_get_proc_version(void)
 {
   RPS_ASSERT(rps_buffer_proc_version[0] != (char)0);
   RPS_ASSERT(rps_buffer_proc_version[sizeof(rps_buffer_proc_version)-1]
-	     == (char)0);
+             == (char)0);
   return rps_buffer_proc_version;
 } // end rps_get_proc_version
 
