@@ -784,6 +784,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
              getpid(), myqr_shortgitid);
     tsrcfil->write(inibuf);
     tsrcfil->write("\n");
+    tsrcfil->flush();
     MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote second line "
                   << inibuf);
   };
