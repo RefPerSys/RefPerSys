@@ -67,6 +67,8 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         raw-refpersys raw-objects \
         snapshot \
 	q6refpersys \
+	plain-q6rps-plugin \
+	qt-q6rps-plugin \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a test07x \
@@ -719,6 +721,22 @@ q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __timestamp.o |GNUmakefile
 
 _q6refpersys-moc.cc: tools/q6refpersys.cc |GNUmakefile
 	$(REFPERSYS_QT6MOC)  -DGITID='"$(RPS_GIT_ID)"'   -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' $< > $@
+
+
+## the q6refpersys may generate C++ code in file XXX.cc and compile it with
+## make plain-q6rps-plugin Q6RPS_PLUGIN_SRC=XXX.cc QQRPS_PLUGIN_SHARED=YYY.so
+plain-q6rps-plugin:tools/q6refpersys.cc  __timestamp.o $(Q6RPS_PLUGIN_SRC) |GNUmakefile
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-DSELF_FILE='"$(realpath $(Q6RPS_PLUGIN_SRC))"' \
+	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES)) \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	-shared -o $(Q6RPS_PLUGIN_OUT)  \
+	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES))
+
+
+## same for C++ code requiring the Qt6 moc
+qt-q6rps-plugin:
+	$(warning unimplemented qt-q6rps-plugin)
 
 ## for plugins, see do-build-refpersys-plugin.cc
 print-plugin-settings:
