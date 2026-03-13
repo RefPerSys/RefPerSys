@@ -218,9 +218,10 @@ extern "C" {
 //// plugin; the prefix lines ( myqr_first_decl_line ⋯ ⋯
 //// myqr_last_decl_line) gets copied verbatim. The `name` identify
 //// somehows the plugin. The flag `needqtmoc` is set if the generated
-//// code needs to run Qt6 meta object protocol compiler.  The `data`
-//// is private to the compilation. If it succeeds the `handler` is
-//// called, and when it fails the `failer`gets called.
+//// code needs to run the Qt6 meta object protocol compiler (cf
+//// https://doc.qt.io/qt-6/moc.html ...).  The `data` is private to
+//// the compilation. If it succeeds the `handler` is called, and when
+//// it fails the `failer`gets called.
 extern "C" void myqr_initiate_cpp_compilation_to_plugin
 (const std::vector<std::string> &srcvec,
  const QString& name,
@@ -342,8 +343,11 @@ MyqrJsonRpcFromRefPerSys::register_handler(const std::string& methname,
 void
 MyqrJsonRpcFromRefPerSys::forget_handler(const std::string& methname)
 {
-#warning unimplemented MyqrJsonRpcFromRefPerSys::forget_handler
-  MYQR_FATALOUT("unimplemented forget_handler methname=" << methname);
+  if (methname.empty() || !isalpha(methname[0]))
+    MYQR_FATALOUT("forget_handler with invalid methname=" << methname);
+  std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
+  myjr_handler_map.erase(methname);
+  MYQR_DEBUGOUT("forget_handler for methname=" << methname);
 } // end of MyqrJsonRpcFromRefPerSys::forget_handler
 
 
@@ -819,6 +823,10 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
                   << inibuf);
   };
   /* Should start a compilation process using QProcess */
+  QProcess* comproc = new QProcess();
+  comproc->setProgram(rps_gnu_make);
+  comproc->setWorkingDirectory(rps_topdirectory);
+  /* TODO: improve our GNUmakefile for q6refpersys plugins */
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " file "
