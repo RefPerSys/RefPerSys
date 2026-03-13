@@ -116,6 +116,44 @@ extern "C" pid_t myqr_refpersys_pid;
 
 extern "C" std::string myqr_json2str(const Json::Value&jv);
 
+//// from generated __timestamp.c
+extern "C" const char rps_timestamp[];
+extern "C" const unsigned long rps_timelong;
+extern "C" const char rps_topdirectory[];
+extern "C" const char rps_gitid[];
+extern "C" const char rps_qt6moc[];
+extern "C" const char rps_shortgitid[];
+extern "C" const char rps_gitbranch[];
+extern "C" const char rps_lastgittag[];
+extern "C" const char rps_lastgitcommit[];
+extern "C" const char rps_md5sum[];
+extern "C" const char*const rps_files[];
+extern "C" const char*const rps_subdirectories[];
+extern "C" /// see https://www.gnu.org/software/make/ - a builder tool
+extern "C" const char rps_gnumakefile[];
+extern "C" const char rps_gnu_make[];
+extern "C" const char rps_gnu_make_version[];
+extern "C" const char rps_gnu_make_features[];
+extern "C" /// see https://www.gnu.org/software/bison/ - a parser generator
+extern "C" const char rps_gnu_bison[];
+extern "C" const char rps_gnu_bison_version[];
+extern "C" /// carburetta.com is a lexer & parser generator
+extern "C" /// cf github.com/kingletbv/carburetta
+extern "C" const char rps_carburetta[];
+extern "C" const char rps_carburetta_version[];
+extern "C" const char rps_gui_script_executable[];
+extern "C" const char rps_building_user_name[];
+extern "C" const char rps_building_user_email[];
+extern "C" const char rps_building_host[];
+extern "C" const char rps_building_operating_system[];
+extern "C" const char rps_building_opersysname[];
+extern "C" const char rps_building_machine[];
+extern "C" const char rps_building_machname[];
+extern "C" const char rps_plugin_builder[];
+extern "C" const char rps_cxx_compiler_realpath[];
+extern "C" const char rps_cxx_compiler_version[];
+// end from __timestamp.c
+
 /// process the JSONRPC2 message recieved from refpersys
 extern "C" void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
 
@@ -389,7 +427,8 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
   _mainwin_menubar = menuBar();
   _mainwin_appmenu =_mainwin_menubar-> addMenu("App");
   _mainwin_aboutact = _mainwin_appmenu->addAction("About");
-  QObject::connect(_mainwin_aboutact,&QAction::triggered,this,&MyqrMainWindow::about);
+  QObject::connect(_mainwin_aboutact,&QAction::triggered,this,
+                   &MyqrMainWindow::about);
   _mainwin_aboutqtact = _mainwin_appmenu->addAction("About Qt");
   QObject::connect(_mainwin_aboutqtact,&QAction::triggered,this,&MyqrMainWindow::aboutQt);
   _mainwin_editmenu =_mainwin_menubar-> addMenu("Edit");
@@ -458,7 +497,10 @@ MyqrMainWindow::about()
                              QString(myqr_progname),
                              QString(" built "  __DATE__ "@" __TIME__ "\n")
                              + QString("git id ")
-                             + QString(myqr_shortgitid));
+                             + QString(myqr_shortgitid)
+                             + QString("\n")
+                             + QString("compiled by ")
+                             + QString(rps_cxx_compiler_realpath));
   MYQR_DEBUGOUT("incomplete MyqrMainWindow::about");
 #warning incomplete MyqrMainWindow::about
 } // end MyqrDisplayWindow::about
