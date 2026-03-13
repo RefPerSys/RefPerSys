@@ -749,6 +749,8 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
         badname = true;
       namlen++;
     };
+  if (name.contains("XXXXXX")) //cf doc.qt.io/qt-6/qtemporaryfile.html
+    badname = true;
   MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " namlen:" << namlen
                 << " is " << (badname?"bad":"good"));
@@ -756,11 +758,13 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     MYQR_FATALOUT("myqr_initiate_cpp_compilation_to_plugin name="
                   << name.toStdString() << " of length " << namlen
                   << "is bad");
-  QTemporaryFile* tfil = new QTemporaryFile(name);
+  QTemporaryFile* tsrcfil = new QTemporaryFile(QString(name)+".cc");
+  QTemporaryFile* tfilso = new QTemporaryFile(QString(name)+".so");
   int srclen = (int) srcvec.size();
   MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString()
-                << " tfil:" << tfil->fileName().toStdString()
+                << " tsrcfil:" << tsrcfil->fileName().toStdString()
+                << " tfilso:" << tfilso->fileName().toStdString()
                 << " srclen=" << srclen << " "
                 << (needqtmoc?"need Qt MOC":"no_Qt6moc"));
   {
@@ -768,11 +772,19 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     memset (inibuf, 0, sizeof(inibuf));
     snprintf(inibuf, sizeof(inibuf)-2,
              "/" "/ temporary C++ file %.250s from %s pid %d git %s",
-             tfil->fileName().toStdString(), __FILE__,
+             tsrcfil->fileName().toStdString(), __FILE__,
              getpid(), myqr_shortgitid);
-    tfil->write(inibuf);
-    tfil->write("\n");
+    tsrcfil->write(inibuf);
+    tsrcfil->write("\n");
     MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote first line "
+                  << inibuf);
+    snprintf(inibuf, sizeof(inibuf)-2,
+             "/" "/ plugin %.250s to be generated from %s pid %d git %s",
+             tfilso->fileName().toStdString(), __FILE__,
+             getpid(), myqr_shortgitid);
+    tsrcfil->write(inibuf);
+    tsrcfil->write("\n");
+    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote second line "
                   << inibuf);
   };
   //// copy the lines myqr_first_decl_line ⋯ myqr_last_decl_line of
@@ -798,7 +810,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
           maxwidth = curwidth;
         if (lineno >= myqr_first_decl_line && lineno<=  myqr_last_decl_line)
           {
-            int wsiz = tfil->write(curlin);
+            int wsiz = tsrcfil->write(curlin);
             if (wsiz<curwidth)
               MYQR_FATALOUT("failed to copy line#" << lineno << std::endl
                             << curlin);
@@ -819,7 +831,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     memset (midbuf, 0, sizeof(midbuf));
     snprintf(midbuf, sizeof(midbuf)-2,
              "\n\f\n/" "/ own C++ code file %.250s from %s pid %d git %s",
-             tfil->fileName().toStdString(), getpid(), myqr_shortgitid);
+             tsrcfil->fileName().toStdString(), getpid(), myqr_shortgitid);
   }
   //// the own emitted lines
   for (int i= 0; i < srclen; i++)
@@ -827,7 +839,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
       std::string curlin = srcvec[i];
       if (curlin.empty() || curlin[curlin.size()-1] != '\n')
         curlin += '\n';
-      long l = tfil->write(curlin.c_str(), curlin.size());
+      long l = tsrcfil->write(curlin.c_str(), curlin.size());
       MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote line#" << i
                     << " " << curlin);
       if (l < curlin.size())
@@ -838,28 +850,46 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     memset (inibuf, 0, sizeof(inibuf));
     snprintf(inibuf, sizeof(inibuf)-2,
              "/" "/ end of file %.250s from %s pid %d git %s - %d lines",
-             tfil->fileName().toStdString(), __FILE__,
+             tsrcfil->fileName().toStdString(), __FILE__,
              getpid(), myqr_shortgitid, srclen);
-    tfil->write(inibuf);
-    tfil->write("\n");
-    tfil->flush();
+    tsrcfil->write(inibuf);
+    tsrcfil->write("\n");
+    tsrcfil->flush();
     MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote last line "
                   << inibuf);
   };
   /* Should start a compilation process using QProcess */
   QProcess* comproc = new QProcess();
+  QProcessEnvironment compenv = QProcessEnvironment::systemEnvironment();
   comproc->setProgram(rps_gnu_make);
   comproc->setWorkingDirectory(rps_topdirectory);
+  QStringList compargs;
+  compargs << "plain-q6rps-plugin";
+  compenv.insert("Q6RPS_PLUGIN_SRC", tsrcfil->fileName());
+  compenv.insert("Q6RPS_PLUGIN_SHARED", tfilso->fileName());
   /**
    * Our GNUmakefile is building plain q6refpersys plugins (not
-   * needing Qt6 moc tool) with
+   * needing Qt6 moc tool) with the following command (or run GNU make
+   * with an environment containing Q6RPS_PLUGIN_SRC &
+   * Q6RPS_PLUGIN_SHARED)
    *
    * make plain-q6rps-plugin Q6RPS_PLUGIN_SRC=⋯ Q6RPS_PLUGIN_SHARED=⋯
   **/
+  if (needqtmoc)
+    {
+#warning unimplemented myqr_initiate_cpp_compilation_to_plugin for Qt6 moc
+      MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
+                    << name.toStdString() << " file "
+                    << tsrcfil->fileName().toStdString()
+                    << " needs to run Qt6 moc compiler");
+    }
+  else
+    {
+    };
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " file "
-                << tfil->fileName().toStdString());
+                << tsrcfil->fileName().toStdString());
 } // end myqr_initiate_cpp_compilation_to_plugin
 
 void
