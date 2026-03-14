@@ -940,6 +940,10 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     {
       compargs << "plain-q6rps-plugin";
     };
+  comproc->setStandardInputFile(QProcess::nullDevice());
+  comproc->setProcessChannelMode(QProcess::MergedChannels);
+  // should connect appropriately to read compilation errors.
+  comproc->start();
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " file "
