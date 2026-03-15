@@ -289,6 +289,7 @@ class MyqrMainWindow : public QMainWindow
   QMenu* _mainwin_appmenu;
   QAction* _mainwin_aboutact;
   QAction* _mainwin_aboutqtact;
+  QAction* _mainwin_debugact;
   QMenu* _mainwin_editmenu;
   QAction* _mainwin_copyact;
   QAction* _mainwin_pasteact;
@@ -300,6 +301,7 @@ class MyqrMainWindow : public QMainWindow
 private slots:
   void about();
   void aboutQt();
+  void toggle_debug();
 public:
   static MyqrMainWindow*the_instance;
   explicit MyqrMainWindow(QWidget*parent = nullptr);
@@ -438,6 +440,7 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
     _mainwin_appmenu(nullptr),
     _mainwin_aboutact(nullptr),
     _mainwin_aboutqtact(nullptr),
+    _mainwin_debugact(nullptr),
     _mainwin_editmenu(nullptr),
     _mainwin_copyact(nullptr),
     _mainwin_pasteact(nullptr),
@@ -455,6 +458,10 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
   QObject::connect(_mainwin_aboutact,&QAction::triggered,this,
                    &MyqrMainWindow::about);
   _mainwin_aboutqtact = _mainwin_appmenu->addAction("About Qt");
+  _mainwin_debugact = _mainwin_appmenu->addAction("Debug");
+  QObject::connect(_mainwin_debugact,&QAction::triggered,this,
+                   &MyqrMainWindow::toggle_debug);
+  _mainwin_debugact->setCheckable(true);
   QObject::connect(_mainwin_aboutqtact,&QAction::triggered,this,&MyqrMainWindow::aboutQt);
   _mainwin_editmenu =_mainwin_menubar-> addMenu("Edit");
   _mainwin_copyact =  _mainwin_editmenu->addAction("Copy");
@@ -513,6 +520,16 @@ MyqrMainWindow::aboutQt()
 {
   QApplication::aboutQt();
 } // end MyqrDisplayWindow::aboutQt
+
+void
+MyqrMainWindow::toggle_debug()
+{
+  bool fl = _mainwin_debugact->isChecked();
+#warning unimplemented MyqrMainWindow::toggle_debug
+  MYQR_WARNOUT("unimplemented MyqrMainWindow::toggle_debug " << (fl?"checked":"not")
+               << " "
+               << (myqr_debug?"debugged":"notdebug"));
+} // end MyqrDisplayWindow::toggle_debug
 
 void
 MyqrMainWindow::about()
