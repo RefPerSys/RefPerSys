@@ -45,7 +45,7 @@ extern "C" const char myqr_self_file[];
 #define UNUSED __attribute__((unused))
 extern "C" const char myqr_git_id[];
 extern "C" const char myqr_shortgitid[];
-extern "C" char myqr_host_name[64];
+extern "C" char myqr_host_name[];
 
 #ifndef GITID
 #error GITID should be defined in compilation command
@@ -92,7 +92,7 @@ extern "C" char myqr_host_name[64];
 #include <signal.h>
 
 
-extern "C" char myqr_host_name[];
+extern "C" char myqr_host_name[96];
 extern "C" char* myqr_progname;
 extern "C" bool myqr_debug;
 extern "C" std::string myqr_jsonrpc; // the FIFO prefix
@@ -542,13 +542,42 @@ MyqrProcess::get(const std::string&nam) const
   auto it = _proc_map.find(nam);
   if (it != _proc_map.end())
     return it->second;
+  return nullptr;
 } // end MyqrProcess:get
 
 void
 MyqrProcess::put(const std::string&nam, QObject*obj)
 {
-  if (nam.empty()) return;
-  if (!obj) return;
+  if (nam.empty())
+    {
+      MYQR_WARNOUT("empty nam to put inside MyqrProcess");
+      return;
+    };
+  if (!obj)
+    {
+      MYQR_WARNOUT("null obj to put inside MyqrProcess");
+      return;
+    };
+  int ix=0;
+  for (char c: nam)
+    {
+      if (c=='-')
+        {
+          if (ix==0)
+            {
+              MYQR_WARNOUT("bad nam " << nam
+                           << " (dash starting) to put inside MyqrProcess");
+              return;
+            }
+        }
+      else if (!isalnum(c) && c!='_')
+        {
+          MYQR_WARNOUT("bad nam " << nam
+                       << " (non-id) to put inside MyqrProcess");
+          return;
+        };
+      ix++;
+    }
   auto gpr = std::lock_guard(_proc_mtx);
   _proc_map.insert({nam,obj});
 } // end MyqrProcess::put
