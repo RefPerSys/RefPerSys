@@ -294,6 +294,7 @@ clean: clean-plugins
 	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
+	$(RM) -vf q6refpersys
 	$(RM) *% %~
 	$(RM) *.gch
 	$(RM) *.orig
@@ -714,6 +715,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __timestamp.o |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $<)"' \
+	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	__timestamp.o \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
