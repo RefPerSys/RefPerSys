@@ -165,13 +165,23 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
  const std::function<void(const Json::Value&res)>& resfun);
 
 
-#define MYQR_BREAKPOINT_AT_BIS(Fil,Lin) do { \
-  asm volatile("nop; nop; ");
-} while(0)
+#ifndef SELF_BASENAME // should be defined in the compile command
+#error SELF_BASENAME should be a compile string and is needed here
+#endif
 
-#define MYQR_BREAKPOINT_AT(Fil,Lin) MYQR_BREAKPOINT_AT_BIS(Fil,Lin)
 
-#define MYQR_BREAKPOINT() MYQR_BREAKPOINT_AT(__FILE__,__LINE__)
+
+#define MYQR_BREAKPOINT_AT(Fil,Lin) do {    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+    asm volatile ("__" SELF_BASENAME "_brk_" #Lin ": nop\n");    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+ } while(0)
+
+#define MYQR_BREAKPOINT_AT_BIS(Fil,Lin) \
+  MYQR_BREAKPOINT_AT(Fil,Lin)
+
+#define MYQR_BREAKPOINT() MYQR_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
 
 /// fatal unrecoverable errors
 #define MYQR_FATALOUT_AT_BIS(Fil,Lin,Out) do {  \
@@ -1263,6 +1273,7 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
       };
   };
+  MYQR_BREAKPOINT();
   for (int i=1; i<argc; i++)
     {
       if (!strcmp(argv[i], "-D") || !strcmp(argv[i], "--debug"))
