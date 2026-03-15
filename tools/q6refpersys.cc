@@ -261,6 +261,7 @@ public:
 };        // end class MyqrJsonRpcFromRefPerSys
 
 ////////////////////////////////////////////////////////////////
+typedef bool MyqrProcess_until_sigt(const MyqrProcess*, std::string, QObject*, void*data);
 class MyqrProcess : public QProcess
 {
   Q_OBJECT;
@@ -273,6 +274,11 @@ public slots:
   QObject*get(const std::string&) const;
   virtual void put(const std::string&, QObject*);
   virtual void remove(const std::string);
+  /// iterate on entries until the function returns true (then return true)
+  virtual bool repeat_until(const std::function<MyqrProcess_until_sigt>&fun,
+                            void*data=nullptr) const;
+  virtual bool repeat_until(const MyqrProcess_until_sigt*pfun,
+                            void*data=nullptr) const;
 }; // end MyqrProcess
 
 class MyqrMainWindow : public QMainWindow
@@ -589,6 +595,41 @@ MyqrProcess::remove(const std::string nam)
   auto gpr = std::lock_guard(_proc_mtx);
   _proc_map.erase(nam);
 } // end MyqrProcess::remove
+
+/// iterate on entries until the function returns true (then return true)
+bool
+MyqrProcess::repeat_until(const std::function<MyqrProcess_until_sigt>&fun,
+                          void*data) const
+{
+  if (!fun)
+    return false;
+  auto gpr = std::lock_guard(_proc_mtx);
+  for (auto it: _proc_map)
+    {
+      const std::string curnam = it.first;
+      QObject*curobj = it.second;
+      if (fun(this, curnam, curobj, data))
+        return true;
+    };
+  return false;
+} // end MyqrProcess::repeat_until
+
+bool
+MyqrProcess::repeat_until(const MyqrProcess_until_sigt*pfun,
+                          void*data) const
+{
+  if (!pfun)
+    return false;
+  auto gpr = std::lock_guard(_proc_mtx);
+  for (auto it: _proc_map)
+    {
+      const std::string curnam = it.first;
+      QObject*curobj = it.second;
+      if ((*pfun)(this, curnam, curobj, data))
+        return true;
+    };
+  return false;
+} // end MyqrProcess::repeat_until
 
 void myqr_create_windows(const QString& geom);
 
