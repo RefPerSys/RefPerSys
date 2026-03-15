@@ -730,6 +730,7 @@ _q6refpersys-moc.cc: tools/q6refpersys.cc |GNUmakefile
 plain-q6rps-plugin: tools/q6refpersys.cc  $(Q6RPS_PLUGIN_SRC) |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $(Q6RPS_PLUGIN_SRC))"' \
+	-DSELF_BASENAME='"$(notdir $(basename $(Q6RPS_PLUGIN_SRC)))"' \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES)) \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	-shared -o $(Q6RPS_PLUGIN_SHARED)  \
