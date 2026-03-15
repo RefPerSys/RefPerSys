@@ -164,6 +164,15 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
  const Json::Value& args,
  const std::function<void(const Json::Value&res)>& resfun);
 
+
+#define MYQR_BREAKPOINT_AT_BIS(Fil,Lin) do { \
+  asm volatile("nop; nop; ");
+} while(0)
+
+#define MYQR_BREAKPOINT_AT(Fil,Lin) MYQR_BREAKPOINT_AT_BIS(Fil,Lin)
+
+#define MYQR_BREAKPOINT() MYQR_BREAKPOINT_AT(__FILE__,__LINE__)
+
 /// fatal unrecoverable errors
 #define MYQR_FATALOUT_AT_BIS(Fil,Lin,Out) do {  \
     std::ostringstream outs##Lin;               \
@@ -339,7 +348,15 @@ extern std::ostream& operator << (std::ostream&out, const QList<QString>&qslist)
 const int myqr_last_decl_line = __LINE__ + 1;
 ////////
 
+#ifndef SELF_FILE
+#error missing SELF_FILE in compilation command
+#endif
 const char myqr_self_file[] = SELF_FILE; /// defined in compilation command
+
+#ifndef SELF_BASENAME
+#error missing SELF_BASENAME in compilation command
+#endif
+const char myqr_self_basename[] = SELF_BASENAME; // in compilation command
 
 std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
 std::map<const std::string,MyqrJsonRpcFromRefPerSys::myjr_handler_st>
@@ -526,7 +543,7 @@ MyqrMainWindow::toggle_debug()
 {
   bool fl = _mainwin_debugact->isChecked();
 #warning unimplemented MyqrMainWindow::toggle_debug
-  MYQR_WARNOUT("unimplemented MyqrMainWindow::toggle_debug " << (fl?"checked":"not")
+  MYQR_WARNOUT("unimplemented MyqrMainWindow::toggle_debug " << (fl?"checked":"unchecked")
                << " "
                << (myqr_debug?"debugged":"notdebug"));
 } // end MyqrDisplayWindow::toggle_debug
