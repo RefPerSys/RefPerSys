@@ -12,6 +12,7 @@
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Niklaus Rozencrantz <niklasr@protonmail.com>
  *
  *      © Copyright (C) 2022 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -631,15 +632,54 @@ rps_jsonrpc_initialize(void)
    *  TODO: we need to document the JSONRPC protocol between the GUI
    *  software and RefPerSys
    *
-   *  A needed request is the _VERSION one....
+   *  A needed request is the _RPSVERSION one.... It is done once, so
+   *  can send a lot of information...
    *
   **/
+  Json::Value jvob(Json::objectValue);
+  jvob["major"] = rps_get_major_version();
+  jvob["minor"] = rps_get_minor_version();
+  jvob["shortgit"] = rps_shortgitid;
+  jvob["loaded_dir"] = rps_loaded_directory;
+  jvob["timestamp"] = rps_timestamp;
+  jvob["timelong"] = rps_timelong;
+  jvob["gitbranch"] = rps_gitbranch;
+  jvob["cxx_compiler"] = rps_cxx_compiler_realpath;
+  jvob["cxx_version"] = rps_cxx_compiler_version;
+  jvob["building_user_name"] = rps_building_user_name;
+  jvob["building_user_email"] = rps_building_user_email;
+  jvob["building_host"] = rps_building_host;
+  jvob["building_operating_system"] = rps_building_operating_system;
+#warning incomplete jvob in rps_jsonrpc_initialize
+  Json::Value
+  rvjrpc = rps_jsonrpc_make_rpc_call_json("_RPSVERSION",&jvob);
+  RPS_DEBUG_LOG(REPL, "In rps_jsonrpc_initialize before locking"
+                << std::endl
+                << "jvob=" << jvob
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_jsonrpc_initialize/beflock"));
   RPS_DEBUG_LOG(REPL, "ending rps_jsonrpc_initialize with fifo prefix "
                 << rps_get_fifo_prefix() //
                 << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
                 << " and rout.fd#" << fdp.fifo_ui_rout
                 << " thread:" << rps_current_pthread_name());
 } // end rps_jsonrpc_initialize
+
+
+// JSON-RPC 2.0 specification https://www.jsonrpc.org/specification
+Json::Value
+rps_jsonrpc_make_rpc_call_json(const std::string methname, Json::Value*jparam)
+{
+#warning rps_jsonrpc_make_rpc_call_json need to check the methname
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  Json::Value jrpc(Json::objectValue);
+  jrpc["jsonrpc"]="2.0";
+  jrpc["method"] = methname;
+  if (jparam != nullptr)
+    jrpc["params"] = *jparam;
+  return jrpc;
+} // end rps_jsonrpc_make_rpc_call_json
 
 std::string
 rps_eventloop_explstring(void)

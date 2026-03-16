@@ -456,6 +456,9 @@ extern "C" bool rps_run_repl;
 
 
 extern "C" void rps_jsonrpc_initialize(void);
+extern "C" Json::Value 
+rps_jsonrpc_make_rpc_call_json(const std::string methname, Json::Value*jparam=nullptr);
+
 extern "C" void rps_gccjit_initialize(void);
 extern "C" void rps_gccjit_finalize(void); // passed to atexit(3)
 
