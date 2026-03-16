@@ -12,8 +12,9 @@
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Niklas Rozencrantz 
  *
- *      © Copyright (C) 2020 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
