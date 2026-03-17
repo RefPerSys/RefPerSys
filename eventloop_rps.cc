@@ -591,12 +591,28 @@ rps_initialize_event_loop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop*start"));
   rps_initialize_pipe_to_self_in_event_loop();
+  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop did"
+                      " rps_initialize_pipe_to_self_in_event_loop");
   rps_initialize_signalfd_in_event_loop();
+  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop did"
+                      " rps_initialize_signalfd_in_event_loop");
   rps_initialize_timerfd_in_event_loop();
+  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop did"
+                      " rps_initialize_timerfd_in_event_loop");
   if (!rps_get_fifo_prefix().empty())
-    rps_initialize_jsonfifo_in_event_loop();
+    {
+      rps_initialize_jsonfifo_in_event_loop();
+      RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop did"
+                          " rps_initialize_jsonfifo_in_event_loop with prefix "
+                    << Rps_QuotedC_String(rps_get_fifo_prefix()));
+    };
   if (rps_poll_delay_millisec==0)
-    rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
+    {
+      rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
+      RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop sets "
+                          " rps_poll_delay_millisec to default "
+                    << rps_poll_delay_millisec);
+    };
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop ended "
                 << " polldelay=" << rps_poll_delay_millisec << " ms"
                 << std::endl
