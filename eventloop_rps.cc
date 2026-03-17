@@ -783,7 +783,7 @@ rps_event_loop(void)
         {
           RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt
                         << " elapsed-delay:" << (rps_elapsed_real_time()-startelapsedtime)
-			<< " elapsed-time:" << rps_elapsed_real_time()
+                        << " elapsed-time:" << rps_elapsed_real_time()
                         << " proc-cpu-delay:" << (rps_process_cpu_time()-startcputime)
                         << " thread:" << rps_current_pthread_name()
                         << std::endl
@@ -1022,7 +1022,7 @@ rps_event_loop(void)
           && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout)
         {
           RPS_INFORMOUT("stopping event loop#" << loopcnt
-			<< " agenda mechanism because of agenda timeout after "
+                        << " agenda mechanism because of agenda timeout after "
                         << pollcount << " polling." << std::endl
                         << RPS_FULL_BACKTRACE(1, "rps_event_loop/timeout"));
           rps_stop_agenda_mechanism();
@@ -1057,10 +1057,12 @@ rps_event_loop(void)
         };
       if (pollcount %2 && debugpoll)
         snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
-      RPS_DEBUG_LOG(REPL, "rps_event_loop pollcount#"  << pollcount ///
+      RPS_DEBUG_LOG(REPL, "rps_event_loop loop#" << loopcnt << " pollcount#"  << pollcount ///
                     << " respoll=" << respoll
                     << " nbfdpoll=" << nbfdpoll
-                    << " elapsed time:" << rps_elapsed_real_time());
+                    << " elapsed time:" << rps_elapsed_real_time()
+		    << " cputime:" << rps_process_cpu_time()
+                    << " agtimout:" << Rps_Agenda::agenda_timeout);
 
       if (respoll>0)
         {
