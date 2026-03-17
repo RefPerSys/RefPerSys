@@ -1055,8 +1055,6 @@ rps_event_loop(void)
                                               "rps_event_loop inform")
                         << std::endl);
         };
-      if (pollcount %2 && debugpoll)
-        snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
       RPS_DEBUG_LOG(REPL, "rps_event_loop loop#" << loopcnt << " pollcount#"  << pollcount ///
                     << " respoll=" << respoll
                     << " nbfdpoll=" << nbfdpoll
@@ -1066,9 +1064,13 @@ rps_event_loop(void)
 
       if (respoll>0)
         {
-          if (debugpoll)
+          if (debugpoll) {
+	    if (pollcount %2)
+	      snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
             rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
-                                "respoll=%d loop%ld%s\n", respoll, event_nbloops.load(), elapsbuf);
+                                "loop#%d respoll=%d loop%ld%s\n", loopcnt,
+				respoll, event_nbloops.load(), elapsbuf);
+	  }
           int nbrev=0;
           for (int pix=0; pix<nbfdpoll; pix++)
             {
