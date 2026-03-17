@@ -899,7 +899,7 @@ test09: refpersys
 	@echo missing test09 ; exit 1
 
 test10: refpersys 
-	./refpersys -AREPL --run-name=test10 --run-delay=6s || (echo test10 failed; exit 1)
+	./refpersys -AREPL,EXIT --run-name=test10 --run-delay=6s || (echo test10 failed; exit 1)
 	@printf '\n\n\n////test10 FINISHED¤\n'
 
 test-load: refpersys
