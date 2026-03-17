@@ -12,8 +12,9 @@
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Niklas Rozencrantz
  *
- *      © Copyright  2020 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -574,11 +575,25 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
                                   const char *function)
 {
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
-  if (!data)
-    RPS_FASTABORT("corruption - no data");
+  char msgbuf[384];
+  memset (msgbuf, 0, sizeof(msgbuf));
+  if (!data)   // should not happen
+    {
+      snprintf(msgbuf, sizeof(msgbuf)-2,
+               "corruption - no backtracer data [pc=%p,%s:%d:%s]",
+               (void*)pc, filename, lineno, function);
+      RPS_FASTABORT(msgbuf);
+    };
   Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
   if (bt->magicnum() != _backtr_magicnum_)
-    RPS_FASTABORT("corrupted backtracer");
+    {
+      /// should never happen.
+      snprintf(msgbuf, sizeof(msgbuf)-2,
+               "corrupted backtracer data %p, [pc=%p,%s:%d:%s]",
+               (void*)data,
+               (void*)pc, filename, lineno, function);
+      RPS_FASTABORT(msgbuf);
+    };
   if (!pc)
     return RPS_STOP_BACKTRACE;
   if (bt->backtr_gotlast)
