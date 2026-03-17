@@ -720,7 +720,7 @@ rps_eventloop_explstring(void)
 
 
 ////////////////////////////////////////////////////////////////
-/* TODO: an event loop using poll(2) and also handling SIGCHLD using
+/* Our event loop using poll(2) and also handling SIGCHLD using
    https://man7.org/linux/man-pages/man2/signalfd.2.html
  */
 void
@@ -782,14 +782,17 @@ rps_event_loop(void)
       if ((loopcnt-1) % 16 == 0)
         {
           RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt
-                        << " elapsed:" << rps_elapsed_real_time()
+                        << " elapsed-delay:" << (rps_elapsed_real_time()-startelapsedtime)
+			<< " elapsed-time:" << rps_elapsed_real_time()
+                        << " proc-cpu-delay:" << (rps_process_cpu_time()-startcputime)
                         << " thread:" << rps_current_pthread_name()
                         << std::endl
                         << RPS_FULL_BACKTRACE(1, "rps_event_loop/looping"));
         }
       else
         RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt
-                      << " elapsed:" << rps_elapsed_real_time()
+                      << " elapsed-delay:"
+                      << (rps_elapsed_real_time() - startelapsedtime)
                       << " pid:" << (long)getpid());
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbfdpoll=0;
@@ -1018,7 +1021,8 @@ rps_event_loop(void)
       if (Rps_Agenda::agenda_timeout > 0
           && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout)
         {
-          RPS_INFORMOUT("stopping agenda mechanism because of agenda timeoutafter "
+          RPS_INFORMOUT("stopping event loop#" << loopcnt
+			<< " agenda mechanism because of agenda timeout after "
                         << pollcount << " polling." << std::endl
                         << RPS_FULL_BACKTRACE(1, "rps_event_loop/timeout"));
           rps_stop_agenda_mechanism();
@@ -1116,16 +1120,17 @@ rps_event_loop(void)
                                 RPS_DEBUG__EVERYTHING,
                                 "poll interrupt loop%ld\n", event_nbloops.load());
         };
+      /// stop event loo if agenda timeout exceeded
       if (Rps_Agenda::agenda_timeout > 0
-          && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout + 2.0)
+          && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout + 0.5)
         {
-          RPS_INFORMOUT("stopping event loop because of agenda timeout after "
+          RPS_INFORMOUT("stopping event loop#"<< loopcnt << " because of agenda timeout after "
                         << pollcount << " polling." << std::endl
                         << RPS_FULL_BACKTRACE(1, "rps_event_loop/agenda-timeout"));
           rps_stop_event_loop_flag.store(true);
         };
       fflush(nullptr);
-    };       // end while not rps_stop_event_loop_flag
+    };       // end eventloop while not rps_stop_event_loop_flag
   {
     std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
     rps_eventloopdata.eld_eventloopisactive.store(true);
