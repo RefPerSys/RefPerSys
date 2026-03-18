@@ -67,6 +67,8 @@ enum self_pipe_code_en
 
 
 #define RPS_MAXPOLL_FD 128
+extern "C" const int rps_maxpoll_fd; // can be dlsym-ed
+const int rps_maxpoll_fd = RPS_MAXPOLL_FD;
 
 //extern "C" std::atomic<bool> rps_stop_event_loop_flag;
 
@@ -649,16 +651,18 @@ rps_jsonrpc_initialize(void)
    *  software and RefPerSys
    *
    *  A needed request is the _RPSVERSION one.... It is done once, so
-   *  can send a lot of information...
+   *  can and probably should send a lot of information...
    *
   **/
   Json::Value jvob(Json::objectValue);
   jvob["major"] = rps_get_major_version();
   jvob["minor"] = rps_get_minor_version();
   jvob["shortgit"] = rps_shortgitid;
+  jvob["gitid"] = rps_gitid;
   jvob["loaded_dir"] = rps_loaded_directory;
   jvob["timestamp"] = rps_timestamp;
   jvob["timelong"] = rps_timelong;
+  jvob["topdirectory"] = rps_topdirectory;
   jvob["gitbranch"] = rps_gitbranch;
   jvob["cxx_compiler"] = rps_cxx_compiler_realpath;
   jvob["cxx_version"] = rps_cxx_compiler_version;
@@ -666,9 +670,54 @@ rps_jsonrpc_initialize(void)
   jvob["building_user_email"] = rps_building_user_email;
   jvob["building_host"] = rps_building_host;
   jvob["building_operating_system"] = rps_building_operating_system;
+  jvob["md5sum"] = rps_md5sum;
+  /// the source files
+  Json::Value jvfiles(Json::arrayValue);
+  {
+    for (const char*const*fil = rps_files;
+         fil && *fil; fil++)
+      jvfiles.append(*fil);
+  };
+  jvob["files"] = jvfiles;
+  /// the subdirectories
+  Json::Value jvsubdirs(Json::arrayValue);
+  {
+    for (const char*const*subdir = rps_subdirectories;
+         subdir && *subdir; subdir++)
+      jvsubdirs.append(*subdir);
+  };
+  jvob["subdirs"] = jvsubdirs;
+  jvob["gnumakefile"] = rps_gnumakefile;
+  jvob["gnu_make"] = rps_gnu_make;
+  jvob["gnu_make_version"] = rps_gnu_make_version;
+  /// the GNU make features, since rps_gnu_make_features is a C string
+  /// containing space separated GNU make features
+  /// e.g. "target-specific order-only second-expansion "
+  Json::Value jvmakfeat(Json::arrayValue);
+  {
+    char mfeatbuf[48];
+    memset (mfeatbuf, 0, sizeof(mfeatbuf));
+    const char* nx = nullptr;
+    for (const char* pc = rps_gnu_make_features;
+         pc && *pc; pc = nx)
+      {
+        memset (mfeatbuf, 0, sizeof(mfeatbuf));
+        int nbytes= -1;
+        if (sscanf(pc, "%40[a-zA-Z0-9-] %n", mfeatbuf, &nbytes)
+            < 0)
+          break;
+        if (!isascii(mfeatbuf[0]))
+          break;
+        if (nbytes <= 0)
+          break;
+        nx = pc + nbytes;
+        jvmakfeat.append(mfeatbuf);
+      };
+    jvob["gnu_make_features"] = jvmakfeat;
+  }
 #warning incomplete jvob in rps_jsonrpc_initialize
-  Json::Value
-  rvjrpc = rps_jsonrpc_make_rpc_call_json("_RPSVERSION",&jvob);
+  Json::Value rvjrpc
+    = rps_jsonrpc_make_rpc_call_json("_RPSVERSION",&jvob);
   RPS_DEBUG_LOG(REPL, "In rps_jsonrpc_initialize before locking"
                 << std::endl
                 << "jvob=" << jvob
@@ -1059,18 +1108,19 @@ rps_event_loop(void)
                     << " respoll=" << respoll
                     << " nbfdpoll=" << nbfdpoll
                     << " elapsed time:" << rps_elapsed_real_time()
-		    << " cputime:" << rps_process_cpu_time()
+                    << " cputime:" << rps_process_cpu_time()
                     << " agtimout:" << Rps_Agenda::agenda_timeout);
 
       if (respoll>0)
         {
-          if (debugpoll) {
-	    if (pollcount %2)
-	      snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
-            rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
-                                "loop#%d respoll=%d loop%ld%s\n", loopcnt,
-				respoll, event_nbloops.load(), elapsbuf);
-	  }
+          if (debugpoll)
+            {
+              if (pollcount %2)
+                snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
+              rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
+                                  "loop#%d respoll=%d loop%ld%s\n", loopcnt,
+                                  respoll, event_nbloops.load(), elapsbuf);
+            }
           int nbrev=0;
           for (int pix=0; pix<nbfdpoll; pix++)
             {
