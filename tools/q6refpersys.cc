@@ -553,7 +553,8 @@ MyqrMainWindow::toggle_debug()
 {
   bool fl = _mainwin_debugact->isChecked();
 #warning unimplemented MyqrMainWindow::toggle_debug
-  MYQR_WARNOUT("unimplemented MyqrMainWindow::toggle_debug " << (fl?"checked":"unchecked")
+  MYQR_WARNOUT("unimplemented MyqrMainWindow::toggle_debug "
+               << (fl?"checked":"unchecked")
                << " "
                << (myqr_debug?"debugged":"notdebug"));
 } // end MyqrDisplayWindow::toggle_debug
