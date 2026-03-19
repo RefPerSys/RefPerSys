@@ -8,6 +8,10 @@
  *      It has the event loop and some JSONRPC code to user-interface
  *      to an external process (using JSONRPC protocol)
  *
+ *      A tentative implementation of such an external process
+ *      providing a graphical interface might be (using the Qt6
+ *      toolkit) the tools/qt6refpersys.cc file
+ *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
@@ -780,10 +784,15 @@ rps_event_loop(void)
   long pollcount = 0;
   double startelapsedtime = rps_elapsed_real_time();
   double informelapsedtime = 0.0;
+  double elapsedtimethreshold = 0.0;
   const double informperiod = 300.0; // five minutes
   double startcputime = rps_process_cpu_time();
+  if (rps_run_delay > 0)
+    elapsedtimethreshold = startelapsedtime + (double)rps_run_delay;
   RPS_DEBUG_LOG(REPL, "rps_event_loop starting elapsedtime=" << startelapsedtime
                 << " cputime=" << startcputime
+                << " run-delay=" << rps_run_delay
+                << " elapsedtimethreshold=" << elapsedtimethreshold
                 << " thread:" << rps_current_pthread_name() << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop/start"));
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
@@ -1061,8 +1070,8 @@ rps_event_loop(void)
               if (pollarr[pix].events & POLLNVAL)
                 evstr += " POLLNVAL";
               rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
-                                  "poll[%d] loop%ld:fd#%d:%s,%s%s\n",
-                                  pix, event_nbloops.load(), pollarr[pix].fd,
+                                  "loop#%d poll[%d] nbloop=%ld:fd#%d:%s,%s%s\n",
+                                  loopcnt, pix, event_nbloops.load(), pollarr[pix].fd,
                                   explarr[pix], evstr.c_str(), pidbuf);
             }
         };
@@ -1075,6 +1084,7 @@ rps_event_loop(void)
                         << pollcount << " polling." << std::endl
                         << RPS_FULL_BACKTRACE(1, "rps_event_loop/timeout"));
           rps_stop_agenda_mechanism();
+          rps_stop_event_loop_flag.store(true);
           break;
         };
       fflush(nullptr);
@@ -1090,6 +1100,23 @@ rps_event_loop(void)
       errno = 0;
       int respoll = poll(pollarr, nbfdpoll, 20 + (rps_poll_delay_millisec*(debugpoll?4:1)));
       pollcount++;
+      if (elapsedtimethreshold > 0.0
+          && rps_elapsed_real_time() > elapsedtimethreshold)
+        {
+          informelapsedtime = rps_elapsed_real_time();
+          RPS_INFORMOUT("rps_eventloop pollcount#" << pollcount
+                        << " loopcnt#" << loopcnt
+                        << " respoll=" << respoll
+                        << " cumul.alloc=" << Rps_QuasiZone::cumulative_allocated_wordcount()
+                        << " elapsed real: " << informelapsedtime
+                        << " reached threshold: " << elapsedtimethreshold
+                        << std::endl
+                        << RPS_FULL_BACKTRACE(1,
+                                              "rps_event_loop threshold")
+                        << std::endl);
+          rps_stop_agenda_mechanism();
+          rps_stop_event_loop_flag.store(true);
+        };
       if (informperiod > 1.0
           &&  rps_elapsed_real_time() - informelapsedtime > informperiod)
         {
