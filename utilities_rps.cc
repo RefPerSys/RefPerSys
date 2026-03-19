@@ -1415,7 +1415,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       /// example argument: --run-delay=45s for elapsed seconds
       if ((pos= -1), sscanf(arg, "%li s%n", &rps_run_delay, &pos) > 0
           && rps_run_delay>0 && pos>0)
-        RPS_INFORMOUT("RefPerSys will run its agenda for "
+        RPS_INFORMOUT("RefPerSys will run its agenda and eventloop for "
                       <<  rps_run_delay
                       << " elapsed seconds.");
       ///
@@ -1425,7 +1425,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                 && dl>0 && pos>0)
         {
           rps_run_delay = dl*60;
-          RPS_INFORMOUT("RefPerSys will run its agenda for "
+          RPS_INFORMOUT("RefPerSys will run its agenda and eventloop for "
                         << dl << " minutes so "
                         << rps_run_delay << " elapsed seconds");
         }
@@ -1437,7 +1437,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                 && dl>0 && pos>0)
         {
           rps_run_delay = dl*3600;
-          RPS_INFORMOUT("RefPerSys will run its agenda for "
+          RPS_INFORMOUT("RefPerSys will run its agenda and eventloop for "
                         << dl << " hours so " << rps_run_delay
                         << " elapsed seconds");
         }
