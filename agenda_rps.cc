@@ -45,7 +45,7 @@ const char rps_agenda_date[]= __DATE__;
 extern "C" const char rps_agenda_timestamp[];
 const char rps_agenda_timestamp[]= __TIMESTAMP__;
 
-unsigned long rps_run_delay;
+unsigned int rps_run_delay;
 
 double Rps_Agenda::agenda_timeout;
 thread_local int rps_curthread_ix;

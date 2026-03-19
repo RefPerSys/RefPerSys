@@ -849,7 +849,7 @@ extern "C" void rps_do_create_fifos_from_prefix(void);
 
 extern "C" void rps_extend_env(void);
 
-extern "C" unsigned long rps_run_delay; // in seconds
+extern "C" unsigned int rps_run_delay; // in seconds (cf agenda_rps.cc)
 ////////////////////////////////////////////////////////////////
 
 extern "C" std::atomic<unsigned> rps_debug_flags;
