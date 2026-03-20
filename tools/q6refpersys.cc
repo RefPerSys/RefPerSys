@@ -1376,6 +1376,8 @@ main(int argc, char **argv)
   MYQR_DEBUGOUT("main after applexecloop execret=" << execret);
   if (myqr_refpersys_pid>0)
     {
+      /// the RefPerSys engine has been started by q6refpersys so
+      /// should be killed here...
       MYQR_DEBUGOUT("main kill with SIGTERM refpersys pid#" << myqr_refpersys_pid);
       errno = 0;
       if (kill(myqr_refpersys_pid, SIGTERM)<0)
