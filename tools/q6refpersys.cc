@@ -1328,7 +1328,7 @@ main(int argc, char **argv)
     "Main window geometry is W*H,\n... e.g. --geometry 400x650", "WxH"};
   cli_parser.addOption(geometry_opt);
   QCommandLineOption
-  refpersys_opt{"start-refpersys",
+    refpersys_opt{{"S", "start-refpersys"},
                 "Starts the given $REFPERSYS, defaulted to refpersys\n"
                 "if a --jsonrpc was given the refpersys command gets them",
                 "REFPERSYS", QString("refpersys")};

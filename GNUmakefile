@@ -75,7 +75,7 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a test07x \
-        test08 test09 test-load \
+        test08 test09 test-load testq6-01 \
         testcarb1 testcarb2 testcarb3
 
 
@@ -898,9 +898,13 @@ test08: refpersys
 test09: refpersys
 	@echo missing test09 ; exit 1
 
-test10: refpersys 
+test10: refpersys |GNUmakefile
 	./refpersys -AREPL,EXIT --run-name=test10 --run-delay=6s || (echo test10 failed; exit 1)
 	@printf '\n\n\n////test10 FINISHED¤\n'
+
+testq6-01: refpersys q6refpersys |GNUmakefile
+	$(RM) -vf /tmp/rpsjson*
+	q6refpersys -D --jsonrpc /tmp/rpsjson --geometry 1000x800 --start-refpersys ./refpersys -- -AREPL
 
 test-load: refpersys
 	./refpersys --batch --run-name=test-load || (echo test-load failed; exit 1)
