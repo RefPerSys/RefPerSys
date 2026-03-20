@@ -1371,9 +1371,9 @@ main(int argc, char **argv)
                       << " with jargs " <<  myqr_json2str(jargs));
       });
     }
-  MYQR_DEBUGOUT("main before exec");
+  MYQR_DEBUGOUT("main before applexecloop");
   int execret = myqr_app->exec();
-  MYQR_DEBUGOUT("main after exec execret=" << execret);
+  MYQR_DEBUGOUT("main after applexecloop execret=" << execret);
   if (myqr_refpersys_pid>0)
     {
       MYQR_DEBUGOUT("main kill with SIGTERM refpersys pid#" << myqr_refpersys_pid);
