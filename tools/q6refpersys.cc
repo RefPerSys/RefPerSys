@@ -327,8 +327,10 @@ public:
   virtual ~MyqrMainWindow();
   static constexpr int minimal_width = 512;
   static constexpr int minimal_height = 360;
+  static constexpr int default_width = 600;
+  static constexpr int default_height = 480;
   static constexpr int maximal_width = 2048;
-  static constexpr int maximal_height = 1024;
+  static constexpr int maximal_height = 1536;
 };        // end MyqrMainWindow
 MyqrMainWindow*MyqrMainWindow::the_instance;
 
@@ -515,7 +517,7 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
   setMaximumWidth(maximal_width);
   setMaximumHeight(maximal_height);
   MYQR_DEBUGOUT("MyqrMainWndow incomplete constructor this@"
-		<< (void*)this);
+                << (void*)this);
   MYQR_BREAKPOINT();
 #warning incomplete MyqrMainWindow constructor
 } // end MyqrMainWindow constructor
@@ -524,7 +526,7 @@ MyqrDisplayWindow::MyqrDisplayWindow(QWidget*parent)
   : QMainWindow(parent)
 {
   MYQR_DEBUGOUT("MyqrDisplayWindow incomplete constructor this@"
-		<< (void*)this);
+                << (void*)this);
   MYQR_BREAKPOINT();
 } // end MyqrDisplayWindow constructor
 
@@ -687,7 +689,7 @@ myqr_create_windows(const QString& geom)
 {
   MYQR_DEBUGOUT("incomplete myqr_create_windows geometry "
                 << geom.toStdString() << ";");
-  int w=0, h=0;
+  int w= -1, h= -1;
   const char*geomcstr = geom.toStdString().c_str();
   if (geomcstr != nullptr)
     {
@@ -697,12 +699,12 @@ myqr_create_windows(const QString& geom)
         {
           MYQR_DEBUGOUT("scanned w=" << w << " h=" << h
                         << " geomcstr='" << geomcstr << "' p=" << p);
-          if (w > MyqrMainWindow::maximal_width)
-            w= MyqrMainWindow::maximal_width;
-          if (h > MyqrMainWindow::maximal_height)
-            h=MyqrMainWindow::maximal_height;
         }
     }
+  if (w<0)
+    w = MyqrMainWindow::default_width;
+  if (h<0)
+    h = MyqrMainWindow::default_height;
   if (w< MyqrMainWindow::minimal_width)
     w=MyqrMainWindow::minimal_width;
   if (h< MyqrMainWindow::minimal_height)
