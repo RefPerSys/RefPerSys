@@ -763,8 +763,8 @@ rps_show_version(void)
 {
   int nbfiles=0;
   int nbsubdirs=0;
-#warning rps_show_version is not thread-safe
-  //TODO: add a mutex here for serialization
+  static std::recursive_mutex versmtx;
+  std::lock_guard<std::recursive_mutex> verslock(versmtx);
   for (const char*const*pfiles=rps_files; *pfiles; pfiles++)
     nbfiles++;
   for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
@@ -806,12 +806,6 @@ rps_show_version(void)
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;
   std::cout << std::endl;
-#if RPS_WITH_FLTK
-  std::cout << " FLTK (see fltk.org) ABI version:" << rps_fltk_get_abi_version()
-            << std::endl;
-  std::cout << " FLTK API version:" << rps_fltk_get_api_version()
-            << std::endl;
-#endif
   std::cout << " GCCJIT version:" << gcc_jit_version_major()
             << "." << gcc_jit_version_minor() << "." << gcc_jit_version_patchlevel() << std::endl;
   std::cout << std::endl
@@ -1413,7 +1407,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       int pos= -1;
       long dl= -1;
       /// example argument: --run-delay=45s for elapsed seconds
-      if ((pos= -1), sscanf(arg, "%li s%n", &rps_run_delay, &pos) > 0
+      if ((pos= -1), sscanf(arg, "%i s%n", &rps_run_delay, &pos) > 0
           && rps_run_delay>0 && pos>0)
         RPS_INFORMOUT("RefPerSys will run its agenda and eventloop for "
                       <<  rps_run_delay
