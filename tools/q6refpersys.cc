@@ -514,14 +514,18 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
   setMinimumHeight(minimal_height);
   setMaximumWidth(maximal_width);
   setMaximumHeight(maximal_height);
-  qDebug() << "incomplete MyqrMainWindow constructor "
-           << __FILE__  ":" << (__LINE__-1);
+  MYQR_DEBUGOUT("MyqrMainWndow incomplete constructor this@"
+		<< (void*)this);
+  MYQR_BREAKPOINT();
 #warning incomplete MyqrMainWindow constructor
 } // end MyqrMainWindow constructor
 
 MyqrDisplayWindow::MyqrDisplayWindow(QWidget*parent)
   : QMainWindow(parent)
 {
+  MYQR_DEBUGOUT("MyqrDisplayWindow incomplete constructor this@"
+		<< (void*)this);
+  MYQR_BREAKPOINT();
 } // end MyqrDisplayWindow constructor
 
 void
