@@ -1480,11 +1480,17 @@ Rps_Dumper::write_generated_rgb_colors_file(void)
 } // end Rps_Dumper::write_generated_rgb_colors_file
 
 void
-Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef genob)
+Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef genobarg)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callfr,
+                 Rps_ObjectRef genob);
   auto rootpathstr = std::string{"generated/rps-parser-decl.hh"};
-  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start genob="<<genob);
+  _f.genob = genobarg;
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start"
+                      " genob="
+                <<_f.genob);
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice
   (*pouts, rootpathstr,
@@ -1495,17 +1501,22 @@ Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   *pouts << "#warning empty parser declaration file " << rootpathstr
          << " from " << __FILE__ << ":" << __LINE__
          << std::endl;
-  *pouts << "/// generator object " << genob << std::endl;
+  *pouts << "/// generator object " << _f.genob << std::endl;
   *pouts << "/// git " << RPS_SHORTGITID << std::endl;
 #warning Rps_Dumper::write_generated_parser_decl_file needs to be written
 } // end Rps_Dumper::write_generated_parser_file
 
 void
-Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef genob)
+Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef genobarg)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callfr,
+                 Rps_ObjectRef genob);
+  _f.genob = genobarg;
   auto rootpathstr = std::string{"generated/rps-parser-impl.cc"};
-  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start genob="<<genob);
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file"
+                      " start genob="<<_f.genob);
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice
   (*pouts, rootpathstr,
@@ -1516,7 +1527,7 @@ Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   *pouts << "#warning empty parser implementation file " << rootpathstr
          << " from " << __FILE__ << ":" << __LINE__
          << std::endl;
-  *pouts << "/// generator object " << genob << std::endl;
+  *pouts << "/// generator object " << _f.genob << std::endl;
   *pouts << "/// git " << RPS_SHORTGITID << std::endl;
 #warning Rps_Dumper::write_generated_parser_impl_file needs to be written
 } // end Rps_Dumper::write_generated_parser_impl_file
