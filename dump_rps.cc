@@ -964,17 +964,40 @@ Rps_Dumper::scan_every_source_file_for_constants(void)
 void
 Rps_Dumper::copy_one_source_file(const std::string& relsrcpath)
 {
-  /// This function should copy the given relative source path,
-  /// e.g. refpersys.hh to the dump directory. It should not do
-  /// anything if the dump directory is the source one
-  /// rps_topdirectory....
-  /// See also the rps_files constant array.
+  /// This function should copy the given relative source path in the
+  /// top directory (e.g. refpersys.hh) to the dump directory. It should
+  /// not do anything if the dump directory is the source one
+  /// rps_topdirectory....  See also the rps_files constant array.
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   if (is_dumping_into_topdir())
     return;
-#warning unimplemented Rps_Dumper::copy_one_source_file
-  RPS_FATALOUT("unimplemented Rps_Dumper::copy_one_source_file relsrcpath="
-               << relsrcpath << " to dumpdir " << du_topdir);
+  std::string fullsrcpath = std::string(rps_topdirectory) + "/" + relsrcpath;
+  char* realsrc = realpath(fullsrcpath.c_str(), nullptr);
+  if (!realsrc)
+    RPS_FATALOUT("copy_one_source_file fails realpath " << Rps_QuotedC_String(fullsrcpath)
+		 << ":" << strerror(errno));
+  {
+    std::string outnam(std::string(du_topdir) + "/" + basename(realsrc));
+    std::ifstream infil(realsrc);
+    std::ofstream outfil(outnam);
+    do {
+      constexpr int rdsiz = 256;
+      char ibuf[rdsiz+8];
+      memset(ibuf, 0, sizeof(ibuf));
+      infil.read(ibuf, rdsiz);
+      if (!infil)
+	break;
+      int rdcnt = infil.gcount();
+      if (rdcnt<0)
+	break;
+      outfil.write(ibuf, rdcnt);
+      if (outfil.fail())
+	RPS_FATALOUT("copy_one_source_file realpath " << Rps_QuotedC_String(fullsrcpath)
+		     << " write failure  to " << outnam);
+    } while (infil);
+  }
+#warning review needed for Rps_Dumper::copy_one_source_file
+  free (realsrc);
 } // end Rps_Dumper::copy_one_source_file
 
 void
