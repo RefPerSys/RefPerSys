@@ -1081,10 +1081,10 @@ Rps_Dumper::write_generated_roots_file(void)
       };
     (*pouts) << " h:" << obr->obhash() << std::endl;
   });
-  /// output a 100 star comments to ease GNU emacs rectangle facilities
+  /// output a 80 stars comment to ease GNU emacs rectangle facilities
   {
     *pouts << "/";
-    for (int k=0; k<100; k++) *pouts << "*";
+    for (int k=0; k<80; k++) *pouts << "*";
     *pouts << "/" << std::endl;
   }
   *pouts << std::endl
