@@ -1353,22 +1353,17 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
   *pouts << "\n\n//// Generated from " << __FILE__ << ":" << __LINE__ << " shortgit " << rps_shortgitid << std::endl;
   *pouts << std::endl;
-  if (sizeof(Rps_Value) == sizeof(void*) && alignof(Rps_Value) == alignof(void*))
+  if (sizeof(Rps_Value) == sizeof(void*)
+      && alignof(Rps_Value) == alignof(void*))
     *pouts << "#define RPS_VALUE_IS_VOIDPTR 1" << std::endl;
   else
     *pouts << "#define RPS_VALUE_IS_VOIDPTR 0" << std::endl;
-  if (sizeof(Rps_ObjectRef) == sizeof(void*) && alignof(Rps_ObjectRef) == alignof(void*))
+  if (sizeof(Rps_ObjectRef) == sizeof(void*)
+      && alignof(Rps_ObjectRef) == alignof(void*))
     *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 1" << std::endl;
   else
     *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 0" << std::endl;
   *pouts << std::endl << std::endl;
-  {
-    *pouts << "#undef RPS_FLTK_ABI_VERSION" << std::endl;
-    *pouts << "#define RPS_WITHOUT_FLTK_ABI 1" << std::endl;
-  }
-  {
-    *pouts << "#undef RPS_WITH_FLTK" << std::endl;
-  }
   /// emit a few GNU lightning constants (it is a runtime code generation
   /// library www.gnu.org/software/lightning/ ...)
   {
