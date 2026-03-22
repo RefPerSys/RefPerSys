@@ -29,14 +29,14 @@ rps_do_plugin(const Rps_Plugin* plugin)
   _f.obroot = Rps_ObjectRef::find_object_or_null_by_string(&_, plugarg);
   if (!_f.obroot)
     RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
-                 " dont refer to any existing object");
+                 << " dont refer to any existing object");
   std::lock_guard<std::recursive_mutex> gu(*(_f.obroot->objmtxptr()));
-  if (_f.obroot->space() != Rps_ObjectRef::root_spacve())
+  if (_f.obroot->get_space() != Rps_ObjectRef::root_space())
     RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
-		 " refer to non-root object "
-		 << Rps_Object_Display(_f.obroot));
+		 << " refer to non-root object "
+		 << RPS_OBJECT_DISPLAY(_f.obroot));
   RPS_INFORMOUT("removing tentative root "
-		<< Rps_Object_Display(_f.obroot));
+		<< RPS_OBJECT_DISPLAY(_f.obroot));
   _f.obroot->put_space(nullptr);
   RPS_WARNOUT("untested rpsplug_removeroot arg=" << plugarg
                << " obroot=" << _f.obroot);
