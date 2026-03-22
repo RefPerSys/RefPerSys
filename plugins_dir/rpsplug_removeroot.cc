@@ -1,8 +1,7 @@
 // see http://refpersys.org/
-// passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
-// with improvement after  9d1db4092 (of July 13, 2023)
+// passed to commits after 4226408d42ea (march 2026) of RefPerSys
 // GPLv3+ licensed
-// © Copyright 2023 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright (C) 2026 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin remove an obsolete root object by clearing its space
 /*****
   Once compiled, use it for example as:
@@ -27,7 +26,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument; should be some non-empty name or oid");
-  RPS_FATALOUT("unimplemented rpsplug_removeroot arg=" << plugarg);
+  _f.obroot = Rps_ObjectRef::find_object_or_null_by_string(&_, plugarg);
+  if (!_f.obroot)
+    RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
+                 " dont refer to any existing object");
+  RPS_FATALOUT("unimplemented rpsplug_removeroot arg=" << plugarg
+               << " obroot=" << _f.obroot);
 } // end rps_do_plugin
 
 
