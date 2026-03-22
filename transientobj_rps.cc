@@ -441,7 +441,7 @@ Rps_PayloadCppStream::register_cpp_stream(void)
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
   RPS_ASSERT(owner()
-	     ->is_instance_of(rpskob_2OMC1QJo5H004kHTXV)); // _2OMC1QJo5H004kHTXV:cpp_stream
+             ->is_instance_of(RPS_ROOT_OB(cpp_stream))); // _2OMC1QJo5H004kHTXV:cpp_stream
   RPS_ASSERT(_ix_magic == _ix_magicnum_);
   int uniqix = std::ios_base::xalloc();
   /// see https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html
@@ -528,6 +528,8 @@ Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner)
     _ix_magic(_ix_magicnum_)
 {
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
+  RPS_ASSERT(owner->is_instance_of(RPS_ROOT_OB(cpp_stream))); // cpp_stream∊class
 } // end Rps_PayloadCppStream constructor for no stream
 
 
@@ -540,7 +542,7 @@ Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&ou
 {
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
-  RPS_ASSERT(owner->is_instance_of(rpskob_0HZtZlbMkBI00uoBym)); // cpp_out_stream∊class
+  RPS_ASSERT(owner->is_instance_of(RPS_ROOT_OB(cpp_out_stream))); // cpp_out_stream∊class
 } // end Rps_PayloadCppStream constructor for output stream
 
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input)
@@ -552,6 +554,7 @@ Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&in
 {
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
+  RPS_ASSERT(owner->is_instance_of(RPS_ROOT_OB(cpp_in_stream))); // cpp_in_stream∊class
 } // end Rps_PayloadCppStream constructor for input stream
 
 
