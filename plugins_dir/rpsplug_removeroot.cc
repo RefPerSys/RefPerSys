@@ -20,7 +20,7 @@ void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-                           Rps_ObjectRef obroot;
+                 Rps_ObjectRef obroot;
                 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   if (!plugarg || plugarg[0]==(char)0)
@@ -30,7 +30,15 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!_f.obroot)
     RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
                  " dont refer to any existing object");
-  RPS_FATALOUT("unimplemented rpsplug_removeroot arg=" << plugarg
+  std::lock_guard<std::recursive_mutex> gu(*(_f.obroot->objmtxptr()));
+  if (_f.obroot->space() != Rps_ObjectRef::root_spacve())
+    RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
+		 " refer to non-root object "
+		 << Rps_Object_Display(_f.obroot));
+  RPS_INFORMOUT("removing tentative root "
+		<< Rps_Object_Display(_f.obroot));
+  _f.obroot->put_space(nullptr);
+  RPS_WARNOUT("untested rpsplug_removeroot arg=" << plugarg
                << " obroot=" << _f.obroot);
 } // end rps_do_plugin
 
