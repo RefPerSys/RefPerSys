@@ -540,10 +540,7 @@ Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&ou
 {
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
-#if 0
-  RPS_ASSERT(*owner()
-	     ->is_instance_of(rpskob_0HZtZlbMkBI00uoBym)); // cpp_out_stream∊class
-#endif
+  RPS_ASSERT(owner->is_instance_of(rpskob_0HZtZlbMkBI00uoBym)); // cpp_out_stream∊class
 } // end Rps_PayloadCppStream constructor for output stream
 
 Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input)
