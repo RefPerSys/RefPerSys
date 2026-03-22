@@ -440,6 +440,11 @@ Rps_PayloadCppStream::register_cpp_stream(void)
     return -1;
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
   std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+#if 0
+  RPS_ASSERT(owner()
+	     ->is_instance_of(rpskob_2OMC1QJo5H004kHTXV)); // _2OMC1QJo5H004kHTXV:cpp_stream
+#endif
+  
   RPS_ASSERT(_ix_magic == _ix_magicnum_);
   int uniqix = std::ios_base::xalloc();
   /// see https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html
@@ -507,7 +512,7 @@ Rps_PayloadCppStream::unregister_cpp_stream(void)
   if (!owner())
     return;
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
-  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  std::lock_guard<std::recursive_mutex> guownob(*owner()->objmtxptr());
   RPS_ASSERT(_ix_magic == _ix_magicnum_);
   if (_ix_stream<0)
     return;
