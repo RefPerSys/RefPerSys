@@ -551,6 +551,7 @@ Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&in
     _ix_magic(_ix_magicnum_)
 {
   std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
 } // end Rps_PayloadCppStream constructor for input stream
 
 
