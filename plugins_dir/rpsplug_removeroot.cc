@@ -1,4 +1,4 @@
-// see http://refpersys.org/
+// see http://refpersys.org/ -*- C++ -*-
 // passed to commits after 4226408d42ea (march 2026) of RefPerSys
 // GPLv3+ licensed
 // © Copyright (C) 2026 Basile Starynkevitch <basile@starynkevitch.net>
@@ -20,7 +20,9 @@ void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-                 Rps_ObjectRef obroot;
+                           Rps_ObjectRef obroot;
+                           Rps_ObjectRef obsymb;
+                           Rps_Value symbv;
                 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   if (!plugarg || plugarg[0]==(char)0)
@@ -30,16 +32,46 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!_f.obroot)
     RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
                  << " dont refer to any existing object");
-  std::lock_guard<std::recursive_mutex> gu(*(_f.obroot->objmtxptr()));
+  std::lock_guard<std::recursive_mutex> guroot(*(_f.obroot->objmtxptr()));
   if (_f.obroot->get_space() != Rps_ObjectRef::root_space())
     RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
-		 << " refer to non-root object "
-		 << RPS_OBJECT_DISPLAY(_f.obroot));
+                 << " refer to non-root object "
+                 << RPS_OBJECT_DISPLAY(_f.obroot));
+  if (_f.obroot->is_class())
+    {
+      Rps_PayloadClassInfo*paylclinf
+        = _f.obroot->get_dynamic_payload<Rps_PayloadClassInfo>();
+      RPS_ASSERT(paylclinf != nullptr);
+      _f.obsymb = paylclinf->symbname();
+    }
+  else if (_f.obroot->is_instance_of(RPS_ROOT_OB(_36I1BY2NetN03WjrOv)) /*symbol∈class*/)
+    {
+      _f.obsymb = _f.obroot;
+    };
+
   RPS_INFORMOUT("removing tentative root "
-		<< RPS_OBJECT_DISPLAY(_f.obroot));
+                << RPS_OBJECT_DISPLAY(_f.obroot)
+                << std::endl << "❇ symbol:" /*U+2747 SPARKLE */
+                << RPS_OBJECT_DISPLAY(_f.obsymb));
+  Rps_PayloadSymbol* paylsymb = nullptr;
+  if (_f.obsymb)
+    {
+      std::lock_guard<std::recursive_mutex> gusymb(*(_f.obsymb->objmtxptr()));
+      paylsymb = f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
+      if (paylsymb)
+        {
+          _f.symbv = paylsymb->symbol_value();
+          if (_f.symbv.as_object()== _f.obroot)
+            {
+              paylsymb->symbol_put_value(nullptr);
+              paylsymb->set_weak(true);
+            }
+        };
+    }
   _f.obroot->put_space(nullptr);
   RPS_WARNOUT("untested rpsplug_removeroot arg=" << plugarg
-               << " obroot=" << _f.obroot);
+              << " obroot=" << _f.obroot
+              << " obsymb=" << _f.obsymb);
 } // end rps_do_plugin
 
 
