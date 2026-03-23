@@ -1,4 +1,4 @@
-// file RefPerSys/plugins_dir/rpsplug_display.cc
+// file RefPerSys/plugins_dir/rpsplug_display.cc -*- C++ -*-
 // SPDX-License-Identifier: GPL-3.0-or-later
 // see http://refpersys.org/
 // GPLv3+ licensed
