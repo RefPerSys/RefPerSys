@@ -32,7 +32,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!_f.obroot)
     RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
                  << " dont refer to any existing object");
-  std::lock_guard<std::recursive_mutex> guroot(*(_f.obroot->objmtxptr()));
+  std::lock_guard<std::recursive_mutex>
+  guroot(*(_f.obroot->objmtxptr()));
   if (_f.obroot->get_space() != Rps_ObjectRef::root_space())
     RPS_FATALOUT("plugin rpsplug_removeroot arg=" << plugarg
                  << " refer to non-root object "
@@ -48,7 +49,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
     {
       _f.obsymb = _f.obroot;
     };
-
   RPS_INFORMOUT("removing tentative root "
                 << RPS_OBJECT_DISPLAY(_f.obroot)
                 << std::endl << "❇ symbol:" /*U+2747 SPARKLE */
@@ -56,19 +56,28 @@ rps_do_plugin(const Rps_Plugin* plugin)
   Rps_PayloadSymbol* paylsymb = nullptr;
   if (_f.obsymb)
     {
-      std::lock_guard<std::recursive_mutex> gusymb(*(_f.obsymb->objmtxptr()));
-      paylsymb = f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
+      std::lock_guard<std::recursive_mutex>
+      gusymb(*(_f.obsymb->objmtxptr()));
+      paylsymb = _f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       if (paylsymb)
         {
           _f.symbv = paylsymb->symbol_value();
           if (_f.symbv.as_object()== _f.obroot)
             {
+              std::string syname = paylsymb->symbol_name();
               paylsymb->symbol_put_value(nullptr);
               paylsymb->set_weak(true);
+              if (Rps_PayloadSymbol::forget_name(syname))
+                RPS_INFORMOUT("forgot symbol named "
+                              << Rps_QuotedC_String(syname));
+              else
+                RPS_WARNOUT("failed to forget symbol named "
+                            << Rps_QuotedC_String(syname));
             }
         };
     }
   _f.obroot->put_space(nullptr);
+  _f.obsymb->put_space(nullptr);
   RPS_WARNOUT("untested rpsplug_removeroot arg=" << plugarg
               << " obroot=" << _f.obroot
               << " obsymb=" << _f.obsymb);
