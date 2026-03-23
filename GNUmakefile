@@ -441,7 +441,7 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
 
-plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  refpersys.hh  |GNUmakefile refpersys
+plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
@@ -453,7 +453,7 @@ plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  r
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
 
-plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys
+plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
@@ -465,7 +465,7 @@ plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedsele
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
 
-plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys
+plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
@@ -477,7 +477,7 @@ plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedatt
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
 
-plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpersys.hh  |GNUmakefile refpersys
+plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
@@ -490,7 +490,7 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
 	    $^ -o $@
 
 
-plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_create_cplusplus_primitive_type.cc  refpersys.hh  |GNUmakefile refpersys
+plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_create_cplusplus_primitive_type.cc  refpersys.hh  |GNUmakefile refpersysdo-build-refpersys-plugin 
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
