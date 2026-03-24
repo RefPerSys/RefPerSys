@@ -68,11 +68,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
               paylsymb->symbol_put_value(nullptr);
               paylsymb->set_weak(true);
               if (Rps_PayloadSymbol::forget_name(syname))
-                RPS_INFORMOUT("forgot symbol named "
-                              << Rps_QuotedC_String(syname));
+                RPS_INFORMOUT("forgot symbol " << _f.obsymb
+                              << " named "  << Rps_QuotedC_String(syname));
               else
-                RPS_WARNOUT("failed to forget symbol named "
-                            << Rps_QuotedC_String(syname));
+                RPS_WARNOUT("failed to forget symbol "
+                            << _f.obsymb
+                            << " named " << Rps_QuotedC_String(syname));
             }
         };
     }
