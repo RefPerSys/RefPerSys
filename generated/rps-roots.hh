@@ -58,7 +58,7 @@ RPS_INSTALL_ROOT_OB(_1aGtWm38Vw701jDhZn) //"the_agenda"∈agenda h:4172773051
 RPS_INSTALL_ROOT_OB(_1jJaY1usnpR02WUvSX) //repl_expression∈class h:3493090607
 RPS_INSTALL_ROOT_OB(_1oPsaaqITVi03OYZb9) //meta_variable∈symbol h:3773245553
 RPS_INSTALL_ROOT_OB(_1rfASGBBbFz02VUsMw) //"rps_serve_onion_expanded_stream"∈rps_routine h:106450750
-RPS_INSTALL_ROOT_OB(_1uJuhQqxj9V02iZLNb) //_1uJuhQqxj9V02iZLNb∈class h:2758186122
+//was fltk_thing RPS_INSTALL_ROOT_OB(_1uJuhQqxj9V02iZLNb) //_1uJuhQqxj9V02iZLNb∈class h:2758186122
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //"our_contributors"∈mutable_set h:2136876006
 RPS_INSTALL_ROOT_OB(_1B7ITSHTZWp00ektj1) //input∈symbol h:779711438
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol h:3260967396
@@ -182,7 +182,7 @@ RPS_INSTALL_ROOT_OB(_9SUO2g0ed6u00j5cnx) //source_file∈class h:2808920655
 /********************************************************************************/
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 125
+#define RPS_NB_ROOT_OB 124
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
