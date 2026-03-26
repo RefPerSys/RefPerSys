@@ -229,10 +229,21 @@ Rps_PayloadUnixProcess::is_erasable(void) const
 void
 Rps_PayloadUnixProcess::gc_mark(Rps_GarbageCollector&gc) const
 {
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
   if (_unixproc_closure)
     {
       RPS_ASSERT(_unixproc_closure.is_closure());
       _unixproc_closure.gc_mark(gc,1);
+    }
+  if (_unixproc_inputclos)
+    {
+      RPS_ASSERT(_unixproc_inputclos.is_closure());
+      _unixproc_inputclos.gc_mark(gc,1);
+    }
+  if (_unixproc_outputclos)
+    {
+      RPS_ASSERT(_unixproc_outputclos.is_closure());
+      _unixproc_outputclos.gc_mark(gc,1);
     }
 } // end Rps_PayloadUnixProcess::gc_mark
 
@@ -303,7 +314,8 @@ Rps_PayloadUnixProcess::make_dormant_unix_process_object(Rps_CallFrame*callerfra
     {
       char *realexepath = ::realpath(exec.c_str(), nullptr);
       if (!realexepath)
-        throw RPS_RUNTIME_ERROR_OUT("cannot make_dormant_unix_process_object from executable " << Rps_QuotedC_String(exec)
+        throw RPS_RUNTIME_ERROR_OUT("cannot make_dormant_unix_process_object from executable "
+                                    << Rps_QuotedC_String(exec)
                                     << " without a real path for " << exec);
       realexestr = std::string{realexepath};
       free (realexepath);
@@ -513,7 +525,7 @@ Rps_PayloadCppStream::unregister_cpp_stream(void)
   RPS_ASSERT(_ix_magic == _ix_magicnum_);
   if (_ix_stream<0)
     return;
-  RPS_ASSERT(_ix_stream<_cppstream_vector.size());
+  RPS_ASSERT(_ix_stream<(int)_cppstream_vector.size());
   RPS_ASSERT(_cppstream_vector[_ix_stream] == this);
   _cppstream_vector[_ix_stream] = nullptr;
   _ix_stream = -1;
