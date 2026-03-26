@@ -1362,7 +1362,12 @@ handle_self_pipe_byte_rps(unsigned char b)
     in transientobj_rps.cc; the dormant processes should somehow
     be started by fork/exec */
     default:
-      RPS_FATALOUT("unexpected byte " << (char)b << "#" << (unsigned)b << " on self pipe");
+      if (isprint((char)b))
+        RPS_FATALOUT("unexpected byte " << (char)b << " #"
+                     << (unsigned)b << " on self pipe");
+      else
+        RPS_FATALOUT("unexpected unprintable byte " << " #"
+                     << (unsigned)b << " on self pipe");
     };
 } // end handle_self_pipe_byte_rps
 
