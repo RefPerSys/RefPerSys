@@ -6049,12 +6049,16 @@ class Rps_PayloadCppStream : public Rps_Payload
 
 typedef std::vector<std::string> rps_cppvect_of_string_t;
 
+extern "C" /// called from event loop
+ void rps_may_start_process(const char*fil, int lin); //in transientobj_rps.cc
+
 /// the transient payload for unix processes (see PaylUnixProcess)
 class Rps_PayloadUnixProcess : public Rps_Payload
 {
   friend class Rps_Agenda;
   friend class Rps_PayloadAgenda;
   friend void rps_event_loop(void);
+  friend void rps_may_start_process(const char*fil, int lin);
   std::atomic<pid_t> _unixproc_pid;
   std::string _unixproc_exe;
   rps_cppvect_of_string_t _unixproc_argv;
