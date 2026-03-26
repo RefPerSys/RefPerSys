@@ -106,7 +106,7 @@ Rps_PayloadUnixProcess::forbid_input(void)
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
   if (_unixproc_pid.load()>0)
     RPS_FATALOUT("cannot forbid_input in " << owner() << " running pid "
-		 << _unixproc_pid.load());
+                 << _unixproc_pid.load());
   _unixproc_pipeinputfd = forbidden_fd;
 } // end Rps_PayloadUnixProcess::forbid_input
 
@@ -116,7 +116,7 @@ Rps_PayloadUnixProcess::forbid_output(void)
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
   if (_unixproc_pid.load()>0)
     RPS_FATALOUT("cannot forbid_output in " << owner() << " running pid "
-		 << _unixproc_pid.load());
+                 << _unixproc_pid.load());
   _unixproc_pipeoutputfd = forbidden_fd;
 } // end Rps_PayloadUnixProcess::forbid_input
 
@@ -455,11 +455,11 @@ rps_may_start_process(const char*fil, int lin)
   /* TODO: this is started in our event loop and could fork some
      processes on the queue_of_runnable_processes */
   RPS_DEBUG_LOG(REPL, "rps_may_start_process from " << fil << ":" << lin
-		<< " with "
-		<< Rps_PayloadUnixProcess::queue_of_runnable_processes.size()
-		<< " runnable processes"
-		<< std::endl
-		<<  RPS_FULL_BACKTRACE_HERE(1,"rps_may_start_process"));
+                << " with "
+                << Rps_PayloadUnixProcess::queue_of_runnable_processes.size()
+                << " runnable processes"
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1,"rps_may_start_process"));
   std::deque<Rps_PayloadUnixProcess*>&procrunque =
     Rps_PayloadUnixProcess::queue_of_runnable_processes;
   if (procrunque.empty())
@@ -468,7 +468,7 @@ rps_may_start_process(const char*fil, int lin)
   procrunque.pop_front();
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERTPRINTF(curpr != nullptr, "rps_may_start_process called from %s:%d",
-		   fil, lin);
+                   fil, lin);
 #warning rps_may_start_process is partly unimplemented
   RPS_FATALOUT("partly unimplemented rps_may_start_process from " << fil << ":" << lin);
 }

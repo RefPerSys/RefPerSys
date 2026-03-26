@@ -6050,7 +6050,7 @@ class Rps_PayloadCppStream : public Rps_Payload
 typedef std::vector<std::string> rps_cppvect_of_string_t;
 
 extern "C" /// called from event loop
- void rps_may_start_process(const char*fil, int lin); //in transientobj_rps.cc
+void rps_may_start_process(const char*fil, int lin); //in transientobj_rps.cc
 
 /// the transient payload for unix processes (see PaylUnixProcess)
 class Rps_PayloadUnixProcess : public Rps_Payload
@@ -6133,12 +6133,12 @@ public:
   unsigned file_size_megabytes_limit(unsigned newlimit=0);
   unsigned core_megabytes_limit(unsigned newlimit=0);
   void forbid_core_dump(void);      // force the CORE limit to 0
-  void forbid_input(void);		// forbid input to the forked
-					// process (redirected from
-					// /dev/null)
-  void forbid_output(void);		// forbid output of the forked
-					// process (redirected to
-					// /dev/null)
+  void forbid_input(void);    // forbid input to the forked
+  // process (redirected from
+  // /dev/null)
+  void forbid_output(void);   // forbid output of the forked
+  // process (redirected to
+  // /dev/null)
   unsigned nofile_limit(unsigned newlimit=0);
   /// the process closure is called when the process has ended...
   const Rps_ClosureValue get_process_closure(void) const;
