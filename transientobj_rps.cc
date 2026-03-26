@@ -400,6 +400,8 @@ Rps_PayloadUnixProcess::start_process(Rps_CallFrame*callframe)
       throw std::runtime_error("already running Rps_PayloadUnixProcess");
     }
   queue_of_runnable_processes.push_back(this);
+  // the rps_postpone_child_process is writing to a pipe to self, and
+  // the event loop will handle it later..
   rps_postpone_child_process();
   /// code in eventloop_rps.cc should be related.
 } // end Rps_PayloadUnixProcess::start_process
@@ -424,6 +426,16 @@ Rps_PayloadUnixProcess::do_on_active_process_queue(std::function<void(Rps_Object
     }
 } // end Rps_PayloadUnixProcess::do_on_active_process_queue
 
+
+void
+rps_may_start_process(const char*fil, int lin)
+{
+  std::lock_guard<std::mutex> gu(Rps_PayloadUnixProcess::mtx_of_runnable_processes);
+  /* TODO: this is started in our event loop and could fork some
+     processes on the queue_of_runnable_processes */
+#warning rps_may_start_process is unimplemented
+  RPS_FATALOUT("unimplemented rps_may_start_process from " << fil << ":" << lin);
+}
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
