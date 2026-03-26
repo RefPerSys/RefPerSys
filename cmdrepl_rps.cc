@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2021 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2021 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -205,8 +205,10 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       _f.classob = _f.exprv.compute_class(&_);
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                     << " object expr:" << _f.exprv
-                    << " of class:" << _f.classob << " physicalclass:" << _f.evalob->get_class()
-                    << " in env:" << _f.envob);
+                    << " of class:" << _f.classob
+                    << " physicalclass:" << _f.evalob->get_class()
+                    << " in env:" << _f.envob
+                    << "... " << RPS_OBJECT_DISPLAY(_f.evalob));
     };
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
