@@ -975,26 +975,28 @@ Rps_Dumper::copy_one_source_file(const std::string& relsrcpath)
   char* realsrc = realpath(fullsrcpath.c_str(), nullptr);
   if (!realsrc)
     RPS_FATALOUT("copy_one_source_file fails realpath " << Rps_QuotedC_String(fullsrcpath)
-		 << ":" << strerror(errno));
+                 << ":" << strerror(errno));
   {
     std::string outnam(std::string(du_topdir) + "/" + basename(realsrc));
     std::ifstream infil(realsrc);
     std::ofstream outfil(outnam);
-    do {
-      constexpr int rdsiz = 256;
-      char ibuf[rdsiz+8];
-      memset(ibuf, 0, sizeof(ibuf));
-      infil.read(ibuf, rdsiz);
-      if (!infil)
-	break;
-      int rdcnt = infil.gcount();
-      if (rdcnt<0)
-	break;
-      outfil.write(ibuf, rdcnt);
-      if (outfil.fail())
-	RPS_FATALOUT("copy_one_source_file realpath " << Rps_QuotedC_String(fullsrcpath)
-		     << " write failure  to " << outnam);
-    } while (infil);
+    do
+      {
+        constexpr int rdsiz = 256;
+        char ibuf[rdsiz+8];
+        memset(ibuf, 0, sizeof(ibuf));
+        infil.read(ibuf, rdsiz);
+        if (!infil)
+          break;
+        int rdcnt = infil.gcount();
+        if (rdcnt<0)
+          break;
+        outfil.write(ibuf, rdcnt);
+        if (outfil.fail())
+          RPS_FATALOUT("copy_one_source_file realpath " << Rps_QuotedC_String(fullsrcpath)
+                       << " write failure  to " << outnam);
+      }
+    while (infil);
   }
 #warning review needed for Rps_Dumper::copy_one_source_file
   free (realsrc);
@@ -1509,8 +1511,8 @@ Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callfr,
                  Rps_ObjectRef genob;
-		 Rps_Value msgv;
-		);
+                 Rps_Value msgv;
+                );
   auto rootpathstr = std::string{"generated/rps-parser-decl.hh"};
   _f.genob = genobarg;
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start"
@@ -1544,8 +1546,8 @@ Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callfr,
                  Rps_ObjectRef genob;
-		 Rps_Value closv;
-		);
+                 Rps_Value closv;
+                );
   _f.genob = genobarg;
   auto rootpathstr = std::string{"generated/rps-parser-impl.cc"};
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file"
@@ -1606,7 +1608,7 @@ Rps_Dumper::write_all_generated_files(void)
       /* TODO: some closure should be extracted from a root or constant object and applied to the generator object */
       RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files before sending "<< _f.gencodselob << " to "
                     << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
-		    << " genstoreob=" << _f.genstoreob
+                    << " genstoreob=" << _f.genstoreob
                     << std::endl
                     << Rps_ShowCallFrame(&_));
       Rps_TwoValues two = _f.refpersysv.send3(&_, _f.gencodselob, _f.dumpdirnamev, _f.tempsuffixv, _f.genstoreob);
