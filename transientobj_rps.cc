@@ -59,8 +59,8 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See Pay
     _unixproc_closure(),
     _unixproc_inputclos(),
     _unixproc_outputclos(),
-    _unixproc_pipeinputfd(-1),
-    _unixproc_pipeoutputfd(-1),
+    _unixproc_pipeinputfd(uninitialized_fd),
+    _unixproc_pipeoutputfd(uninitialized_fd),
     _unixproc_cpu_time_limit(0),
     _unixproc_elapsed_time_limit(0),
     _unixproc_start_time(0),
@@ -82,8 +82,8 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*
     _unixproc_closure(),
     _unixproc_inputclos(),
     _unixproc_outputclos(),
-    _unixproc_pipeinputfd(-1),
-    _unixproc_pipeoutputfd(-1),
+    _unixproc_pipeinputfd(uninitialized_fd),
+    _unixproc_pipeoutputfd(uninitialized_fd),
     _unixproc_cpu_time_limit(0),
     _unixproc_elapsed_time_limit(0),
     _unixproc_start_time(0),
@@ -99,6 +99,26 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*
 Rps_PayloadUnixProcess::~Rps_PayloadUnixProcess()
 {
 } // end destructor Rps_PayloadUnixProcess
+
+void
+Rps_PayloadUnixProcess::forbid_input(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  if (_unixproc_pid.load()>0)
+    RPS_FATALOUT("cannot forbid_input in " << owner() << " running pid "
+		 << _unixproc_pid.load());
+  _unixproc_pipeinputfd = forbidden_fd;
+} // end Rps_PayloadUnixProcess::forbid_input
+
+void
+Rps_PayloadUnixProcess::forbid_output(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  if (_unixproc_pid.load()>0)
+    RPS_FATALOUT("cannot forbid_output in " << owner() << " running pid "
+		 << _unixproc_pid.load());
+  _unixproc_pipeoutputfd = forbidden_fd;
+} // end Rps_PayloadUnixProcess::forbid_input
 
 void
 Rps_PayloadUnixProcess::add_process_argument(const std::string& arg)
@@ -401,7 +421,8 @@ Rps_PayloadUnixProcess::start_process(Rps_CallFrame*callframe)
     }
   queue_of_runnable_processes.push_back(this);
   // the rps_postpone_child_process is writing to a pipe to self, and
-  // the event loop will handle it later..
+  // the event loop will handle it later, probably by indirectly
+  // calling rps_may_start_process...
   rps_postpone_child_process();
   /// code in eventloop_rps.cc should be related.
 } // end Rps_PayloadUnixProcess::start_process
@@ -433,8 +454,23 @@ rps_may_start_process(const char*fil, int lin)
   std::lock_guard<std::mutex> gu(Rps_PayloadUnixProcess::mtx_of_runnable_processes);
   /* TODO: this is started in our event loop and could fork some
      processes on the queue_of_runnable_processes */
-#warning rps_may_start_process is unimplemented
-  RPS_FATALOUT("unimplemented rps_may_start_process from " << fil << ":" << lin);
+  RPS_DEBUG_LOG(REPL, "rps_may_start_process from " << fil << ":" << lin
+		<< " with "
+		<< Rps_PayloadUnixProcess::queue_of_runnable_processes.size()
+		<< " runnable processes"
+		<< std::endl
+		<<  RPS_FULL_BACKTRACE_HERE(1,"rps_may_start_process"));
+  std::deque<Rps_PayloadUnixProcess*>&procrunque =
+    Rps_PayloadUnixProcess::queue_of_runnable_processes;
+  if (procrunque.empty())
+    return;
+  Rps_PayloadUnixProcess*curpr = procrunque.front();
+  procrunque.pop_front();
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERTPRINTF(curpr != nullptr, "rps_may_start_process called from %s:%d",
+		   fil, lin);
+#warning rps_may_start_process is partly unimplemented
+  RPS_FATALOUT("partly unimplemented rps_may_start_process from " << fil << ":" << lin);
 }
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////

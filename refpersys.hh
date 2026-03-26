@@ -6065,6 +6065,8 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   Rps_ClosureValue _unixproc_closure; // handle termination of the Unix process
   Rps_ClosureValue _unixproc_inputclos; // handle input condition
   Rps_ClosureValue _unixproc_outputclos; // handle output condition
+  static constexpr int forbidden_fd = -2;
+  static constexpr int uninitialized_fd = -1;
   int _unixproc_pipeinputfd;             // input to process pipe(2) fd
   int _unixproc_pipeoutputfd;            // output from process pipe(2) fd
   //
@@ -6130,7 +6132,13 @@ public:
   unsigned address_space_megabytes_limit(unsigned newlimit=0);
   unsigned file_size_megabytes_limit(unsigned newlimit=0);
   unsigned core_megabytes_limit(unsigned newlimit=0);
-  void forbid_core_dump();      // force the CORE limit to 0
+  void forbid_core_dump(void);      // force the CORE limit to 0
+  void forbid_input(void);		// forbid input to the forked
+					// process (redirected from
+					// /dev/null)
+  void forbid_output(void);		// forbid output of the forked
+					// process (redirected to
+					// /dev/null)
   unsigned nofile_limit(unsigned newlimit=0);
   /// the process closure is called when the process has ended...
   const Rps_ClosureValue get_process_closure(void) const;
