@@ -13,7 +13,7 @@
  *      toolkit) the tools/qt6refpersys.cc file
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Basile Starynkevitch, France <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *      Niklaus Rozencrantz <niklasr@protonmail.com>
@@ -129,7 +129,8 @@ extern "C" void rps_self_pipe_write_handler(Rps_CallFrame*cf, int fd, void* data
  * We probably want to use the pipe to self trick.
  * https://www.sitepoint.com/the-self-pipe-trick-explained/
  *
- * in cooperation with Rps_PayloadUnixProcess::start_process
+ * in cooperation with Rps_PayloadUnixProcess::start_process defined
+ * in transientobj_rps.cc
  **/
 static std::atomic<bool> event_loop_is_active;
 
@@ -155,6 +156,7 @@ rps_do_stop_event_loop(void)
 
 extern "C" void rps_jsonrpc_initialize(void);
 
+#warning missing code to fork Rps_PayloadUnixProcess and call pipe(2) for them
 
 void
 rps_self_pipe_write_byte(unsigned char b)
@@ -325,11 +327,13 @@ void
 rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
 {
   RPS_ASSERT(rps_is_main_thread());
-  unsigned char buf[128];
+  constexpr int extrabuf = 8;
+  constexpr int readsize = 128;
+  unsigned char buf[readsize+extrabuf];
   RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipereadfd);
   RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
   memset(buf, 0, sizeof(buf));
-  int nbr = read(fd, buf, sizeof(buf));
+  int nbr = read(fd, buf, readsize);
   RPS_DEBUG_LOG(REPL, "rps_self_pipe_read_handler fd#" << fd << " nbr=" << nbr
                 << " buf=" << buf << "." << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
