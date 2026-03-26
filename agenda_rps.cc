@@ -8,11 +8,11 @@
  *      It implements the agenda mechanism.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Basile Starynkevitch, France <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2020 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -426,7 +426,7 @@ rps_run_agenda_mechanism(int nbjobs)
       /*** TODO (2):
        *
        * Cooperation with unix processes and popen-ed commands is
-       * needed in the agenda. See our file eventloop_rps.cc.  We do
+       * needed in the agenda.  See our file eventloop_rps.cc.  We do
        * need to use poll(2) system call and waitpid(2) system calls
        * and/or to handle SIGCHLD signals in that eventloop_rps.cc
        * file.  See Todo §1 above.
