@@ -6061,8 +6061,8 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   Rps_ClosureValue _unixproc_closure; // handle termination of the Unix process
   Rps_ClosureValue _unixproc_inputclos; // handle input condition
   Rps_ClosureValue _unixproc_outputclos; // handle output condition
-  int _unixproc_pipeinputfd;             // input pipe(2)
-  int _unixproc_pipeoutputfd;            // output pipe(2)
+  int _unixproc_pipeinputfd;             // input to process pipe(2) fd
+  int _unixproc_pipeoutputfd;            // output from process pipe(2) fd
   //
   // for setrlimit(RLIMIT_CPU, ...) in child
   std::atomic<unsigned> _unixproc_cpu_time_limit;
