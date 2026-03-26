@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // see http://refpersys.org/
 // GPLv3+ licensed
-// © Copyright 2025 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright (C) 2025 - 2026 Basile Starynkevitch <basile@starynkevitch.net>
+/// also used by file RefPerSys/test_dir/007display.bash
 
 /***
     This plugin just displays an object. The plugin argument is an
