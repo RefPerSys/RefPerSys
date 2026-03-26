@@ -1327,6 +1327,8 @@ rps_timerfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
 } // end rps_timerfd_read_handler
 
 
+// Implemented in transientobj_rps.cc:
+extern "C" void rps_may_start_process(const char*fil, int lin);
 
 void
 handle_self_pipe_byte_rps(unsigned char b)
@@ -1351,6 +1353,10 @@ handle_self_pipe_byte_rps(unsigned char b)
       rps_do_stop_event_loop();
       break;
     case SelfPipe_Process:
+      {
+	rps_may_start_process(__FILE__, __LINE__);
+	break;
+      }
 #warning should call something from transientobj_rps.cc to perhaps fork a process related to some Rps_PayloadUnixProcess
     /* TODO: see Rps_PayloadUnixProcess::queue_of_runnable_processes
     in transientobj_rps.cc; the dormant processes should somehow
@@ -1420,7 +1426,9 @@ void
 rps_postpone_child_process(void)
 {
   RPS_DEBUG_LOG(REPL, "rps_postpone_child_process thread:"
-                << rps_current_pthread_name());
+                << rps_current_pthread_name()
+		<< std::endl
+		<< RPS_FULL_BACKTRACE(1, "rps_postpone_child_process"));
   rps_self_pipe_write_byte(SelfPipe_Process);
 } // end rps_postpone_child_process
 
