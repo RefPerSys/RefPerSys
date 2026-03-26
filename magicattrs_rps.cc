@@ -9,10 +9,10 @@
  *      which are dlsym-able and dladdr-able on Linux.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Basile Starynkevitch, France <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
- *      Niklas Rozencrantz 
+ *      Niklas Rozencrantz
  *
  *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
