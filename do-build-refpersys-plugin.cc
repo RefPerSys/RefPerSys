@@ -4,9 +4,9 @@
 /// Description:
 ///     This file is part of the Reflective Persistent System.
 
-///      © Copyright 2024 - 2025 The Reflective Persistent System Team
+///      © Copyright (C) 2024 - 2026 The Reflective Persistent System Team
 ///      team@refpersys.org & http://refpersys.org/
-///      including Basile Starynkevitch
+///      including Basile Starynkevitch, France
 ///
 /// Purpose: build a plugin for RefPerSys
 ///
@@ -31,7 +31,8 @@
 
 ///
 /// Author(s):
-///      Basile Starynkevitch <basile@starynkevitch.net>
+///      Basile Starynkevitch, 92340 Bourg-la-Reine, France
+///      <basile@starynkevitch.net>
 
 /// License: GPLv3+ (file COPYING-GPLv3)
 ///    This software is free software: you can redistribute it and/or modify
@@ -308,11 +309,22 @@ bp_prog_options(int argc, char**argv)
   int opt= 0;
   int ix= 0;
   pthread_setname_np(pthread_self(), "bldrpsplug");
+  if (argc>0
+      && (!strcmp(argv[1], "--verbose")
+	  || !strcmp(argv[1], "-v")))
+    bp_verbose = true;
+  if (argc>0
+      && !strcmp(argv[1], "--version"))
+    {
+      bp_version();
+      exit (EXIT_SUCCESS);
+    };
   bp_vect_cpp_sources.reserve(argc);
   BP_NOP_BREAKPOINT();
   do
     {
-      opt = getopt_long(argc, argv, "Vhvi:s:o:N:S:d:G:L:", bp_options_ptr, &ix);
+      opt = getopt_long(argc, argv, "Vhvi:s:o:N:S:d:G:L:",
+			bp_options_ptr, &ix);
       BP_NOP_BREAKPOINT();
       if (opt == -1)
         break;
@@ -672,7 +684,7 @@ main(int argc, char**argv, const char**env)
   BP_NOP_BREAKPOINT();
   if (bp_verbose)
     {
-      char cwdbuf[256];
+      char cwdbuf[384];
       memset(cwdbuf, 0, sizeof(cwdbuf));
       const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
       std::cout << "Running on " << bp_hostname;
@@ -706,8 +718,11 @@ main(int argc, char**argv, const char**env)
       std::string bufstr{buf};
       if (bp_base_src_set.find(bufstr) != bp_base_src_set.end())
         {
-          std::clog << bp_progname << " : the base name " << bufstr << " appears more than once, last in C++ file " << cursrc
-                    << " [" << __FILE__ << ":" << __LINE__ <<"]" <<std::endl;
+          std::clog << bp_progname << " : the base name "
+		    << bufstr << " appears more than once,"
+		    << " last in C++ file " << cursrc
+                    << " [" << __FILE__ << ":" << __LINE__ <<"]"
+		    <<std::endl;
           exit(EXIT_FAILURE);
         };
       if (bp_first_base.empty())
