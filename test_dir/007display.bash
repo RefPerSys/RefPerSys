@@ -32,12 +32,15 @@ if [ -n "$REFPERSYS_TOPDIR" ]; then
 fi
 
 if [ ! -x refpersys ]; then
-    /usr/bin/gmake -j3 refpersys do-build-build-refpersys-plugin
+    /usr/bin/gmake -j3 refpersys
 fi
 
 if [ ! -x refpersys ]; then
     echo 'no refpersys executable in ' $(/bin/pwd) > /dev/stderr
     exit 1
+fi
+if [ ! -x do-build-refpersys-plugin ]; then
+    /usr/bin/gmake  do-build-refpersys-plugin
 fi
 
 if [ -f /tmp/rpsplug_display.so ]; then
