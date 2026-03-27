@@ -830,12 +830,16 @@ main(int argc, char**argv, const char**env)
   BP_NOP_BREAKPOINT();
   char *rp = realpath(bp_plugin_binary, NULL);
   bp_final_plugin = rp;
+  BP_NOP_BREAKPOINT();
   if (!access(rp, R_OK) && bp_plugin_symlink)
     {
       char oldsymlink[384];
       memset (oldsymlink, 0, sizeof(oldsymlink));
-      ssize_t rlsz = readlink(bp_plugin_symlink, oldsymlink, sizeof(oldsymlink)-1);
-      if (rlsz > 0 && (int)rlsz <  (int)sizeof(oldsymlink)-2 && !strcmp(oldsymlink, rp))
+      ssize_t rlsz = readlink(bp_plugin_symlink, oldsymlink,
+			      sizeof(oldsymlink)-1);
+      if (rlsz > 0
+	  && (int)rlsz <  (int)sizeof(oldsymlink)-2
+	  && !strcmp(oldsymlink, rp))
         {
           if (bp_verbose)
             printf("%s: symlink %s -> %s already exists\n",
@@ -845,6 +849,7 @@ main(int argc, char**argv, const char**env)
       else
         {
           int syok = 0;
+	  BP_NOP_BREAKPOINT();
           if (!access(bp_plugin_symlink, R_OK))
             std::clog << bp_progname << " fail to symlink "
                       << bp_plugin_symlink << " -> " << rp
@@ -893,7 +898,8 @@ main(int argc, char**argv, const char**env)
         printf("%s: emitted plugin %s and symlink %s\n",
                bp_progname, bp_final_plugin, bp_final_symlink);
       else if (bp_final_plugin)
-        printf("%s: emitted plugin %s\n", bp_progname, bp_final_plugin);
+        printf("%s: emitted just plugin %s\n",
+	       bp_progname, bp_final_plugin);
     };
   fflush(nullptr);
   bp_options_ptr = nullptr;
