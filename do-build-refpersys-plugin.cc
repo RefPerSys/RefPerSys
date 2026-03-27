@@ -95,6 +95,8 @@ extern "C" {
   const char* bp_plugin_binary; // generated shared object
   const char* bp_plugin_symlink; // generated symlink to plugin
   std::string bp_srcdir;  // plugin source directory
+  const char* bp_final_plugin;
+  const char* bp_final_symlink;
   void bp_initialize_guile_scheme(void);
 #warning bp_srcdir plugin source directory incompletely handled
   // if only once C++ source given set bp_srcdir to its dirname(3)
@@ -311,7 +313,7 @@ bp_prog_options(int argc, char**argv)
   pthread_setname_np(pthread_self(), "bldrpsplug");
   if (argc>0
       && (!strcmp(argv[1], "--verbose")
-	  || !strcmp(argv[1], "-v")))
+          || !strcmp(argv[1], "-v")))
     bp_verbose = true;
   if (argc>0
       && !strcmp(argv[1], "--version"))
@@ -324,7 +326,7 @@ bp_prog_options(int argc, char**argv)
   do
     {
       opt = getopt_long(argc, argv, "Vhvi:s:o:N:S:d:G:L:",
-			bp_options_ptr, &ix);
+                        bp_options_ptr, &ix);
       BP_NOP_BREAKPOINT();
       if (opt == -1)
         break;
@@ -503,20 +505,22 @@ bp_prog_options(int argc, char**argv)
   memset(cwdbuf, 0, sizeof(cwdbuf));
   const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   BP_NOP_BREAKPOINT();
-  if (!cwd) {
-    fprintf(stderr,
-	    "%s failed to getcwd %s [%s:%d]\n",
-	    bp_progname, strerror(errno),
-	    __FILE__, __LINE__-2);
-    fflush(stderr);
-    exit(EXIT_FAILURE);
-  };
-  if (cwd && bp_verbose) {
-    printf("%s running in %s git %15s [%s:%d]\n",
-	   bp_progname, cwd, bp_git_id, __FILE__, __LINE__-1);
-    fflush(stdout);
-    BP_NOP_BREAKPOINT();
-  };
+  if (!cwd)
+    {
+      fprintf(stderr,
+              "%s failed to getcwd %s [%s:%d]\n",
+              bp_progname, strerror(errno),
+              __FILE__, __LINE__-2);
+      fflush(stderr);
+      exit(EXIT_FAILURE);
+    };
+  if (cwd && bp_verbose)
+    {
+      printf("%s running in %s git %15s [%s:%d]\n",
+             bp_progname, cwd, bp_git_id, __FILE__, __LINE__-1);
+      fflush(stdout);
+      BP_NOP_BREAKPOINT();
+    };
   while (optind < argc)
     {
       BP_NOP_BREAKPOINT();
@@ -719,10 +723,10 @@ main(int argc, char**argv, const char**env)
       if (bp_base_src_set.find(bufstr) != bp_base_src_set.end())
         {
           std::clog << bp_progname << " : the base name "
-		    << bufstr << " appears more than once,"
-		    << " last in C++ file " << cursrc
+                    << bufstr << " appears more than once,"
+                    << " last in C++ file " << cursrc
                     << " [" << __FILE__ << ":" << __LINE__ <<"]"
-		    <<std::endl;
+                    <<std::endl;
           exit(EXIT_FAILURE);
         };
       if (bp_first_base.empty())
@@ -756,15 +760,15 @@ main(int argc, char**argv, const char**env)
       BP_NOP_BREAKPOINT();
       if (bp_verbose)
         snprintf (buildcmd, sizeof(buildcmd)-1, "%s --trace -C %s "
-                  "one-plugin"
-                  " REFPERSYS_PLUGIN_SOURCE='%s' REFPERSYS_PLUGIN_SHARED_OBJECT='%s'",
+                                                "one-plugin"
+                                                " REFPERSYS_PLUGIN_SOURCE='%s' REFPERSYS_PLUGIN_SHARED_OBJECT='%s'",
                   rps_gnu_make,
                   rps_topdirectory,
                   thecppsrc.c_str(),
                   bp_plugin_binary);
       else
         snprintf (buildcmd, sizeof(buildcmd)-1, "%s -C %s one-plugin"
-                  " REFPERSYS_PLUGIN_SOURCE='%s' REFPERSYS_PLUGIN_SHARED_OBJECT='%s'",
+                                                " REFPERSYS_PLUGIN_SOURCE='%s' REFPERSYS_PLUGIN_SHARED_OBJECT='%s'",
                   rps_gnu_make,
                   rps_topdirectory,
                   thecppsrc.c_str(),
@@ -805,17 +809,27 @@ main(int argc, char**argv, const char**env)
   BP_NOP_BREAKPOINT();
   int ex = system(buildcmd);
   sync ();
+  char cwdbuf[256];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-3) || cwdbuf[sizeof(cwdbuf)-3])
+    strcpy(cwdbuf, "./");
   if (ex)
     {
-      char cwdbuf[256];
-      memset(cwdbuf, 0, sizeof(cwdbuf));
-      if (!getcwd(cwdbuf, sizeof(cwdbuf)-3) || cwdbuf[sizeof(cwdbuf)-3])
-        strcpy(cwdbuf, "./");
-      std::clog << bp_progname << " fail to run " << buildcmd << " in " << cwdbuf
-                << " =" << ex << " [" <<__FILE__ << ":" << __LINE__ -2 << "]" << std::endl;
+      std::clog << bp_progname << " fail to run " << buildcmd
+                << " in " << cwdbuf << " =" << ex
+                << " [" <<__FILE__ << ":" << __LINE__ -3 << "]"
+                << std::endl;
       return ex;
     };
+  // GNU make succeeded
+  if (bp_verbose)
+    std::cout << bp_progname << " did " << buildcmd
+              << " in " << cwdbuf
+              << " [" <<__FILE__ << ":" << __LINE__ -3 << "]"
+              << std::endl;
+  BP_NOP_BREAKPOINT();
   char *rp = realpath(bp_plugin_binary, NULL);
+  bp_final_plugin = rp;
   if (!access(rp, R_OK) && bp_plugin_symlink)
     {
       char oldsymlink[384];
@@ -843,6 +857,7 @@ main(int argc, char**argv, const char**env)
                       << " : " << strerror(errno) << std::endl;
           else
             {
+              bp_final_symlink = bp_plugin_symlink;
               if (bp_verbose)
                 printf("%s: symlinked %s -> %s\n",
                        bp_progname, bp_plugin_symlink, rp);
@@ -872,6 +887,14 @@ main(int argc, char**argv, const char**env)
                  bp_progname, bp_temp_ninja.c_str());
         }
     }
+  if (bp_verbose)
+    {
+      if (bp_final_plugin && bp_final_symlink)
+        printf("%s: emitted plugin %s and symlink %s\n",
+               bp_progname, bp_final_plugin, bp_final_symlink);
+      else if (bp_final_plugin)
+        printf("%s: emitted plugin %s\n", bp_progname, bp_final_plugin);
+    };
   fflush(nullptr);
   bp_options_ptr = nullptr;
   /// synchronize the disk
