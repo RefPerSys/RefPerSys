@@ -51,7 +51,8 @@ if [ ! -x do-build-refpersys-plugin ]; then
     exit 1
 fi
 
-./do-build-refpersys-plugin --verbose --input=plugins_dir/rpsplug_display.cc \
+./do-build-refpersys-plugin --verbose \
+			    --input=plugins_dir/rpsplug_display.cc \
 			    --output=plugins_dir/rpsplug_display.so \
 			     --symlink=/tmp/rpsplug_display.so
 
