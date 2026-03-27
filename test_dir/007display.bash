@@ -21,8 +21,9 @@
 
 disp=$1
 
-if [ -n "$disp" ]; then
-    echo $@ should be used with an argument the object to display
+if [ -z "$disp" ]; then
+    echo $0 should be used with an argument the object to display > /dev/stderr
+    echo $0 got none > /dev/stderr
     exit 1
 fi
 
@@ -44,8 +45,9 @@ if [ -f /tmp/rpsplug_display.so ]; then
 fi
 
 
-if [ ! -x do-build-build-refpersys-plugin ]; then
+if [ ! -x do-build-refpersys-plugin ]; then
     echo 'no do-build-build-refpersys-plugin executable in ' $(/bin/pwd) > /dev/stderr
+    echo 'try running make do-build-refpersys-plugin' > /dev/stderr
     exit 1
 fi
 
