@@ -3,6 +3,7 @@
 # file RefPerSys/test_dir/007display.bash
 #  © Copyright (C) 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
+#  contributed by Basile Starynkevitch, France
 
 # License:
 #    This program is free software: you can redistribute it and/or modify
@@ -57,7 +58,14 @@ fi
 ./do-build-refpersys-plugin --verbose \
 			    --input=plugins_dir/rpsplug_display.cc \
 			    --output=plugins_dir/rpsplug_display.so \
-			     --symlink=/tmp/rpsplug_display.so
+			    --symlink=/tmp/rpsplug_display.so
+
+## printf is builtin in bash
+printf "\n\n%s: after do-build-refpersys-plugin pid %d\n" $0 $$
+
+/bin/ls -ltf ./refpersys $(/bin/pwd)/plugins_dir/rpsplug_display.{cc,so} /tmp/rpsplug_display.so
+
+echo
 
 ./refpersys -AREPL --script=$(/usr/bin/realpath $0) --batch \
 	    --plugin-after-load=/tmp/rpsplug_display.so \
