@@ -81,11 +81,17 @@
 
 #warning perhaps replace pkg-config with "https://github.com/pkgconf/pkgconf"
 
+#ifndef GIT_ID
+#error GIT_ID should be defined in the compilation command
+#endif
+
 #warning fix issue #24 on github.com/RefPerSys/RefPerSys
 
 extern "C" {
 #include "__timestamp.c"
-  const char bp_git_id[]=GIT_ID;
+
+  const char bp_git_id[]=
+    GIT_ID; /// actually a short string passed at compilation command
   const char bp_timestamp[]= __TIMESTAMP__;
   char bp_hostname[128];
   const char* bp_progname;
@@ -836,10 +842,10 @@ main(int argc, char**argv, const char**env)
       char oldsymlink[384];
       memset (oldsymlink, 0, sizeof(oldsymlink));
       ssize_t rlsz = readlink(bp_plugin_symlink, oldsymlink,
-			      sizeof(oldsymlink)-1);
+                              sizeof(oldsymlink)-1);
       if (rlsz > 0
-	  && (int)rlsz <  (int)sizeof(oldsymlink)-2
-	  && !strcmp(oldsymlink, rp))
+          && (int)rlsz <  (int)sizeof(oldsymlink)-2
+          && !strcmp(oldsymlink, rp))
         {
           if (bp_verbose)
             printf("%s: symlink %s -> %s already exists\n",
@@ -849,7 +855,7 @@ main(int argc, char**argv, const char**env)
       else
         {
           int syok = 0;
-	  BP_NOP_BREAKPOINT();
+          BP_NOP_BREAKPOINT();
           if (!access(bp_plugin_symlink, R_OK))
             std::clog << bp_progname << " fail to symlink "
                       << bp_plugin_symlink << " -> " << rp
@@ -894,12 +900,23 @@ main(int argc, char**argv, const char**env)
     }
   if (bp_verbose)
     {
+      constexpr int cwdsize = 256;
+      char cwdbuf[cwdsize+8];
+      memset (cwdbuf, 0, sizeof (cwdbuf));
+      if (!getcwd(cwdbuf, cwdsize))
+        cwdbuf[0] = '.';
       if (bp_final_plugin && bp_final_symlink)
-        printf("%s: emitted plugin %s and symlink %s\n",
-               bp_progname, bp_final_plugin, bp_final_symlink);
+        printf("%s: emitted plugin %s and symlink %s in cwd %s git %s\n",
+               bp_progname, bp_final_plugin,
+               bp_final_symlink, cwdbuf, bp_git_id);
       else if (bp_final_plugin)
-        printf("%s: emitted just plugin %s\n",
-	       bp_progname, bp_final_plugin);
+        printf("%s: emitted just plugin %s in cwd %s git %s\n",
+               bp_progname, bp_final_plugin, cwdbuf, bp_git_id);
+      printf("# invocation of pid %d was (argc=%d):",
+             (int)getpid(), bp_argc_prog);
+      for (int i=0; i<bp_argc_prog; i++)
+        printf (" %s", bp_argv_prog[i]);
+      putchar('\n');
     };
   fflush(nullptr);
   bp_options_ptr = nullptr;
