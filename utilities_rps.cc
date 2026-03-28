@@ -40,21 +40,6 @@
 //@@PKGCONFIG cairo
 
 
-#if RPS_WITH_FLTK
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Menu_Bar.H>
-#include <FL/Fl_Multi_Label.H>
-#include <FL/Fl_Widget.H>
-#if FLTK_API_VERSION >= 10400
-#include <FL/Fl_Pack.H>
-#include <FL/Fl_Flex.H>
-#endif
-#include <FL/Fl_Text_Buffer.H>
-#include <FL/Fl_Text_Editor.H>
-#include <FL/Fl_Box.H>
-#endif // RPS_WITH_FLTK
 
 #include "glib.h"
 #include "libgccjit.h"
@@ -545,19 +530,6 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_ZoneValue);
   EXPLAIN_TYPE_ABSTRACT(rpscarbrepl_stack,rpscarbrepl_stack_size,rpscarbrepl_stack_align);
   ////
-#if RPS_WITH_FLTK
-  printf("\n\n===== FLTK widgets from %s:%d ====\n", __FILE__, __LINE__);
-  EXPLAIN_TYPE(Fl_Box);
-#if FLTK_API_VERSION >= 10400
-  EXPLAIN_TYPE(Fl_Flex);
-  EXPLAIN_TYPE(Fl_Pack);
-#endif
-  EXPLAIN_TYPE(Fl_Menu_Bar);
-  EXPLAIN_TYPE(Fl_Text_Buffer);
-  EXPLAIN_TYPE(Fl_Text_Editor);
-  EXPLAIN_TYPE(Fl_Widget);
-  EXPLAIN_TYPE(Fl_Window);
-#endif /*RPS_WITH_FLTK*/
   ////
 #undef EXPLAIN_TYPE4
 #undef EXPLAIN_TYPE3
@@ -1255,14 +1227,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_set_debug_output_path(arg);
     }
     return 0;
-#if RPS_WITH_FLTK
-    case RPSPROGOPT_FLTK:
-    {
-      RPS_DEBUG_LOG(PROGARG, "rps_parse1opt fltk arg=" << arg);
-      rps_fltk_progoption(arg, state, side_effect);
-    }
-    return 0;
-#endif /*RPS_WITH_FLTK*/
     case RPSPROGOPT_LOADDIR:
     {
       rps_my_load_dir = std::string(arg);

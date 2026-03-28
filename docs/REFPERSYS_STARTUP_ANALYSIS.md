@@ -78,7 +78,6 @@ int main (int argc, char** argv)
 #### 8. **Mode-Specific Execution** (Lines 1964-1989)
 
 - **Non-Batch Mode**: Initialize appropriate user interface
-  - **FLTK Mode**: If FLTK is enabled, initialize and run FLTK GUI
   - **Event Loop Mode**: Run the main event loop for REPL mode
 - **Post-Event Loop**: Execute cleanup and finalization code
 

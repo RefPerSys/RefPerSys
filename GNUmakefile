@@ -116,7 +116,11 @@ REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_
 ### Dumped C++ sources which are written at dump time and needs to be git managed
 REFPERSYS_DUMPED_CPP_SOURCES := $(wildcard generated/*.cc)
 
-REFPERSYS_RAW_SOURCES := $(filter-out %fltk%, $(REFPERSYS_HUMAN_CPP_SOURCES) $(REFPERSYS_GENERATED_CPP_SOURCES) $(REFPERSYS_DUMPED_CPP_SOURCES))
+### in commit cdce494874af (end of March 2026) FLTK is not used
+
+REFPERSYS_RAW_SOURCES := $(REFPERSYS_HUMAN_CPP_SOURCES) \
+            $(REFPERSYS_GENERATED_CPP_SOURCES) \
+            $(REFPERSYS_DUMPED_CPP_SOURCES)
 
 REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, %.raw.o, $(REFPERSYS_RAW_SOURCES))
 

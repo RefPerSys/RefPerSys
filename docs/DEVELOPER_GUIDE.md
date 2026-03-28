@@ -71,9 +71,9 @@ The project serves as a research platform for:
 - **libjsoncpp**: For JSON processing
 
 #### Optional Libraries
-- **FLTK**: For graphical user interface
 - **libonion**: For HTTP service
 - **GTKmm**: For additional GUI components
+- **Qt6**: for the independent `tools/q6refpersys.cc` frontend
 
 ### Build Configuration
 
@@ -681,7 +681,6 @@ RefPerSys uses the **GNU argp** (argument parser) library for command-line argum
 
 #### Mode Selection
 - **`--batch` / `-B`**: Run in batch mode without user interface
-- **`--fltk[=GUI_PREFS]`**: Enable FLTK graphical interface
 - **`--interface-fifo=PREFIX`**: Use FIFO-based JSONRPC interface
 
 #### Debug and Development
@@ -769,25 +768,6 @@ RefPerSys supports five distinct operational modes, each optimized for different
 ./refpersys --batch --load=/data/input --dump=/data/output --plugin-after-load=process_plugin
 ```
 
-### 2. FLTK GUI Mode (`--fltk`)
-
-**Characteristics:**
-- Full graphical user interface using FLTK toolkit
-- Windowed environment with menus and dialogs
-- Interactive object manipulation
-- Real-time debugging and visualization
-
-**Components:**
-- Main application window
-- Object browser and inspector
-- REPL console integrated in GUI
-- Debug message display
-- File dialogs and preferences
-
-**Example Usage:**
-```bash
-./refpersys --fltk=default.prefs
-```
 
 ### 3. REPL Mode (Default Interactive Mode)
 

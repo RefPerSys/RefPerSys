@@ -195,18 +195,6 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Dump the persistent state to given DUMPDIR directory.\n", ///
     /*group:*/0 ///
   },
-#if RPS_WITH_FLTK
-  /* ======= FLTK GUI library ======= */
-  {/*name:*/ "fltk", ///
-    /*key:*/ RPSPROGOPT_FLTK, ///  -F
-    /*arg:*/ "GUIPREFERENCES", ///
-    /*flags:*/ OPTION_ARG_OPTIONAL, ///
-    /*doc:*/ "pass, if GUIPREFERENCES is given,"
-    " to FLTK graphical library; enable FLTK graphics.\n"
-    "\t see fltk.org for details\n", ///
-    /*group:*/0 ///
-  },
-#endif /*RPS_WITH_FLTK*/
   /* ======= extra argument ======= */
   {/*name:*/ "extra", ///
     /*key:*/ RPSPROGOPT_EXTRA_ARG, ///
@@ -699,14 +687,6 @@ rps_run_loaded_application(int &argc, char **argv)
                     << " with call frame " << Rps_ShowCallFrame(&_));
       rps_edit_run_cplusplus_code (&_);
     };
-#if RPS_WITH_FLTK
-  //// initialize the FLTK windows in --fltk mode
-  if (rps_fltk_enabled ())
-    {
-      RPS_DEBUG_LOG(REPL, "rps_run_loaded_application initializing FLTK");
-      rps_fltk_initialize (argc, argv);
-    };
-#endif /*RPS_WITH_FLTK*/
   //// running the given plugins after load - should happen after
   //// edition of C++ code
   if (!rps_plugins_vector.empty())
@@ -1462,10 +1442,6 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
         //
         fflush(nullptr);
       }
-#ifdef RPS_WITH_FLTK
-    if (rps_fltk_enabled())
-      rps_fltk_show_debug_message(fname, fline,funcname, dbgopt, ndbg, msg);
-#endif /*RPS_WITH_FLTK*/
     //
     pthread_mutex_unlock(&rps_debug_mutex);
   }

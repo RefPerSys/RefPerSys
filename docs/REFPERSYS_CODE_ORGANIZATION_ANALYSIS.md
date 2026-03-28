@@ -140,12 +140,6 @@ The RefPerSys codebase is organized into **10 major functional domains**, each w
 
 ---
 
-#### **Domain 7: Graphical User Interface**
-**Purpose**: FLTK-based GUI for interactive development
-
-**Files**:
-- `fltk_rps.cc` - FLTK GUI implementation
-- GUI preferences and window management
 
 **Components**:
 - Main application window
@@ -220,7 +214,6 @@ The RefPerSys codebase is organized into **10 major functional domains**, each w
 
 **Build Integration**:
 - `test00-test09` - Makefile test targets
-- `testfltk1-testfltk4` - GUI interface tests
 - `testcarb1-testcarb3` - Carburetta parser tests
 
 ---

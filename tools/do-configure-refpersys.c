@@ -138,8 +138,6 @@ const char *rpsconf_builder_person;
 /* strdup-ed string of the email of the person building RefPerSys (or null): */
 const char *rpsconf_builder_email;
 
-/* absolute path to fltk-config utility */
-const char *rpsconf_fltk_config;
 
 /* code generation flags */
 const char *rpsconf_codegen_flags;
@@ -1136,235 +1134,6 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
 }       /* end rpsconf_emit_from_testdir */
 
 void
-rpsconf_try_then_set_fltkconfig (const char *fc)
-{
-  FILE *pipf = NULL;
-  char fcflags[2048];
-  char fldflags[1024];
-  char cmdbuf[sizeof (fcflags) + sizeof (fldflags) + 256];
-  memset (cmdbuf, 0, sizeof (cmdbuf));
-  memset (fcflags, 0, sizeof (fcflags));
-  memset (fldflags, 0, sizeof (fldflags));
-  assert (fc);
-  if (strlen (fc) > sizeof (cmdbuf) - 16)
-    {
-      fprintf (stderr, "%s: too long fltk-config path %s (max is %d bytes)\n",
-               rpsconf_prog_name, fc, (int) sizeof (cmdbuf) - 16);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    };
-  if (access (fc, R_OK | X_OK))
-    {
-      fprintf (stderr,
-               "%s: cannot access FLTK configurator %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, fc, strerror (errno), __FILE__, __LINE__);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  /// run fltk-config --version and require FLTK 1.4 or 1.5
-  {
-    char flversbuf[80];
-    memset (flversbuf, 0, sizeof (flversbuf));
-    memset (cmdbuf, 0, sizeof (cmdbuf));
-    snprintf (cmdbuf, sizeof (cmdbuf), "%s --version", fc);
-    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
-            __FILE__, __LINE__ - 1);
-    fflush (NULL);
-    pipf = popen (cmdbuf, "r");
-    if (!pipf)
-      {
-        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n", //
-                 rpsconf_prog_name, cmdbuf, strerror (errno), //
-                 __FILE__, __LINE__ - 2);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    if (!fgets (flversbuf, sizeof (flversbuf), pipf))
-      {
-        fprintf (stderr, "%s: failed to get FLTK version using %s (%s)" //
-                 " [%s:%d]\n",  //
-                 rpsconf_prog_name, cmdbuf, strerror (errno), //
-                 __FILE__, __LINE__ - 3);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      };
-    int flmajv = -1, flminv = -1, flpatchv = -1, flpos = -1;
-    if (sscanf (flversbuf, "%d.%d.%d%n",  //
-                &flmajv, &flminv, &flpatchv, &flpos) < 3
-        || flpos < (int) strlen ("1.2.3"))
-      {
-        fprintf (stderr, "%s: failed to query FLTK version with  %s (%s)" //
-                 " [%s:%d]\n",  //
-                 rpsconf_prog_name, cmdbuf, strerror (errno), //
-                 __FILE__, __LINE__ - 2);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      };
-    if (flmajv != 1 || (flminv != 4 && flminv != 5) || flpatchv < 0)
-      {
-        fprintf (stderr, "%s: needs FLTK version 1.4 or 1.5, "  //
-                 "got fltk %d.%d.%d using %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, flmajv, flminv, flpatchv, cmdbuf,
-                 strerror (errno), __FILE__, __LINE__ - 3);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    if (pclose (pipf))
-      {
-        fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    fflush (NULL);
-    pipf = NULL;
-  }
-  /// run fltk-config -g --cflags
-  {
-    memset (cmdbuf, 0, sizeof (cmdbuf));
-    snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --cflags", fc);
-    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
-            __LINE__);
-    fflush (NULL);
-    pipf = popen (cmdbuf, "r");
-    if (!pipf)
-      {
-        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    memset (fcflags, 0, sizeof (fcflags));
-    if (!fgets (fcflags, sizeof (fcflags), pipf))
-      {
-        fprintf (stderr, "%s: failed to get cflags using %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    if (pclose (pipf))
-      {
-        fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    fflush (NULL);
-    pipf = NULL;
-  }
-  ///
-  /// run fltk-config -g --ldflags
-  {
-    memset (cmdbuf, 0, sizeof (cmdbuf));
-    snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --ldlags", fc);
-    printf ("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, __FILE__,
-            __LINE__);
-    pipf = popen (cmdbuf, "r");
-    if (!pipf)
-      {
-        fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    memset (fldflags, 0, sizeof (fldflags));
-    if (!fgets (fldflags, sizeof (fldflags), pipf))
-      {
-        fprintf (stderr, "%s: failed to get ldflags using %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    if (pclose (pipf))
-      {
-        fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-      }
-    fflush (NULL);
-    pipf = NULL;
-  }
-  ////
-  const char *tmp_testfltk_src
-    = rpsconf_temporary_textual_file ("tmp_test_fltk", ".cc", __LINE__);
-  FILE *fltksrc = fopen (tmp_testfltk_src, "w");
-  if (!fltksrc)
-    {
-      fprintf (stderr,
-               "%s: failed to fopen for FLTK testing %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, tmp_testfltk_src, strerror (errno),
-               __FILE__, __LINE__ - 2);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    };
-  fprintf (fltksrc, "/// FLTK test file %s\n", tmp_testfltk_src);
-  fputs ("#include <FL/Fl.H>\n", fltksrc);
-  fputs ("#include <FL/Fl_Window.H>\n", fltksrc);
-  fputs ("#include <FL/Fl_Box.H>\n", fltksrc);
-  fputs ("\n", fltksrc);
-  fputs ("int main(int argc, char **argv) {\n", fltksrc);
-  fputs ("   Fl_Window *window = new Fl_Window(340, 180);\n", fltksrc);
-  fputs ("   Fl_Box *box = new Fl_Box(20, 40, 300, 100,\n", fltksrc);
-  fputs ("                            \"Hello, World!\");\n", fltksrc);
-  fputs ("   box->box(FL_UP_BOX);\n", fltksrc);
-  fputs ("   box->labelfont(FL_BOLD + FL_ITALIC);\n", fltksrc);
-  fputs ("   box->labelsize(36);\n", fltksrc);
-  fputs ("   box->labeltype(FL_SHADOW_LABEL);\n", fltksrc);
-  fputs ("   window->end();\n", fltksrc);
-  fputs ("   if (argc>1 && !strcmp(argv[1], \"--run\")) {\n", fltksrc);
-  fputs ("     argv[1] = argv[0];\n", fltksrc);
-  fputs ("     window->show(argc-1, argv+1);\n", fltksrc);
-  fputs ("     return Fl::run();\n", fltksrc);
-  fputs ("   };\n", fltksrc);
-  fputs ("  return 0;\n", fltksrc);
-  fputs ("}\n", fltksrc);
-  fprintf (fltksrc, "/// end of FLTK test file %s\n", tmp_testfltk_src);
-  if (fclose (fltksrc))
-    {
-      fprintf (stderr,
-               "%s: failed to fclose for FLTK testing %s (%s) [%s:%d]\n",
-               rpsconf_prog_name, tmp_testfltk_src, strerror (errno),
-               __FILE__, __LINE__ - 2);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    };
-  fltksrc = NULL;
-  char *tmp_fltk_exe =
-    rpsconf_temporary_binary_file ("./tmp_fltkprog", ".bin", __LINE__);
-  memset (cmdbuf, 0, sizeof (cmdbuf));
-  snprintf (cmdbuf, sizeof (cmdbuf), "%s -g -O %s %s %s -o %s",
-            rpsconf_cpp_compiler, fcflags, tmp_testfltk_src,
-            fldflags, tmp_fltk_exe);
-  printf ("%s build test FLTK executable %s from %s with %s\n",
-          rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src,
-          rpsconf_cpp_compiler);
-  fflush (NULL);
-  if (system (cmdbuf) > 0)
-    {
-      fprintf (stderr,
-               "%s failed build test FLTK executable %s from %s [%s:%d]\n",
-               rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src, __FILE__,
-               __LINE__ - 1);
-      fflush (stderr);
-      fprintf (stderr, "... using\n%s\n...[%s:%d]\n",
-               cmdbuf, __FILE__, __LINE__);
-      fflush (NULL);
-      rpsconf_failed = true;
-      exit (EXIT_FAILURE);
-    }
-  rpsconf_should_remove_file (tmp_testfltk_src, __LINE__);
-  rpsconf_should_remove_file (tmp_fltk_exe, __LINE__);
-}       /* end rpsconf_try_then_set_fltkconfig */
-
-void
 rpsconf_remove_files (void)
 {
   if (rpsconf_failed)
@@ -1532,17 +1301,6 @@ rpsconf_emit_configure_refpersys_mk (void)
                    rpsconf_builder_email);
         }
     }
-  //// emit the FLTK configurator
-  if (rpsconf_fltk_config)
-    {
-      fprintf (f, "\n# FLTK (see fltk.org) configurator\n");
-      fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", rpsconf_fltk_config);
-      fprintf (f, "REFPERSYS_FLTK_SOURCE= fltk_rps.cc\n");
-    }
-  else
-    {
-      fprintf(f, "\n### no fltk.org from %s:%d\n", __FILE__, __LINE__);
-    };
   ////
   fprintf (f, "\n### machine architecture\n");
   fprintf (f, "REFPERSYS_ARCH=%s\n", rpsconf_arch);
@@ -1695,7 +1453,6 @@ rpsconf_usage (void)
   puts ("\t                         # e.g. CC=/usr/bin/gcc");
   puts ("\t CXX=<C++ compiler>      # set the C++ compiler,");
   puts ("\t                         # e.g. CXX=/usr/bin/g++");
-  puts ("\t FLTKCONF=<fltk-config>  # set path of fltk-config, see fltk.org");
   puts ("\t BUILDER_PERSON=<name>   # set the name of the person building");
   puts ("\t                         # e.g. BUILDER_PERSON='Alan TURING");
   puts ("\t BUILDER_EMAIL=<email>   # set the email of the person building");
@@ -1953,30 +1710,6 @@ main (int argc, char **argv)
     }
   errno = 0;
 
-  rpsconf_fltk_config = getenv ("FLTKCONFIG");
-  if (!rpsconf_fltk_config)
-    {
-      printf ("\nFLTK is a graphical toolkit from www.fltk.org\n"
-              "\t providing a configurator script;\n"
-              "\t its configurator is a program often named fltk-config\n"
-              "\t An empty input or a dot character disable FLTK\n");
-      fflush (stdout);
-      rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
-      if (rpsconf_fltk_config && rpsconf_fltk_config[0]
-          && strcmp(rpsconf_fltk_config, ".")
-          && access (rpsconf_fltk_config, X_OK))
-        {
-          fprintf (stderr,
-                   "%s bad FLTK configurator %s (%s) [%s:%d]\n",
-                   rpsconf_prog_name,
-                   rpsconf_fltk_config ? rpsconf_fltk_config : "???",
-                   strerror (errno), __FILE__, __LINE__ - 3);
-          rpsconf_failed = true;
-          exit (EXIT_FAILURE);
-        };
-      if (rpsconf_fltk_config && !strcmp(rpsconf_fltk_config, "."))
-        rpsconf_fltk_config = NULL;
-    }
 
   if (access ("generated/rpsdata.h", R_OK))
     {
