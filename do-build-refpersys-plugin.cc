@@ -914,8 +914,15 @@ main(int argc, char**argv, const char**env)
                bp_progname, bp_final_plugin, cwdbuf, bp_git_id);
       printf("# invocation of pid %d was (argc=%d):",
              (int)getpid(), bp_argc_prog);
-      for (int i=0; i<bp_argc_prog; i++)
-        printf (" %s", bp_argv_prog[i]);
+      int nlinbyt=32;
+      for (int i=0; i<bp_argc_prog; i++) {
+	nlinbyt += strlen(bp_argv_prog[i]);
+	if (nlinbyt > 72) {
+	  printf("\\\n");
+	  nlinbyt = 0;
+	};
+        printf (" '%s'", bp_argv_prog[i]);
+      };
       putchar('\n');
     };
   fflush(nullptr);
