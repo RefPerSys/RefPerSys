@@ -12,7 +12,7 @@
 ///
 /// Caveat: this do-build-refpersys-plugin program should run quickly
 /// and uses GNU make or ninja from ninja-build.org.  It could leak
-/// memory.
+/// memory (ie malloc without free).
 ///
 /// invocation: do-build-refpersys-plugin <plugin-c++-source> -o <plugin-shared-object>
 /// e.g. do-build-refpersys-plugin plugins_dir/foo.cc -o /tmp/foo.so
@@ -85,7 +85,6 @@
 #error GIT_ID should be defined in the compilation command
 #endif
 
-#warning fix issue #24 on github.com/RefPerSys/RefPerSys
 
 extern "C" {
 #include "__timestamp.c"
