@@ -268,6 +268,10 @@ extern "C" bool rps_without_quick_tests;
 /// dump to the SHORTPATH...
 extern "C" std::string rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath);
 
+/// Give a shell-compatible real path of a file path
+/// it uses shell conventions like ~/ - implemented in utilities_rps.cc
+extern "C" const std::string rps_real_shell_file_path(const std::string& filpath);
+
 extern "C" char* rps_run_command_after_load;
 extern "C" char* rps_debugflags_after_load;
 

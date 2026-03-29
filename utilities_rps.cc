@@ -1468,6 +1468,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_without_terminal_escape = true;
       char cwdbuf[rps_path_byte_size];
       memset(cwdbuf, 0, sizeof(cwdbuf));
+      const char*cwd = getcwd(cwdbuf, sizeof(cwdbuf)-1);
       if (side_effect)
         {
           if (!rps_syslog_enabled)
@@ -1479,9 +1480,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           if (daemon(/*nochdir:*/1,  /*noclose:*/0))
             RPS_FATAL("failed to daemon");
           rps_daemonized = true;
-          const char*cw = getcwd(cwdbuf, sizeof(cwdbuf)-1);
           RPS_INFORM("daemonized pid %d in dir %s git %s",
-                     (int)getpid(), cw, rps_shortgitid);
+                     (int)getpid(), cwd, rps_shortgitid);
         };
     }
     return 0;
@@ -2585,6 +2585,77 @@ rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr
   out << ")endvecstr" << std::flush;
 #warning TODO: use rps_indentnl once defined
 } // end rps_output_vector_string
+
+
+const std::string
+rps_real_shell_file_path(const std::string& filpath)
+{
+  std::string restr;
+  if (filpath.empty())
+    return filpath;
+  char buf[rps_path_byte_size+8];
+  memset(buf, 0, sizeof(buf));
+  std::size_t pathsize = filpath.size();
+  if (pathsize > rps_path_byte_size) {
+    RPS_WARNOUT("rps_real_shell_file_path with too long path "
+		<< Rps_QuotedC_String(filpath)
+		<< std::endl
+		<< RPS_FULL_BACKTRACE(1, "rps_real_shell_file_path"));
+    return filpath;
+  };
+  if (access(filpath.c_str(), F_OK)) {
+    /// non-existent or inaccessible filpath...
+    int lastslash = filpath.find_last_of('/');
+    if (lastslash>0 && lastslash+1 < (int)pathsize
+	&& filpath[lastslash+1]!='.') {
+      std::string dirpath = filpath.substr(0, lastslash-1);
+      std::string basepath = filpath.substr(lastslash+1);
+      std::string realdirpath;
+      char*rp = realpath(dirpath.c_str(), nullptr);
+      if (!rp) {
+	RPS_WARNOUT("rps_real_shell_file_path realpath("
+		    << Rps_QuotedC_String(dirpath)
+		    << ") for "
+		    << Rps_QuotedC_String(filpath)
+		    << " failure: " << strerror(errno));
+	return filpath;
+      };
+      realdirpath.reserve(strlen(rp)+2);
+      realdirpath.copy(rp, strlen(rp));
+      free(rp), rp=nullptr;
+      restr = realdirpath + "/" + basepath;
+    };
+  }
+  else {
+    /** The access(2) system call tells us that the file existed, in
+     * an hostile environment it could have been removed since by an
+     * other process... We deliberately ignore such a scenario.
+     **/
+      char*rp = realpath(filpath.c_str(), nullptr);
+      if (!rp) {
+	RPS_WARNOUT("rps_real_shell_file_path filpath("
+		    << Rps_QuotedC_String(filpath)
+		    << " failure: " << strerror(errno));
+	return filpath;
+      };
+      restr.reserve(strlen(rp)+1);
+      restr.copy(rp,strlen(rp));
+      free(rp);
+  }
+  RPS_ASSERT(!restr.empty());
+#warning rps_real_shell_file_path to be improved for pathological paths
+  // pathological path could contain control characters
+  const char*homedir = rps_homedir();
+  int homelen = strlen(homedir);
+  if (restr.size() > homelen && restr[homelen] == '/'
+      && !strncmp(restr.c_str(), homedir, homelen)
+      ) 
+    return std::string ("~/") + restr.substr(homelen);
+  else
+    return restr;
+} // end of rps_real_shell_file_path
+
+
 
 #pragma message "may need to define output of more vectors (of objects, values, ...) and indented output"
 //// end of file utilities_rps.cc
