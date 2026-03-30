@@ -65,8 +65,8 @@ printf "\n\n%s: after do-build-refpersys-plugin pid %d\n" $0 $$
 
 /bin/ls -ltf ./refpersys $(/bin/pwd)/plugins_dir/rpsplug_display.{cc,so} /tmp/rpsplug_display.so
 
-echo
+printf "\n\n##### before running refpersys from %s ######\n" $0
 
-./refpersys -AREPL --script=$(/usr/bin/realpath $0) --batch \
+exec ./refpersys -AREPL --run-name=$(/usr/bin/realpath $0) --batch \
 	    --plugin-after-load=/tmp/rpsplug_display.so \
 	    --plugin-arg=rpsplug_display:$disp
