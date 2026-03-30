@@ -94,7 +94,6 @@ extern "C" {
   const char bp_timestamp[]= __TIMESTAMP__;
   char bp_hostname[128];
   const char* bp_progname;
-  const int bp_options_cardinal;
   int bp_argc_prog;
   char**bp_argv_prog;
   const char** bp_env_prog;
