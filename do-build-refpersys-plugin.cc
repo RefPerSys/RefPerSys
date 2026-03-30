@@ -94,6 +94,7 @@ extern "C" {
   const char bp_timestamp[]= __TIMESTAMP__;
   char bp_hostname[128];
   const char* bp_progname;
+  const int bp_options_cardinal;
   int bp_argc_prog;
   char**bp_argv_prog;
   const char** bp_env_prog;
@@ -181,6 +182,8 @@ struct option bp_options_arr[BP_MAX_OPTIONS] =
   },
 };        // end bp_options_arr
 
+const int bp_options_cardinal =
+  sizeof(bp_options_arr)/sizeof(bp_options_arr[0]) - 1;
 
 void
 bp_version (void)
@@ -336,8 +339,7 @@ bp_prog_options(int argc, char**argv)
       BP_NOP_BREAKPOINT();
       if (opt == -1)
         break;
-      if (ix >= (int)(sizeof(bp_options_arr)/sizeof(bp_options_arr[0]))
-          || ix<0)
+      if (ix >= (int)bp_options_cardinal || ix<0)
         break;
       BP_NOP_BREAKPOINT();
       switch (opt)
