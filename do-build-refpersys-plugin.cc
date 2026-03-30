@@ -336,7 +336,7 @@ bp_prog_options(int argc, char**argv)
       BP_NOP_BREAKPOINT();
       if (opt == -1)
         break;
-      if (ix >= sizeof(bp_options_ptr)/sizeof(bp_options_ptr[0])
+      if (ix >= (int)(sizeof(bp_options_arr)/sizeof(bp_options_arr[0]))
           || ix<0)
         break;
       BP_NOP_BREAKPOINT();
