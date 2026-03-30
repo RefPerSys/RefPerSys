@@ -330,12 +330,14 @@ bp_prog_options(int argc, char**argv)
   BP_NOP_BREAKPOINT();
   do
     {
+      ix = -1;
       opt = getopt_long(argc, argv, "Vhvi:s:o:N:S:d:G:L:",
                         bp_options_ptr, &ix);
       BP_NOP_BREAKPOINT();
       if (opt == -1)
         break;
-      if (ix >= argc)
+      if (ix >= sizeof(bp_options_ptr)/sizeof(bp_options_ptr[0])
+          || ix<0)
         break;
       BP_NOP_BREAKPOINT();
       switch (opt)
@@ -394,6 +396,14 @@ bp_prog_options(int argc, char**argv)
         {
           static char dirbuf[1024];
           struct stat dirstat = {};
+          BP_NOP_BREAKPOINT();
+          if (dirbuf[0])
+            {
+              std::clog << bp_progname
+                        << " : specified plugin source directory " << optarg
+                        << " more than once: " << dirbuf << std::endl;
+              exit(EXIT_FAILURE);
+            };
           if (stat(optarg, &dirstat) == 0)
             {
               if (!S_ISDIR(dirstat.st_mode))
@@ -426,20 +436,25 @@ bp_prog_options(int argc, char**argv)
                         << std::endl;
               exit(EXIT_FAILURE);
             }
+          BP_NOP_BREAKPOINT();
           bp_srcdir = dirpath;
         }
         break;
         case 'i':   // --input=C++source
+          BP_NOP_BREAKPOINT();
           bp_add_cplusplus_source(optarg);
+          BP_NOP_BREAKPOINT();
           break;
         case 'o':   // --output=PLUGIN
         {
           char bufbak[384];
           memset (bufbak, 0, sizeof(bufbak));
           bp_plugin_binary = optarg;
+          BP_NOP_BREAKPOINT();
           if (!access(optarg, F_OK) && strlen(optarg)<sizeof(bufbak)-2)
             {
               int n = snprintf(bufbak, sizeof(bufbak), "%s~", optarg);
+              BP_NOP_BREAKPOINT();
               if (n >= (int)sizeof(bufbak)-2)
                 {
                   std::clog << bp_progname
@@ -448,17 +463,20 @@ bp_prog_options(int argc, char**argv)
                   exit(EXIT_FAILURE);
                 };
               if (!rename(optarg, bufbak) && bp_verbose)
-                printf("%s renamed old plugin: %s -> %s\n", bp_progname, optarg, bufbak);
+                printf("%s renamed old plugin: %s -> %s\n",
+                       bp_progname, optarg, bufbak);
             };
         }
         break;
         case 'L':   // --symlink=SYMLINK
         {
+          BP_NOP_BREAKPOINT();
           bp_plugin_symlink = optarg;
         }
         break;
         case 'S':   // --shell COMMAND
         {
+          BP_NOP_BREAKPOINT();
           printf("%s running shell %s [%s:%d]\n",
                  bp_progname, optarg, __FILE__, __LINE__-1);
           fflush(nullptr);
@@ -482,6 +500,7 @@ bp_prog_options(int argc, char**argv)
         break;
         case 'G': // --guile GUILECODE
         {
+          BP_NOP_BREAKPOINT();
           if (bp_verbose)
             {
               printf("%s is running GUILE Scheme code %s [%s:%d]\n",
@@ -914,14 +933,16 @@ main(int argc, char**argv, const char**env)
       printf("# invocation of pid %d was (argc=%d):",
              (int)getpid(), bp_argc_prog);
       int nlinbyt=32;
-      for (int i=0; i<bp_argc_prog; i++) {
-	nlinbyt += strlen(bp_argv_prog[i]);
-	if (nlinbyt > 72) {
-	  printf("\\\n");
-	  nlinbyt = 0;
-	};
-        printf (" '%s'", bp_argv_prog[i]);
-      };
+      for (int i=0; i<bp_argc_prog; i++)
+        {
+          nlinbyt += strlen(bp_argv_prog[i]);
+          if (nlinbyt > 72)
+            {
+              printf("\\\n");
+              nlinbyt = 0;
+            };
+          printf (" '%s'", bp_argv_prog[i]);
+        };
       putchar('\n');
     };
   fflush(nullptr);
