@@ -585,7 +585,8 @@ replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
 
 replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
    _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "put carburetta command $2 is:" << $2 << ", attr $4 is " << $4 << ", expr $6 is " << $6);
+   RPS_DEBUG_LOG(REPL, "put carburetta command $2 is:" << $2
+		 << ", attr $4 is " << $4 << ", expr $6 is " << $6);
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
@@ -596,17 +597,19 @@ replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_ex
 
 replnt_command: ATSIGN KEYW_DO replnt_action {
    _Pragma("message \"replnt_command as KEYW_DO replnt_action in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "do carburetta action $2 is:" << $2 );
-   RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
+   RPS_DEBUG_LOG(REPL, "do carburetta action $2 is:" << $2
+		 << " tksrc=" << tksrc
+	      << RPS_FULL_BACKTRACE(1, "replnt_action@DO-action"));
+   RPS_POSSIBLE_BREAKPOINT();
    $$ = $2;
 }
 
 
 replnt_action: replnt_expr {
    _Pragma("message \"replnt_action in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "do carburetta action $0 is:" << $0 );
+   RPS_DEBUG_LOG(REPL, "do carburetta action $0 is:" << $0);
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
@@ -618,7 +621,8 @@ replnt_action: replnt_expr {
 replnt_action: ATSIGN KEYW_DO {
   RPS_POSSIBLE_BREAKPOINT();
   _Pragma("message \"replnt_action incomplete for @DO in carbrepl_rps.cbrt\"");
-  RPS_WARNOUT("missing code for @DO replnt_action tksrc=" << tksrc);
+  RPS_WARNOUT("missing code for @DO replnt_action tksrc=" << tksrc
+	      << RPS_FULL_BACKTRACE(1, "replnt_action@DO"));
   RPS_POSSIBLE_BREAKPOINT();
 }
 
@@ -1510,7 +1514,8 @@ rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
   RPS_FATALOUT("corrupted rps_carbrepl_keyword_lexer keystr="
                << keystr
                << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
-               << " cval=" << _f.cval << ":" <<  RPS_CARBREPL_SYMBOL_NAME(numkeyw));
+               << " cval=" << _f.cval << ":"
+	       <<  RPS_CARBREPL_SYMBOL_NAME(numkeyw));
   return -1;
 } // end rps_carbrepl_keyword_lexer
 
