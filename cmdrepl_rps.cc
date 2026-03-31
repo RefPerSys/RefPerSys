@@ -9,7 +9,7 @@
  *      repl_rps.cc file.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Basile Starynkevitch, France <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
@@ -46,9 +46,10 @@ const char rps_cmdrepl_shortgitid[]= RPS_SHORTGITID;
 static Rps_TwoValues
 rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long count, Rps_ObjectRef exprobarg, Rps_ObjectRef envobarg,  unsigned depth=0);
 
+extern "C"
+Rps_TwoValues
+rps_full_evaluate_repl_instance(Rps_CallFrame*callframe,Rps_Value instv,Rps_ObjectRef envob);
 
-/// FIXME: declare  rps_full_evaluate_repl_instance
-#warning should declare rps_full_evaluate_repl_instance
 
 
 //// TODO: define some cmdrepl_rps.cc local conventions for local frames so a future
@@ -62,7 +63,6 @@ rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long c
 Rps_TwoValues
 rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_ObjectRef envobarg)
 {
-#define TEMPORARY_CODE 1
   RPS_ASSERT_CALLFRAME (callframe);
   RPS_ASSERT(envobarg);
   constexpr int maxloop=256;
@@ -89,6 +89,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   _f.envob = envobarg;
   _f.nextenvob = nullptr;
   _f.firstenvob = envobarg;
+  RPS_POSSIBLE_BREAKPOINT();
   /// macros to ease debugging
 #define RPS_REPLEVAL_GIVES_BOTH_AT(V1,V2,LIN) do {              \
     _f.mainresv = (V1);                                         \
@@ -113,8 +114,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                      << eval_number << " of expr:"      \
                      << _f.exprv                        \
                      << " in envob:" << _f.envob        \
-                     << " gives main:" << _f.mainresv   \
-                     << ", extra:" << _f.extraresv);    \
+                     << " gives main:" << _f.mainresv); \
     return Rps_TwoValues(_f.mainresv,_f.extraresv);     \
   } while(0)
 #define RPS_REPLEVAL_GIVES_PLAIN(V) \
@@ -382,9 +382,20 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
 } // end rps_full_evaluate_repl_expr
 
 Rps_TwoValues
-rps_full_evaluate_repl_instance(Rps_CallFrame*callframe,Rps_Value instv,Rps_ObjectRef envob)
+rps_full_evaluate_repl_instance(Rps_CallFrame*callframe,Rps_Value instarg,Rps_ObjectRef envarg)
 {
-  RPS_FATALOUT("rps_full_evaluate_repl_instance unimplemented instv=" << instv << " envob=" << envob);
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callframe,
+                 Rps_Value instv;
+                 Rps_ObjectRef envob;
+                 Rps_Value mainresv;
+                 Rps_Value otheresv;
+                );
+  _f.instv = instarg;
+  _f.envob = envarg;
+  RPS_FATALOUT("rps_full_evaluate_repl_instance unimplemented instv="
+               << _f.instv
+               << " envob=" << RPS_OBJECT_DISPLAY(_f.envob));
 #warning unimplemented rps_full_evaluate_repl_instance
 } // end rps_full_evaluate_repl_instance
 
