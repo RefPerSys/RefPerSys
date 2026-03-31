@@ -81,6 +81,8 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                  Rps_ObjectRef classob;
                  Rps_Value mainresv;
                  Rps_Value extraresv;
+                 Rps_Value tmpmainv;
+                 Rps_Value tmpextrav;
                 );
   _f.closv = _.call_frame_closure();
   _f.exprv = exprarg;
@@ -99,7 +101,9 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                      << ", extra:" << _f.extraresv);            \
     return Rps_TwoValues(_f.mainresv,_f.extraresv);             \
   } while(0)
-#define RPS_REPLEVAL_GIVES_BOTH(V1,V2) RPS_REPLEVAL_GIVES_BOTH_AT((V1),(V2),__LINE__)
+#define RPS_REPLEVAL_GIVES_BOTH(V1,V2) \
+  RPS_REPLEVAL_GIVES_BOTH_AT((V1),(V2),__LINE__)
+  ///
   ///
 #define RPS_REPLEVAL_GIVES_PLAIN_AT(V1,LIN) do {        \
     _f.mainresv = (V1);                                 \
@@ -113,8 +117,9 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                      << ", extra:" << _f.extraresv);    \
     return Rps_TwoValues(_f.mainresv,_f.extraresv);     \
   } while(0)
+#define RPS_REPLEVAL_GIVES_PLAIN(V) \
+  RPS_REPLEVAL_GIVES_PLAIN_AT((V),__LINE__)
   ///
-#define RPS_REPLEVAL_GIVES_PLAIN(V) RPS_REPLEVAL_GIVES_PLAIN_AT((V),__LINE__)
   ///
 #define RPS_REPLEVAL_FAIL_AT(MSG,LOG,LIN) do {                  \
     RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,                         \
@@ -127,9 +132,8 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     throw  std::runtime_error("rps_full_evaluate_repl_expr "    \
                               " fail " #MSG "@" #LIN); }        \
   while(0)
-  ///
-  ///
-#define  RPS_REPLEVAL_FAIL(MSG,LOG) RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
+#define  RPS_REPLEVAL_FAIL(MSG,LOG) \
+  RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
   ///
   ///
   RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
@@ -147,17 +151,21 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   std::lock_guard gu(*_f.envob->objmtxptr());
   if (!_f.envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
     {
-      RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
-                        << _f.envob->get_class() << " is not a valid environment");
+      RPS_REPLEVAL_FAIL("bad environment",
+                        "The envob " << _f.envob << " of class "
+                        << _f.envob->get_class()
+                        << " is not a valid environment");
     };
+  ///
   auto envpayl = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
   if (!envpayl)
     {
-      RPS_REPLEVAL_FAIL("bad environment payload","The envob " << _f.envob << " of class "
-                        << _f.envob->get_class() << " without environment payload");
+      RPS_REPLEVAL_FAIL("bad environment payload",
+                        "The envob " << _f.envob << " of class "
+                        << _f.envob->get_class()
+                        << " without environment payload");
     };
   /* environments should have bindings, probably with Rps_PayloadEnvironment */
-#warning rps_full_evaluate_repl_expr should check that envob is an environment, with bindings and optional parent env....
   RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
                 << eval_number << " *STARTEVAL*"
                 << " expr:" << _f.exprv
@@ -191,12 +199,24 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                     << " instance expr:" << _f.exprv
                     << " of class:" << _f.classob
                     << " in env:" << _f.envob);
-      Rps_TwoValues two = rps_full_evaluate_repl_instance(&_, _f.exprv, _f.envob);
-      RPS_FATALOUT("rps_full_evaluate_repl_expr#" << eval_number
-                   << " UNIMPLEMENTED instance expr:" << _f.exprv
-                   << " of class:" << _f.classob
-                   << " in env:" << _f.envob
-                   << " gives two main=" << two.mainv() << " xtra=" << two.xtrav());
+      Rps_TwoValues two =
+        rps_full_evaluate_repl_instance(&_, _f.exprv, _f.envob);
+      _f.tmpmainv = two.mainv();
+      _f.tmpextrav = two.xtrav();
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " instance expr:" << _f.exprv
+                    << " of class:" << _f.classob
+                    << " in env:" << _f.envob << std::endl
+                    << " evaluated to tmpmainv=" << _f.tmpmainv
+                    << " & tmpxtrav=" << _f.tmpextrav);
+      if (!_f.tmpmainv &&  !_f.tmpextrav)
+        RPS_REPLEVAL_FAIL("fail to eval instance",
+                          "failed evaluation#" << eval_number
+                          << " of instance expr:" << _f.exprv
+                          << " of class:" << _f.classob
+                          << " in env:" << _f.envob);
+      else
+        RPS_REPLEVAL_GIVES_BOTH(_f.tmpmainv, _f.tmpextrav);
     }
   else if (_f.exprv.is_object())
     {
