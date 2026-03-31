@@ -261,7 +261,8 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
             {
               bool missing = false;
               RPS_POSSIBLE_BREAKPOINT();
-              _f.mainresv = paylenv->get_obmap(_f.evalob,/*defaultval:*/nullptr,&missing);
+              _f.mainresv = paylenv->get_obmap(_f.evalob,
+                                               /*defaultval:*/nullptr,&missing);
               if (!missing)
                 {
                   RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
@@ -271,22 +272,33 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                             << ", firstenvob=" << _f.firstenvob
                             << " loopcount:" << count);
               _f.nextenvob = paylenv->get_parent_environment();
+              RPS_POSSIBLE_BREAKPOINT();
             }
           else // envob without Rps_PayloadEnvironment
-            RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
-                              << _f.envob->get_class() << " has no payload environment;"
+            RPS_REPLEVAL_FAIL("bad environment","The envob "
+                              << _f.envob << " of class "
+                              << _f.envob->get_class()
+                              << " has no payload environment;"
                               << " first env was " <<_f.firstenvob
                               << " evaluating variable " << _f.exprv);
-          RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
-                        << " object variable:" << _f.evalob << " ending loop count#" << count
-                        << " is variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob
-                        << " envob=" << _f.envob << " nextenvob=" << _f.nextenvob);
+          RPS_DEBUG_LOG(REPL,
+                        "rps_full_evaluate_repl_expr#" << eval_number
+                        << " object variable:" << _f.evalob
+                        << " ending loop count#" << count
+                        << " is variable envob:" <<_f.envob
+                        << " firstenvob:" << _f.firstenvob
+                        << " envob=" << _f.envob
+                        << " nextenvob=" << _f.nextenvob);
           _f.envob = _f.nextenvob;
           RPS_POSSIBLE_BREAKPOINT();
         } // end while count... loop for variable
+      ///
+      RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                     << " object VARIABLE expr:" << _f.evalob << " exprv:" << _f.exprv
-                    << " unbound in envob=" << _f.envob << " firstenvob=" << _f.firstenvob << " count#" << count << std::endl
+                    << " unbound in envob=" << _f.envob
+                    << " firstenvob=" << _f.firstenvob
+                    << " count#" << count << std::endl
                     << RPS_FULL_BACKTRACE(1,"rps_full_evaluate_repl_expr unboundvar"));
       RPS_POSSIBLE_BREAKPOINT();
       RPS_REPLEVAL_FAIL("unbound variable","Variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
@@ -321,13 +333,18 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
               _f.nextenvob = paylenv->get_parent_environment();
             }
           else // envob without Rps_PayloadEnvironment
-            RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
+            RPS_REPLEVAL_FAIL("bad environment",
+                              "The envob " << _f.envob << " of class "
                               << _f.envob->get_class() << " has no payload environment;"
                               << " first env was " <<_f.firstenvob
-                              << " evaluating symbolic variable " << _f.exprv);
-          RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
-                        << " object variable:" << _f.evalob << " ending loop count#" << count
-                        << " is symbolic_variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob
+                              << " evaluating symbolic variable "
+                              << _f.exprv);
+          RPS_DEBUG_LOG(REPL,
+                        "rps_full_evaluate_repl_expr#" << eval_number
+                        << " object variable:" << _f.evalob
+                        << " ending loop count#" << count
+                        << " is symbolic_variable envob:"
+                        <<_f.envob << " firstenvob:" << _f.firstenvob
                         << " nextenvob:" << _f.nextenvob);
           RPS_POSSIBLE_BREAKPOINT();
           _f.envob = _f.nextenvob;
@@ -355,8 +372,10 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       // any other object is self evaluating! or NOT?
       // TODO: think more.
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
-                    << " object:" << _f.evalob << " of class " << _f.classob << " is selfevaluating in envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
-
+                    << " object:" << _f.evalob
+                    << " of class " << _f.classob
+                    << " is selfevaluating in envob:" <<_f.envob
+                    << " firstenvob:" << _f.firstenvob);
       RPS_POSSIBLE_BREAKPOINT();
       RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
     }
