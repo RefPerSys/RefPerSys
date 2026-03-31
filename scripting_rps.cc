@@ -110,7 +110,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-                                                 synchronization or mutex is needed to : */
+                                                       synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -186,16 +186,15 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size()
              && ix <= rps_script_maxnum);
   RPS_ASSERT(!strcmp(rps_scripting_magic_string,  RPS_SCRIPT_MAGIC_STR));
-  const std::string curpathstr =
+  const std::string curpstr =
     rps_real_shell_file_path(rps_scripts_vector[ix]);
-  const char*curpath = curpathstr.c_str();
+  const char*curpath = curpstr.c_str();
   RPS_ASSERT(curpath != nullptr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
                 << " curpath=" << curpath
                 << " thread:" << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "+rps_run_one_script_file"));
-  const std::string curpstr(curpath);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callframe,
                  Rps_ObjectRef obenv;);
