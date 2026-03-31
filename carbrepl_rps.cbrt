@@ -222,7 +222,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 
 
-//// Adding new KEYW_ keywords could require to create a symbol for them using
+//// Adding new KEYW_ keywords could require the
+//// plugins_dir/rpsplug_createsymbol.cc to create a symbol for them
+//// using
 /***
  ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
  --plugin-arg=rpsplug_createsymbol:<SYMBOL> \
