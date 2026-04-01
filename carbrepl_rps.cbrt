@@ -50,6 +50,7 @@ struct rps_carbrepl_data_st {
   double cardata_d;
   std::string cardata_str;
   void* cardata_ptr;
+  Rps_Id cardata_oid;
   Rps_ObjectRef cardata_ob1;
   Rps_ObjectRef cardata_ob2;
   Rps_ObjectRef cardata_obdelim;
@@ -201,8 +202,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {  _Pragma("message \"token_action for NAME\"");          \
   RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc          \
                 << " cardata_str=" << carbdata.cardata_str);            \
+  $$ = carbdata.cardata_str;                                            \
   /* should assign $$ for NAME using cardata_str */                     \
-  RPS_FATALOUT("NAME token_action is incomplete tksrc=" << tksrc        \
+  RPS_DEBUG_LOG(REPL, "NAME token_action tksrc=" << tksrc	        \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                 << " cardata_str=" << carbdata.cardata_str              \
@@ -215,6 +217,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   /* should assign $$ for OID */                                        \
   RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc           \
                 << " cardata_str=" << carbdata.cardata_str);            \
+  carbdata.cardata_oid = Rps_Id(*tksrc);                                \
   RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc         \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)); }
