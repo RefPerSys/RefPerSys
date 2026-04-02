@@ -159,68 +159,64 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token INT
 %type INT: intptr_t
-%token_action {  _Pragma("message \"token_action for INT\"");           \
-  $$ = carbdata.cardata_i;                                              \
-  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc           \
-                << " cardata_i=" << carbdata.cardata_i);                \
-  RPS_FATALOUT("INT token_action is incomplete tksrc="                  \
-               << tksrc << " sym=" << sym                               \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1, "token_action INT"));      \
+%token_action {  _Pragma("message \"token_action for INT\"");	\
+  $$ = carbdata.cardata_i;					\
+  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc	\
+                << " cardata_i=" << carbdata.cardata_i		\
+		<< " $$=" << $$);				\
+  RPS_FATALOUT("INT token_action is incomplete tksrc="		\
+               << tksrc << " sym=" << sym			\
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)		\
+               << RPS_FULL_BACKTRACE(1, "token_action INT"));	\
  }
 
 
 %token DOUBLE
 %type DOUBLE: double
 %token_action {  _Pragma("message \"token_action for DOUBLE\"");        \
-  RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc        \
-                << " cardata_d=" << carbdata.cardata_d);                \
   /* should assign $$ for DOUBLE */                                     \
   $$ = carbdata.cardata_d;                                              \
-  RPS_FATALOUT("DOUBLE token_action is incomplete tksrc="               \
-               << tksrc << " sym=" << sym                               \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << " cardata_d="   << carbdata.cardata_d                 \
-               << RPS_FULL_BACKTRACE(1, "token_action DOUBLE"));   \
+  RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc        \
+                << " cardata_d=" << carbdata.cardata_d			\
+		<< " $$=" << $$  << " sym=" << sym			\
+		<< ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+		<< " cardata_d="   << carbdata.cardata_d		\
+		<< RPS_FULL_BACKTRACE(1, "token_action DOUBLE"));	\
  }
 
 %token STRING
 %type STRING: std::string
 %token_action { _Pragma("message \"token_action for STRING\"");         \
-  /*  assign $$ for STRING */						\
+  /*  assign $$ for STRING */                                           \
+  $$ = carbdata.cardata_str;                                            \
   RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc        \
                 << " cardata_str="                                      \
-                << Rps_QuotedC_String(carbdata.cardata_str));           \
-  $$ = carbdata.cardata_str;                                            \
-  RPS_WARNOUT("STRING token_action is incomplete tksrc=" << tksrc	\
-	      << "$$:" << $$ << " sym=" << sym                          \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-               << RPS_FULL_BACKTRACE(1, "token_action STRING")); }
+                << Rps_QuotedC_String(carbdata.cardata_str)		\
+                << "$$:" << $$ << " sym=" << sym			\
+                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+                << RPS_FULL_BACKTRACE(1, "token_action STRING")); }
 
 %token NAME
 %type NAME: std::string
-%token_action {  _Pragma("message \"token_action for NAME\"");          \
-  RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc          \
-                << " cardata_str=" << carbdata.cardata_str);            \
-  $$ = carbdata.cardata_str;                                            \
-  /* should assign $$ for NAME using cardata_str */                     \
-  RPS_DEBUG_LOG(REPL, "NAME token_action tksrc=" << tksrc	        \
-               << " sym=" << sym                                        \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
-                << " cardata_str=" << carbdata.cardata_str              \
-               << std::endl                                             \
-               << RPS_FULL_BACKTRACE(1, "token_action NAME"));  }
+%token_action {  _Pragma("message \"token_action for NAME\"");   \
+  $$ = carbdata.cardata_str;                                     \
+  RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc   \
+                << " cardata_str=" << carbdata.cardata_str       \
+                << " $$=" << $$                                  \
+		<< " sym=" << sym				 \
+		<< ":" << RPS_CARBREPL_SYMBOL_NAME(sym)		 \
+		<< std::endl					 \
+		<< RPS_FULL_BACKTRACE(1, "token_action NAME"));  }
 
 %token OID
 %type OID: Rps_Id
-%token_action { _Pragma("message \"token_action for OID\"");            \
-  /* should assign $$ for OID */                                        \
-  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc           \
-                << " cardata_str=" << carbdata.cardata_str);            \
-  carbdata.cardata_oid = Rps_Id(*tksrc);                                \
-  RPS_FATALOUT("OID token_action is incomplete tksrc=" << tksrc         \
-               << " sym=" << sym                                        \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)); }
+%token_action { _Pragma("message \"token_action for OID\"");	\
+  carbdata.cardata_oid = Rps_Id(*tksrc);			\
+  $$ = carbdata.cardata_oid;					\
+  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc	\
+                << " $$=" << $$					\
+		<< " sym=" << sym				\
+		<< ":" << RPS_CARBREPL_SYMBOL_NAME(sym); }
 
 
 
@@ -334,8 +330,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ =  RPSCARBREPL_COMMA;                                              \
   RPS_DEBUG_LOG(REPL, "token_action for COMMA tksrc=" << *tksrc         \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$])		\
-                << " sym=" << sym					\
+                << ":" << rpscarbrepl_symbol_names_[$$])                \
+                << " sym=" << sym                                       \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action COMMA"));  }
 
@@ -346,7 +342,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = RPSCARBREPL_ASSIGN;                                              \
   RPS_DEBUG_LOG(REPL, "token_action for ASSIGN tksrc=" << *tksrc        \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$])		\
+                << ":" << rpscarbrepl_symbol_names_[$$])                \
                << tksrc << " sym=" << sym                               \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action ASSIGN")); }
@@ -355,9 +351,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token LEFTPAREN
 %token_action {_Pragma("message \"token_action for LEFTPAREN\"");       \
   $$ = RPSCARBREPL_LEFTPAREN;                                           \
-  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc	\
+  RPS_DEBUG_LOG(REPL, "token_action for LEFTPAREN tksrc=" << *tksrc     \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]			\
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action LEFTPAREN"));  }
@@ -367,9 +363,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token RIGHTPAREN
 %token_action {_Pragma("message \"token_action for RIGHTPAREN\"");      \
   $$ = RPSCARBREPL_RIGHTPAREN;                                          \
-  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc	\
+  RPS_DEBUG_LOG(REPL, "token_action for RIGHTPAREN tksrc=" << *tksrc    \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action RIGHTPAREN"));   }
@@ -381,8 +377,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = RPSCARBREPL_LEFTBRACE;                                           \
   RPS_DEBUG_LOG(REPL, "token_action for LEFTBRACE tksrc=" << *tksrc  \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
-		<< "/LEFTBRACE token_action is incomplete tksrc="	\
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
+                << "/LEFTBRACE token_action is incomplete tksrc="       \
                << tksrc << " sym=" << sym                               \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action LEFTBRACE"));   }
@@ -394,9 +390,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = RPSCARBREPL_RIGHTBRACE;                                          \
   RPS_DEBUG_LOG(REPL, "token_action for RIGHTBRACE tksrc=" << *tksrc  \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
-		<< "/RIGHTBRACE token_action is incomplete tksrc=" \
-		<< tksrc						\
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
+                << "/RIGHTBRACE token_action is incomplete tksrc=" \
+                << tksrc                                                \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action RIGHTBRACE"));  }
@@ -407,8 +403,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = RPSCARBREPL_PLUS;                                                \
   RPS_DEBUG_LOG(REPL, "token_action for PLUS tksrc=" << *tksrc          \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
-		"/PLUS token_action is incomplete tksrc=" << tksrc	\
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
+                "/PLUS token_action is incomplete tksrc=" << tksrc      \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action PLUS"));  }
@@ -421,8 +417,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = RPSCARBREPL_MINUS;                                               \
   RPS_DEBUG_LOG(REPL, "token_action for MINUS tksrc=" << tksrc        \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
-		<< "/MINUS token_action is incomplete tksrc=" << tksrc	\
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
+                << "/MINUS token_action is incomplete tksrc=" << tksrc  \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action MINUS"));   }
@@ -434,8 +430,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = RPSCARBREPL_ASTERISK;                                            \
   RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc    \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
-		<< "/ASTERISK token_action is incomplete tksrc=" << tksrc \
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
+                << "/ASTERISK token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action ASTERISK")); }
@@ -447,9 +443,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
 %token_action {_Pragma("message \"token_action for SLASH\"");           \
   $$ = RPSCARBREPL_SLASH;                                               \
   RPS_DEBUG_LOG(REPL, "token_action for SLASH tksrc=" << *tksrc         \
-		<< "/SLASH token_action is incomplete tksrc=" << tksrc	\
+                << "/SLASH token_action is incomplete tksrc=" << tksrc  \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action SLASH")); }
@@ -461,8 +457,8 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = RPSCARBREPL_STARAT;                                              \
   RPS_DEBUG_LOG(REPL, "token_action for STARAT tksrc=" << *tksrc        \
                 << " $$=" << $$                                         \
-                << ":" << rpscarbrepl_symbol_names_[$$]		        \
-		<< "/STARAT token_action is incomplete tksrc=" << tksrc	\
+                << ":" << rpscarbrepl_symbol_names_[$$]                 \
+                << "/STARAT token_action is incomplete tksrc=" << tksrc \
                << " sym=" << sym                                        \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action STARAT")); }
@@ -567,7 +563,7 @@ replnt_input: replnt_command replnt_input {
    RPS_ASSERT("command replnt_input" && tksrc != nullptr);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_DEBUG_LOG(REPL, "replnt_input as command:" << $1
-		 << " tksrc=" << *tksrc);
+                 << " tksrc=" << *tksrc);
    RPS_ASSERT(tksrc != nullptr);
    $$ = $1 + 1;
 }
@@ -589,7 +585,7 @@ replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
 replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr {
    _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
    RPS_DEBUG_LOG(REPL, "put carburetta command $2 is:" << $2
-		 << ", attr $4 is " << $4 << ", expr $6 is " << $6);
+                 << ", attr $4 is " << $4 << ", expr $6 is " << $6);
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
@@ -603,8 +599,8 @@ replnt_command: ATSIGN KEYW_DO replnt_action {
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    RPS_DEBUG_LOG(REPL, "do carburetta action $2 is:" << $2
-		 << " tksrc=" << tksrc
-	      << RPS_FULL_BACKTRACE(1, "replnt_action@DO-action"));
+                 << " tksrc=" << tksrc
+              << RPS_FULL_BACKTRACE(1, "replnt_action@DO-action"));
    RPS_POSSIBLE_BREAKPOINT();
    $$ = $2;
 }
@@ -625,7 +621,7 @@ replnt_action: ATSIGN KEYW_DO {
   RPS_POSSIBLE_BREAKPOINT();
   _Pragma("message \"replnt_action incomplete for @DO in carbrepl_rps.cbrt\"");
   RPS_WARNOUT("missing code for @DO replnt_action tksrc=" << tksrc
-	      << RPS_FULL_BACKTRACE(1, "replnt_action@DO"));
+              << RPS_FULL_BACKTRACE(1, "replnt_action@DO"));
   RPS_POSSIBLE_BREAKPOINT();
 }
 
@@ -1330,7 +1326,7 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
                 << RPS_FULL_BACKTRACE(1, "carburetta command display"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(CMD, "carburetta display obenv=" << RPS_OBJECT_DISPLAY(_f.obenv)
-		<< std::endl
+                << std::endl
                 << "display expr=" << _f.exprv
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "carburetta command display"));
@@ -1338,7 +1334,7 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
 #warning incomplete rps_do_display_carburetta_command
   // TODO: should evaluate exprv in obenv and display it
   RPS_WARNOUT("incomplete rps_carbrepl_do_display_command obenv=" << _f.obenv
-	      << " exprv=" << _f.exprv);
+              << " exprv=" << _f.exprv);
  } // end rps_carbrepl_do_display_command
 
 
@@ -1518,7 +1514,7 @@ rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
                << keystr
                << " obkeyw=" << RPS_OBJECT_DISPLAY(_f.obkeyw)
                << " cval=" << _f.cval << ":"
-	       <<  RPS_CARBREPL_SYMBOL_NAME(numkeyw));
+               <<  RPS_CARBREPL_SYMBOL_NAME(numkeyw));
   return -1;
 } // end rps_carbrepl_keyword_lexer
 
