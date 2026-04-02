@@ -29,6 +29,10 @@
 #error RPS_GITID is not defined by compilation command
 #endif
 
+#ifndef RPS_SHORTGITID
+#error RPS_SHORTGITID is not defined by compilation command
+#endif
+
 extern "C" const char rps_carbrepl_gitid[];
 const char rps_carbrepl_gitid[]= RPS_GITID;
 
@@ -575,7 +579,8 @@ replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    RPS_POSSIBLE_BREAKPOINT();
-   rps_carbrepl_do_display_command(callframe, rps_get_first_repl_environment(), $2);
+   rps_carbrepl_do_display_command(callframe,
+				   rps_get_first_repl_environment(), $2);
    RPS_POSSIBLE_BREAKPOINT();
    tksrc->clear_token_dequeue();
    RPS_POSSIBLE_BREAKPOINT();
