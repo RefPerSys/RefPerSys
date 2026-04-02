@@ -378,8 +378,10 @@ To install the dependencies on a recent [Debian](https://debian.org/) 13 *trixie
 steps
 
 
-* `sudo apt install -y gcc-15 g++-15 libgccjit-15-dev clang-19`
+* `sudo apt install -y gcc-15 g++-15 libgccjit-15-dev clang-19 clang-tidy`
+ (or `gcc-16 g++-16 libgccjit-16-dev clang-21` if available)
 * `sudo apt build-dep g++-15`
+* `sudo apt install uncrustify bcpp astyle`
 * `sudo apt install libunistring-dev`
 * `sudo apt install libjsoncpp-dev`
 * `sudo apt-get install libssl-dev`
