@@ -2591,57 +2591,67 @@ const std::string
 rps_real_shell_file_path(const std::string& filpath)
 {
   std::string restr;
+  RPS_DEBUG_LOG(REPL, "+rps_real_shell_file_path filpath="
+                << Rps_QuotedC_String(filpath)
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "+rps_real_shell_file_path"));
   if (filpath.empty())
     return filpath;
   char buf[rps_path_byte_size+8];
   memset(buf, 0, sizeof(buf));
   std::size_t pathsize = filpath.size();
-  if (pathsize > rps_path_byte_size) {
-    RPS_WARNOUT("rps_real_shell_file_path with too long path "
-		<< Rps_QuotedC_String(filpath)
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_real_shell_file_path"));
-    return filpath;
-  };
-  if (access(filpath.c_str(), F_OK)) {
-    /// non-existent or inaccessible filpath...
-    int lastslash = filpath.find_last_of('/');
-    if (lastslash>0 && lastslash+1 < (int)pathsize
-	&& filpath[lastslash+1]!='.') {
-      std::string dirpath = filpath.substr(0, lastslash-1);
-      std::string basepath = filpath.substr(lastslash+1);
-      std::string realdirpath;
-      char*rp = realpath(dirpath.c_str(), nullptr);
-      if (!rp) {
-	RPS_WARNOUT("rps_real_shell_file_path realpath("
-		    << Rps_QuotedC_String(dirpath)
-		    << ") for "
-		    << Rps_QuotedC_String(filpath)
-		    << " failure: " << strerror(errno));
-	return filpath;
-      };
-      realdirpath.reserve(strlen(rp)+2);
-      realdirpath.copy(rp, strlen(rp));
-      free(rp), rp=nullptr;
-      restr = realdirpath + "/" + basepath;
+  if (pathsize > rps_path_byte_size)
+    {
+      RPS_WARNOUT("rps_real_shell_file_path with too long path "
+                  << Rps_QuotedC_String(filpath)
+                  << std::endl
+                  << RPS_FULL_BACKTRACE(1, "rps_real_shell_file_path"));
+      return filpath;
     };
-  }
-  else {
-    /** The access(2) system call tells us that the file existed, in
-     * an hostile environment it could have been removed since by an
-     * other process... We deliberately ignore such a scenario.
-     **/
+  if (access(filpath.c_str(), F_OK))
+    {
+      /// non-existent or inaccessible filpath...
+      int lastslash = filpath.find_last_of('/');
+      if (lastslash>0 && lastslash+1 < (int)pathsize
+          && filpath[lastslash+1]!='.')
+        {
+          std::string dirpath = filpath.substr(0, lastslash-1);
+          std::string basepath = filpath.substr(lastslash+1);
+          std::string realdirpath;
+          char*rp = realpath(dirpath.c_str(), nullptr);
+          if (!rp)
+            {
+              RPS_WARNOUT("rps_real_shell_file_path realpath("
+                          << Rps_QuotedC_String(dirpath)
+                          << ") for "
+                          << Rps_QuotedC_String(filpath)
+                          << " failure: " << strerror(errno));
+              return filpath;
+            };
+          realdirpath.reserve(strlen(rp)+2);
+          realdirpath.copy(rp, strlen(rp));
+          free(rp), rp=nullptr;
+          restr = realdirpath + "/" + basepath;
+        };
+    }
+  else
+    {
+      /** The access(2) system call tells us that the file existed, in
+       * an hostile environment it could have been removed since by an
+       * other process... We deliberately ignore such a scenario.
+       **/
       char*rp = realpath(filpath.c_str(), nullptr);
-      if (!rp) {
-	RPS_WARNOUT("rps_real_shell_file_path filpath("
-		    << Rps_QuotedC_String(filpath)
-		    << " failure: " << strerror(errno));
-	return filpath;
-      };
+      if (!rp)
+        {
+          RPS_WARNOUT("rps_real_shell_file_path filpath("
+                      << Rps_QuotedC_String(filpath)
+                      << " failure: " << strerror(errno));
+          return filpath;
+        };
       restr.reserve(strlen(rp)+1);
       restr.copy(rp,strlen(rp));
       free(rp);
-  }
+    }
   RPS_ASSERT(!restr.empty());
 #warning rps_real_shell_file_path to be improved for pathological paths
   // pathological path could contain control characters
@@ -2649,7 +2659,7 @@ rps_real_shell_file_path(const std::string& filpath)
   int homelen = strlen(homedir);
   if (restr.size() > homelen && restr[homelen] == '/'
       && !strncmp(restr.c_str(), homedir, homelen)
-      ) 
+     )
     return std::string ("~/") + restr.substr(homelen);
   else
     return restr;
