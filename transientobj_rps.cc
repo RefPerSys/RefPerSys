@@ -107,8 +107,8 @@ Rps_PayloadUnixProcess::forbid_input(void)
   if (_unixproc_pid.load()>0)
     RPS_FATALOUT("cannot forbid_input in " << owner() << " running pid "
                  << _unixproc_pid.load()
-		 << " executable " << _unixproc_exe
-		 << " arguments " << _unixproc_argv);
+                 << " executable " << _unixproc_exe
+                 << " arguments " << _unixproc_argv);
   _unixproc_pipeinputfd = forbidden_fd;
 } // end Rps_PayloadUnixProcess::forbid_input
 
@@ -119,8 +119,8 @@ Rps_PayloadUnixProcess::forbid_output(void)
   if (_unixproc_pid.load()>0)
     RPS_FATALOUT("cannot forbid_output in " << owner() << " running pid "
                  << _unixproc_pid.load()
-		 << " executable " << _unixproc_exe
-		 << " arguments " << _unixproc_argv);
+                 << " executable " << _unixproc_exe
+                 << " arguments " << _unixproc_argv);
   _unixproc_pipeoutputfd = forbidden_fd;
 } // end Rps_PayloadUnixProcess::forbid_input
 

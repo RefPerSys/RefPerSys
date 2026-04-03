@@ -1399,8 +1399,8 @@ rps_postpone_dump(void)
 {
   RPS_DEBUG_LOG(REPL, "rps_postpone_dump thread:"
                 << rps_current_pthread_name()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_postpone_dump"));
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_postpone_dump"));
   rps_self_pipe_write_byte(SelfPipe_Dump);
 } // end rps_postpone_dump
 
@@ -1409,8 +1409,8 @@ rps_postpone_garbage_collection(void)
 {
   RPS_DEBUG_LOG(REPL, "rps_postpone_garbage_collection thread:"
                 << rps_current_pthread_name()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_postpone_garbage_collection"));
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_postpone_garbage_collection"));
   rps_self_pipe_write_byte(SelfPipe_GarbColl);
 } // end rps_postpone_garbage_collection
 
@@ -1419,8 +1419,8 @@ rps_postpone_quit(void)
 {
   RPS_DEBUG_LOG(REPL, "rps_postpone_quit thread:"
                 << rps_current_pthread_name()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_postpone_quit"));
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_postpone_quit"));
   rps_self_pipe_write_byte(SelfPipe_Quit);
 } // end rps_postpone_quit
 
@@ -1429,8 +1429,8 @@ rps_postpone_exit_with_dump(void)
 {
   RPS_DEBUG_LOG(REPL, "rps_postpone_exit_with_dump thread:"
                 << rps_current_pthread_name()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_postpone_exit_with_dump"));
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_postpone_exit_with_dump"));
   rps_self_pipe_write_byte(SelfPipe_Exit);
 } // end rps_postpone_exit_with_dump
 

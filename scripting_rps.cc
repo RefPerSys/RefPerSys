@@ -110,7 +110,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-                                                       synchronization or mutex is needed to : */
+                                                             synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
