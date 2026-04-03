@@ -5503,6 +5503,12 @@ class Rps_PayloadEnvironment : public Rps_PayloadObjMap
   friend Rps_Value rps_environment_get_bound_value(Rps_ObjectRef envob,
       Rps_ObjectRef varob,
       int*pdepth, Rps_ObjectRef*penvob);
+  /**
+   * Several member functions are inherited from Rps_PayloadObjMap,
+   * e.g.  get, get_obmap, put, put_obmap, remove_obmap,
+   * has_key_obmap, has_key, get_descr, put_descr,
+   * do_each_obmap_entry, do_each_entry, output_payload, ...
+   **/
 protected:
   Rps_PayloadEnvironment(Rps_ObjectZone*owner);
   Rps_PayloadEnvironment(Rps_ObjectRef obr) :
