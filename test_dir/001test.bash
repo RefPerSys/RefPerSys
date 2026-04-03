@@ -19,7 +19,9 @@
 
 rps_scriptname=$0
 
-echo $0 " pid " $$ " : "; /usr/bin/pstree -a -A -C age -s $$
+if /usr/bin/tty -s ; then
+    echo $0 " pid " $$ " : "; /usr/bin/pstree -a -A -C age -s $$
+fi
 
 if [ -z "$REFPERSYS_TOPDIR" ]; then
     printf "%s: without REFPERSYS_TOPDIR\n" $rps_scriptname > /dev/stderr
