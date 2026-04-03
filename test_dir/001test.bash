@@ -1,7 +1,7 @@
 #!/bin/bash -x
 # SPDX-License-Identifier: GPL-3.0-or-later
-## a shell script to create named selectors
-#      © Copyright 2025 Basile STARYNKEVITCH 
+## a testing shell script
+#      © Copyright 2026 Basile STARYNKEVITCH 
 #      see team@refpersys.org & http://refpersys.org/
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -25,18 +25,29 @@ if [ -z "$REFPERSYS_TOPDIR" ]; then
     printf "%s: without REFPERSYS_TOPDIR\n" $rps_scriptname > /dev/stderr
     exit 1
 fi
+
 cd "$REFPERSYS_TOPDIR"
+
 if [ ! -f "refpersys.hh" ]; then
     printf "%s: in %s no refpersys.hh header file\n" $rps_scriptname $(/bin/pwd) > /dev/stderr
     exit 1
 fi
-make -j3 refpersys || exit 1
+
+if [ ! -x refpersys ]; then
+    printf "%s: in %s no refpersys executable\n" $rps_scriptname $(/bin/pwd) > /dev/stderr
+    exit 1
+fi
+
+
 rps_persistore="$(/usr/bin/realpath persistore)"
 if /bin/grep -rl prepare_cplusplus_generation $rps_persistore ; then
     printf "%s: already known prepare_cplusplus_generation in %s\n" \
 	   $rps_scriptname $rps_persistore ;
     exit 0
 fi
+################################################################
+#### after commit 99851d35cecc2 (April 2026) and even before this is
+#### not reached
 make plugins_dir/rpsplug_createnamedselector.so
 ./refpersys --plugin-after-load=plugins_dir/rpsplug_createnamedselector.so \
             --plugin-arg=rpsplug_createnamedselector:prepare_cplusplus_generation \
