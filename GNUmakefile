@@ -89,6 +89,10 @@ FMT=/usr/bin/fmt
 ASTYLE=/usr/bin/astyle
 ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
+## uncrustify from github.com/uncrustify
+## if you don't have or don't want it, replace by /bin/cat
+#UNCRUSTIFY?= uncrustify -lcpp
+
 
 REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
 -include $(REFPERSYS_CONFIG_MAKE)
@@ -307,6 +311,7 @@ clean: clean-plugins
 	$(RM) */*.so
 	$(RM) *.ii
 	$(RM) core*
+	$(RM) .gdb_history */.gdb_history
 	$(RM) Make-dependencies/__*
 
 _bispprepl_rps.cc _bispprepl_rps.hh: bispprepl_rps.yyp |GNUmakefile
