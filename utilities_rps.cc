@@ -2608,6 +2608,7 @@ rps_real_shell_file_path(const std::string& filpath)
                   << RPS_FULL_BACKTRACE(1, "rps_real_shell_file_path"));
       return filpath;
     };
+  RPS_POSSIBLE_BREAKPOINT();
   if (access(filpath.c_str(), F_OK))
     {
       /// non-existent or inaccessible filpath...
@@ -2617,6 +2618,12 @@ rps_real_shell_file_path(const std::string& filpath)
         {
           std::string dirpath = filpath.substr(0, lastslash-1);
           std::string basepath = filpath.substr(lastslash+1);
+          RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path dirpath="
+                        << Rps_QuotedC_String(dirpath)
+                        << " basepath="
+                        << Rps_QuotedC_String(basepath)
+                        << " for filpath="
+                        << Rps_QuotedC_String(filpath));
           std::string realdirpath;
           char*rp = realpath(dirpath.c_str(), nullptr);
           if (!rp)
@@ -2628,10 +2635,16 @@ rps_real_shell_file_path(const std::string& filpath)
                           << " failure: " << strerror(errno));
               return filpath;
             };
-          realdirpath.reserve(strlen(rp)+2);
-          realdirpath.copy(rp, strlen(rp));
+          RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path rp="
+                        << Rps_QuotedC_String(rp));
+          int rplen = (int)strlen(rp);
+          RPS_POSSIBLE_BREAKPOINT();
+          realdirpath.reserve(rplen+2);
+          realdirpath.copy(rp, rplen);
           free(rp), rp=nullptr;
           restr = realdirpath + "/" + basepath;
+          RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path restr="
+                        << Rps_QuotedC_String(restr));
         };
     }
   else
@@ -2641,15 +2654,22 @@ rps_real_shell_file_path(const std::string& filpath)
        * other process... We deliberately ignore such a scenario.
        **/
       char*rp = realpath(filpath.c_str(), nullptr);
-      if (!rp)
+      if (!rp || !rp[0])
         {
           RPS_WARNOUT("rps_real_shell_file_path filpath("
                       << Rps_QuotedC_String(filpath)
                       << " failure: " << strerror(errno));
           return filpath;
         };
-      restr.reserve(strlen(rp)+1);
-      restr.copy(rp,strlen(rp));
+      RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path rp="
+                    << Rps_QuotedC_String(rp));
+      int rplen = (int)strlen(rp);
+      restr.reserve(rplen+1);
+      restr.copy(rp,rplen);
+      RPS_ASSERT(restr.size() == rplen);
+      RPS_ASSERT(restr.c_str() != rp);
+      RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path restr="
+                    << Rps_QuotedC_String(restr));
       free(rp);
     }
   RPS_ASSERT(!restr.empty());
