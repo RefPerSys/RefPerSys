@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 ## a testing shell script
 #      © Copyright 2026 Basile STARYNKEVITCH 
@@ -19,7 +19,7 @@
 
 rps_scriptname=$0
 
-echo -n $0 " : "; /usr/bin/pstree -a -A -C age -s $$
+echo $0 " pid " $$ " : "; /usr/bin/pstree -a -A -C age -s $$
 
 if [ -z "$REFPERSYS_TOPDIR" ]; then
     printf "%s: without REFPERSYS_TOPDIR\n" $rps_scriptname > /dev/stderr
