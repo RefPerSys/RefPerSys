@@ -1092,7 +1092,7 @@ while (0)
       syslog(LOG_CRIT,                                          \
        "*** RefPerSys ASSERT_LOG failed:"			\
        " %s *** [%s:%d:%s] *** %s"				\
-       #Cond, Fil, Lin, Func, outs_##Lin).str().c_str());	\
+       #Cond, Fil, Lin, Func, outs_##Lin.str().c_str());	\
     else {                                                      \
       fprintf(stderr, "\n\n"                                    \
               "%s*** RefPerSys ASSERT_LOG failed:%s %s\n"	\
@@ -1101,7 +1101,8 @@ while (0)
                 #Cond,                                          \
           (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
               Fil, Lin, Func);                                  \
-      fprintf(stderr, "!*!*! " Fmt "\n\n", ##__VA_ARGS__);      \
+      fprintf(stderr, "!*!*! %s \n\n",				\
+	      outs_##Lin.str().c_str());			\
     };                                                          \
     rps_fatal_stop_at(Fil, Lin); }                              \
  } while(0)
