@@ -2666,7 +2666,9 @@ rps_real_shell_file_path(const std::string& filpath)
       int rplen = (int)strlen(rp);
       restr.reserve(rplen+1);
       restr.copy(rp,rplen);
-      RPS_ASSERT(restr.size() == rplen);
+      RPS_ASSERT_LOG(restr.size() == rplen,
+		     "rplen=" << rplen
+		     << " rp=" << Rps_QuotedC_String(rp));
       RPS_ASSERT(restr.c_str() != rp);
       RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path restr="
                     << Rps_QuotedC_String(restr));
