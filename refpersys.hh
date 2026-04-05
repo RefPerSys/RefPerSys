@@ -1080,37 +1080,39 @@ while (0)
 #define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
 #define RPS_ASSERTPRINTF(Cond,Fmt,...) \
   RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,\
-		      (Cond),Fmt,##__VA_ARGS__)
+                      (Cond),Fmt,##__VA_ARGS__)
 
 
 
-#define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {	\
+#define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {       \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
-    std::ostringstream outs_##Lin;				\
-      outs_##Lin << __VA_ARGS__  << std::flush;			\
+    std::ostringstream outs_##Lin;                              \
+      outs_##Lin << __VA_ARGS__  << std::flush;                 \
+      const std::string str_##Lin = outs_##Lin.str();           \
     if (rps_syslog_enabled)                                     \
       syslog(LOG_CRIT,                                          \
-       "*** RefPerSys ASSERT_LOG failed:"			\
-       " %s *** [%s:%d:%s] *** %s"				\
-       #Cond, Fil, Lin, Func, outs_##Lin.str().c_str());	\
+       "*** RefPerSys ASSERT_LOG failed:"                       \
+       " %s *** [%s:%d:%s] *** %s"                              \
+       #Cond, Fil, Lin, Func, str_##Lin.c_str());               \
     else {                                                      \
       fprintf(stderr, "\n\n"                                    \
-              "%s*** RefPerSys ASSERT_LOG failed:%s %s\n"	\
+              "%s*** RefPerSys ASSERT_LOG failed:%s %s\n"       \
               "%s:%d: {%s}\n",                                  \
           (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),       \
                 #Cond,                                          \
           (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
               Fil, Lin, Func);                                  \
-      fprintf(stderr, "!*!*! %s \n\n",				\
-	      outs_##Lin.str().c_str());			\
+      fprintf(stderr, "!*!*! %s \n\n",                          \
+              str_##Lin.c_str());				\
     };                                                          \
     rps_fatal_stop_at(Fil, Lin); }                              \
  } while(0)
+//
 #define RPS_ASSERT_LOG_AT(Fil,Lin,Func,Cond,...) \
   RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,##__VA_ARGS__)
 #define RPS_ASSERT_LOG(Cond,...) \
   RPS_ASSERT_LOG_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,\
-		    (Cond),##__VA_ARGS__)
+                    (Cond),##__VA_ARGS__)
 
 
 
