@@ -186,12 +186,13 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   RPS_ASSERT(ix >= 0 && ix < (int)rps_scripts_vector.size()
              && ix <= rps_script_maxnum);
   RPS_ASSERT(!strcmp(rps_scripting_magic_string,  RPS_SCRIPT_MAGIC_STR));
+  const std::string scriptpath = rps_scripts_vector[ix];
   const std::string curpstr =
     rps_real_shell_file_path(rps_scripts_vector[ix]);
   const char*curpath = curpstr.c_str();
   RPS_ASSERT(curpath != nullptr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
-                << " curpath=" << curpath
+                << " curpath=" << curpath << " scriptpath=" << scriptpath
                 << " thread:" << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "+rps_run_one_script_file"));
@@ -199,7 +200,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                  callframe,
                  Rps_ObjectRef obenv;);
   RPS_POSSIBLE_BREAKPOINT();
-  Rps_MemoryFileTokenSource tsrc(curpstr);
+  Rps_MemoryFileTokenSource tsrc(scriptpath);
   RPS_POSSIBLE_BREAKPOINT();
   tsrc.fill_current_line_buffer();
   RPS_POSSIBLE_BREAKPOINT();
