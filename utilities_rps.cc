@@ -2661,15 +2661,19 @@ rps_real_shell_file_path(const std::string& filpath)
                       << " failure: " << strerror(errno));
           return filpath;
         };
-      RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path rp="
-                    << Rps_QuotedC_String(rp));
       int rplen = (int)strlen(rp);
-      restr.reserve(rplen+1);
-      restr.copy(rp,rplen);
+      RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path rp="
+                    << Rps_QuotedC_String(rp)
+		    << std::endl
+		    << "… rplen=" << rplen
+		    << " filpath=" << Rps_QuotedC_String(filpath));
+      restr.reserve(rplen);
+      restr.assign(rp,rplen);
       RPS_ASSERT_LOG(restr.size() == rplen,
 		     "rplen=" << rplen
 		     << " rp=" << Rps_QuotedC_String(rp)
-		     << " restr=" << Rps_QuotedC_String(restr)
+		     << std::endl
+		     << "… restr=" << Rps_QuotedC_String(restr)
 		     << " of size=" << restr.size());
       RPS_ASSERT(restr.c_str() != rp);
       RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path restr="
@@ -2684,7 +2688,7 @@ rps_real_shell_file_path(const std::string& filpath)
   if (restr.size() > homelen && restr[homelen] == '/'
       && !strncmp(restr.c_str(), homedir, homelen)
      )
-    return std::string ("~/") + restr.substr(homelen);
+    return std::string ("~/") + restr.substr(homelen+1);
   else
     return restr;
 } // end of rps_real_shell_file_path
