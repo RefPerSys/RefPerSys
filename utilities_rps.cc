@@ -2669,7 +2669,7 @@ rps_real_shell_file_path(const std::string& filpath)
 		    << " filpath=" << Rps_QuotedC_String(filpath));
       restr.reserve(rplen);
       restr.assign(rp,rplen);
-      RPS_ASSERT_LOG(restr.size() == rplen,
+      RPS_ASSERT_LOG((int)restr.size() == rplen,
 		     "rplen=" << rplen
 		     << " rp=" << Rps_QuotedC_String(rp)
 		     << std::endl
@@ -2685,7 +2685,7 @@ rps_real_shell_file_path(const std::string& filpath)
   // pathological path could contain control characters
   const char*homedir = rps_homedir();
   int homelen = strlen(homedir);
-  if (restr.size() > homelen && restr[homelen] == '/'
+  if ((int)restr.size() > homelen && restr[homelen] == '/'
       && !strncmp(restr.c_str(), homedir, homelen)
      )
     return std::string ("~/") + restr.substr(homelen+1);
