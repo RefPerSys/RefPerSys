@@ -591,17 +591,20 @@ MyqrMainWindow::about()
 MyqrProcess::MyqrProcess(QObject*parent)
   : QProcess(parent), _proc_mtx(), _proc_map()
 {
+  MYQR_DEBUGOUT("MyqrProcess constr this@" << (void*)this);
 };
 
 MyqrProcess::~MyqrProcess()
 {
+  MYQR_DEBUGOUT("MyqrProcess destr this@" << (void*)this);
   _proc_map.clear();
 };
 
 QObject*
 MyqrProcess::get(const std::string&nam) const
 {
-  if (nam.empty()) return nullptr;
+  if (nam.empty())
+    return nullptr;
   auto gpr = std::lock_guard(_proc_mtx);
   auto it = _proc_map.find(nam);
   if (it != _proc_map.end())
@@ -649,7 +652,8 @@ MyqrProcess::put(const std::string&nam, QObject*obj)
 void
 MyqrProcess::remove(const std::string nam)
 {
-  if (nam.empty()) return;
+  if (nam.empty())
+    return;
   auto gpr = std::lock_guard(_proc_mtx);
   _proc_map.erase(nam);
 } // end MyqrProcess::remove
