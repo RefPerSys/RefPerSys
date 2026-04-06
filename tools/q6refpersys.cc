@@ -491,7 +491,8 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
   QObject::connect(_mainwin_debugact,&QAction::triggered,this,
                    &MyqrMainWindow::toggle_debug);
   _mainwin_debugact->setCheckable(true);
-  QObject::connect(_mainwin_aboutqtact,&QAction::triggered,this,&MyqrMainWindow::aboutQt);
+  QObject::connect(_mainwin_aboutqtact,&QAction::triggered,this,
+                   &MyqrMainWindow::aboutQt);
   _mainwin_editmenu =_mainwin_menubar-> addMenu("Edit");
   _mainwin_copyact =  _mainwin_editmenu->addAction("Copy");
   _mainwin_pasteact = _mainwin_editmenu->addAction("Paste");
@@ -533,19 +534,25 @@ MyqrDisplayWindow::MyqrDisplayWindow(QWidget*parent)
 void
 MyqrDisplayWindow::about()
 {
-  qDebug() << " unimplemented MyqrDisplayWindow::about";
+  MYQR_DEBUGOUT("unimplemented MyqrDisplayWindow::about this@"
+                << (void*)this);
+  MYQR_BREAKPOINT();
 } // end MyqrDisplayWindow::about
 
 MyqrMainWindow::~MyqrMainWindow()
 {
+  MYQR_DEBUGOUT("MyqrMainWindow destruct this@" << (void*)this);
   if (the_instance != this)
     MYQR_FATALOUT("corruption in MyqrMainWndow the_instance@" << (void*)the_instance
                   << " this@" << (void*)this);
   the_instance = nullptr;
+  MYQR_BREAKPOINT();
 } // end MyqrMainWindow destructor
 
 MyqrDisplayWindow::~MyqrDisplayWindow()
 {
+  MYQR_DEBUGOUT("MyqrDisplayWindow destruct this@" << (void*)this);
+  MYQR_BREAKPOINT();
 } // end MyqrDisplayWindow destructor
 
 void
@@ -1328,10 +1335,10 @@ main(int argc, char **argv)
     "Main window geometry is W*H,\n... e.g. --geometry 400x650", "WxH"};
   cli_parser.addOption(geometry_opt);
   QCommandLineOption
-    refpersys_opt{{"S", "start-refpersys"},
-                "Starts the given $REFPERSYS, defaulted to refpersys\n"
-                "if a --jsonrpc was given the refpersys command gets them",
-                "REFPERSYS", QString("refpersys")};
+  refpersys_opt{{"S", "start-refpersys"},
+    "Starts the given $REFPERSYS, defaulted to refpersys\n"
+    "if a --jsonrpc was given the refpersys command gets them",
+    "REFPERSYS", QString("refpersys")};
   cli_parser.addOption(refpersys_opt);
   cli_parser.process(the_app);
   MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser);
