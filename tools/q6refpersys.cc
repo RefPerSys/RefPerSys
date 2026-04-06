@@ -385,8 +385,13 @@ MyqrJsonRpcFromRefPerSys::myjr_handler_map;
 void
 myqr_output_qobject(std::ostream& out, const QObject*qob)
 {
-#warning unimplemented myqr_output_qobject
-  MYQR_FATALOUT("unimplemented myqr_output_qobject qob@" << (void*)qob);
+  if (!qob)
+    out << "*NULL*";
+  else
+    {
+      out << qob->objectName().toStdString() << "@" << (void*)qob;
+    };
+  out << std::flush;
 }
 
 void
