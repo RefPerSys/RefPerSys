@@ -498,7 +498,8 @@ rps_initialize_pipe_to_self_in_event_loop(void)
                 << " elapsed: "
                 << std::setw(3) << rps_elapsed_real_time());
   /**
-   * create the pipe to self and install handlers for it
+   * Create the pipe to self and install handlers for it.
+   * See https://cr.yp.to/docs/selfpipe.html
    **/
   {
     int pipefdarr[2] = {-1, -1};
