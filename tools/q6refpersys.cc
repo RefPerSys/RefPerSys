@@ -249,6 +249,13 @@ extern "C" void myqr_initiate_cpp_compilation_to_plugin
  bool needqtmoc,
  std::function<void(QGenericPlugin*,QString&,void*)> handler,
  std::function<void(QString,void*)> failer);
+extern "C" void myqr_output_qobject(std::ostream& out, const QObject*qob);
+
+inline std::ostream&operator << (std::ostream&out, const QObject*qob)
+{
+  myqr_output_qobject(out, qob);
+  return out;
+}
 
 //// regarding JSONRPC v2.0 see www.jsonrpc.org/specification
 class MyqrJsonRpcData
@@ -374,6 +381,13 @@ std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
 std::map<const std::string,MyqrJsonRpcFromRefPerSys::myjr_handler_st>
 MyqrJsonRpcFromRefPerSys::myjr_handler_map;
 
+
+void
+myqr_output_qobject(std::ostream& out, const QObject*qob)
+{
+#warning unimplemented myqr_output_qobject
+  MYQR_FATALOUT("unimplemented myqr_output_qobject qob@" << (void*)qob);
+}
 
 void
 MyqrJsonRpcFromRefPerSys::register_handler(const std::string& methname,
@@ -603,13 +617,15 @@ MyqrProcess::~MyqrProcess()
 QObject*
 MyqrProcess::get(const std::string&nam) const
 {
-  if (nam.empty())
-    return nullptr;
-  auto gpr = std::lock_guard(_proc_mtx);
-  auto it = _proc_map.find(nam);
-  if (it != _proc_map.end())
-    return it->second;
-  return nullptr;
+  QObject* res = nullptr;
+  if (!nam.empty())
+    {
+      auto gpr = std::lock_guard(_proc_mtx);
+      auto it = _proc_map.find(nam);
+      if (it != _proc_map.end())
+        res = it->second;
+    };
+  return res;
 } // end MyqrProcess:get
 
 void
