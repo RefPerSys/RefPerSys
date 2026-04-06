@@ -196,15 +196,18 @@ rps_unregister_event_loop_prepoller(int rank)
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   if (rank<0 || rank>(int) rps_eventloopdata.eld_prepollvect.size())
     {
-      RPS_WARNOUT("invalid rank to rps_unregister_event_loop_prepoller " << rank);
+      RPS_WARNOUT("invalid rank to rps_unregister_event_loop_prepoller "
+                  << rank << std::endl
+                  << RPS_FULL_BACKTRACE(1, "rps_unregister_event_loop_prepoller"));
       return;
     };
   rps_eventloopdata.eld_prepollvect[rank] = nullptr;
 } // end rps_unregister_event_loop_prepoller
 
-bool rps_event_loop_get_entry(int ix,
-                              Rps_EventHandler_sigt**pfun,
-                              struct pollfd*po, const char**pexpl, void**pdata)
+bool
+rps_event_loop_get_entry(int ix,
+                         Rps_EventHandler_sigt**pfun,
+                         struct pollfd*po, const char**pexpl, void**pdata)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
@@ -248,8 +251,11 @@ rps_event_loop_add_input_fd_handler (int fd,
   rps_eventloopdata.eld_lastix = lastfd+1;
   RPS_DEBUG_LOG(REPL, "rps_event_loop_add_input_fd_handler fd#" << fd
                 << " f@" << (void*)f
+                << " elapsed: " << std::setw(3) << rps_elapsed_real_time()
                 << " expl:" << explanation
-                << " data@" << (void*)data);
+                << " data@" << (void*)data
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_event_loop_add_input_fd_handler"));
 } // end rps_event_loop_add_input_fd_handler
 
 void
@@ -270,8 +276,11 @@ rps_event_loop_add_output_fd_handler (int fd,
   rps_eventloopdata.eld_lastix = lastfd+1;
   RPS_DEBUG_LOG(REPL, "rps_event_loop_add_output_fd_handler fd#" << fd
                 << " f@" << (void*)f
+                << " elapsed: " << std::setw(3) << rps_elapsed_real_time()
                 << " expl:" << explanation
-                << " data@" << (void*)data);
+                << " data@" << (void*)data
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_event_loop_add_output_fd_handler"));
   RPS_POSSIBLE_BREAKPOINT();
 } // end rps_event_loop_add_output_fd_handler
 
@@ -288,6 +297,9 @@ rps_event_loop_remove_input_fd_handler(int fd)
   memset (new_datarr, 0, sizeof(new_datarr));
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_input_fd_handler fd#" << fd
+                << " elapsed: "
+                << std::setw(3) << rps_elapsed_real_time());
   unsigned lastix = rps_eventloopdata.eld_lastix;
   unsigned newlastix = 0;
   for (int ix=0; ix<(int)lastix; ix++)
@@ -336,6 +348,8 @@ rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
   int nbr = read(fd, buf, readsize);
   RPS_DEBUG_LOG(REPL, "rps_self_pipe_read_handler fd#" << fd << " nbr=" << nbr
                 << " buf=" << buf << "." << std::endl
+                << " elapsed: "
+                << std::setw(3) << rps_elapsed_real_time()
                 << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
   if (nbr > 0)
     {
@@ -380,6 +394,8 @@ rps_self_pipe_write_handler(Rps_CallFrame*cf, int fd, void* data)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "rps_self_pipe_write_handler fd#" << fd
+                << " elapsed: "
+                << std::setw(3) << rps_elapsed_real_time()
                 << RPS_FULL_BACKTRACE(1, "rps_self_pipe_write_handler"));
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
@@ -459,7 +475,9 @@ rps_event_loop_remove_output_fd_handler(int fd)
   memcpy (rps_eventloopdata.eld_datarr, new_datarr,
           newlastix*sizeof(new_datarr[0]));
   rps_eventloopdata.eld_lastix = newlastix;
-  RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_output_fd_handler fd#" << fd);
+  RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_output_fd_handler fd#" << fd
+                << " elapsed: "
+                << std::setw(3) << rps_elapsed_real_time());
 } // end rps_event_loop_remove_output_fd_handler
 
 bool
@@ -476,6 +494,9 @@ rps_initialize_pipe_to_self_in_event_loop(void)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop"
+                << " elapsed: "
+                << std::setw(3) << rps_elapsed_real_time());
   /**
    * create the pipe to self and install handlers for it
    **/
@@ -496,7 +517,10 @@ rps_initialize_pipe_to_self_in_event_loop(void)
                                         rps_self_pipe_write_handler,
                                         "selfpipewrite",
                                         nullptr);
-    RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop eld_selfpipereadfd#"
+    RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop"
+                  << " elapsed: "
+                  << std::setw(3) << rps_elapsed_real_time()
+                  << " eld_selfpipereadfd#"
                   << (rps_eventloopdata.eld_selfpipereadfd)
                   << " eld_selfpipewritefd#"
                   << (rps_eventloopdata.eld_selfpipewritefd)
