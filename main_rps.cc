@@ -1801,11 +1801,12 @@ main (int argc, char** argv)
                 << (int)getpid() << " on " << rps_hostname()
                 << std::endl
                 << "… executable " << rps_progexe
-                << " git " << rps_gitid << " branch " << rps_gitbranch
+                << " git " << rps_shortgitid
+                << " branch " << rps_gitbranch
                 << std::endl
                 << "… built " << rps_timestamp
                 << " loaded state " << rps_my_load_dir << std::endl
-                << " elapsed " << rps_elapsed_real_time()
+                << "… elapsed " << std::setw(4) << rps_elapsed_real_time()
                 << ", cpu " << rps_process_cpu_time() << " seconds;"
                 << std::endl
                 << "… /proc/version " << rps_get_proc_version()
