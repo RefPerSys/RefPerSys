@@ -77,7 +77,7 @@ in commit 559ea329f46a28 (nov. 2024).
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
 
-**Don't expect (RefPerSys)[http://refpersys.org/] to be a mature
+**Don't expect [RefPerSys](http://refpersys.org/) to be a mature
   project.** It is not in spring 2026.
 
 ## environment variables and scripts
