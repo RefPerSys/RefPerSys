@@ -270,20 +270,25 @@ typedef bool Myqr_Handler_jsonRpcFrom_sig (const unsigned long num,
     const Json::Value& request,
     Json::Value& reply,
     MyqrJsonRpcData*data);
+struct myjr_handler_st
+{
+  Myqr_Handler_jsonRpcFrom_sig* hdlr;
+  MyqrJsonRpcData* data;
+};
+
+extern "C" void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
+
 class MyqrJsonRpcFromRefPerSys
 {
+  friend void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
   static std::recursive_mutex myjr_mtx;
-  struct myjr_handler_st
-  {
-    Myqr_Handler_jsonRpcFrom_sig* hdlr;
-    MyqrJsonRpcData* data;
-  };
   static std::map<const std::string,myjr_handler_st> myjr_handler_map;
 public:
   static void register_handler(const std::string& methname,
                                Myqr_Handler_jsonRpcFrom_sig*fct,
                                MyqrJsonRpcData*data=nullptr);
   static void forget_handler(const std::string& methname);
+  static struct myjr_handler_st* find_handler(const std::string&methname);
 };        // end class MyqrJsonRpcFromRefPerSys
 
 ////////////////////////////////////////////////////////////////
@@ -378,7 +383,7 @@ const char myqr_self_file[] = SELF_FILE; /// defined in compilation command
 const char myqr_self_basename[] = SELF_BASENAME; // in compilation command
 
 std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
-std::map<const std::string,MyqrJsonRpcFromRefPerSys::myjr_handler_st>
+std::map<const std::string,struct myjr_handler_st>
 MyqrJsonRpcFromRefPerSys::myjr_handler_map;
 
 
@@ -410,6 +415,19 @@ MyqrJsonRpcFromRefPerSys::register_handler(const std::string& methname,
   MYQR_DEBUGOUT("register_handler for methname=" << methname);
 } // end of MyqrJsonRpcFromRefPerSys::register_handler
 
+struct myjr_handler_st* 
+MyqrJsonRpcFromRefPerSys::find_handler(const std::string& methname)
+{
+  if (methname.empty() || !isalpha(methname[0]))
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
+  auto it = myjr_handler_map.find(methname);
+  if (it != myjr_handler_map.end()) {
+    return &it->second;
+  }
+  else
+    return nullptr;
+} // end MyqrJsonRpcFromRefPerSys::find_handler
 
 void
 MyqrJsonRpcFromRefPerSys::forget_handler(const std::string& methname)
@@ -1208,8 +1226,14 @@ myqr_process_jsonrpc_from_refpersys(const Json::Value&js)
   const std::string methname = js["method"].asString();
   MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys JSONRPC#" << num
                 << " methname=" << methname);
-#warning myqr_process_jsonrpc_from_refpersys unimplemented
-  MYQR_FATALOUT("unimplemented myqr_process_jsonrpc_from_refpersys"
+  /// the below lock is useful if another thread is calling
+  /// MyqrJsonRpcFromRefPerSys::forget_handler
+  std::lock_guard<std::recursive_mutex>
+    gu(MyqrJsonRpcFromRefPerSys::myjr_mtx);
+  struct myjr_handler_st* handlerp =
+    MyqrJsonRpcFromRefPerSys::find_handler(methname);
+#warning myqr_process_jsonrpc_from_refpersys incomplete
+  MYQR_FATALOUT("incomplete myqr_process_jsonrpc_from_refpersys"
                 << std::endl
                 << myqr_json2str(js));
 } // end myqr_process_jsonrpc_from_refpersys
