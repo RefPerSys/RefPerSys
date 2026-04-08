@@ -270,10 +270,13 @@ typedef bool Myqr_Handler_jsonRpcFrom_sig (const unsigned long num,
     const Json::Value& request,
     Json::Value& reply,
     MyqrJsonRpcData*data);
+
+constexpr int myjr_hdler_namesize= 32;
 struct myjr_handler_st
 {
   Myqr_Handler_jsonRpcFrom_sig* hdlr;
   MyqrJsonRpcData* data;
+  char hdname[myjr_hdler_namesize];
 };
 
 extern "C" void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
@@ -286,7 +289,8 @@ class MyqrJsonRpcFromRefPerSys
 public:
   static void register_handler(const std::string& methname,
                                Myqr_Handler_jsonRpcFrom_sig*fct,
-                               MyqrJsonRpcData*data=nullptr);
+                               MyqrJsonRpcData*data= nullptr,
+			       const char*hdlername= nullptr);
   static void forget_handler(const std::string& methname);
   static struct myjr_handler_st* find_handler(const std::string&methname);
 };        // end class MyqrJsonRpcFromRefPerSys
@@ -368,7 +372,7 @@ extern "C" QProcess*myqr_refpersys_process;
 extern std::ostream& operator << (std::ostream&out, const QList<QString>&qslist);
 
 
-////////
+//////// lines before have been copied in generated C++ files
 const int myqr_last_decl_line = __LINE__ + 1;
 ////////
 
@@ -400,17 +404,29 @@ myqr_output_qobject(std::ostream& out, const QObject*qob)
 }
 
 void
-MyqrJsonRpcFromRefPerSys::register_handler(const std::string& methname,
-    Myqr_Handler_jsonRpcFrom_sig*fct,
-    MyqrJsonRpcData*data)
+MyqrJsonRpcFromRefPerSys::register_handler
+(const std::string& methname,
+ Myqr_Handler_jsonRpcFrom_sig*fct,
+ MyqrJsonRpcData*data,
+ const char*hname
+)
 {
   if (methname.empty() || !isalpha(methname[0]))
     MYQR_FATALOUT("register_handler with invalid methname=" << methname);
   if (!fct)
     MYQR_FATALOUT("register_handler with methname=" << methname
                   << " has no function");
+  if (hname) {
+    for (const char*pc=hname; *pc; pc++)
+      if (!isalnum(*pc) && *pc!='_' && *pc!='-')
+	MYQR_FATALOUT("register_handler with methname=" << methname
+		      << " has invalid hname=" << hname);
+  }	
   std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
   myjr_handler_st h{.hdlr=fct, .data=data};
+  memset(h.hdname, 0, myjr_hdler_namesize);
+  if (hname)
+    strncpy(h.hdname, hname, myjr_hdler_namesize-1);
   myjr_handler_map.insert({methname, h});
   MYQR_DEBUGOUT("register_handler for methname=" << methname);
 } // end of MyqrJsonRpcFromRefPerSys::register_handler
@@ -1232,6 +1248,10 @@ myqr_process_jsonrpc_from_refpersys(const Json::Value&js)
     gu(MyqrJsonRpcFromRefPerSys::myjr_mtx);
   struct myjr_handler_st* handlerp =
     MyqrJsonRpcFromRefPerSys::find_handler(methname);
+  if (handlerp) {
+    MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys JSONRPC#" << num
+		  << " methname=" << methname << " found handler");
+  }
 #warning myqr_process_jsonrpc_from_refpersys incomplete
   MYQR_FATALOUT("incomplete myqr_process_jsonrpc_from_refpersys"
                 << std::endl
