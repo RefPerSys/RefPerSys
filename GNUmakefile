@@ -499,7 +499,9 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
 	    $^ -o $@
 
 
-plugins_dir/rpsplug_create_cplusplus_primitive_type.so:  plugins_dir/rpsplug_create_cplusplus_primitive_type.cc  refpersys.hh  |GNUmakefile refpersysdo-build-refpersys-plugin 
+plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
+   plugins_dir/rpsplug_create_cplusplus_primitive_type.cc  refpersys.hh \
+       |GNUmakefile refpersys do-build-refpersys-plugin
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
