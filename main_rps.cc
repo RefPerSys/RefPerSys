@@ -1311,10 +1311,13 @@ rps_set_debug_output_path(const char*filepath)
   atexit(rps_close_debug_file);
 } // end rps_set_debug_output_path
 
+
+
 ////////////////////////////////////////////////////////////////
 // if fline is negative, print a newline before....
 void
-rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug dbgopt,
+rps_debug_printf_at(const char *filnam, int fline,
+		    const char*funcnam, Rps_Debug dbgopt,
                     const char *fmt, ...)
 {
   char threadbfr[24];
@@ -1363,7 +1366,6 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
   else
     msg = bfr;
   //
-
   {
     pthread_mutex_lock(&rps_debug_mutex);
     long ndbg = rps_debug_atomic_counter.fetch_add(1);
@@ -1381,31 +1383,36 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
     char debugcstr[24];
     memset (debugcstr, 0, sizeof(debugcstr));
     if (!rps_debug_level(dbgopt).empty())
-      strncpy(debugcstr, rps_debug_level(dbgopt).c_str(), sizeof(debugcstr)-1);
+      strncpy(debugcstr, rps_debug_level(dbgopt).c_str(),
+	      sizeof(debugcstr)-1);
     //
 #define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
       {
-        rps_now_strftime_centiseconds_nolen(datebfr, "%Y-%b-%d@%H:%M:%s.__ %Z");
+        rps_now_strftime_centiseconds_nolen(datebfr,
+					    "%Y-%b-%d@%H:%M:%s.__ %Z");
       }
     //
     if (rps_syslog_enabled)
       {
-        syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG#%s %7s %s @%s:%d %s %s",
+        syslog(RPS_DEBUG_LOG_LEVEL,
+	       "RPS-DEBUG#%s %7s %s @%s:%d <%s> %s %s",
                debugcntstr,
-               debugcstr, threadbfr, fname, fline, tmbfr, msg);
+               debugcstr, threadbfr, filnam, fline, funcnam, tmbfr, msg);
       }
     else if (rps_debug_file)
       {
         fprintf(rps_debug_file, "RPS DEBUG#%s %7s %s",
                 debugcntstr,
                 debugcstr, threadbfr);
-        fprintf(rps_debug_file, " %s:%d %s %s\n",
-                fname, (fline>0)?fline:(-fline),
+        fprintf(rps_debug_file, " %s:%d <%s> %s %s\n",
+                filnam, (fline>0)?fline:(-fline),
+		funcnam,
                 tmbfr, msg);
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            if (!rps_debug_file && rps_debug_file != stdout && rps_debug_file != stderr)
+            if (!rps_debug_file && rps_debug_file != stdout
+		&& rps_debug_file != stderr)
               fprintf(stderr, "\n¤RPS-DEBUG#%s *^*^* %s\n",
                       debugcntstr, datebfr);
             else
@@ -1419,25 +1426,27 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
         bool ontty = isatty(STDERR_FILENO);
         if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
-        fprintf(stderr, "%sRPS DEBUG#%s %7s%s %s",
-                ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-                debugcntstr,
-                debugcstr,
-                ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
-                threadbfr);
-        fprintf(stderr, "%s@%s:%d%s %s\n%s\n",
-                ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",
-                fname, (fline>0)?fline:(-fline),
-                ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
-                tmbfr, msg);
+	if (ontty)
+	  fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
+        fprintf(stderr, "RPS DEBUG#%s %7s %s",
+                debugcntstr, debugcstr, threadbfr);
+	if (ontty)
+	  fputs(RPS_TERMINAL_ITALICS_ESCAPE, stderr);
+        fprintf(stderr, "@%s:%d", filnam, (fline>0)?fline:(-fline));
+	if (ontty)
+	  fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);
+	fprintf(stderr, "%s\n%s\n", tmbfr, msg);
         fflush(stderr);
         //
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            fprintf(stderr, "%sRPS.DEBUG %04ld ~ %s *^*^*%s\n\n",
-                    ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-                    ndbg, datebfr,
-                    ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+	    if (ontty)
+	      fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
+            fprintf(stderr, "RPS.DEBUG %04ld ~ %s *^*^*",
+		    ndbg, datebfr);
+	    if (ontty)
+	      fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
+	    fputs("\n\n", stderr);
           }
         //
         fflush(nullptr);
@@ -1449,6 +1458,8 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
   if (bigbfr)
     free(bigbfr);
 } // end rps_debug_printf_at
+
+
 
 
 /// function called by atexit to kill then wait the GUI process
