@@ -904,8 +904,13 @@ myqr_readable_jsonrpc_cmd(void)
 void
 myqr_writable_jsonrpc_out(void)
 {
-  MYQR_DEBUGOUT("myqr_writable_jsonrpc_out unimplemented myqr_jsonrpc_out_fd="
-                << myqr_jsonrpc_out_fd);
+  /// this routine has been Qt-connected to the activated signal of
+  /// myqr_writable_jsonrpc_out
+  MYQR_DEBUGOUT("myqr_writable_jsonrpc_out unimplemented"
+		<< " myqr_jsonrpc_out_fd="
+                << myqr_jsonrpc_out_fd
+		<< " for myqr_writable_jsonrpc_out="
+		<< myqr_writable_jsonrpc_out);
 #warning unimplemented myqr_writable_jsonrpc_out
 } // end myqr_writable_jsonrpc_out
 
@@ -945,8 +950,10 @@ myqr_have_jsonrpc(const std::string&jsonrpc)
     MYQR_FATALOUT("failed to open output JSONRPC " << jsonrpc_out << " for writing:" << strerror(errno));
   else
     MYQR_DEBUGOUT("myqr_have_jsonrpc out fd#" << myqr_jsonrpc_out_fd);
-  myqr_notifier_jsonrpc_out = new QSocketNotifier(myqr_jsonrpc_out_fd, QSocketNotifier::Write);
-  QObject::connect(myqr_notifier_jsonrpc_out,&QSocketNotifier::activated,myqr_writable_jsonrpc_out);
+  myqr_notifier_jsonrpc_out = new QSocketNotifier(myqr_jsonrpc_out_fd,
+						  QSocketNotifier::Write);
+  QObject::connect(myqr_notifier_jsonrpc_out,&QSocketNotifier::activated,
+		   myqr_writable_jsonrpc_out);
   if (setenv("REFPERSYS_JSONRPC", jsonrpc.c_str(), /*overwrite:*/(int)true))
     {
       MYQR_FATALOUT("failed to setenv REFPERSYS_JSONRPC to " << jsonrpc
