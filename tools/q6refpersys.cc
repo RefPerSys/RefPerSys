@@ -544,6 +544,7 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
   QObject::connect(_mainwin_debugact,&QAction::triggered,this,
                    &MyqrMainWindow::toggle_debug);
   _mainwin_debugact->setCheckable(true);
+  _mainwin_debugact->setChecked(myqr_debug);
   QObject::connect(_mainwin_aboutqtact,&QAction::triggered,this,
                    &MyqrMainWindow::aboutQt);
   _mainwin_editmenu =_mainwin_menubar-> addMenu("Edit");
