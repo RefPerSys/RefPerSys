@@ -154,6 +154,8 @@ extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
 // end from __timestamp.c
 
+class MyqrApplication;
+
 /// process the JSONRPC2 message recieved from refpersys
 extern "C" void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
 
@@ -224,9 +226,10 @@ extern "C" void myqr_call_jsonrpc_to_refpersys
 
 #define MYQR_DEBUGOUT(Out) MYQR_DEBUGOUT_AT(__FILE__,__LINE__,Out)
 
-extern "C" QApplication *myqr_app;
+extern "C" MyqrApplication *myqr_app;
 
 extern "C" {
+  class MyqrApplication;
   class MyqrProcess;
   class MyqrJsonRpcFromRefPerSys;
   class MyqrMainWindow;
@@ -266,6 +269,19 @@ public:
   virtual ~MyqrJsonRpcData();
 }; // end MyqrJsonRpcData
 
+class MyqrApplication: public QApplication
+{
+  Q_OBJECT;
+public:
+  MyqrApplication(int argc, char**argv);
+  virtual ~MyqrApplication();
+public slots:
+  void compilation_process_started();
+#warning compilation_process_finished probably need more arguments
+  void compilation_process_finished();
+};        // end MyqrApplication
+
+
 typedef bool Myqr_Handler_jsonRpcFrom_sig (const unsigned long num,
     const Json::Value& request,
     Json::Value& reply,
@@ -290,7 +306,7 @@ public:
   static void register_handler(const std::string& methname,
                                Myqr_Handler_jsonRpcFrom_sig*fct,
                                MyqrJsonRpcData*data= nullptr,
-			       const char*hdlername= nullptr);
+                               const char*hdlername= nullptr);
   static void forget_handler(const std::string& methname);
   static struct myjr_handler_st* find_handler(const std::string&methname);
 };        // end class MyqrJsonRpcFromRefPerSys
@@ -388,7 +404,7 @@ const char myqr_self_basename[] = SELF_BASENAME; // in compilation command
 
 std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
 std::map<const std::string,struct myjr_handler_st>
-MyqrJsonRpcFromRefPerSys::myjr_handler_map;
+  MyqrJsonRpcFromRefPerSys::myjr_handler_map;
 
 
 void
@@ -401,7 +417,7 @@ myqr_output_qobject(std::ostream& out, const QObject*qob)
       out << qob->objectName().toStdString() << "@" << (void*)qob;
     };
   out << std::flush;
-}
+} // end myqr_output_qobject
 
 void
 MyqrJsonRpcFromRefPerSys::register_handler
@@ -416,12 +432,13 @@ MyqrJsonRpcFromRefPerSys::register_handler
   if (!fct)
     MYQR_FATALOUT("register_handler with methname=" << methname
                   << " has no function");
-  if (hname) {
-    for (const char*pc=hname; *pc; pc++)
-      if (!isalnum(*pc) && *pc!='_' && *pc!='-')
-	MYQR_FATALOUT("register_handler with methname=" << methname
-		      << " has invalid hname=" << hname);
-  }	
+  if (hname)
+    {
+      for (const char*pc=hname; *pc; pc++)
+        if (!isalnum(*pc) && *pc!='_' && *pc!='-')
+          MYQR_FATALOUT("register_handler with methname=" << methname
+                        << " has invalid hname=" << hname);
+    }
   std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
   myjr_handler_st h{.hdlr=fct, .data=data};
   memset(h.hdname, 0, myjr_hdler_namesize);
@@ -431,16 +448,17 @@ MyqrJsonRpcFromRefPerSys::register_handler
   MYQR_DEBUGOUT("register_handler for methname=" << methname);
 } // end of MyqrJsonRpcFromRefPerSys::register_handler
 
-struct myjr_handler_st* 
+struct myjr_handler_st*
 MyqrJsonRpcFromRefPerSys::find_handler(const std::string& methname)
 {
   if (methname.empty() || !isalpha(methname[0]))
     return nullptr;
   std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
   auto it = myjr_handler_map.find(methname);
-  if (it != myjr_handler_map.end()) {
-    return &it->second;
-  }
+  if (it != myjr_handler_map.end())
+    {
+      return &it->second;
+    }
   else
     return nullptr;
 } // end MyqrJsonRpcFromRefPerSys::find_handler
@@ -641,7 +659,37 @@ MyqrMainWindow::about()
   MYQR_DEBUGOUT("incomplete MyqrMainWindow::about");
 #warning incomplete MyqrMainWindow::about
 } // end MyqrDisplayWindow::about
+////////////////////////////////////////////////////////////////
 
+MyqrApplication::MyqrApplication(int argc, char**argv)
+  : QApplication(argc, argv)
+{
+  MYQR_DEBUGOUT("MyqrApplication constr this@" << (void*)this);
+} // end MyqrApplication::MyqrApplication
+
+MyqrApplication::~MyqrApplication()
+{
+  MYQR_DEBUGOUT("MyqrApplication destr this@" << (void*)this);
+} // end MyqrApplication::MyqrApplication
+
+
+void
+MyqrApplication::compilation_process_started(void)
+{
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  MYQR_DEBUGOUT("compilation_process_started comproc@" << comproc
+                << " pid=" << comproc->processId());
+} // end MyqrApplication::compilation_process_started
+
+void
+MyqrApplication::compilation_process_finished()
+{
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  MYQR_DEBUGOUT("compilation_process_finished comproc@" << comproc
+                << " pid=" << comproc->processId());
+} // end MyqrApplication::compilation_process_finished
+
+////////////////////////////////////////////////////////////////
 MyqrProcess::MyqrProcess(QObject*parent)
   : QProcess(parent), _proc_mtx(), _proc_map()
 {
@@ -908,10 +956,10 @@ myqr_writable_jsonrpc_out(void)
   /// this routine has been Qt-connected to the activated signal of
   /// myqr_writable_jsonrpc_out
   MYQR_DEBUGOUT("myqr_writable_jsonrpc_out unimplemented"
-		<< " myqr_jsonrpc_out_fd="
+                << " myqr_jsonrpc_out_fd="
                 << myqr_jsonrpc_out_fd
-		<< " for myqr_writable_jsonrpc_out="
-		<< myqr_writable_jsonrpc_out);
+                << " for myqr_writable_jsonrpc_out="
+                << myqr_writable_jsonrpc_out);
 #warning unimplemented myqr_writable_jsonrpc_out
 } // end myqr_writable_jsonrpc_out
 
@@ -952,9 +1000,9 @@ myqr_have_jsonrpc(const std::string&jsonrpc)
   else
     MYQR_DEBUGOUT("myqr_have_jsonrpc out fd#" << myqr_jsonrpc_out_fd);
   myqr_notifier_jsonrpc_out = new QSocketNotifier(myqr_jsonrpc_out_fd,
-						  QSocketNotifier::Write);
+    QSocketNotifier::Write);
   QObject::connect(myqr_notifier_jsonrpc_out,&QSocketNotifier::activated,
-		   myqr_writable_jsonrpc_out);
+                   myqr_writable_jsonrpc_out);
   if (setenv("REFPERSYS_JSONRPC", jsonrpc.c_str(), /*overwrite:*/(int)true))
     {
       MYQR_FATALOUT("failed to setenv REFPERSYS_JSONRPC to " << jsonrpc
@@ -1135,11 +1183,14 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     {
       compargs << "plain-q6rps-plugin";
     };
+  /// redirect stdin from /dev/null
   comproc->setStandardInputFile(QProcess::nullDevice());
+  /// merge stderr & stdout of the compilation process
   comproc->setProcessChannelMode(QProcess::MergedChannels);
   // should connect appropriately to read compilation errors.
-#warning missing connect to Qt6 process comproc
-  ///  QObject::connect(comproc
+  QObject::connect(comproc, SIGNAL(MyqrProcess::started()),
+                   myqr_app,
+                   SLOT(MyqrApplication::compilation_process_started()));
   comproc->start();
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
@@ -1255,13 +1306,14 @@ myqr_process_jsonrpc_from_refpersys(const Json::Value&js)
   /// the below lock is useful if another thread is calling
   /// MyqrJsonRpcFromRefPerSys::forget_handler
   std::lock_guard<std::recursive_mutex>
-    gu(MyqrJsonRpcFromRefPerSys::myjr_mtx);
+  gu(MyqrJsonRpcFromRefPerSys::myjr_mtx);
   struct myjr_handler_st* handlerp =
     MyqrJsonRpcFromRefPerSys::find_handler(methname);
-  if (handlerp) {
-    MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys JSONRPC#" << num
-		  << " methname=" << methname << " found handler");
-  }
+  if (handlerp)
+    {
+      MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys JSONRPC#" << num
+                    << " methname=" << methname << " found handler");
+    }
 #warning myqr_process_jsonrpc_from_refpersys incomplete
   MYQR_FATALOUT("incomplete myqr_process_jsonrpc_from_refpersys"
                 << std::endl
@@ -1398,7 +1450,8 @@ main(int argc, char **argv)
   QCoreApplication::setApplicationName("q6refpersys");
   QCoreApplication::setApplicationVersion(QString("version ") + myqr_git_id
                                           + " " __DATE__ "@" __TIME__);
-  QApplication the_app(argc, argv);
+  MyqrApplication the_app(argc, argv);
+  myqr_app = &the_app;
   MYQR_DEBUGOUT("the_app@" << (void*)&the_app << " argc:" << argc);
   QCommandLineParser cli_parser;
   cli_parser.addVersionOption();
@@ -1423,7 +1476,6 @@ main(int argc, char **argv)
   MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser);
   QStringList args = cli_parser.positionalArguments();
   MYQR_DEBUGOUT("main args:" << args);
-  myqr_app = &the_app;
   QString geomstr = cli_parser.value(geometry_opt);
   MYQR_DEBUGOUT("main geomstr:" << geomstr.toStdString());
   MYQR_DEBUGOUT("main debug:" << cli_parser.value(debug_opt).toStdString());
@@ -1484,7 +1536,7 @@ const char myqr_shortgitid[] = SHORT_GITID;
 char* myqr_progname;
 char myqr_host_name[sizeof(myqr_host_name)];
 std::string myqr_refpersys_topdir;
-QApplication *myqr_app;
+MyqrApplication *myqr_app;
 bool myqr_debug;
 std::string myqr_jsonrpc;
 Json::CharReaderBuilder myqr_jsoncpp_reader_builder;
