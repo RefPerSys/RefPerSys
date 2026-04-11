@@ -1138,6 +1138,8 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
   comproc->setStandardInputFile(QProcess::nullDevice());
   comproc->setProcessChannelMode(QProcess::MergedChannels);
   // should connect appropriately to read compilation errors.
+#warning missing connect to Qt6 process comproc
+  ///  QObject::connect(comproc
   comproc->start();
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
