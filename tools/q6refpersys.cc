@@ -713,23 +713,34 @@ MyqrApplication::compilation_process_finished(int exitCode,
 void
 MyqrApplication::compilation_process_changed_state(QProcess::ProcessState newstate)
 {
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
   MYQR_FATALOUT("unimplemented compilation_process_changed_state newstate#"
-                << (int)newstate);
+                << (int)newstate
+                << " comproc@"
+                << comproc
+                << " pid=" << comproc->processId());
 #warning unimplemented MyqrApplication::compilation_process_changed_state
 } // end MyqrApplication::compilation_process_changed_state
 
 void
 MyqrApplication::compilation_process_errored(QProcess::ProcessError error)
 {
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
   MYQR_FATALOUT("unimplemented compilation_process_error newstate#"
-                << (int)error);
+                << (int)error
+                << " comproc@"
+                << comproc
+                << " pid=" << comproc->processId());
 #warning unimplemented MyqrApplication::compilation_process_errored
 } // end MyqrApplication::compilation_process_errored
 
 void
 MyqrApplication::compilation_process_readable(void)
 {
-  MYQR_FATALOUT("unimplemented compilation_process_readable");
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  MYQR_FATALOUT("unimplemented compilation_process_readable comproc@"
+                << comproc
+                << " pid=" << comproc->processId());
 #warning unimplemented MyqrApplication::compilation_process_readable
 } // end MyqrApplication::compilation_process_readable
 
