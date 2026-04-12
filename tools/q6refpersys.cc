@@ -280,6 +280,9 @@ public slots:
   void compilation_process_finished(int exitCode,
                                     QProcess::ExitStatus exitStatus
                                     = QProcess::NormalExit);
+  void compilation_process_changed_state(QProcess::ProcessState newstate);
+  void compilation_process_errored(QProcess::ProcessError error);
+  void compilation_process_readable(void);
 };        // end MyqrApplication
 
 
@@ -706,6 +709,30 @@ MyqrApplication::compilation_process_finished(int exitCode,
                << " reason=" << reason);
 #warning MyqrApplication::compilation_process_finished incomplete
 } // end MyqrApplication::compilation_process_finished
+
+void
+MyqrApplication::compilation_process_changed_state(QProcess::ProcessState newstate)
+{
+  MYQR_FATALOUT("unimplemented compilation_process_changed_state newstate#"
+                << (int)newstate);
+#warning unimplemented MyqrApplication::compilation_process_changed_state
+} // end MyqrApplication::compilation_process_changed_state
+
+void
+MyqrApplication::compilation_process_errored(QProcess::ProcessError error)
+{
+  MYQR_FATALOUT("unimplemented compilation_process_error newstate#"
+                << (int)error);
+#warning unimplemented MyqrApplication::compilation_process_errored
+} // end MyqrApplication::compilation_process_errored
+
+void
+MyqrApplication::compilation_process_readable(void)
+{
+  MYQR_FATALOUT("unimplemented compilation_process_readable");
+#warning unimplemented MyqrApplication::compilation_process_readable
+} // end MyqrApplication::compilation_process_readable
+
 
 ////////////////////////////////////////////////////////////////
 MyqrProcess::MyqrProcess(QObject*parent)
