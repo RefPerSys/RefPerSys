@@ -276,9 +276,10 @@ public:
   MyqrApplication(int argc, char**argv);
   virtual ~MyqrApplication();
 public slots:
-  void compilation_process_started();
-#warning compilation_process_finished probably need more arguments
-  void compilation_process_finished();
+  void compilation_process_started(void);
+  void compilation_process_finished(int exitCode,
+                                    QProcess::ExitStatus exitStatus
+                                    = QProcess::NormalExit);
 };        // end MyqrApplication
 
 
@@ -682,11 +683,28 @@ MyqrApplication::compilation_process_started(void)
 } // end MyqrApplication::compilation_process_started
 
 void
-MyqrApplication::compilation_process_finished()
+MyqrApplication::compilation_process_finished(int exitCode,
+    QProcess::ExitStatus exitStatus)
 {
   MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
-  MYQR_DEBUGOUT("compilation_process_finished comproc@" << comproc
-                << " pid=" << comproc->processId());
+  const char*reason=nullptr;
+  switch (exitStatus)
+    {
+    case QProcess::NormalExit:
+      reason="normal-exit";
+      break;
+    case QProcess::CrashExit:
+      reason="crash-exit";
+      break;
+    default:
+      MYQR_FATALOUT("unexpected exitStatus#" << (int)exitStatus);
+    };
+  MYQR_WARNOUT("incomplete compilation_process_finished comproc@"
+               << comproc
+               << " pid=" << comproc->processId()
+               << " exitcode=" << exitCode
+               << " reason=" << reason);
+#warning MyqrApplication::compilation_process_finished incomplete
 } // end MyqrApplication::compilation_process_finished
 
 ////////////////////////////////////////////////////////////////
@@ -1191,6 +1209,9 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
   QObject::connect(comproc, SIGNAL(MyqrProcess::started()),
                    myqr_app,
                    SLOT(MyqrApplication::compilation_process_started()));
+  QObject::connect(comproc, SIGNAL(MyqrProcess::finished()),
+                   myqr_app,
+                   SLOT(MyqrApplication::compilation_process_finished()));
   comproc->start();
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
