@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2020 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -718,9 +718,11 @@ Rps_PayloadObjMap::put_obmap(Rps_ObjectRef obkey, Rps_Value val)
 void
 Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  constexpr long linemax = 70;
   /// most of the code below is duplicated in
-  /// Rps_PayloadEnvironment::output_payload in file cmdrepl_rps.cc
-  /// we hope to later (in 2025?) have this C++ code generated at dump time
+  /// Rps_PayloadEnvironment::output_payload in file cmdrepl_rps.cc we
+  /// hope to later (in 2026 or 2027?) have this C++ code generated at
+  /// dump time
   RPS_ASSERT(depth <= maxdepth);
   bool ontty =
     (&out == &std::cout)?isatty(STDOUT_FILENO)
@@ -732,13 +734,16 @@ Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned max
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
   int nbobjmap = (int) obm_map.size();
+  long linpos = out.tellp();
   if (nbobjmap==0)
     out << BOLD_esc << "-empty object map-" << NORM_esc;
   else
-    out << BOLD_esc << "-object map of " << nbobjmap << ((nbobjmap>1)?" entries":" entry");
+    out << BOLD_esc << "-object map of "
+        << nbobjmap << ((nbobjmap>1)?" entries":" entry");
   Rps_Value dv = obm_descr;
   if (dv)
-    out << " described by " << NORM_esc << Rps_OutputValue(dv, depth, maxdepth) << std::endl;
+    out << " described by " << NORM_esc
+        << Rps_OutputValue(dv, depth, maxdepth) << std::endl;
   else
     out << " plain" << NORM_esc << std::endl;
   std::vector<Rps_ObjectRef> attrvect(nbobjmap);
@@ -747,6 +752,13 @@ Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned max
   rps_sort_object_vector_for_display(attrvect);
   for (int ix=0; ix<(int)nbobjmap; ix++)
     {
+      if (out.tellp() - linpos > linemax)
+        {
+          out << std::endl;
+          for (int j=0; j<depth%16; j++)
+            out << ' ';
+          linpos = out.tellp();
+        };
       const Rps_ObjectRef curattr = attrvect[ix];
       const Rps_Value curval = (obm_map.at(curattr));
       out << BOLD_esc << "*"
@@ -754,7 +766,6 @@ Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned max
           << Rps_OutputValue(curval, depth, maxdepth)
           << std::endl;
     };
-#warning Rps_PayloadObjMap::output_payload incomplete
 } // end Rps_PayloadObjMap::output_payload
 
 void
