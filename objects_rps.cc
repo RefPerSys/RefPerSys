@@ -2277,6 +2277,7 @@ Rps_PayloadSymbol::register_name(std::string name, Rps_ObjectRef obj, bool weak)
 
 bool Rps_PayloadSymbol::forget_name(std::string name)
 {
+  RPS_DEBUG_LOG(REPL, "symbol forget_name " << Rps_QuotedC_String(name));
   if (!valid_name(name))
     return false;
   std::lock_guard<std::recursive_mutex> gusy(symb_tablemtx);
@@ -2306,6 +2307,7 @@ Rps_PayloadSymbol::forget_object(Rps_ObjectRef obj)
   if (!obj)
     return false;
   std::lock_guard<std::recursive_mutex> gu(*(obj->objmtxptr()));
+  RPS_DEBUG_LOG(REPL, "symbol forget_object " << obj);
   Rps_PayloadSymbol* paylsymb = obj->get_dynamic_payload<Rps_PayloadSymbol>();
   if (!paylsymb)
     return false;
