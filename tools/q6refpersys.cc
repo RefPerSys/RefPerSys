@@ -1454,32 +1454,39 @@ myqr_json2str(const Json::Value&jv)
   return str;
 } // end myqr_json2str
 
+
+
+
+////////////////////////////////////////////////////////////////
+extern "C" void myqr_get_topdir(void);
+void
+myqr_get_topdir(void)
+{
+  char*rfpt = getenv("REFPERSYS_TOPDIR");
+  if (rfpt)
+    {
+      if (access(rfpt, R_OK))
+        {
+          int e=errno;
+          std::clog << myqr_progname << " has bad REFPERSYS_TOPDIR="
+                    << rfpt << ":" << strerror(e) << std::endl;
+          exit(EXIT_FAILURE);
+        }
+      else
+        myqr_refpersys_topdir = std::string(rfpt);
+    }
+  else
+    {
+      std::clog << myqr_progname << " needs a REFPERSYS_TOPDIR from environment"
+                << std::endl;
+      exit(EXIT_FAILURE);
+    };
+} // end myqr_get_topdir
+
 int
 main(int argc, char **argv)
 {
   myqr_progname = argv[0];
-  {
-    char*rfpt = getenv("REFPERSYS_TOPDIR");
-    if (rfpt)
-      {
-        if (access(rfpt, R_OK))
-          {
-            int e=errno;
-            std::clog << myqr_progname << " has bad REFPERSYS_TOPDIR="
-                      << rfpt << ":" << strerror(e) << std::endl;
-            exit(EXIT_FAILURE);
-          }
-        else
-          myqr_refpersys_topdir = std::string(rfpt);
-      }
-    else
-      {
-        std::clog << myqr_progname << " needs a REFPERSYS_TOPDIR from environment"
-                  << std::endl;
-        exit(EXIT_FAILURE);
-      };
-  };
-  MYQR_BREAKPOINT();
   for (int i=1; i<argc; i++)
     {
       if (!strcmp(argv[i], "-D") || !strcmp(argv[i], "--debug"))
@@ -1488,6 +1495,9 @@ main(int argc, char **argv)
           myqr_debug = true;
         }
     }
+  MYQR_BREAKPOINT();
+  myqr_get_topdir();
+  MYQR_BREAKPOINT();
   gethostname(myqr_host_name, sizeof(myqr_host_name)-1);
   char parentbuf[384];
   memset (parentbuf, 0, sizeof(parentbuf));
@@ -1513,11 +1523,12 @@ main(int argc, char **argv)
                                           + " " __DATE__ "@" __TIME__);
   MyqrApplication the_app(argc, argv);
   myqr_app = &the_app;
-  MYQR_DEBUGOUT("the_app@" << (void*)&the_app << " argc:" << argc
-		<< " myqr_app:" << myqr_app);
+  MYQR_DEBUGOUT("main the_app@" << (void*)&the_app << " argc:" << argc
+                << " myqr_app:" << myqr_app);
   QCommandLineParser cli_parser;
+  MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser);
   cli_parser.setApplicationDescription("Qt6 graphical interface"
-				       " to refpersys inference engine");
+                                       " to refpersys inference engine");
   cli_parser.addVersionOption();
   cli_parser.addHelpOption();
   QCommandLineOption debug_opt(QStringList() << "D" << "debug",
@@ -1537,10 +1548,10 @@ main(int argc, char **argv)
     "REFPERSYS", QString("refpersys")};
   cli_parser.addOption(refpersys_opt);
   MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser
-		<< " before process");
+                << " before process");
   cli_parser.process(the_app);
   MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser
-		<< " myqr_app=" << myqr_app);
+                << " myqr_app=" << myqr_app);
   QStringList args = cli_parser.positionalArguments();
   MYQR_DEBUGOUT("main args:" << args);
   QString geomstr = cli_parser.value(geometry_opt);
