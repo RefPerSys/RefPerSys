@@ -1531,6 +1531,8 @@ main(int argc, char **argv)
                                        " to refpersys inference engine");
   cli_parser.addVersionOption();
   cli_parser.addHelpOption();
+  MYQR_DEBUGOUT("main cli_parser has version&help"
+                << " cli_parser@" << (void*)&cli_parser);
   QCommandLineOption debug_opt(QStringList() << "D" << "debug",
                                "show debugging messages");
   cli_parser.addOption(debug_opt);
