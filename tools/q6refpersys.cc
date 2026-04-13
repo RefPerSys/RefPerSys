@@ -559,10 +559,12 @@ MyqrMainWindow::MyqrMainWindow(QWidget*parent)
   _mainwin_menubar = menuBar();
   _mainwin_appmenu =_mainwin_menubar-> addMenu("App");
   _mainwin_aboutact = _mainwin_appmenu->addAction("About");
+  _mainwin_aboutact->setToolTip("Give information about software");
   QObject::connect(_mainwin_aboutact,&QAction::triggered,this,
                    &MyqrMainWindow::about);
   _mainwin_aboutqtact = _mainwin_appmenu->addAction("About Qt");
   _mainwin_debugact = _mainwin_appmenu->addAction("Debug");
+  _mainwin_debugact->setToolTip("Debugging of this q6refpersys");
   QObject::connect(_mainwin_debugact,&QAction::triggered,this,
                    &MyqrMainWindow::toggle_debug);
   _mainwin_debugact->setCheckable(true);
@@ -1511,8 +1513,11 @@ main(int argc, char **argv)
                                           + " " __DATE__ "@" __TIME__);
   MyqrApplication the_app(argc, argv);
   myqr_app = &the_app;
-  MYQR_DEBUGOUT("the_app@" << (void*)&the_app << " argc:" << argc);
+  MYQR_DEBUGOUT("the_app@" << (void*)&the_app << " argc:" << argc
+		<< " myqr_app:" << myqr_app);
   QCommandLineParser cli_parser;
+  cli_parser.setApplicationDescription("Qt6 graphical interface"
+				       " to refpersys inference engine");
   cli_parser.addVersionOption();
   cli_parser.addHelpOption();
   QCommandLineOption debug_opt(QStringList() << "D" << "debug",
@@ -1531,8 +1536,11 @@ main(int argc, char **argv)
     "if a --jsonrpc was given the refpersys command gets them",
     "REFPERSYS", QString("refpersys")};
   cli_parser.addOption(refpersys_opt);
+  MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser
+		<< " before process");
   cli_parser.process(the_app);
-  MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser);
+  MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser
+		<< " myqr_app=" << myqr_app);
   QStringList args = cli_parser.positionalArguments();
   MYQR_DEBUGOUT("main args:" << args);
   QString geomstr = cli_parser.value(geometry_opt);
