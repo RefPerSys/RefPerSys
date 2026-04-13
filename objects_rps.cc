@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -2051,8 +2051,11 @@ Rps_PayloadVectVal::make_instance_zone_from_vector(Rps_ObjectRef classob)
 } // end Rps_PayloadVectVal::make_instance_zone_from_vector
 
 void
-Rps_PayloadVectVal::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+Rps_PayloadVectVal::output_payload(std::ostream&out,
+				   unsigned depth, unsigned maxdepth)
+  const
 {
+  constexpr long linemax = 70;
   bool ontty =
     (&out == &std::cout)?isatty(STDOUT_FILENO)
     :(&out == &std::cerr)?isatty(STDERR_FILENO)
@@ -2062,7 +2065,23 @@ Rps_PayloadVectVal::output_payload(std::ostream&out, unsigned depth, unsigned ma
   const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
-#warning incomplete Rps_PayloadVectVal::output_payload
+  int veclen = (int)pvectval.size();
+  out << BOLD_esc << "vectval.len:" << veclen << NORM_esc << std::endl;
+  if (depth+1 >= maxdepth)
+    return;
+  long linpos = out.tellp();
+  for (int ix=0; ix<veclen; ix++) {
+    if (out.tellp() - linpos > linemax) {
+      out << std::endl;
+      for (int j=0; j<depth%16; j++)
+	out << ' ';
+      linpos = out.tellp();
+    };
+    Rps_Value curval = pvectval[ix];
+    out << BOLD_esc << "[" << ix << "]" << NORM_esc << ": ";
+    out << Rps_OutputValue(curval, depth, maxdepth);
+  }
+  out << std::endl;
 } // end of Rps_PayloadVectVal::output_payload
 
 
