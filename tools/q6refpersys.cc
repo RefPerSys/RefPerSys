@@ -693,6 +693,7 @@ MyqrApplication::compilation_process_finished(int exitCode,
 {
   MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
   const char*reason=nullptr;
+  bool crashed=false;
   switch (exitStatus)
     {
     case QProcess::NormalExit:
@@ -700,6 +701,7 @@ MyqrApplication::compilation_process_finished(int exitCode,
       break;
     case QProcess::CrashExit:
       reason="crash-exit";
+      crashed=true;
       break;
     default:
       MYQR_FATALOUT("unexpected exitStatus#" << (int)exitStatus);
@@ -1254,7 +1256,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
                    SLOT(MyqrApplication::compilation_process_finished()));
   comproc->start();
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
-  MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
+  MYQR_WARNOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
                 << name.toStdString() << " file "
                 << tsrcfil->fileName().toStdString());
 } // end myqr_initiate_cpp_compilation_to_plugin
