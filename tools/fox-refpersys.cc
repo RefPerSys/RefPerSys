@@ -161,3 +161,13 @@ extern "C" const char rps_cxx_compiler_version[];
 #define FOXRPS_DEBUGOUT(Out) FOXRPS_DEBUGOUT_AT(__FILE__,__LINE__,Out)
 
 #error fox-refpersys.cc very incomplete
+
+
+
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && make fox-refpersys" ;;
+ ** End: ;;
+ **
+ ****************/
