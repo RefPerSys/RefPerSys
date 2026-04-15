@@ -52,6 +52,7 @@ RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 # Carburetta is a parser generator on github.com/kingletbv/carburetta
 RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
 Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
+FOXREFPERSYS_PACKAGES ?= 
 ## see https://lists.debian.org/debian-user-french/2025/12/msg00005.html
 RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 ## REFPERSYS_LTO is by convention for link-time optimization flags
@@ -186,7 +187,21 @@ all:
 	$(MAKE) plugins
 	@/usr/bin/printf "\n\nMaking q6refpersys\n\n"
 	$(MAKE) q6refpersys
+#	@/usr/bin/printf "\n\nMaking fox-refpersys\n\n"
+#	$(MAKE) fox-refpersys
 
+fox-refpersys: tools/fox-refpersys.cc __timestamp.o | GNUmakefile
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-DSELF_FILE='"$(realpath $<)"' \
+	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	__timestamp.o \
+	$(shell pkg-config --cflags $(FOXREFPERSYS_PACKAGES)) \
+	$(shell fox-config --cflags) \
+        $< \
+	$(shell pkg-config --libs $(FOXREFPERSYS_PACKAGES)) \
+	$(shell fox-config --libs) \
+        -o $@
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
 
@@ -200,6 +215,9 @@ raw-objects: $(REFPERSYS_RAW_OBJECTS)
 ## close to JSONRPC and may (later) recieve C++ code chunks to be
 ## compiled (to some QGenericPlugin) and dlopen-ed.  For Qt6 see
 ## https://doc.qt.io/qt-6/
+
+## on mid-April 2026 (near commit  df629861dc) we are considering a
+## fox-toolkit.org based graphical interface. Try make fox-refpersys
 
 ### raw-refpersys executable has no FLTK or other graphical user
 ### interface code or library dependencies; it communicates using HTTP
@@ -301,9 +319,11 @@ clean: clean-plugins
 #	$(RM) -v _gramrepl_rps.*
 	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
 	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
-	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys do-build-refpersys-plugin 
+	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys
+	$(RM) do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) -vf q6refpersys
+	$(RM) -vf fox-refpersys
 	$(RM) *% %~
 	$(RM) *.gch
 	$(RM) *.orig
