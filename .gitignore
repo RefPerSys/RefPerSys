@@ -30,3 +30,4 @@ do-scan-pkgconfig
 .vscode/settings.json
 .gdb_history
 q6refpersys
+fox-refpersys

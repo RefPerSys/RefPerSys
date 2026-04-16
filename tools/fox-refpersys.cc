@@ -26,10 +26,10 @@
 ****/
 
 
-///// We may want to generate Qt6 temporary C++ code which has to
+///// We may want to generate FOX toolkit temporary C++ code which has to
 ///// contain the declarations then compile that code into a dlopen-ed
 ///// plugin....  So we remember the first and last lines of this very
-///// C++ source file q6refpersys.cc to be replicated in generated C++
+///// C++ source file fox-refpersys.cc to be replicated in generated C++
 ///// code by this utility, to be compiled by it (in temporary C++
 ///// files) into a temporary C++ plugin.
 
@@ -38,19 +38,7 @@ extern "C" const int foxrps_first_decl_line, foxrps_last_decl_line;
 const int foxrps_first_decl_line = __LINE__ -2;
 
 extern "C" const char foxrps_self_file[];
-
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE 1
-#endif
-
-#define UNUSED __attribute__((unused))
-extern "C" const char foxrps_git_id[];
-extern "C" const char foxrps_shortgitid[];
-extern "C" char foxrps_host_name[];
-
-#ifndef GITID
-#error GITID should be defined in compilation command
-#endif
+extern "C" const char foxrps_self_basename[];
 
 
 #ifndef _GNU_SOURCE
@@ -61,10 +49,14 @@ extern "C" char foxrps_host_name[];
 extern "C" const char foxrps_git_id[];
 extern "C" const char foxrps_shortgitid[];
 extern "C" char foxrps_host_name[];
+extern "C" int foxrps_argc;
+extern "C" char** foxrps_argv;
 
 #ifndef GITID
 #error GITID should be defined in compilation command
 #endif
+
+
 
 //// from generated __timestamp.c
 extern "C" const char rps_timestamp[];
@@ -104,7 +96,10 @@ extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
 // end from __timestamp.c
 
-#include <FXJSON.h>
+/// a big FOX toolkit header file installed in
+/// /usr/local/include/fox-1.7/fx.h
+#include <fx.h>
+
 
 
 
@@ -160,8 +155,40 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_DEBUGOUT(Out) FOXRPS_DEBUGOUT_AT(__FILE__,__LINE__,Out)
 
-#error fox-refpersys.cc very incomplete
 
+
+
+////////////////////////////////////////////////////////////////
+///////////// end of declaration part
+const int foxrps_last_decl_line = __LINE__ -2;
+
+#ifndef SELF_FILE
+#error SELF_FILE should be defined in compilation command
+#endif
+
+#ifndef SELF_BASENAME
+#error SELF_BASENAME should be defined in compilation command
+#endif
+
+const char foxrps_self_file[]= SELF_FILE;
+const char foxrps_self_basename[]= SELF_BASENAME;
+
+
+int foxrps_argc;
+char**foxrps_argv;
+
+int
+main(int argc, char**argv)
+{
+  foxrps_argc = argc;
+  foxrps_argv = argv;
+  if (foxrps_argc>1) {
+    if (!strcmp(foxrps_argv[1], "--version")) {
+    }
+    else if (!strcmp(foxrps_argv[1], "--help")) {
+    };
+  };
+} // end of main
 
 
 /****************
