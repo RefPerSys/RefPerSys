@@ -98,8 +98,9 @@ extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
 // end from __timestamp.c
 
-/// a big FOX toolkit header file installed in
-/// /usr/local/include/fox-1.7/fx.h
+#include <unistd.h>
+/// a big FOX toolkit header file (including all other FOX headers)
+/// installed in /usr/local/include/fox-1.7/fx.h
 #include <fx.h>
 
 
@@ -158,8 +159,6 @@ extern "C" const char rps_cxx_compiler_version[];
 #define FOXRPS_DEBUGOUT(Out) FOXRPS_DEBUGOUT_AT(__FILE__,__LINE__,Out)
 
 
-
-
 ////////////////////////////////////////////////////////////////
 ///////////// end of declaration part
 const int foxrps_last_decl_line = __LINE__ -2;
@@ -179,12 +178,15 @@ const char foxrps_git_id[]=GITID;
 
 int foxrps_argc;
 char**foxrps_argv;
+char foxrps_host_name[128];
 
 int
 main(int argc, char**argv)
 {
   foxrps_argc = argc;
   foxrps_argv = argv;
+  memset (foxrps_host_name, 0, sizeof(foxrps_host_name));
+  gethostname(foxrps_host_name, sizeof(foxrps_host_name)-1);
   if (foxrps_argc>1) {
     if (!strcmp(foxrps_argv[1], "--version")) {
       std::cout << argv[0] << " git " << foxrps_shortgitid
@@ -197,6 +199,21 @@ main(int argc, char**argv)
     else if (!strcmp(foxrps_argv[1], "--help")) {
     };
   };
+  if (fxversion[0]!=FOX_MAJOR || fxversion[1]!=FOX_MINOR) {
+    FOXRPS_FATALOUT(foxrps_argv[0]
+		    << " incompatibly linked to FOX toolkit "
+		    << fxversion[0] << "." << fxversion[1] << "."
+		    << fxversion[2] << " but built for "
+		    << FOX_MAJOR << "." << FOX_MINOR
+		    << "." << FOX_LEVEL);
+  };
+  if (fxversion[2] != FOX_LEVEL) {
+    FOXRPS_WARNOUT(foxrps_argv[0] << " linked to FOX toolkit "
+		    << fxversion[0] << "." << fxversion[1] << "."
+		    << fxversion[2] << " but built for "
+		    << FOX_MAJOR << "." << FOX_MINOR
+		    << "." << FOX_LEVEL);
+  }
 } // end of main
 
 
