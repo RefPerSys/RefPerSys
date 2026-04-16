@@ -45,6 +45,8 @@ extern "C" const char foxrps_self_basename[];
 #define _GNU_SOURCE 1
 #endif
 
+#include <iostream>
+
 #define UNUSED __attribute__((unused))
 extern "C" const char foxrps_git_id[];
 extern "C" const char foxrps_shortgitid[];
@@ -172,7 +174,8 @@ const int foxrps_last_decl_line = __LINE__ -2;
 
 const char foxrps_self_file[]= SELF_FILE;
 const char foxrps_self_basename[]= SELF_BASENAME;
-
+const char foxrps_shortgitid[]=SHORT_GITID;
+const char foxrps_git_id[]=GITID;
 
 int foxrps_argc;
 char**foxrps_argv;
@@ -184,6 +187,12 @@ main(int argc, char**argv)
   foxrps_argv = argv;
   if (foxrps_argc>1) {
     if (!strcmp(foxrps_argv[1], "--version")) {
+      std::cout << argv[0] << " git " << foxrps_shortgitid
+		<< " compiled by " << rps_cxx_compiler_realpath
+		<< ": " << rps_cxx_compiler_version
+		<< " on " __DATE__ "@" __TIME__ << std::endl
+		<< "using FOX toolkit " << FOX_MAJOR << "." << FOX_MINOR
+		<< "." << FOX_LEVEL << "-" << FXApp::copyright << std::endl;
     }
     else if (!strcmp(foxrps_argv[1], "--help")) {
     };
