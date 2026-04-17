@@ -327,6 +327,7 @@ clean: clean-plugins
 	$(RM) *% %~
 	$(RM) *.gch
 	$(RM) *.orig
+	$(RM) doc*/*/*~
 	$(RM) */*~ */*% */*.orig
 	$(RM) */*.so
 	$(RM) *.ii
