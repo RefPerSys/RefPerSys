@@ -465,6 +465,11 @@ and allowed to download its source code and configure it using
 '--enable-debug' '--with-abiversion' '--with-optim=-g -O2 -fPIC'
 '--sysconfdir=/etc/local/'` please send us an email.
 
+The `tools/fox-refpersys.cc` is a
+[FOX-toolkit](https://fox-toolkit.org/) tentative for a companion GUI
+(the binary `fox-refpersys`should communicate with `refpersys` using
+JSONRPC and could generate its plugins via temporary C++ code)
+
 ## Garbage collection
 
 *RefPerSys* is a multi-threaded and garbage-collected system. We are
