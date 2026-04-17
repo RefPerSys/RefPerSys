@@ -186,7 +186,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
-///////////// end of declaration part
+///////////// end of declaration part
 const int foxrps_last_decl_line = __LINE__ -2;
 
 
@@ -212,6 +212,48 @@ std::unique_ptr< FX::FXApp> foxrps_ptr_app;
 int foxrps_argc;
 char**foxrps_argv;
 char foxrps_host_name[128];
+bool foxrps_debug;
+
+
+
+
+
+FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp):
+  FoxrpsMainWindow()
+{
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow this@" << (void*)this);
+#warning incomplete FoxrpsMainWindow constructor
+} // end FoxrpsMainWindow::FoxrpsMainWindow
+
+FoxrpsMainWindow::~FoxrpsMainWindow()   //virtual destructor
+{
+  FOXRPS_DEBUGOUT("~FoxrpsMainWindow this@" << (void*)this);
+#warning incomplete FoxrpsMainWindow destructor
+} // end FoxrpsMainWindow::~FoxrpsMainWindow
+
+void
+FoxrpsMainWindow::create(void)  // virtual method
+{
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::create this@" << (void*)this);
+  FXMainWindow::create();
+#warning incomplete FoxrpsMainWindow::create
+} // end FoxrpsMainWindow::create
+
+void
+FoxrpsMainWindow::layout(void)   // virtual method
+{
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::layout this@" << (void*)this);
+  FXMainWindow::layout();
+#warning incomplete FoxrpsMainWindow::layout
+} // end FoxrpsMainWindow::layout
+
+void
+FoxrpsMainWindow::show(void)   // virtual method
+{
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::show this@" << (void*)this);
+  FXMainWindow::show();
+#warning incomplete FoxrpsMainWindow::show
+} // end FoxrpsMainWindow::show
 
 void
 FoxrpsMainWindow::output(std::ostream&out) const
@@ -219,6 +261,16 @@ FoxrpsMainWindow::output(std::ostream&out) const
 #warning incomplete FoxrpsMainWindow::output
   out << "FoxrpsMainWindow@" << (void*)this;
 } // end FoxrpsMainWindow::output
+
+
+////////////////
+FXDEFMAP(FoxrpsMainWindow) FoxrpsMainWindowMap[]=
+{
+};
+
+FXIMPLEMENT(FoxrpsMainWindow,FXMainWindow,
+            FoxrpsMainWindowMap, ARRAYNUMBER(FoxrpsMainWindowMap));
+
 
 static void
 foxrps_usage(void)
