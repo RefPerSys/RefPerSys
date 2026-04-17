@@ -6,7 +6,7 @@
 echo $0 Starting in $(pwd)
 rm -rfv RefPerSys-PFIA-2026-Starynkevitch..{aux,bcf,blg,log,pdf} generated-pfia2026-gitid.tex
 
-printf "\n\n generating pfia2026-gitid\n"
+printf "\n\n generating generated-pfia2026.tex\n"
 
 rawgittag="$(git log --format=oneline -1 --abbrev=16 --abbrev-commit -q|cut -d' ' -f1)"
 
@@ -25,3 +25,9 @@ for svgfile in *.svg ; do
     inkscape -o $svgbase.eps $svgfile
 done
 
+### running LuaLaTeX
+lualatex --shell-escape  --halt-on-error RefPerSys-PFIA-2026-Starynkevitch
+if [[ $? == 0 ]]; then
+   lualatex --shell-escape  --halt-on-error RefPerSys-PFIA-2026-Starynkevitch
+fi
+## eof

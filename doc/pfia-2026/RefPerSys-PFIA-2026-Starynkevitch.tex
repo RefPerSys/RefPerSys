@@ -7,3 +7,37 @@
 %https://pfia26.cril.fr/
 
 \newcommand{\RefPerSys}{{\textit{\textsc{RefPerSys}}}}
+
+% defines the \rpsgitcommit and \rpsgitdate commands
+% with a generated LaTeX file
+\input{generated-pfia2026}
+
+\begin{document}
+\title{gestion des incertitudes dans le moteur d'inférences \RefPerSys}
+\author{Basile Starynkevitch\institute{Bourg La Reine, France, email: \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}}
+
+  \maketitle
+
+  \begin{abstract}
+    Le moteur d'inférences \RefPerSys est un logiciel libre en dévelopement qui ambitionne de gérer des règles et des expertises de manière déclarative, facilitant ainsi la gestion des incertitudes.
+  \end{abstract}
+
+%%% for a draft that should be acceptable
+\begin{flushright}
+  \begin{relsize}{-1}
+    Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}
+  \end{relsize}
+\end{flushright}
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% For emacs:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Local Variables: ;;
+%% compile-command: "./build-pfia2026-refpersys.sh" ;;
+%% End: ;;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  
+\end{document}
