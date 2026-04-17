@@ -15,8 +15,11 @@ if git status -s | grep -q '^.M' > /dev/null ; then
 else
     gittag=$(printf "%s..." "$rawgittag")
 fi
-printf "\\\\newcommand{\\\\rpsgitcommit}[0]{%s}\n" "$gittag" > generated-pfia2026.tex
+
+echo '%generated file generated-pfia2026.tex by build-pfia2026-refpersys.sh' > generated-pfia2026.tex
+printf "\\\\newcommand{\\\\rpsgitcommit}[0]{%s}\n" "$gittag" >> generated-pfia2026.tex
 env LANG=fr_FR.UTF-8 date +"\\newcommand{\\rpsgitdate}[0]{%d %b %Y}%n" >> generated-pfia2026.tex
+echo '%end of generated file generated-pfia2026.tex' >> generated-pfia2026.tex
 
 printf "\n\n ================ SVG processing by inkscape of "; echo *.svg "files."
 for svgfile in *.svg ; do
@@ -27,7 +30,18 @@ done
 
 ### running LuaLaTeX
 lualatex --shell-escape  --halt-on-error RefPerSys-PFIA-2026-Starynkevitch
+
+### running BibTeX
+bibtex RefPerSys-PFIA-2026-Starynkevitch
+
 if [[ $? == 0 ]]; then
    lualatex --shell-escape  --halt-on-error RefPerSys-PFIA-2026-Starynkevitch
 fi
-## eof
+##% For emacs:
+##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## Local Variables: ;;
+## compile-command: "./build-pfia2026-refpersys.sh" ;;
+## End: ;;
+##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## eof build-pfia2026-refpersys.sh
+

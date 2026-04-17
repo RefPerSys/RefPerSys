@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[french]{pfia}
 \usepackage{graphicx}
 \usepackage{latexsym}
 \usepackage{xcolor}
@@ -6,28 +6,69 @@
 \usepackage{hyperref}
 %https://pfia26.cril.fr/
 
+\definecolor{afiablue}{RGB}{61,159,207}
+\definecolor{afiared}{RGB}{167,75,68}
+\definecolor{afialightblue}{RGB}{158,193,232}
+
 \newcommand{\RefPerSys}{{\textit{\textsc{RefPerSys}}}}
+
+\newcommand{\afiafield}[1]{\textcolor{afiablue}{#1}}
+\newcommand{\afiaval}[1]{\textsf{\textcolor{afialightblue}{#1}}}
+
 
 % defines the \rpsgitcommit and \rpsgitdate commands
 % with a generated LaTeX file
 \input{generated-pfia2026}
 
+\author{Basile \textsc{Starynkévitch}\\
+    {\relsize{-1}{\href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}}}}
+
+  \date{\rpsgitdate}
+  
 \begin{document}
 \title{gestion des incertitudes dans le moteur d'inférences \RefPerSys}
-\author{Basile Starynkevitch\institute{Bourg La Reine, France, email: \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}}
 
   \maketitle
 
-  \begin{abstract}
-    Le moteur d'inférences \RefPerSys est un logiciel libre en dévelopement qui ambitionne de gérer des règles et des expertises de manière déclarative, facilitant ainsi la gestion des incertitudes.
-  \end{abstract}
+  \begin{resume}
+    Le moteur d'inférences \RefPerSys{} est un logiciel libre en dévelopement qui ambitionne de gérer des règles et des méta-règles et des expertises de manière déclarative, facilitant ainsi la gestion des incertitudes.
+  \end{resume}
 
+\begin{motscles}
+Moteur d'inférences, systèmes experts, logiciels libres, souveraineté numérique
+\end{motscles}
+
+\begin{abstract}
+The \RefPerSys{} inference engine is an open source software in
+development which aims to manage rules and meta-rules and expertise in
+a declarative way, hence facilitating management of incertaintis.
+\end{abstract}
+
+\begin{keywords}
+Inference engine, expert system, free software, digital sovereignty.
+\end{keywords}
+
+\section{Introduction}
+Les moteurs d'inférences existent depuis
+longtemps\cite{Pitrat:1982:decr-conn-decl,Starynkevitch-1990-EUM} et
+le logiciel libre aussi\cite{Weber:2004:SuccessOpenSource}.
+
+\smallskip
+\section*{Remerciements}
+Les remerciements s'expriment juste avant la bibliographie, à l'aide d'une section non numérotée.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% for a draft that should be acceptable
 \begin{flushright}
   \begin{relsize}{-1}
-    Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}
+    version \texttt{git} ID is \texttt{\textit{\rpsgitcommit}} du
+    \texttt{\textit{\rpsgitdate}}
   \end{relsize}
 \end{flushright}
+
+\bibliographystyle{plain}
+\bibliography{bib-refpersys}
+
 
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,6 +79,3 @@
 %% compile-command: "./build-pfia2026-refpersys.sh" ;;
 %% End: ;;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  
-\end{document}
