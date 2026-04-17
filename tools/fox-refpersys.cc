@@ -54,12 +54,13 @@ extern "C" const char foxrps_self_basename[];
 
 
 
-#define UNUSED __attribute__((unused))
+
 extern "C" const char foxrps_git_id[];
 extern "C" const char foxrps_shortgitid[];
 extern "C" char foxrps_host_name[];
 extern "C" int foxrps_argc;
 extern "C" char** foxrps_argv;
+extern "C" bool foxrps_debug;
 extern "C" std::unique_ptr< FX::FXApp> foxrps_ptr_app;
 #ifndef GITID
 #error GITID should be defined in compilation command
@@ -160,6 +161,30 @@ extern "C" const char rps_cxx_compiler_version[];
 #define FOXRPS_DEBUGOUT(Out) FOXRPS_DEBUGOUT_AT(__FILE__,__LINE__,Out)
 
 
+// Our main window
+class FoxrpsMainWindow : public FXMainWindow
+{
+  FXDECLARE(FoxrpsMainWindow);
+  FXVerticalFrame* _main_vertframe;
+  FXMenuBar* _main_menubar;
+  FXMenuPane *_main_filemenu;
+  FXMenuCommand *_main_quitcmd;
+protected:
+  FoxrpsMainWindow(): FXMainWindow(),
+    _main_vertframe(nullptr), _main_menubar(nullptr), _main_filemenu(nullptr), _main_quitcmd(nullptr)
+  {
+    FOXRPS_DEBUGOUT("FoxrpsMainWindow @" << (void*)this);
+  };
+public:
+  FoxrpsMainWindow(FXApp *theapp);
+  virtual ~FoxrpsMainWindow();
+  virtual void create(void);
+  virtual void layout(void);
+  virtual void show(void);
+  void output (std::ostream&out) const;
+};        // end FoxrpsMainWindow
+
+
 ////////////////////////////////////////////////////////////////
 ///////////// end of declaration part
 const int foxrps_last_decl_line = __LINE__ -2;
@@ -188,6 +213,13 @@ int foxrps_argc;
 char**foxrps_argv;
 char foxrps_host_name[128];
 
+void
+FoxrpsMainWindow::output(std::ostream&out) const
+{
+#warning incomplete FoxrpsMainWindow::output
+  out << "FoxrpsMainWindow@" << (void*)this;
+} // end FoxrpsMainWindow::output
+
 static void
 foxrps_usage(void)
 {
@@ -195,7 +227,6 @@ foxrps_usage(void)
 #warning incomplete foxrps_usage
 } // end foxrps_usage
 
-int
 static void
 foxrps_prog_args(void)
 {
@@ -203,8 +234,11 @@ foxrps_prog_args(void)
 #warning incomplete foxrps_prog_args
 } // end foxrps_prog_args
 
+
+int
 main(int argc, char**argv)
 {
+  int exitcode = 0;
   foxrps_argc = argc;
   foxrps_argv = argv;
   memset (foxrps_host_name, 0, sizeof(foxrps_host_name));
@@ -246,9 +280,9 @@ main(int argc, char**argv)
   foxrps_ptr_app.reset(&the_app);
   the_app.init(argc, argv);
   foxrps_prog_args();
-  int ok = the_app.run();
+  exitcode = the_app.run();
   foxrps_ptr_app.release();
-  return ok;
+  return exitcode;
 } // end of main
 
 
