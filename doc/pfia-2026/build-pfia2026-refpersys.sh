@@ -4,7 +4,7 @@
 # 
 # https://pfia26.cril.fr/journ%C3%A9es/journee3/incertitude-ia/ 
 echo $0 Starting in $(pwd)
-rm -rfv RefPerSys-PFIA-2026-Starynkevitch..{aux,bcf,blg,log,pdf} generated-pfia2026-gitid.tex
+rm -rfv RefPerSys-PFIA-2026-Starynkevitch.{aux,bcf,blg,log,pdf} generated-pfia2026-gitid.tex
 
 printf "\n\n generating generated-pfia2026.tex\n"
 

@@ -41,7 +41,7 @@ Moteur d'inférences, systèmes experts, logiciels libres, souveraineté numéri
 \begin{abstract}
 The \RefPerSys{} inference engine is an open source software in
 development which aims to manage rules and meta-rules and expertise in
-a declarative way, hence facilitating management of incertaintis.
+a declarative way, hence facilitating management of incertainties.
 \end{abstract}
 
 \begin{keywords}
@@ -50,9 +50,77 @@ Inference engine, expert system, free software, digital sovereignty.
 
 \section{Introduction}
 Les moteurs d'inférences existent depuis
-longtemps\cite{Pitrat:1982:decr-conn-decl,Starynkevitch-1990-EUM} et
-le logiciel libre aussi\cite{Weber:2004:SuccessOpenSource}.
+longtemps\cite{Pitrat:1982:decr-conn-decl, Starynkevitch-1990-EUM,
+  Pitrat:2009:ArtifBeings, Starynkevitch-JDLL-2025, dormoy:1992:meta,
+  Lauriere:1986:snark} et le logiciel libre
+aussi\cite{Weber:2004:SuccessOpenSource}. Ils se caractérisent par la
+déclarativité des connaissances qui y sont
+explicitées\cite{fouet-starynkevitch:describing-control:1987}, y
+compris le mécanisme d'inférences. Beaucoup de moteurs d'inférences et
+la plupart des compilateurs\cite{Starynkevitch-DSL2011,
+  queinnec:2003:lisp, serrano:1995:bigloo,
+  Chailloux:2000:applications-ocaml} sont des programmes séquentiels,
+souvent états-uniens\footnote{cf
+\href{https://www.clipsrules.net/}{\texttt{clipsrules.net}} et le
+compilateur \href{https://gcc.gnu.org}{GCC}}.
 
+Les ordinateurs sont actuellement parallèles, leur processeur étant en
+2026 multi-c{\oe}urs. Pour profiter de ce parallèlisme, les logiciels
+doivent être reconçus. Le codage parallèle est
+difficile\cite{sangiorgi:2003:pi-calculus,
+  foster:1995:designing-parallel, mitchell:2001:advanced-linux-prog,
+  computing1995designing, stallings:2003:organisation}.
+
+Il est donc utile de concevoir des moteurs d'inférences et des
+systèmes experts embarquant des générateurs de code à
+l'exécution. Sous Linux, on peut générer du code dans
+des milliers de greffons temporaires (chargés avec \texttt{dlopen(3)})
+soit en générant des fichiers temporaires en C ou C++, soit en
+utilisant des bibliothèques telles que
+\href{https://gcc.gnu.org/onlinedocs/jit}{\texttt{libgccjit}} ou
+\href{https://www.gnu.org/software/lightning/}{GNU
+  \texttt{lightning}}.
+
+Un calcul symbolique ou numérique peut durer longtemps\footnote{Les
+jumeaux numériques: simulation de galaxie ou de centrale nucléaire
+peuvent demander des semaines de calcul sur supercalculateur}. Le
+logiciel doit alors se soucier de persister
+\cite{dearle:2009:orthogonal} les résultats temporaires, par exemple
+toutes les heures. Les algorithmes de persistence et de gestion
+mémoire (ramasses-miettes \cite{jones:2016:gchandbook} sont des
+parcours de graphe et ont des ressemblances qui incitent à une
+génération de code avec un formalisme partagé.
+
+\section{Représentation des données}
+Les données doivent donc faciliter la représentation et la
+manipulation du code et certaines sont transitoires donc non
+persistentes. \RefPerSys{} distingue les objets mutables et lourds,
+des valeurs immuables plus nombreuses et légères. Un objet est figé en
+mémoire et a un identifiant ``globalement'' unique (aléatoire sur 128
+bits), par exemple {\relsize{-1}{\texttt{\_1Io89yIORqn02SXx4p}}} qui
+represente le système tout entier (nommé
+\texttt{\textit{RefPerSys\_system}}). Nos données suivent le modèle
+ObjVLisp \cite{cointe:1987:metaclasses}: chaque valeur a une classe
+qui est un objet persistent. Certaines sont scalaires, d'autres
+composites. Les ensembles finis d'objets ou leur tuples sont des
+valeurs contigües en mémoire.
+
+Au démarrage les données sont rechargées depuis des fichiers JSON ou
+C++ (compilés \cite{mazur:2004:compile, stroustrup:2018:tourcplusplus, levine:1999:linkers-loaders,
+  pierce:2002:types, rougier:2017:ReScience}) produits à l'exécution
+précédente. Périodiquement\footnote{En principe toutes les quelques
+minutes...} elles sont écrites par le système dans ces même fichiers,
+et il est avantageux
+\cite{hernandez-phillips:2019:debugging-bootstrap} de générer le code
+d'écriture.
+
+Les objets (suivant \cite{greiner:1980:representation,
+  kay:1996:early-smalltalk, kumar:2015:importance-expert-systems,
+  levene:2012:relational-databases}) ont leur classe, un jeu
+d'attributs, une séquence de composants, une charge utile. Chaque
+attribut associe un objet à une valeur, chaque composant est une
+valeur. La charge utile (``payload'') est optionnelle, persistable et
+propre à l'objet la contenant.
 \smallskip
 \section*{Remerciements}
 Les remerciements s'expriment juste avant la bibliographie, à l'aide d'une section non numérotée.
@@ -67,8 +135,9 @@ Les remerciements s'expriment juste avant la bibliographie, à l'aide d'une sect
 \end{flushright}
 
 \bibliographystyle{plain}
+\begin{relsize}{-0.5}
 \bibliography{bib-refpersys}
-
+\end{relsize}
 
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
