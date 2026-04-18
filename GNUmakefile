@@ -949,11 +949,11 @@ testcarb1: refpersys
 
 testcarb2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "@display 1 + 2 * 3" -B --run-name=testcarb2 || (echo testcarb2 failed; exit 1)
+	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb2 || (echo testcarb2 failed; exit 1)
 
 testcarb3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
+	./refpersys  -AREPL,CMD -c "@display 1 + 2* 3" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
 
 ########### show the testing commands
 showtests:
