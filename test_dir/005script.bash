@@ -30,9 +30,14 @@ if [ ! -x refpersys ]; then
     exit 1
 fi
 
-## CPU soft and hard limits
+## CPU time soft and hard limits in seconds
 ulimit -S -t 5
 ulimit -H -t 8
+## memory limit in kilobytes (512 Mbytes)
+ulimit -S -m 512000
+## file size limits (in half kilobytes blocks)
+ulimit -S -f 32768
+
 echo running refpersys -AREPL --script=$0 --user-pref=. --batch --run-name=005script
 
 ./refpersys -AREPL --script=$0 --user-pref=. --batch --run-name=005script
@@ -47,4 +52,5 @@ REFPERSYS_SCRIPT carbon
 
 @display RefPerSys_system
 
+@display 1 + 2
 # end of file test_dir/005script.bash in refpersys
