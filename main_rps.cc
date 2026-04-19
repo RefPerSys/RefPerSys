@@ -1317,7 +1317,7 @@ rps_set_debug_output_path(const char*filepath)
 // if fline is negative, print a newline before....
 void
 rps_debug_printf_at(const char *filnam, int fline,
-		    const char*funcnam, Rps_Debug dbgopt,
+                    const char*funcnam, Rps_Debug dbgopt,
                     const char *fmt, ...)
 {
   char threadbfr[24];
@@ -1337,6 +1337,7 @@ rps_debug_printf_at(const char *filnam, int fline,
                , thrbuf,  static_cast<int>(rps_thread_id()));
     }
   RPS_ASSERT(threadbfr[0] != (char)0);
+  RPS_POSSIBLE_BREAKPOINT();
   //
   char tmbfr[64];
   memset(tmbfr, 0, sizeof (tmbfr));
@@ -1345,11 +1346,15 @@ rps_debug_printf_at(const char *filnam, int fline,
   char *msg = nullptr, *bigbfr = nullptr;
   char bfr[256];
   memset(bfr, 0, sizeof (bfr));
-  //
+  int len= -1;
   va_list arglst;
-  va_start(arglst, fmt);
-  int len = vsnprintf(bfr, sizeof (bfr), fmt, arglst);
-  va_end(arglst);
+  //
+  {
+    va_start(arglst, fmt);
+    len = vsnprintf(bfr, sizeof (bfr), fmt, arglst);
+    va_end(arglst);
+  };
+  RPS_POSSIBLE_BREAKPOINT();
   //
   if (RPS_UNLIKELY (len >= static_cast<int>(sizeof (bfr)) - 1))
     {
@@ -1365,6 +1370,9 @@ rps_debug_printf_at(const char *filnam, int fline,
     }
   else
     msg = bfr;
+  ////
+  RPS_POSSIBLE_BREAKPOINT();
+  ////
   //
   {
     pthread_mutex_lock(&rps_debug_mutex);
@@ -1384,19 +1392,19 @@ rps_debug_printf_at(const char *filnam, int fline,
     memset (debugcstr, 0, sizeof(debugcstr));
     if (!rps_debug_level(dbgopt).empty())
       strncpy(debugcstr, rps_debug_level(dbgopt).c_str(),
-	      sizeof(debugcstr)-1);
+              sizeof(debugcstr)-1);
     //
 #define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
       {
         rps_now_strftime_centiseconds_nolen(datebfr,
-					    "%Y-%b-%d@%H:%M:%s.__ %Z");
+                                            "%Y-%b-%d@%H:%M:%s.__ %Z");
       }
     //
     if (rps_syslog_enabled)
       {
         syslog(RPS_DEBUG_LOG_LEVEL,
-	       "RPS-DEBUG#%s %7s %s @%s:%d <%s> %s %s",
+               "RPS-DEBUG#%s %7s %s @%s:%d <%s> %s %s",
                debugcntstr,
                debugcstr, threadbfr, filnam, fline, funcnam, tmbfr, msg);
       }
@@ -1407,12 +1415,12 @@ rps_debug_printf_at(const char *filnam, int fline,
                 debugcstr, threadbfr);
         fprintf(rps_debug_file, " %s:%d <%s> %s %s\n",
                 filnam, (fline>0)?fline:(-fline),
-		funcnam,
+                funcnam,
                 tmbfr, msg);
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
             if (!rps_debug_file && rps_debug_file != stdout
-		&& rps_debug_file != stderr)
+                && rps_debug_file != stderr)
               fprintf(stderr, "\n¤RPS-DEBUG#%s *^*^* %s\n",
                       debugcntstr, datebfr);
             else
@@ -1426,27 +1434,27 @@ rps_debug_printf_at(const char *filnam, int fline,
         bool ontty = isatty(STDERR_FILENO);
         if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
-	if (ontty)
-	  fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
+        if (ontty)
+          fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
         fprintf(stderr, "RPS DEBUG#%s %7s %s",
                 debugcntstr, debugcstr, threadbfr);
-	if (ontty)
-	  fputs(RPS_TERMINAL_ITALICS_ESCAPE, stderr);
+        if (ontty)
+          fputs(RPS_TERMINAL_ITALICS_ESCAPE, stderr);
         fprintf(stderr, "@%s:%d", filnam, (fline>0)?fline:(-fline));
-	if (ontty)
-	  fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);
-	fprintf(stderr, "%s\n%s\n", tmbfr, msg);
+        if (ontty)
+          fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);
+        fprintf(stderr, "%s\n%s\n", tmbfr, msg);
         fflush(stderr);
         //
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-	    if (ontty)
-	      fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
+            if (ontty)
+              fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
             fprintf(stderr, "RPS.DEBUG %04ld ~ %s *^*^*",
-		    ndbg, datebfr);
-	    if (ontty)
-	      fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
-	    fputs("\n\n", stderr);
+                    ndbg, datebfr);
+            if (ontty)
+              fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
+            fputs("\n\n", stderr);
           }
         //
         fflush(nullptr);
