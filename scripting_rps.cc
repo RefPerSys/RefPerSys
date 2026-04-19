@@ -58,9 +58,9 @@ extern "C" const char rps_scripting_help_english_text[];
 extern "C" void rps_run_one_script_file(Rps_CallFrame*, int ix);
 
 extern "C" void rps_run_script_carbon_mode(Rps_CallFrame*, Rps_MemoryFileTokenSource&,
-					   int ix, int loopcnt);
+    int ix, int loopcnt);
 extern "C" void rps_run_script_echo_mode(Rps_CallFrame*, Rps_MemoryFileTokenSource&,
-					 int ix, int loopcnt);
+    int ix, int loopcnt);
 
 
 
@@ -118,7 +118,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-	 synchronization or mutex is needed to : */
+      	 synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -344,7 +344,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 
 
 void rps_run_script_carbon_mode(Rps_CallFrame*callfr, Rps_MemoryFileTokenSource&tsrc,
-				int ix, int loopcnt)
+                                int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
@@ -374,33 +374,33 @@ void rps_run_script_carbon_mode(Rps_CallFrame*callfr, Rps_MemoryFileTokenSource&
 
 
 void rps_run_script_echo_mode(Rps_CallFrame*callfr, Rps_MemoryFileTokenSource&tsrc,
-			      int ix, int loopcnt)
+                              int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
                  Rps_ObjectRef obenv;);
   RPS_INFORMOUT("rps_run_one_echo_mode ix=" << ix << " loopcnt=" << loopcnt);
   RPS_DEBUG_LOG(REPL, "rps_run_script_echo_mode ix=" << ix
-		<< " tsrc=" << tsrc << " @"  << tsrc.position_str()
-		<< " loop#" << loopcnt
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_run_script_echo_mode"));
+                << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+                << " loop#" << loopcnt
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_script_echo_mode"));
   while (tsrc.get_line() && !tsrc.reached_end()) {
-    clp = tsrc.curcptr();
-    if (!clp)
-      break;
-    RPS_DEBUG_LOG(REPL, "¤echo: clp=" << Rps_QuotedC_String(clp)
-		  << " outloop#" << loopcnt
-		  << " @" << tsrc.position_str());
-    std::cout << clp << std::flush;
-  } // end while get_line in echo mode
+      clp = tsrc.curcptr();
+      if (!clp)
+        break;
+      RPS_DEBUG_LOG(REPL, "¤echo: clp=" << Rps_QuotedC_String(clp)
+                    << " outloop#" << loopcnt
+                    << " @" << tsrc.position_str());
+      std::cout << clp << std::flush;
+    } // end while get_line in echo mode
   std::cout << std::endl;
   RPS_DEBUG_LOG(REPL, "rps_run_script_echo_mode clp="
-		<< Rps_QuotedC_String(clp)
-		<< " @" << tsrc.position_str()
-		<< " echo mode"
-		<< RPS_FULL_BACKTRACE_HERE(1, "-rps_run_script_echo_mode")
-		<< " ix=" << ix	<< " loop#" << loopcnt);
+                << Rps_QuotedC_String(clp)
+                << " @" << tsrc.position_str()
+                << " echo mode"
+                << RPS_FULL_BACKTRACE_HERE(1, "-rps_run_script_echo_mode")
+                << " ix=" << ix	<< " loop#" << loopcnt);
 } // end rps_run_script_echo_mode
-  
+
 //// end of file scripting_rps.cc

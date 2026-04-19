@@ -2664,17 +2664,17 @@ rps_real_shell_file_path(const std::string& filpath)
       int rplen = (int)strlen(rp);
       RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path rp="
                     << Rps_QuotedC_String(rp)
-		    << std::endl
-		    << "… rplen=" << rplen
-		    << " filpath=" << Rps_QuotedC_String(filpath));
+                    << std::endl
+                    << "… rplen=" << rplen
+                    << " filpath=" << Rps_QuotedC_String(filpath));
       restr.reserve(rplen);
       restr.assign(rp,rplen);
       RPS_ASSERT_LOG((int)restr.size() == rplen,
-		     "rplen=" << rplen
-		     << " rp=" << Rps_QuotedC_String(rp)
-		     << std::endl
-		     << "… restr=" << Rps_QuotedC_String(restr)
-		     << " of size=" << restr.size());
+                     "rplen=" << rplen
+                     << " rp=" << Rps_QuotedC_String(rp)
+                     << std::endl
+                     << "… restr=" << Rps_QuotedC_String(restr)
+                     << " of size=" << restr.size());
       RPS_ASSERT(restr.c_str() != rp);
       RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path restr="
                     << Rps_QuotedC_String(restr));

@@ -1103,7 +1103,7 @@ while (0)
           (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
               Fil, Lin, Func);                                  \
       fprintf(stderr, "!*!*! %s \n\n",                          \
-              str_##Lin.c_str());				\
+              str_##Lin.c_str());       \
     };                                                          \
     rps_fatal_stop_at(Fil, Lin); }                              \
  } while(0)

@@ -1620,9 +1620,9 @@ Rps_exit_todo_cl::tdxit_do_at_exit(void)
 {
   std::lock_guard<std::recursive_mutex> gu_tdxit(rps_exit_recmutx);
   int xsiz = (int) rps_exit_vecptr.size();
-  RPS_DEBUG_LOG(REPL, "exiting, todo xsiz=" << xsiz << std::endl
+  RPS_DEBUG_LOG(REPL, "°tdxit_do_at_exit, todo xsiz=" << xsiz << std::endl
                 << RPS_FULL_BACKTRACE(1,
-                                      "Rps_exit_todo_cl::tdxit_do_at_exit"));
+                                      "°tdxit_do_at_exit"));
   if (xsiz == 0)
     return;
   for (int ix=0; ix<xsiz; ix++)
@@ -1715,12 +1715,13 @@ rps_exiting(void) //// called thru atexit
                 << " shortgit " << rps_shortgitid
                 << " thread " <<  rps_current_pthread_name()
                 << std::endl
-                << RPS_FULL_BACKTRACE(1, "rps_exiting < tdxit_do_at_exit"));
+                << RPS_FULL_BACKTRACE(1, "rps_exiting"));
   RPS_POSSIBLE_BREAKPOINT();
   Rps_exit_todo_cl::tdxit_do_at_exit();
   rps_unique_exit_handler();
   RPS_POSSIBLE_BREAKPOINT();
-  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
+  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s\n"
+                   "… git %s version %d.%d exiting α (%d);\n"
                    "… elapsed %.3f sec, CPU %.3f sec;\n"
                    "%s%s%s%s",
          (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
@@ -1733,7 +1734,8 @@ rps_exiting(void) //// called thru atexit
          rps_run_name.c_str());
   if (!rps_syslog_enabled)
     {
-      printf("RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
+      printf("RefPerSys process %d on host %s in %s\n"
+             "… git %s version %d.%d exiting β (%d);\n"
              "… elapsed %.3f sec, CPU %.3f sec\n",
              (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
              rps_get_major_version(), rps_get_minor_version(),
