@@ -212,7 +212,7 @@ rps_do_create_fifos_from_prefix(void)
   RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix outfd#" << outfd
                 << " outfifo:" << outfifo);
   if (rmatex)
-    atexit(rps_remove_fifos);
+    rps_atexit(rps_remove_fifos);
   rps_fifo_pair.fifo_ui_wcmd = cmdfd;
   rps_fifo_pair.fifo_ui_rout = outfd;
   RPS_INFORMOUT("RefPerSys did create (in pid " << (int)getpid()
@@ -1799,7 +1799,7 @@ rps_postponed_remove_file(const std::string& path)
 {
   std::lock_guard<std::mutex> gu(rps_postponed_lock);
   if (rps_postponed_removed_files_vector.empty())
-    atexit(rps_schedule_files_postponed_removal);
+    rps_atexit(rps_schedule_files_postponed_removal);
   rps_postponed_removed_files_vector.push_back(std::string(path));
 } // end rps_postponed_remove_file
 

@@ -676,7 +676,7 @@ rps_run_loaded_application(int &argc, char **argv)
           return;
         };
       rps_gui_pid = guipid;
-      atexit(rps_kill_wait_gui_process);
+      rps_atexit(rps_kill_wait_gui_process);
     }
   //// if told, run an editor for C++ code
   if (!rps_cpluspluseditor_str.empty() || !rps_cplusplusflags_str.empty())
@@ -1308,7 +1308,7 @@ rps_set_debug_output_path(const char*filepath)
   fflush(fdbg);
   rps_debug_file = fdbg;
   strncpy(rps_debug_path, filepath, sizeof(rps_debug_path)-1);
-  atexit(rps_close_debug_file);
+  rps_atexit(rps_close_debug_file);
 } // end rps_set_debug_output_path
 
 
@@ -1727,7 +1727,7 @@ main (int argc, char** argv)
 #endif /*RPS_USE_CURL*/
   //// initialize the gccjit
   rps_gccjit_initialize ();
-  atexit(rps_gccjit_finalize);
+  rps_atexit(rps_gccjit_finalize);
   if (rps_my_load_dir.empty())
     {
       const char* rpld = realpath(rps_topdirectory, nullptr);
@@ -1752,7 +1752,7 @@ main (int argc, char** argv)
                      << ":" << strerror(errno));
       RPS_INFORMOUT("after loading the current directory has changed to " << cwdbuf);
     };
-  atexit (rps_exiting);
+  atexit (rps_exiting); /// should not use rps_atexit here!
   if (!disableduserpref && !rps_has_parsed_user_preferences())
     {
       rps_try_parsing_default_user_preferences();

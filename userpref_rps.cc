@@ -195,7 +195,7 @@ rps_set_user_preferences(char*path)
                 << " nbloop=" << nbloop
                 << " pos:" << rps_userpref_mts->position_str());
   rps_parse_user_preferences(rps_userpref_mts);
-  atexit(rps_delete_user_preferences);
+  rps_atexit(rps_delete_user_preferences);
 } // end  rps_set_user_preferences
 
 
