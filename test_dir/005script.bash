@@ -1,5 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
+# file RefPerSys/test_dir/005script.bash
 #  © Copyright (C) 2025 - 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 
@@ -47,6 +48,7 @@ exit $?
 ## gdb --args ./refpersys -AREPL --script=test_dir/005script.bash --user-pref=. --batch --run-name 005script
 
 ## magic string should not be commented
+## see scripting_rps.cc file
 REFPERSYS_SCRIPT carbon
 ## etc
 
