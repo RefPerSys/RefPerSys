@@ -98,6 +98,7 @@ rps_scripting_help(void)
 void
 rps_scripting_add_script(const char*path)
 {
+  RPS_POSSIBLE_BREAKPOINT();
   if (access(path, R_OK))
     RPS_FATALOUT("script file " << Rps_QuotedC_String(path)
                  << " is not accessible: "
@@ -118,7 +119,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-      	 synchronization or mutex is needed to : */
+            	 synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -141,6 +142,7 @@ rps_scripting_add_script(const char*path)
   rps_scripts_vector.push_back(rp);
   RPS_INFORMOUT("added script file #" << rps_scripts_vector.size()
                 << ": " << rp);
+  RPS_POSSIBLE_BREAKPOINT();
 } // end rps_scripting_add_script
 
 
