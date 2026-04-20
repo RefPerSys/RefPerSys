@@ -623,7 +623,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 extern "C" long rps_incremented_debug_counter(void);
 extern "C" long rps_debug_counter(void);
 
-extern "C" void rps_debug_warn_at(const char*file, int line);
+extern "C" void rps_debug_warn_at_msg(const char*file, int line, const char*msg=nullptr);
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {                   \
     if (rps_syslog_enabled) {                                   \
       syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} " Fmt,    \
@@ -635,7 +635,7 @@ extern "C" void rps_debug_warn_at(const char*file, int line);
             ontty##Lin?RPS_TERMINAL_BOLD_ESCAPE:"",             \
             ontty##Lin?RPS_TERMINAL_NORMAL_ESCAPE:"",           \
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);      \
-    rps_debug_warn_at(Fil,Lin);                                 \
+    rps_debug_warn_at_msg(Fil,Lin);       \
     fflush(stderr); } } while(0)
 
 #define RPS_WARN_AT(Fil,Lin,Fmt,...) RPS_WARN_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
@@ -644,23 +644,17 @@ extern "C" void rps_debug_warn_at(const char*file, int line);
 #define RPS_WARN(Fmt,...) RPS_WARN_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
 #define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {                    \
-    if (rps_syslog_enabled) {                                   \
       std::ostringstream outl##Lin;                             \
       outl##Lin <<   __VA_ARGS__ << std::flush;                 \
       outl##Lin.flush();                                        \
+    if (rps_syslog_enabled) {                                   \
       syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} %s",      \
              Fil, Lin, __PRETTY_FUNCTION__,                     \
              outl##Lin.str().c_str());                          \
     }                                                           \
     else {                                                      \
-      bool ontty##Lin = rps_stderr_istty;                       \
-      std::clog << (ontty##Lin?RPS_TERMINAL_BOLD_ESCAPE:"")     \
-                << "** RefPerSys WARN!"                         \
-                << (ontty##Lin?RPS_TERMINAL_NORMAL_ESCAPE:"")   \
-                << " " << (Fil) << ":" << Lin << ":: "          \
-                << __VA_ARGS__ << std::endl;                    \
-    };                                                          \
-    rps_debug_warn_at(Fil,Lin);  } while(0)
+  rps_debug_warn_at_msg(Fil, Lin, outl##Lin.str().c_str()); \
+    };  } while(0)
 
 #define RPS_WARNOUT_AT(Fil,Lin,...) RPS_WARNOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 

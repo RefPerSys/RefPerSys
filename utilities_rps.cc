@@ -2013,21 +2013,41 @@ rps_fatal_stop_at (const char *filnam, int lin)
 } // end rps_fatal_stop_at
 
 
-void rps_debug_warn_at(const char*file, int line)
+void rps_debug_warn_at_msg(const char*file, int line, const char*msg)
 {
   if (rps_syslog_enabled)
     {
-      syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d (git %s pid %d) **", file, line,
-             rps_shortgitid, (int)getpid());
+      if (msg)
+        syslog(LOG_WARNING,
+               "** REFPERSYS WARNING AT %s:%d : [%s] (git %s pid %d) **", file, line, msg,
+               rps_shortgitid, (int)getpid());
+      else
+        syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d (git %s pid %d) **", file, line,
+               rps_shortgitid, (int)getpid());
     }
   else
     {
       std::cerr << std::flush;
-      std::cerr << std::endl << "**!** REFPERSYS WARNING at " << file << ":" << line << std::endl;
+      if (msg)
+        std::cerr << std::endl << "**!** REFPERSYS WARNING at "
+                  << file << ":" << line
+                  << "[" << msg << "]" << std::endl;
+      else
+        std::cerr << std::endl << "**!** REFPERSYS WARNING at "
+                  << file << ":" << line
+                  << std::endl;
+
     };
   if (rps_debug_file)
     {
-      fprintf(rps_debug_file, "\n*** REFPERSYS WARNING at %s:%d ***\n", file, line);
+      if (msg)
+        fprintf(rps_debug_file,
+                "\n*** REFPERSYS WARNING at %s:%d [%s] ***\n",
+                file, line, msg);
+      else
+        fprintf(rps_debug_file,
+                "\n*** REFPERSYS WARNING at %s:%d ***\n",
+                file, line);
       fflush(rps_debug_file);
     }
 } // end rps_debug_warn_at
