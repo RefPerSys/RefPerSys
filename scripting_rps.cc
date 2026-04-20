@@ -119,7 +119,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-                  	 synchronization or mutex is needed to : */
+                                 synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -338,7 +338,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
               << " loop#" << loopcnt
               << " tsrc=" << tsrc << " @"  << tsrc.position_str()
               << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file")
+              << std::endl);
   RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file incompletely unimplemented
 } // end rps_run_one_script_file
@@ -402,7 +403,7 @@ void rps_run_script_echo_mode(Rps_CallFrame*callfr, Rps_MemoryFileTokenSource&ts
                 << " @" << tsrc.position_str()
                 << " echo mode"
                 << RPS_FULL_BACKTRACE_HERE(1, "-rps_run_script_echo_mode")
-                << " ix=" << ix	<< " loop#" << loopcnt);
+                << " ix=" << ix << " loop#" << loopcnt);
 } // end rps_run_script_echo_mode
 
 //// end of file scripting_rps.cc
