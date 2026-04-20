@@ -1404,13 +1404,14 @@ rps_debug_printf_at(const char *filnam, int fline,
     if (rps_syslog_enabled)
       {
         syslog(RPS_DEBUG_LOG_LEVEL,
-               "RPS-DEBUG#%s %7s %s @%s:%d <%s> %s %s",
+               "RPS-Debug#%s %7s %s @%s:%d <%s> %s %s",
                debugcntstr,
                debugcstr, threadbfr, filnam, fline, funcnam, tmbfr, msg);
       }
     else if (rps_debug_file)
       {
-        fprintf(rps_debug_file, "RPS DEBUG#%s %7s %s",
+        fprintf(rps_debug_file,
+                "° RPS Debug#%s %7s %s", ///U+00B0 DEGREE SIGN
                 debugcntstr,
                 debugcstr, threadbfr);
         fprintf(rps_debug_file, " %s:%d <%s> %s %s\n",
@@ -1421,10 +1422,10 @@ rps_debug_printf_at(const char *filnam, int fline,
           {
             if (!rps_debug_file && rps_debug_file != stdout
                 && rps_debug_file != stderr)
-              fprintf(stderr, "\n¤RPS-DEBUG#%s *^*^* %s\n",
+              fprintf(stderr, "\n¤RPS-Debug#%s *^*^* %s\n",
                       debugcntstr, datebfr);
             else
-              fprintf(rps_debug_file, "\n*RPS DEBUG#%s ~  *^*^* %s\n",
+              fprintf(rps_debug_file, "\n* RPS Debug#%s ~  *^*^* %s\n",
                       debugcntstr, datebfr);
           }
         fflush(rps_debug_file);
@@ -1436,7 +1437,8 @@ rps_debug_printf_at(const char *filnam, int fline,
           fputc('\n', stderr);
         if (ontty)
           fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
-        fprintf(stderr, "RPS DEBUG#%s %7s %s",
+        RPS_POSSIBLE_BREAKPOINT();
+        fprintf(stderr, "※ RPS Debug#%s %7s %s", //U+203B REFERENCE MARK
                 debugcntstr, debugcstr, threadbfr);
         if (ontty)
           fputs(RPS_TERMINAL_ITALICS_ESCAPE, stderr);
@@ -1450,7 +1452,7 @@ rps_debug_printf_at(const char *filnam, int fline,
           {
             if (ontty)
               fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
-            fprintf(stderr, "RPS.DEBUG %04ld ~ %s *^*^*",
+            fprintf(stderr, "⁂ RPS Debug %04ld ~ %s *^*^*",
                     ndbg, datebfr);
             if (ontty)
               fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
