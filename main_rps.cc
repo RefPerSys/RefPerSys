@@ -1235,29 +1235,30 @@ rps_small_quick_tests_after_load(void)
 
 static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+extern "C" const char* rps_debug_level_cstr(Rps_Debug dbgopt);
+const char*rps_debug_level_cstr(Rps_Debug dbgopt)
+{
+  static thread_local char levbuf[32];
+  switch(dbgopt)
+    {
+#define DEBUG_LEVEL_CSTR_MACRO(dbgopt) case RPS_DEBUG_##dbgopt: return #dbgopt;
+      RPS_DEBUG_OPTIONS(DEBUG_LEVEL_CSTR_MACRO);
+#undef DEBUG_LEVEL_CSTR_MACRO
+    case RPS_DEBUG__EVERYTHING:
+      return "|EveryDbg|";
+    default:
+      memset(levbuf, 0, sizeof(levbuf));
+      snprintf(levbuf, sizeof(levbuf), "?Dbg?%d",
+               static_cast<int>(dbgopt));
+      return levbuf;
+    }
+} // end rps_debug_level_cstr
+
+
 static std::string
 rps_debug_level(Rps_Debug dbgopt)
 {
-#define DEBUG_LEVEL(dbgopt) case RPS_DEBUG_##dbgopt: return #dbgopt;
-
-  switch (dbgopt)
-    {
-      RPS_DEBUG_OPTIONS(DEBUG_LEVEL);
-    case RPS_DEBUG__EVERYTHING:
-      return std::string{"*EveryDbg*"};
-    //
-    default:
-    {
-      char dbglevel[16];
-      memset(dbglevel, 0, sizeof (dbglevel));
-      snprintf(dbglevel, sizeof(dbglevel), "?DBG?%d",
-               static_cast<int>(dbgopt));
-
-      return std::string(dbglevel);
-    }
-    }
-  //
-#undef DEBUG_LEVEL
+  return std::string(rps_debug_level_cstr(dbgopt));
 } // end rps_debug_level
 
 static void rps_close_debug_file(void)
@@ -1344,7 +1345,7 @@ rps_debug_printf_at(const char *filnam, int fline,
   rps_now_strftime_centiseconds_nolen(tmbfr, "%H:%M:%S.__ ");
   //
   char *msg = nullptr, *bigbfr = nullptr;
-  char bfr[256];
+  char bfr[512];
   memset(bfr, 0, sizeof (bfr));
   int len= -1;
   va_list arglst;
@@ -1390,9 +1391,8 @@ rps_debug_printf_at(const char *filnam, int fline,
     memset(datebfr, 0, sizeof (datebfr));
     char debugcstr[24];
     memset (debugcstr, 0, sizeof(debugcstr));
-    if (!rps_debug_level(dbgopt).empty())
-      strncpy(debugcstr, rps_debug_level(dbgopt).c_str(),
-              sizeof(debugcstr)-1);
+    strncpy(debugcstr, rps_debug_level_cstr(dbgopt), sizeof(debugcstr)-1);
+    RPS_POSSIBLE_BREAKPOINT();
     //
 #define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
