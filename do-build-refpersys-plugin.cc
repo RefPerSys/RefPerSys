@@ -246,8 +246,8 @@ bp_add_cplusplus_source(const char*path)
   if (access(path, R_OK))
     {
       std::clog << bp_progname
-                << " : failed to access input source " << path
-                << " - " << strerror(errno)
+                << " : failed to access input source '" << path
+                << "' - " << strerror(errno)
                 << std::endl;
       exit (EXIT_FAILURE);
     };
@@ -401,7 +401,8 @@ bp_prog_options(int argc, char**argv)
           if (dirbuf[0])
             {
               std::clog << bp_progname
-                        << " : specified plugin source directory " << optarg
+                        << " : specified plugin source directory "
+			<< optarg
                         << " more than once: " << dirbuf << std::endl;
               exit(EXIT_FAILURE);
             };
@@ -410,7 +411,8 @@ bp_prog_options(int argc, char**argv)
               if (!S_ISDIR(dirstat.st_mode))
                 {
                   std::clog << bp_progname
-                            << " : specified plugin source directory " << optarg
+                            << " : specified plugin source directory "
+			    << optarg
                             << " is not a directory." << std::endl;
                   exit(EXIT_FAILURE);
                 };
