@@ -2616,7 +2616,7 @@ rps_real_shell_file_path(const std::string& filpath)
       if (lastslash>0 && lastslash+1 < (int)pathsize
           && filpath[lastslash+1]!='.')
         {
-          std::string dirpath = filpath.substr(0, lastslash-1);
+          std::string dirpath = filpath.substr(0, lastslash);
           std::string basepath = filpath.substr(lastslash+1);
           RPS_DEBUG_LOG(REPL, "rps_real_shell_file_path dirpath="
                         << Rps_QuotedC_String(dirpath)
