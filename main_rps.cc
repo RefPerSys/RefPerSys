@@ -1333,7 +1333,7 @@ rps_debug_printf_at(const char *filnam, int fline,
       pthread_getname_np(pthread_self(), thrbuf, sizeof(thrbuf)-1);
       snprintf(threadbfr, sizeof(threadbfr),
 // U+2045 LEFT SQUARE BRACKET WITH QUILL
-               "⁅%s:%d⁆"
+               "⁅%s|%d⁆"
 // U+2046 RIGHT SQUARE BRACKET WITH QUILL
                , thrbuf,  static_cast<int>(rps_thread_id()));
     }
@@ -1377,7 +1377,7 @@ rps_debug_printf_at(const char *filnam, int fline,
   //
   {
     pthread_mutex_lock(&rps_debug_mutex);
-    long ndbg = rps_debug_atomic_counter.fetch_add(1);
+    long ndbg = 1+rps_debug_atomic_counter.fetch_add(1);
     //
     char debugcntstr[32];
     memset (debugcntstr, 0, sizeof(debugcntstr));
@@ -1445,7 +1445,7 @@ rps_debug_printf_at(const char *filnam, int fline,
         fprintf(stderr, "@%s:%d", filnam, (fline>0)?fline:(-fline));
         if (ontty)
           fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);
-        fprintf(stderr, "%s\n%s\n", tmbfr, msg);
+        fprintf(stderr, " %s\n%s\n", tmbfr, msg);
         fflush(stderr);
         //
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
