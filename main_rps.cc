@@ -171,6 +171,14 @@ struct argp_option rps_progoptions[] =
     " Also from $REFPERSYS_DEBUG environment variable, if provided\n", ///
     /*group:*/0 ///
   },
+  /* ======= debug  flags ======= */
+  {/*name:*/ "debug-exit", ///
+    /*key:*/ RPSPROGOPT_DEBUG_EXIT, /// --debug-exit=
+    /*arg:*/ "DEBUGFLAGS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To set RefPerSys debug flags just before exiting.\n", ///
+    /*group:*/0 ///
+  },
   /* ======= debug after load flags ======= */
   {/*name:*/ "debug-after-load", ///
     /*key:*/ RPSPROGOPT_DEBUG_AFTER_LOAD, /// -A
@@ -494,6 +502,7 @@ char* rps_program_invocation;
 
 char* rps_run_command_after_load = nullptr;
 char* rps_debugflags_after_load = nullptr;
+char* rps_debugflags_exit = nullptr;
 
 std::vector<std::function<void(Rps_CallFrame*)>> rps_do_after_load_vect;
 

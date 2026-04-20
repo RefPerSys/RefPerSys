@@ -119,7 +119,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-            	 synchronization or mutex is needed to : */
+                  	 synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -333,7 +333,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
               << std::endl
-              << " curpath=" << rps_real_shell_file_path(curpath) << " "
+              << "… curpath=" << rps_real_shell_file_path(curpath) << " "
               << (gotmagic?"GOTmagic":"NO!MAGIC")
               << " loop#" << loopcnt
               << " tsrc=" << tsrc << " @"  << tsrc.position_str()

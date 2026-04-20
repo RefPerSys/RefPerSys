@@ -1543,6 +1543,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_debugflags_after_load = arg;
     }
     return 0;
+    case RPSPROGOPT_DEBUG_EXIT:
+    {
+      if (!rps_debugflags_exit || side_effect)
+        rps_debugflags_exit = arg;
+    }
+    return 0;
     case RPSPROGOPT_EXTRA_ARG:
     {
       int eqnextpos= -1;

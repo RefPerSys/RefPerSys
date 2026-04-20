@@ -274,6 +274,7 @@ extern "C" const std::string rps_real_shell_file_path(const std::string& filpath
 
 extern "C" char* rps_run_command_after_load;
 extern "C" char* rps_debugflags_after_load;
+extern "C" char* rps_debugflags_exit;
 
 extern "C" const char* rps_get_proc_version(void);
 
@@ -834,6 +835,7 @@ enum rps_progoption_en
   RPSPROGOPT_VERSION,
   RPSPROGOPT_PREFERENCES_HELP,
   RPSPROGOPT_SCRIPT,
+  RPSPROGOPT_DEBUG_EXIT,
   RPSPROGOPT_PUBLISH_ME,
 };
 

@@ -1706,6 +1706,21 @@ rps_exiting(void) //// called thru atexit
 {
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+  if (rps_debugflags_exit)
+    {
+      rps_add_debug_cstr(rps_debugflags_exit);
+      RPS_INFORMOUT("did set when exiting "
+                    << " of RefPerSys process " << (int)getpid() << std::endl
+                    << "… on " << rps_hostname()
+                    << " shortgit " << rps_shortgitid << " version " << rps_get_major_version() << "." << rps_get_minor_version()
+                    << " debug to "
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        rps_output_debug_flags(out);
+      }));
+    }
+  else
+    rps_debug_flags = 0;
   RPS_DEBUG_LOG(EXIT, "rps_exiting in " << mycwd << " pid " << getpid()
                 << " shortgit " << rps_shortgitid
                 << " thread " <<  rps_current_pthread_name()
