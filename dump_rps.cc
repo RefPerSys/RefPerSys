@@ -1951,6 +1951,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
       RPS_WARNOUT("invalid directory to dump into " << Rps_QuotedC_String(dirpath));
       throw std::runtime_error("bad dump directory with dash or space");
     }
+  ////
   {
     DIR* d = opendir(dirpath.c_str());
     if (d)
@@ -1984,7 +1985,8 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
       RPS_FATAL("getcwd failed: %m");
     cwdpath = std::string(cwdbuf);
   }
-  RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " cwdpath=" << cwdpath);
+  RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath
+                << " cwdpath=" << cwdpath);
   /// ensure that realdirpath exists
   {
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
