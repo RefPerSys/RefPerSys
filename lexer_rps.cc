@@ -60,7 +60,7 @@ Rps_StringValue rps_lexer_token_name_str_val(nullptr);
 std::atomic<unsigned> Rps_TokenSource::toksrc_instance_count_;
 
 Rps_TokenSource::Rps_TokenSource(std::string name)
-  : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_counter(0),
+  : toksrc_name(name), toksrc_line(1), toksrc_col(0), toksrc_counter(0),
     toksrc_number(1+toksrc_instance_count_.fetch_add(1)),
     toksrc_linebuf{},
     toksrc_token_deq(),
