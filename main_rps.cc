@@ -1454,6 +1454,7 @@ rps_debug_printf_at(const char *filnam, int fline,
           {
             if (ontty)
               fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
+	    //U+2042 ASTERISM ⁂
             fprintf(stderr, "⁂ RPS Debug %04ld ~ %s *^*^*",
                     ndbg, datebfr);
             if (ontty)
