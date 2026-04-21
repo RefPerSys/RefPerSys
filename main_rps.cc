@@ -1244,7 +1244,6 @@ rps_small_quick_tests_after_load(void)
 
 static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-extern "C" const char* rps_debug_level_cstr(Rps_Debug dbgopt);
 const char*rps_debug_level_cstr(Rps_Debug dbgopt)
 {
   static thread_local char levbuf[32];
@@ -1263,12 +1262,6 @@ const char*rps_debug_level_cstr(Rps_Debug dbgopt)
     }
 } // end rps_debug_level_cstr
 
-
-static std::string
-rps_debug_level(Rps_Debug dbgopt)
-{
-  return std::string(rps_debug_level_cstr(dbgopt));
-} // end rps_debug_level
 
 static void rps_close_debug_file(void)
 {
