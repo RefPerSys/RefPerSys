@@ -2652,6 +2652,7 @@ rps_real_shell_file_path(const std::string& filpath)
                         << Rps_QuotedC_String(filpath));
           std::string realdirpath;
           char*rp = realpath(dirpath.c_str(), nullptr);
+	  RPS_POSSIBLE_BREAKPOINT();
           if (!rp)
             {
               RPS_WARNOUT("rps_real_shell_file_path realpath("
