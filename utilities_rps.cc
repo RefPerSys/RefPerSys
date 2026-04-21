@@ -2031,7 +2031,7 @@ void rps_debug_warn_at_msg(const char*file, int line, const char*msg)
       if (msg)
         std::cerr << std::endl << "**!** REFPERSYS WARNING at "
                   << file << ":" << line
-                  << "[" << msg << "]" << std::endl;
+                  << " [" << msg << "]" << std::endl;
       else
         std::cerr << std::endl << "**!** REFPERSYS WARNING at "
                   << file << ":" << line
