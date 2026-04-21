@@ -172,8 +172,10 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
       RPS_ASSERT(rps_scripts_vector.size() <= rps_script_maxnum);
       RPS_POSSIBLE_BREAKPOINT();
       try {
-          rps_run_one_script_file(&_, ix);
-        } catch (std::exception& ex) {
+	RPS_POSSIBLE_BREAKPOINT();
+	rps_run_one_script_file(&_, ix);
+	RPS_POSSIBLE_BREAKPOINT();
+      } catch (std::exception& ex) {
           RPS_FATALOUT("failed to run script#" << ix
                        << " " << rps_scripts_vector[ix]
                        << " got exception "
