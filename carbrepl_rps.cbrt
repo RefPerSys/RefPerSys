@@ -1042,13 +1042,11 @@ rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin)
 
 int
 rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
-                        int& sym, struct rps_carbrepl_data_st&carbdata, int lin)
+                        int& sym, struct rps_carbrepl_data_st&carbdata,
+			int lin)
 {
   static thread_local int callcnt;
   /// used by %on_next_token above:
-#warning gdb_do_return and gdb_returned should become useless
-  bool gdb_do_return=false; // to be set from GDB
-  int gdb_returned= 0;      // to be set from GDB
   int callnum = ++callcnt;
   RPS_POSSIBLE_BREAKPOINT();
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
@@ -1072,6 +1070,10 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_carbrepl_next_token+"));
   RPS_POSSIBLE_BREAKPOINT();
+  //// temporary trick to help debugging with GDB,
+  //// in some cases in GDB do: b carbrepl_rps_issue
+  asm volatile (".global carbrepl_rps_issue; nop; nop;\n"
+		" carbrepl_rps_issue: nop; nop; nop");
   _f.tokv = tksrc->lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
                 << __FILE__ << ":" << lin
@@ -1135,7 +1137,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
         if (carbrank>0 && carbrank<rpscarbrepl_symbol_names_length_)
           termname=rpscarbrepl_symbol_names_[carbrank];
         if (!termname) {
-          snprintf(carbtermbuf, sizeof(carbtermbuf)-1, "#?Carb-%d", carbrank);
+          snprintf(carbtermbuf, sizeof(carbtermbuf)-1, "#?Carb-%d",
+		   carbrank);
           termname = carbtermbuf;
         };        
         RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
@@ -1147,41 +1150,18 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
     }
     RPS_POSSIBLE_BREAKPOINT();
   }
-  RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
                 << " kindtokob=" << _f.kindtokob
                 << " valtokv=" << _f.valtokv
-                << " tokv=" << _f.tokv
-                << " °gdb_do_return at "
-                << (void*)&gdb_do_return << " is "
-                << (gdb_do_return?"SET":"CLEARED")
-                << " gdb_returned at " << (void*)&gdb_returned
-                << " is " << gdb_returned);
-  RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
-  //// temporary trick to help debugging with GDB
-  asm volatile (".global carbrepl_rps_issue; nop; carbrepl_rps_issue: nop; nop; nop");
-  RPS_ASSERT(&gdb_do_return != nullptr);
-  RPS_POSSIBLE_BREAKPOINT(); /// GDB could set gdb_do_return & gdb_returned
-  //// for GDB
-  if (gdb_do_return) {
-    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-                  << "- tksrc=" << *tksrc << " tokv=" << _f.tokv
-                  << " gdb_returned=" << gdb_returned);
-    RPS_INFORMOUT("rps_carbrepl_next_token from#" << callnum
-                  << "- lin=" << lin << " tokv=" << _f.tokv
-                  << " GDB returning " << gdb_returned);
-    return gdb_returned;
-  }
-  else {
-    RPS_POSSIBLE_BREAKPOINT();
-    RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-                  << "- tksrc=" << *tksrc << std::endl
-                  << "… tokv=" << _f.tokv
-                  << " kindtokob=" << _f.kindtokob
-                  << " valtokv=" << _f.valtokv
-                  << "… no°gdb_do_return" << std::endl
-                  << RPS_FULL_BACKTRACE(1, "rps_carbrepl_next_token-gdb"));
-  };
+                << " tokv=" << _f.tokv);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
+		<< "- tksrc=" << *tksrc << std::endl
+		<< "… tokv=" << _f.tokv
+		<< " kindtokob=" << _f.kindtokob
+		<< " valtokv=" << _f.valtokv
+		<< RPS_FULL_BACKTRACE(1, "rps_carbrepl_next_token°"));
   ////
   RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_carbrepl_next_token
