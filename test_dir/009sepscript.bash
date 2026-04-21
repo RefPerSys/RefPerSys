@@ -39,9 +39,9 @@ ulimit -S -m $[[2 * 1024]]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
 
-echo running refpersys -AREPL --script=009sepscript.rps --user-pref=. --batch --run-name=009sepscript
+echo running refpersys -AREPL --script=test_dir/009sepscript.rps --user-pref=. --batch --run-name=009sepscript
 
-./refpersys -AREPL --script=009sepscript.rps --user-pref=. --batch --run-name=008otherscript
+./refpersys -AREPL --script=test_dir/009sepscript.rps --user-pref=. --batch --run-name=009sepscript
 
 exit $?
 ####### eof RefPerSys/test_dir/009sepscript.bash
