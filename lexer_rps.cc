@@ -187,7 +187,9 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
        curp = nextp, i++)
     {
       ucs4_t curuc=0;
-      int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
+      // length in bytes of the UTF8 glyph
+      int ulen= curp?u8_strmbtouc(&curuc,
+                                  (const uint8_t*)curp):0;
       if (ulen<0 || curuc==0)
         break;
       out << ' ';
@@ -647,7 +649,8 @@ Rps_MemoryFileTokenSource::reached_end(void) const
 
 
 void
-Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+Rps_MemoryFileTokenSource::output(std::ostream&out,
+                                  unsigned depth, unsigned maxdepth) const
 {
 #warning incomplete Rps_MemoryFileTokenSource::output
   const std::string curname = name();
@@ -660,7 +663,7 @@ Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned max
     {
       out << position_str();
       if (eqnp)
-        out << "¤=";
+        out << " ¤=";
       else
         {
           RPS_POSSIBLE_BREAKPOINT();
@@ -670,7 +673,7 @@ Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned max
   else
     {
       if (eqnp)
-        out << "¤=";
+        out << " ¤=";
       else
         {
           RPS_POSSIBLE_BREAKPOINT();
