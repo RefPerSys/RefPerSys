@@ -21,6 +21,8 @@ rps_scriptname=$0
 
 if /usr/bin/tty -s ; then
     echo $0 " pid " $$ " : "; /usr/bin/pstree -a -A -C age -s $$
+else
+    echo $0 " pid " $$ " not on tty"
 fi
 
 if [ -z "$REFPERSYS_TOPDIR" ]; then
@@ -68,4 +70,10 @@ printf "%s: the store in %s contains prepare_cplusplus_generation\n" \
 
 /usr/bin/pstree -a -A $$
 
-exit 0 
+exit $?
+
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/001test.bash" ;;
+## End: ;;
+####### eof RefPerSys/test_dir/001test.bash

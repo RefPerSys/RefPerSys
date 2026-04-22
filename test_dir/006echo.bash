@@ -61,4 +61,8 @@ Trahit donc ma querelle, et ne fait rien pour moi ?
 For every alpha in the set of relative integers alpha plus zero is alpha
 ∀ α ∈ ℤ  α + 0 = α
 
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/006echo.bash" ;;
+## End: ;;
 # end of file test_dir/006echo.bash in refpersys

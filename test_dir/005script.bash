@@ -55,4 +55,9 @@ REFPERSYS_SCRIPT carbon
 @display RefPerSys_system
 
 @display 1 + 2
+
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/005script.bash" ;;
+## End: ;;
 # end of file test_dir/005script.bash in refpersys

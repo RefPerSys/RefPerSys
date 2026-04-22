@@ -1,7 +1,7 @@
 #!/bin/bash -x
 # SPDX-License-Identifier: GPL-3.0-or-later
 # A shell script to create the code_int object reifying the int type
-#      © Copyright 2025 Basile STARYNKEVITCH 
+#      © Copyright 2025 - 2026 Basile STARYNKEVITCH 
 #      see team@refpersys.org & http://refpersys.org/
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -55,3 +55,9 @@ printf "%s: the store in %s contains code_int\n" \
 printf "%s: dont forget to edit rps_set_native_data_in_loader in load_rps.cc\n" \
        $rps_scriptname
 exit 0
+
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/003crint.bash" ;;
+## End: ;;
+####### eof RefPerSys/test_dir/003crint.bash

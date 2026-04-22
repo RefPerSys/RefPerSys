@@ -1,7 +1,7 @@
 #!/bin/bash -x
 # SPDX-License-Identifier: GPL-3.0-or-later
 # A shell script to create the several RefPerSys objects reifying some "scalar" types
-#      © Copyright 2025 Basile STARYNKEVITCH 
+#      © Copyright (C) 2025 - 2026 Basile STARYNKEVITCH 
 #      see team@refpersys.org & http://refpersys.org/
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -66,4 +66,10 @@ function rps_add_scal_type() {
 
 
 
+
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/004crscaltypes.bash" ;;
+## End: ;;
+####### eof RefPerSys/test_dir/004crscaltypes.bash
 

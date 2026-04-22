@@ -44,4 +44,9 @@ echo running refpersys -AREPL --script=test_dir/009sepscript.rps --user-pref=. -
 ./refpersys -AREPL --script=test_dir/009sepscript.rps --user-pref=. --batch --run-name=009sepscript
 
 exit $?
+
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/009sepscript.bash" ;;
+## End: ;;
 ####### eof RefPerSys/test_dir/009sepscript.bash

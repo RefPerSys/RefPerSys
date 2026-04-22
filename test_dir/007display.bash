@@ -70,3 +70,9 @@ printf "\n\n\n### before running refpersys from %s pid %d ###\n\n" $0 $$
 exec ./refpersys -AREPL --run-name=$(/usr/bin/realpath $0) --batch \
 	    --plugin-after-load=/tmp/rpsplug_display.so \
 	    --plugin-arg=rpsplug_display:$disp
+
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/007display.bashRefPerSys_system " ;;
+## End: ;;
+####### eof RefPerSys/test_dir/007display.bash
