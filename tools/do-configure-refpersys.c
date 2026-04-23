@@ -104,6 +104,15 @@ const char *rpsconf_prog_name;
 bool rpsconf_verbose = 1;	/* will be set later with command line flag */
 bool rpsconf_failed;
 
+#define RPSCONF_BREAKPOINT_AT(Lin) do{		\
+  asm volatile (" nop; nop");			\
+  asm volatile (" _rpsconf_break" #Lin  ":\n"); \
+  asm volatile("  nop; nop; nop; nop\n");	\
+} while(0)
+#define RPSCONF_BREAKPOINT_AT_BIS(Lin) \
+  RPSCONF_BREAKPOINT_AT(Lin)
+#define RPSCONF_BREAKPOINT() RPSCONF_BREAKPOINT_AT_BIS(__LINE__)
+
 #ifndef RPSCONF_WITHOUT_GCCJIT
 gcc_jit_context *rpsconf_gccjit_ctxt;
 gcc_jit_result *rpsconf_gccjit_result;
@@ -1700,13 +1709,16 @@ main (int argc, char **argv)
 	    char *eol = strchr (lbuf, '\n');
 	    if (eol)
 	      *eol = (char) 0;
+	    RPSCONF_BREAKPOINT ();
 	    if (lbuf[0] == '#')
 	      continue;
 	    int p = -1;
+	    RPSCONF_BREAKPOINT ();
 	    if (sscanf (lbuf, " [%30[a-zA-Z]]%n", name, &p) > 0 && p > 0)
 	      strncpy (secname, name, sizeof (secname));
 	    else if (sscanf (lbuf, " name = %n", &p) > 0 && p > 0)
 	      {
+		RPSCONF_BREAKPOINT ();
 		if (!strcmp (secname, "user"))
 		  rpsconf_builder_person = strdup (lbuf + p);
 		if (rpsconf_verbose)
@@ -1715,6 +1727,7 @@ main (int argc, char **argv)
 	      }
 	    else if (sscanf (lbuf, " email = %n", &p) > 0 && p > 0)
 	      {
+		RPSCONF_BREAKPOINT ();
 		if (!strcmp (secname, "user"))
 		  rpsconf_builder_email = strdup (lbuf + p);
 		if (rpsconf_verbose)
