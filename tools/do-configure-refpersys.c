@@ -1702,10 +1702,18 @@ main (int argc, char **argv)
 	if (sscanf(lbuf, " [%30[a-zA-Z]]%p",
 		   name, &p) > 0 && p>0)
 	  strncpy(secname, name, sizeof(secname));
-	else if (sscanf(lbuf, " name = %p", &p)>0 && p>0)
+	else if (sscanf(lbuf, " name = %p", &p)>0 && p>0) {
 	  rpsconf_builder_person = strdup(lbuf+p);
-	else if (sscanf(lbuf, " email = %p", &p)>0 && p>0)
+	  if (rpsconf_verbose)
+	    printf("%s found in ~/.gitconfig person '%s'\n",
+		   rpsconf_prog_name, rpsconf_builder_person);
+	}
+	else if (sscanf(lbuf, " email = %p", &p)>0 && p>0) {
 	  rpsconf_builder_email = strdup(lbuf+p);
+	  if (rpsconf_verbose)
+	    printf("%s found in ~/.gitconfig email '%s'\n",
+		   rpsconf_prog_name, rpsconf_builder_email);
+	}
       } while(!feof(filgit));
       fclose(filgit);
     }
