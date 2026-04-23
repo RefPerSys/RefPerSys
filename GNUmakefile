@@ -96,6 +96,7 @@ ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
 
 REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
+
 -include $(REFPERSYS_CONFIG_MAKE)
 
 REFPERSYS_CXX_STANDARD?= -std=gnu++2c
@@ -205,6 +206,8 @@ fox-refpersys: tools/fox-refpersys.cc __timestamp.o | GNUmakefile
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
 
+
+_config-refpersys.mk: GNUmakefile tools/do-configure-refpersys.c
 
 ### raw-objects are the set of *rps.raw.o files without FLTK interface
 raw-objects: $(REFPERSYS_RAW_OBJECTS)
