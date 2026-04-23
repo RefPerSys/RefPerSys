@@ -1675,7 +1675,43 @@ main (int argc, char **argv)
   rpsconf_test_libgccjit_compilation (cc);
   ////
   ////
-  rpsconf_builder_person = getenv("RPS_BUILDER_PERSON");
+  //// parse our ~/.gitconfig
+  {
+    char gitconfpath[RPSCONF_PATH_MAXLEN+4];
+    memset(gitconfpath, 0, sizeof(gitconfpath));
+    const char*home = getenv("HOME");
+    if (home)
+      snprintf(gitconfpath, RPSCONF_PATH_MAXLEN, "%s/.gitconfig",
+	       home);
+    FILE*filgit = fopen(gitconfpath, "r");
+    if (filgit) {
+      const int lsiz=256;
+      char lbuf[lsiz+8];
+      char secname[32];
+      memset(secname, 0, sizeof(secname));
+      do {
+      char name[32];
+      memset(name, 0, sizeof(name));
+	memset(lbuf, 0, sizeof(lbuf));
+	fgets(lbuf, lsiz, filgit);
+	char*eol = strchr(lbuf, '\n');
+	if (eol)
+	  *eol=(char)0;
+	if (lbuf[0]=='#') continue;
+	int p= -1;
+	if (sscanf(lbuf, " [%30[a-zA-Z]]%p",
+		   name, &p) > 0 && p>0)
+	  strncpy(secname, name, sizeof(secname));
+	else if (sscanf(lbuf, " name = %p", &p)>0 && p>0)
+	  rpsconf_builder_person = strdup(lbuf+p);
+	else if (sscanf(lbuf, " email = %p", &p)>0 && p>0)
+	  rpsconf_builder_email = strdup(lbuf+p);
+      } while(!feof(filgit));
+      fclose(filgit);
+    }
+  }
+  if (!rpsconf_builder_person)
+    rpsconf_builder_person = getenv("RPS_BUILDER_PERSON");
   if (!rpsconf_builder_person)
     rpsconf_builder_person =
       rpsconf_readline ("person building RefPerSys (eg Alan TURING):");
