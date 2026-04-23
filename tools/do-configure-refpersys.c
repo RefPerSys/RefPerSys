@@ -1025,8 +1025,12 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
       if (dent->d_type == DT_REG && isdigit (dent->d_name[0])
           && strlen (dent->d_name) + 2 < RPSCONF_PATH_MAXLEN)
         {
-          if (!strchr (dent->d_name, '.'))
+	  char*lastdot = strrchr(dent->d_name, '.');
+          if (!lastdot)
             continue;
+	  if (strcmp(lastdot, ".bash") || strcmp(lastdot, ".sh")
+	      || strcmp(lastdot, ".zsh"))
+	    continue;
           bool goodname = true;
           for (const char *pc = dent->d_name; *pc && goodname; pc++)
             {
@@ -1159,9 +1163,9 @@ rpsconf_remove_files (void)
 void
 rpsconf_emit_configure_refpersys_mk (void)
 {
-  const char *tmp_conf
-    =
-      rpsconf_temporary_textual_file ("tmp_config_refpersys", ".mk", __LINE__);
+  const char *tmp_conf =
+      rpsconf_temporary_textual_file ("tmp_config_refpersys",
+				      ".mk", __LINE__-1);
   FILE *f = fopen (tmp_conf, "w");
   if (!f)
     {
@@ -1653,7 +1657,8 @@ main (int argc, char **argv)
 
   if (!cxx)
     cxx = "/usr/bin/g++";
-
+  ////
+  ////
   char *optimflags = getenv ("CXXFLAGS");
   if (!optimflags)
     {
@@ -1668,18 +1673,25 @@ main (int argc, char **argv)
   rpsconf_try_then_set_cxx_compiler (cxx);
   rpsconf_try_cxx_compiler_for_libgccjit (cc);
   rpsconf_test_libgccjit_compilation (cc);
-  rpsconf_builder_person =
-    rpsconf_readline ("person building RefPerSys (eg Alan TURING):");
+  ////
+  ////
+  rpsconf_builder_person = getenv("RPS_BUILDER_PERSON");
+  if (!rpsconf_builder_person)
+    rpsconf_builder_person =
+      rpsconf_readline ("person building RefPerSys (eg Alan TURING):");
   if (rpsconf_builder_person && isspace (rpsconf_builder_person[0]))
     {
       free ((void *) rpsconf_builder_person);
       rpsconf_builder_person = NULL;
     };
+  ///
+  rpsconf_builder_email = getenv("RPS_BUILDER_EMAIL");
   if (rpsconf_builder_person)
     {
-      rpsconf_builder_email =
-        rpsconf_readline ("email of person building "
-                        "(e.g. alan.turing@princeton.edu):");
+      if (!rpsconf_builder_email)
+	rpsconf_builder_email =
+	  rpsconf_readline ("email of person building "
+			    "(e.g. alan.turing@princeton.edu):");
       bool goodemail = rpsconf_builder_email != NULL
                        && isalnum (rpsconf_builder_email[0]);
       const char *pc = rpsconf_builder_email;
@@ -1709,8 +1721,6 @@ main (int argc, char **argv)
         }
     }
   errno = 0;
-
-
   if (access ("generated/rpsdata.h", R_OK))
     {
       char datapath[RPSCONF_PATH_MAXLEN];
