@@ -8,7 +8,10 @@
 ///      team@refpersys.org & http://refpersys.org/
 ///
 /// Purpose: build-time configuration of the RefPerSys inference
-/// engine.
+/// engine.  It often use readline, ncurses, gccjit (from gcc.gnu.org)
+/// and these could be disabled by passing at compile time
+/// RPSCONF_WITHOUT_READLINE RPSCONF_WITHOUT_NCURSES
+/// RPSCONF_WITHOUT_GCCJIT
 ///
 /// Caveat: this program should run quickly and consumes and leaks a
 /// few memory. So we never call free here!
@@ -36,6 +39,7 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #endif /*_GNU_SOURCE*/
+
 #include <sys/utsname.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -204,6 +208,7 @@ struct rpsconf_trash
   char state_;
 };
 
+#if 0 && obsolete
 static struct rpsconf_trash *rpsconf_trash_get_ (void);
 static void rpsconf_trash_push_ (const char *, int);
 static void rpsconf_trash_exit (void);
@@ -224,7 +229,9 @@ struct rpsconf_trash *rpsconf_trash_get_ (void)
 
   return &ctx;
 }
+#endif /* obsolete rpsconf_trash_get_ */
 
+#if 0 && obsolete
 void
 rpsconf_trash_push_ (const char *path, int line)
 {
@@ -244,8 +251,10 @@ rpsconf_trash_push_ (const char *path, int line)
     }
 
   ctx->pathv_[ctx->pathc_++] = path;
-}
+}       // end obsoete rpsconf_trash_push_
+#endif /* obsolete rpsconf_trash_push */
 
+#if 0 && obsolete
 void
 rpsconf_trash_exit (void)
 {
@@ -269,6 +278,7 @@ rpsconf_trash_exit (void)
 }
 
 /* End rpsconf_trash interface */
+#endif /*0 && obsolete rpsconf_trash_exit */
 
 
 /// return a malloced path to a temporary textual file
@@ -1193,9 +1203,36 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f, "## using CC, CXX, CXXFLAGS, HOME for ~/.gitconfig ...\n");
   fprintf (f, "## and RPS_BUILDER_PERSON & RPS_BUILDER_EMAIL env vars\n");
   fprintf (f, "# see refpersys.org\n\n");
-  fprintf (f, "# generated at %s## on %s git %s\n\n",
+  fprintf (f, "# generated at %s\n" "## on %s git %s\n\n",
            ctime (&nowt), rpsconf_host_name, RPSCONF_GIT_ID);
   fprintf (f, "#  generated from %s:%d\n", __FILE__, __LINE__);
+  {
+    fprintf (f, "##%% readline is on www.gnu.org/software/readline/\n");
+#ifdef RPSCONF_WITHOUT_READLINE
+    fprintf (f, "#° readline disabled %s:%d\n", __FILE__, __LINE__);
+#else
+    fprintf (f, "#° readline enabled %s:%d\n", __FILE__, __LINE__);
+#endif /*RPSCONF_WITHOUT_READLINE */
+  }
+  //
+  {
+    fprintf (f, "##%% ncurses is on www.gnu.org/software/ncurses/\n");
+#ifdef RPSCONF_WITHOUT_NCURSES
+    fprintf (f, "#° ncurses disabled %s:%d\n", __FILE__, __LINE__);
+#else
+    fprintf (f, "#° ncurses enabled %s:%d\n", __FILE__, __LINE__);
+#endif /*RPSCONF_WITHOUT_NCURSES */
+  }
+  //
+  {
+    fprintf (f, "##%% gccjit is from www.gnu.org/software/gcc/\n");
+#ifdef RPSCONF_WITHOUT_GCCJIT
+    fprintf (f, "#° gccjit disabled %s:%d\n", __FILE__, __LINE__);
+#else
+    fprintf (f, "# gccjit enabled %s:%d\n", __FILE__, __LINE__);
+#endif /*RPSCONF_WITHOUT_GCCJIT */
+  }
+  //
   fprintf (f, "REFPERSYS_DIRECTORY=%s\n", rpsconf_cwd_buf);
   fprintf (f, "REFPERSYS_CONFIGURED_GITID=%s\n\n", RPSCONF_GIT_ID);
   //// emit C compiler
@@ -1344,12 +1381,11 @@ rpsconf_emit_configure_refpersys_mk (void)
     memset (testdir, 0, sizeof (testdir));
     snprintf (testdir, sizeof (testdir) - 1, "%s/test_dir", rpsconf_cwd_buf);
     fprintf (f, "\n\n### emitting tests [%s:%d]\n"
-	     "#... from test directory %s\n",
-             __FILE__, __LINE__-2, testdir);
+             "#... from test directory %s\n",
+             __FILE__, __LINE__ - 2, testdir);
     rpsconf_emit_from_testdir (f, testdir);
-    fprintf (f, "\n\n### ending tests [%s:%d]\n",
-	     __FILE__, __LINE__-1);
-    fflush(f);
+    fprintf (f, "\n\n### ending tests [%s:%d]\n", __FILE__, __LINE__ - 1);
+    fflush (f);
   }
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
