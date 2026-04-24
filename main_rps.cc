@@ -44,6 +44,13 @@ const char rps_main_date[]= __DATE__;
 extern "C" const char rps_main_shortgitid[];
 const char rps_main_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_main_basename[];
+const char rps_main_basename[] = RPS_BASENAME;
+
+/// as long as this source file has no dash it is the same as above...
+extern "C" const char rps_main_baseid[];
+const char rps_main_baseid[] = RPS_BASEID;
+
 extern "C" const char rps_main_timestamp[];
 const char rps_main_timestamp[]= __TIMESTAMP__;
 
