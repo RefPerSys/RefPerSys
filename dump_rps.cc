@@ -63,6 +63,12 @@ const char rps_dump_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_dump_timestamp[];
 const char rps_dump_timestamp[]= __TIMESTAMP__;
 
+extern "C" const char rps_dump_basename[];
+const char rps_dump_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_dump_baseid[];
+const char rps_dump_baseid[]= RPS_BASEID;
+
 
 // comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp
