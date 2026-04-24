@@ -44,6 +44,13 @@ const char rps_backtrace_date[]= __DATE__;
 extern "C" const char rps_backtrace_shortgitid[];
 const char rps_backtrace_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_backtrace_basename[];
+const char rps_backtrace_basename[] = RPS_BASENAME;
+
+/// as long as this source file has no dash it is the same as above...
+extern "C" const char rps_backtrace_baseid[];
+const char rps_backtrace_baseid[] = RPS_BASEID;
+
 extern "C" const char rps_backtrace_timestamp[];
 const char rps_backtrace_timestamp[]= __TIMESTAMP__;
 
@@ -51,7 +58,8 @@ const char rps_backtrace_timestamp[]= __TIMESTAMP__;
     std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'    \
               << __LINE__  << std::endl                         \
               << "..@" << __PRETTY_FUNCTION__                   \
-              << " §¤: " << Msg << std::endl << std::flush;     \
+              << " §¤: " << Msg << std::endl << std::endl;      \
+    std::clog << "sh°git=" RPS_SHORTGITID << std::endl;         \
     abort();                                                    \
   } while(0)
 

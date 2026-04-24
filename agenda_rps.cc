@@ -39,6 +39,14 @@ const char rps_agenda_gitid[]= RPS_GITID;
 extern "C" const char rps_agenda_shortgitid[];
 const char rps_agenda_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_agenda_basename[];
+const char rps_agenda_basename[] = RPS_BASENAME;
+
+/// as long as this source file has no dash it is the same as above...
+extern "C" const char rps_agenda_baseid[];
+const char rps_agenda_baseid[] = RPS_BASEID;
+
+
 extern "C" const char rps_agenda_date[];
 const char rps_agenda_date[]= __DATE__;
 
