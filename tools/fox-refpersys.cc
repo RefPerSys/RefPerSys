@@ -47,6 +47,7 @@ extern "C" const char foxrps_self_basename[];
 
 #include <iostream>
 #include <memory>
+#include <cstdio>
 #include <unistd.h>
 /// a big FOX toolkit header file (including all other FOX headers)
 /// installed in /usr/local/include/fox-1.7/fx.h
@@ -111,7 +112,7 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_BREAKPOINT_AT(Fil,Lin) do {    \
     asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
-    asm volatile ("__" SELF_BASENAME "_brk_" #Lin ": nop\n");   \
+    asm volatile ("_" SELF_BASEID "_brk_" #Lin ": nop; nop\n");   \
     asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
     asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
  } while(0)
@@ -122,12 +123,13 @@ extern "C" const char rps_cxx_compiler_version[];
 #define FOXRPS_BREAKPOINT() FOXRPS_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
 
 /// fatal unrecoverable errors
-#define FOXRPS_FATALOUT_AT_BIS(Fil,Lin,Out) do {    \
+#define FOXRPS_FATALOUT_AT_BIS(Fil,Lin,Out) do {        \
   std::clog <<  "FOXRPS FATAL: " << Out << std::flush   \
-      << Fil<<":"<< Lin<< "::"<< __FUNCTION__     \
-        <<  "git:" << foxrps_shortgitid     \
-        << " host " << foxrps_host_name<< std::endl;  \
-    abort();              \
+      << Fil<<":"<< Lin<< "::"<< __FUNCTION__           \
+        <<  "git:" << foxrps_shortgitid                 \
+        << " host " << foxrps_host_name<< std::endl;    \
+  FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
+    abort();                                            \
   } while(0)
 
 #define FOXRPS_FATALOUT_AT(Fil,Lin,Out) \
@@ -136,11 +138,12 @@ extern "C" const char rps_cxx_compiler_version[];
 #define FOXRPS_FATALOUT(Out) FOXRPS_FATALOUT_AT(__FILE__,__LINE__,Out)
 
 /// serious warnings
-#define FOXRPS_WARNOUT_AT_BIS(Fil,Lin,Out) do {   \
-  std::cerr << "FOXRPS WARNING: " << Out << std::flush    \
-      << Fil<<":"<< Lin<< "::"<< __FUNCTION__     \
-        <<  "git:" << foxrps_shortgitid     \
-        << " host " << foxrps_host_name<< std::endl;  \
+#define FOXRPS_WARNOUT_AT_BIS(Fil,Lin,Out) do {         \
+  std::cerr << "FOXRPS WARNING: " << Out << std::flush  \
+      << Fil<<":"<< Lin<< "::"<< __FUNCTION__           \
+        <<  "git:" << foxrps_shortgitid                 \
+        << " host " << foxrps_host_name<< std::endl;    \
+  FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
   } while(0)
 
 #define FOXRPS_WARNOUT_AT(Fil,Lin,Out) \
@@ -148,11 +151,12 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_WARNOUT(Out) FOXRPS_WARNOUT_AT(__FILE__,__LINE__,Out)
 
-#define FOXRPS_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {  \
-    if (foxrps_debug)         \
-      std::clog << Fil << ":" << Lin      \
-    << "::"<< __FUNCTION__ << " "   \
-    << Out << std::endl;      \
+#define FOXRPS_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {        \
+    if (foxrps_debug)                                   \
+      std::clog << Fil << ":" << Lin                    \
+		<< "::"<< __FUNCTION__ << " "		\
+		<< Out << std::endl;			\
+    FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);			\
   } while(0)
 
 #define FOXRPS_DEBUGOUT_AT(Fil,Lin,Out) \
@@ -160,6 +164,14 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_DEBUGOUT(Out) FOXRPS_DEBUGOUT_AT(__FILE__,__LINE__,Out)
 
+
+class FoxrpsApp : public FX::FXApp {
+  FXDECLARE(FoxrpsApp);
+  FoxrpsApp();
+public:
+  FoxrpsApp(const FXString&name, const FXString&vendor);
+  virtual ~FoxrpsApp();
+};                              // end FoxrpsApp
 
 // Our main window
 class FoxrpsMainWindow : public FXMainWindow
@@ -215,7 +227,28 @@ char foxrps_host_name[128];
 bool foxrps_debug;
 
 
+FXDEFMAP(FoxrpsApp) FoxrpsAppMap[]=
+{
+};
 
+FXIMPLEMENT(FoxrpsApp,FXApp,
+            FoxrpsAppMap, ARRAYNUMBER(FoxrpsAppMap));
+
+
+FoxrpsApp::FoxrpsApp():
+  FX::FXApp()  {
+  FOXRPS_DEBUGOUT("app @" << (void*)this);
+} // end empty constr FoxrpsApp::FoxrpsApp
+
+FoxrpsApp::FoxrpsApp(const FXString&name, const FXString&vendor)
+  : FX::FXApp(name,vendor) {
+  FOXRPS_DEBUGOUT("name=" << name.text() << ", vendor=" << vendor.text()
+                  << " @" << (void*)this);
+}// end constr FoxrpsApp::FoxrpsApp
+
+FoxrpsApp::~FoxrpsApp() {
+  FOXRPS_DEBUGOUT("destr app @" << (void*)this);
+} // end destr FoxrpsApp::~FoxrpsApp
 
 
 FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp):
@@ -295,6 +328,7 @@ main(int argc, char**argv)
   foxrps_argv = argv;
   memset (foxrps_host_name, 0, sizeof(foxrps_host_name));
   gethostname(foxrps_host_name, sizeof(foxrps_host_name)-1);
+  FOXRPS_BREAKPOINT();
   if (foxrps_argc>1)
     {
       if (!strcmp(foxrps_argv[1], "--version"))
@@ -328,7 +362,7 @@ main(int argc, char**argv)
                      << FOX_MAJOR << "." << FOX_MINOR
                      << "." << FOX_LEVEL);
     };
-  FX::FXApp the_app("fox-refpersys", "refpersys.org");
+  FoxrpsApp the_app("fox-refpersys", "refpersys.org");
   foxrps_ptr_app.reset(&the_app);
   the_app.init(argc, argv);
   foxrps_prog_args();
