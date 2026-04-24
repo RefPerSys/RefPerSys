@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -44,6 +44,12 @@ const char rps_garbcoll_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" const char rps_garbcoll_timestamp[];
 const char rps_garbcoll_timestamp[]= __TIMESTAMP__;
+
+extern "C" const char rps_garbcoll_basename[];
+const char rps_garbcoll_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_garbcoll_baseid[];
+const char rps_garbcoll_baseid[]= RPS_BASENAME;
 
 
 std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this_;
