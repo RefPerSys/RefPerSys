@@ -33,6 +33,10 @@
 #error RPS_SHORTGITID is not defined by compilation command
 #endif
 
+#ifndef RPS_BASENAME
+#error RPS_BASENAME not defined by compilation command
+#endif
+
 extern "C" const char rps_carbrepl_gitid[];
 const char rps_carbrepl_gitid[]= RPS_GITID;
 
@@ -44,6 +48,16 @@ const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" const char rps_carbrepl_timestamp[];
 const char rps_carbrepl_timestamp[]= __TIMESTAMP__;
+
+
+
+extern "C" const char rps_carbrepl_basename[];
+const char rps_carbrepl_basename[] = RPS_BASENAME;
+
+/// as long as this source file has no dash it is the same as above...
+extern "C" const char rps_carbrepl_baseid[];
+const char rps_carbrepl_baseid[] = RPS_BASEID;
+
 
 constexpr unsigned rps_magic_carbrepl_data = 696140743; // 0x297e43c7
 struct rps_carbrepl_data_st {
