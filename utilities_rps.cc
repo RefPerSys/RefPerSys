@@ -56,6 +56,15 @@ const char rps_utilities_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_utilities_timestamp[];
 const char rps_utilities_timestamp[]= __TIMESTAMP__;
 
+extern "C" const char rps_utilities_basename[];
+const char rps_utilities_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_utilities_baseid[];
+const char rps_utilities_baseid[]= RPS_BASEID;
+
+
+
+////////////////////////////////////////////////////////////////
 extern "C" void rps_set_user_preferences(const char*path);
 
 extern "C" void rps_scripting_help(void);

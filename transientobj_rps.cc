@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright (C) 2023 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -48,6 +48,12 @@ const char rps_transientobj_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" const char rps_transientobj_timestamp[];
 const char rps_transientobj_timestamp[]= __TIMESTAMP__;
+
+extern "C" const char rps_transientobj_basename[];
+const char rps_transientobj_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_transientobj_baseid[];
+const char rps_transientobj_baseid[]= RPS_BASEID;
 
 ////////////////////////////////////////////////////////////////
 ////// trensient unix process payload
