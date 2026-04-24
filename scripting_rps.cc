@@ -48,6 +48,12 @@ const char rps_scripting_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_scripting_timestamp[];
 const char rps_scripting_timestamp[]= __TIMESTAMP__;
 
+extern "C" const char rps_scripting_basename[];
+const char rps_scripting_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_scripting_baseid[];
+const char rps_scripting_baseid[]= RPS_BASEID;
+
 
 extern "C" void rps_scripting_help(void);
 extern "C" void rps_scripting_add_script(const char*);
