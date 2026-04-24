@@ -1341,9 +1341,13 @@ rpsconf_emit_configure_refpersys_mk (void)
     char testdir[RPSCONF_PATH_MAXLEN + 10];
     memset (testdir, 0, sizeof (testdir));
     snprintf (testdir, sizeof (testdir) - 1, "%s/test_dir", rpsconf_cwd_buf);
-    fprintf (f, "\n\n### emitted tests [%s:%d] from test directory %s\n",
-             __FILE__, __LINE__, testdir);
+    fprintf (f, "\n\n### emitting tests [%s:%d]\n"
+	     "#... from test directory %s\n",
+             __FILE__, __LINE__-2, testdir);
     rpsconf_emit_from_testdir (f, testdir);
+    fprintf (f, "\n\n### ending tests [%s:%d]\n",
+	     __FILE__, __LINE__-1);
+    fflush(f);
   }
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
@@ -1486,6 +1490,8 @@ rpsconf_usage (void)
   puts ("# generate the _configure-refpersys.mk file");
   puts ("# for inclusion by GNU make");
   puts ("# GPLv3+ licensed, so no warranty");
+  puts ("## using CC, CXX, CXXFLAGS, HOME for ~/.gitconfig ...");
+  puts ("## and RPS_BUILDER_PERSON & RPS_BUILDER_EMAIL environment vars");
 }       /* end rpsconf_usage */
 
 
