@@ -653,6 +653,7 @@ MyqrMainWindow::toggle_debug()
 void
 MyqrMainWindow::about()
 {
+  MYQR_DEBUGOUT("MyqrMainWindow::about this=" << this);
   int ret =
     QMessageBox::information(this,
                              QString(myqr_progname),
@@ -662,7 +663,7 @@ MyqrMainWindow::about()
                              + QString("\n")
                              + QString("compiled by ")
                              + QString(rps_cxx_compiler_realpath));
-  MYQR_DEBUGOUT("incomplete MyqrMainWindow::about");
+  MYQR_DEBUGOUT("incomplete MyqrMainWindow::about ret=" << ret);
 #warning incomplete MyqrMainWindow::about
 } // end MyqrDisplayWindow::about
 ////////////////////////////////////////////////////////////////
@@ -709,7 +710,8 @@ MyqrApplication::compilation_process_finished(int exitCode,
   MYQR_WARNOUT("incomplete compilation_process_finished comproc@"
                << comproc
                << " pid=" << comproc->processId()
-               << " exitcode=" << exitCode
+               << " exitcode=" << exitCode << ' '
+               << (crashed?"crashed":"exited")
                << " reason=" << reason);
 #warning MyqrApplication::compilation_process_finished incomplete
 } // end MyqrApplication::compilation_process_finished
@@ -931,6 +933,8 @@ myqr_readable_jsonrpc_cmd(void)
     {
       errmsg = strerror_r(rderr, errbuf, sizeof(errbuf));
       assert(errbuf[0] != (char)0);
+      MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd read cmdfd#"
+                    << myqr_jsonrpc_cmd_fd << " failed:" << errmsg);
     };
   MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd got rdcnt=" << rdcnt
                 << (rderr?" : ":".")
@@ -1127,15 +1131,16 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     memset (inibuf, 0, sizeof(inibuf));
     snprintf(inibuf, sizeof(inibuf)-2,
              "/" "/ temporary C++ file %.250s from %s pid %d git %s",
-             tsrcfil->fileName().toStdString(), __FILE__,
+             tsrcfil->fileName().toStdString().c_str(), __FILE__,
              getpid(), myqr_shortgitid);
     tsrcfil->write(inibuf);
     tsrcfil->write("\n");
-    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote first line "
+    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin"
+                  " wrote first line "
                   << inibuf);
     snprintf(inibuf, sizeof(inibuf)-2,
              "/" "/ plugin %.250s to be generated from %s pid %d git %s",
-             tfilso->fileName().toStdString(), __FILE__,
+             tfilso->fileName().toStdString().c_str(), __FILE__,
              getpid(), myqr_shortgitid);
     tsrcfil->write(inibuf);
     tsrcfil->write("\n");
@@ -1175,7 +1180,7 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
           break;
       }
     while (!feof(selfil));
-    if (maxwidth >= sizeof(slinbuf)-4)
+    if (maxwidth >= (int)sizeof(slinbuf)-4)
       {
         MYQR_WARNOUT("maximum width of copied C++ lines is big " << maxwidth
                      << " bytes");
@@ -1186,8 +1191,11 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
     char midbuf[512];
     memset (midbuf, 0, sizeof(midbuf));
     snprintf(midbuf, sizeof(midbuf)-2,
-             "\n\f\n/" "/ own C++ code file %.250s from %s pid %d git %s",
-             tsrcfil->fileName().toStdString(), getpid(), myqr_shortgitid);
+             "\n\f\n/" "/"
+             "// own C++ code file %.250s from %s pid %d git %s",
+             tsrcfil->fileName().toStdString().c_str(),
+             __FILE__,
+             getpid(), myqr_shortgitid);
   }
   //// the own emitted lines
   for (int i= 0; i < srclen; i++)
@@ -1198,15 +1206,16 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
       long l = tsrcfil->write(curlin.c_str(), curlin.size());
       MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote line#" << i
                     << " " << curlin);
-      if (l < curlin.size())
-        MYQR_FATALOUT("failed to write line#" << i << " of " << l << " bytes");
+      if (l < (long)curlin.size())
+        MYQR_FATALOUT("failed to write line#" << i
+                      << " of " << l << " bytes");
     };
   {
     char inibuf[512];
     memset (inibuf, 0, sizeof(inibuf));
     snprintf(inibuf, sizeof(inibuf)-2,
              "/" "/ end of file %.250s from %s pid %d git %s - %d lines",
-             tsrcfil->fileName().toStdString(), __FILE__,
+             tsrcfil->fileName().toStdString().c_str(), __FILE__,
              getpid(), myqr_shortgitid, srclen);
     tsrcfil->write(inibuf);
     tsrcfil->write("\n");
@@ -1257,8 +1266,8 @@ myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
   comproc->start();
 #warning incomplete myqr_initiate_cpp_compilation_to_plugin
   MYQR_WARNOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
-                << name.toStdString() << " file "
-                << tsrcfil->fileName().toStdString());
+               << name.toStdString() << " file "
+               << tsrcfil->fileName().toStdString());
 } // end myqr_initiate_cpp_compilation_to_plugin
 
 void
