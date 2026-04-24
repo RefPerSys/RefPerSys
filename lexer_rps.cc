@@ -53,6 +53,11 @@ const char rps_lexer_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_lexer_timestamp[];
 const char rps_lexer_timestamp[]= __TIMESTAMP__;
 
+extern "C" const char rps_lexer_basename[];
+const char rps_lexer_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_lexer_baseid[];
+const char rps_lexer_baseid[]= RPS_BASENAME;
 
 extern "C" Rps_StringValue rps_lexer_token_name_str_val;
 Rps_StringValue rps_lexer_token_name_str_val(nullptr);

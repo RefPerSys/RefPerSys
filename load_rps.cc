@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -50,6 +50,12 @@ const char rps_load_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" const char rps_load_timestamp[];
 const char rps_load_timestamp[]= __TIMESTAMP__;
+
+extern "C" const char rps_load_basename[];
+const char rps_load_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_load_baseid[];
+const char rps_load_baseid[]= RPS_BASENAME;
 
 extern "C" char rps_loaded_directory[rps_path_byte_size];
 char rps_loaded_directory[rps_path_byte_size];
