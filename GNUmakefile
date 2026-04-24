@@ -195,6 +195,7 @@ fox-refpersys: tools/fox-refpersys.cc __timestamp.o | GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	__timestamp.o \
 	$(shell pkg-config --cflags $(FOXREFPERSYS_PACKAGES)) \
@@ -253,9 +254,10 @@ __raw_timestamp.c: rps-generate-timestamp.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -458,6 +460,7 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(REFPERSYS_PLUGIN_SOURCE)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\" -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $(REFPERSYS_PLUGIN_SOURCE) -o $(REFPERSYS_PLUGIN_SHARED_OBJECT)
@@ -470,6 +473,7 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $<))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
@@ -482,6 +486,7 @@ plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  r
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
@@ -494,6 +499,7 @@ plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedsele
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
@@ -506,6 +512,7 @@ plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedatt
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
@@ -518,6 +525,7 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
@@ -534,6 +542,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	    $^ -o $@
@@ -547,6 +556,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
 #-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 #-             -DRPS_HOST=\"$(RPS_HOST)\" \
 #-	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+#-	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
 #-             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
 #-             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 #- 	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc -o $@
@@ -560,12 +570,13 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 	/usr/bin/printenv
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared  $(REFPERSYS_CODEGEN_FLAGS) \
 	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-	       -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-               -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-	       -DRPS_HOST=\"$(RPS_HOST)\" \
-	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
-	       -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
-	       -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	    -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+            -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	$< -o $@
 
 
@@ -590,6 +601,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 #            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 #            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
 #	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+#	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
 #            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
 #            -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
 #            -o $@ $<
@@ -649,6 +661,7 @@ load_rps.o: load_rps.cc refpersys.hh \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \ \
                -DRPS_HOST=\"$(RPS_HOST)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
                -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
                -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       -c -o $@ $<
@@ -675,6 +688,7 @@ load_rps.o: load_rps.cc refpersys.hh \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -695,6 +709,7 @@ raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -715,6 +730,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -733,6 +749,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
                -DRPS_HOST=\"$(RPS_HOST)\" \
                -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
                -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -752,6 +769,7 @@ q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __timestamp.o |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	__timestamp.o \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
@@ -761,6 +779,7 @@ _q6refpersys.ii:  tools/q6refpersys.cc _q6refpersys-moc.cc  |GNUmakefile
 	$(CXX) -rdynamic -C -E -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	__timestamp.o \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
@@ -776,6 +795,7 @@ plain-q6rps-plugin: tools/q6refpersys.cc  $(Q6RPS_PLUGIN_SRC) |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $(Q6RPS_PLUGIN_SRC))"' \
 	-DSELF_BASENAME='"$(notdir $(basename $(Q6RPS_PLUGIN_SRC)))"' \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES)) \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	-shared -o $(Q6RPS_PLUGIN_SHARED)  \
