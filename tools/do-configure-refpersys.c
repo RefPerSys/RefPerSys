@@ -1190,6 +1190,8 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f, "# DO NOT EDIT but use make config\n");
   fprintf (f, "# generated from %s:%d\n# in %s\n", __FILE__, __LINE__,
            rpsconf_cwd_buf);
+  fprintf (f, "## using CC, CXX, CXXFLAGS, HOME for ~/.gitconfig ...\n");
+  fprintf (f, "## and RPS_BUILDER_PERSON & RPS_BUILDER_EMAIL env vars\n");
   fprintf (f, "# see refpersys.org\n\n");
   fprintf (f, "# generated at %s## on %s git %s\n\n",
            ctime (&nowt), rpsconf_host_name, RPSCONF_GIT_ID);
