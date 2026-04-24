@@ -55,7 +55,7 @@ extern "C" const char rps_load_basename[];
 const char rps_load_basename[]= RPS_BASENAME;
 
 extern "C" const char rps_load_baseid[];
-const char rps_load_baseid[]= RPS_BASENAME;
+const char rps_load_baseid[]= RPS_BASEID;
 
 extern "C" char rps_loaded_directory[rps_path_byte_size];
 char rps_loaded_directory[rps_path_byte_size];

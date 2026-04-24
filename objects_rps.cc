@@ -46,6 +46,12 @@ extern "C" const char rps_objects_timestamp[];
 const char rps_objects_timestamp[]= __TIMESTAMP__;
 
 
+extern "C" const char rps_objects_basename[];
+const char rps_objects_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_objects_baseid[];
+const char rps_objects_baseid[]= RPS_BASEID;
+
 std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> Rps_ObjectZone::ob_idmap_(50777);
 
 std::map<Rps_Id,Rps_ObjectZone*> Rps_ObjectZone::ob_idbucketmap_[Rps_Id::maxbuckets];

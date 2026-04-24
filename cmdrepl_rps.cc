@@ -46,7 +46,7 @@ extern "C" const char rps_cmdrepl_basename[];
 const char rps_cmdrepl_basename[]= RPS_BASENAME;
 
 extern "C" const char rps_cmdrepl_baseid[];
-const char rps_cmdrepl_baseid[]= RPS_BASENAME;
+const char rps_cmdrepl_baseid[]= RPS_BASEID;
 
 // internal code to evaluate composite expressions like arithmetic, conditionals, etc...
 static Rps_TwoValues

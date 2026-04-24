@@ -13,7 +13,7 @@
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      <https://refpersys.gitlab.io> and refpersys.org
  *
  * License:
@@ -45,6 +45,13 @@ const char rps_primes_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_primes_timestamp[];
 const char rps_primes_timestamp[]= __TIMESTAMP__;
 
+extern "C" const char rps_primes_basename[];
+const char rps_primes_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_primes_baseid[];
+const char rps_primes_baseid[]= RPS_BASEID;
+
+////////////////
 extern "C" int64_t rps_prime_above (int64_t n);
 extern "C" int64_t rps_prime_below (int64_t n);
 

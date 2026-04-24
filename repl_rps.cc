@@ -14,7 +14,7 @@
  *      Nimesh Neema <nimeshneema@gmail.com>
  *     with help from Niklas Rozencrantz (Sweden)
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -48,6 +48,12 @@ const char rps_repl_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" const char rps_repl_timestamp[];
 const char rps_repl_timestamp[]= __TIMESTAMP__;
+
+extern "C" const char rps_repl_basename[];
+const char rps_repl_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_repl_baseid[];
+const char rps_repl_baseid[]= RPS_BASEID;
 
 
 std::vector<std::string> rps_completion_vect;

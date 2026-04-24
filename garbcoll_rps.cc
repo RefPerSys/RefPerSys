@@ -49,7 +49,7 @@ extern "C" const char rps_garbcoll_basename[];
 const char rps_garbcoll_basename[]= RPS_BASENAME;
 
 extern "C" const char rps_garbcoll_baseid[];
-const char rps_garbcoll_baseid[]= RPS_BASENAME;
+const char rps_garbcoll_baseid[]= RPS_BASEID;
 
 
 std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this_;

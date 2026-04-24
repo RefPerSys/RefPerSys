@@ -54,6 +54,9 @@ const char rps_main_baseid[] = RPS_BASEID;
 extern "C" const char rps_main_timestamp[];
 const char rps_main_timestamp[]= __TIMESTAMP__;
 
+
+
+////////////////
 extern "C" char rps_buffer_proc_version[];
 char rps_buffer_proc_version[rps_path_byte_size];
 
