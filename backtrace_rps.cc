@@ -205,8 +205,6 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
     RPS_FASTABORT("pc_to_string: corrupted Rps_Backtracer");
   const char* BOLD_esc = (backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* ITALICS_esc = (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"");
-  const char* UNDERLINE_esc = (backtr_ontty?RPS_TERMINAL_UNDERLINE_ESCAPE:"");
-  const char* FAINT_esc = (backtr_ontty?RPS_TERMINAL_FAINT_ESCAPE:"");
   const char* NORMAL_esc = (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   if (gotmain)
     *gotmain = false;
@@ -346,7 +344,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("detailed_pc_to_string: corrupted Rps_Backtracer");
-  const char* BOLD_esc = (backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  //  const char* BOLD_esc = (backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* ITALICS_esc = (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"");
   const char* UNDERLINE_esc = (backtr_ontty?RPS_TERMINAL_UNDERLINE_ESCAPE:"");
   const char* FAINT_esc = (backtr_ontty?RPS_TERMINAL_FAINT_ESCAPE:"");
@@ -526,7 +524,8 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullClos");
         }
         default:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output bad kind " << bt->bkindname());
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output bad kind "
+			<< bt->bkindname());
         }
       break;
     case Todo::Do_Print:
