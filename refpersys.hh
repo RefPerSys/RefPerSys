@@ -865,16 +865,19 @@ void rps_set_debug_output_path(const char*filepath);
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
+
+/* NB: before commit 73727a76ce7b6 at end of april 2026 we thought about
+   defining a std::ostream subclass for the debugging stream... */
+
 /// debug print to stderr or syslog or to the file given to
 /// rps_set_debug_output_path ....; if fline is negative, print a
 /// newline before....
 void
-rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug dbgopt,
+rps_debug_printf_at(const char *fname, int fline, const char*funcname,
+		    Rps_Debug dbgopt,
                     const char *fmt, ...)  /// defined in main_rps.cc
 __attribute__ ((format (printf, 5, 6)));
 
-#warning we may define a std::ostream subclass for the debugging stream
-/// (with a singleton)
 
 #define RPS_DEBUG_PRINTF_AT(Fnam,Fline,Dbgopt,Fmt, ...) \
 do                                                      \
@@ -1015,10 +1018,12 @@ while (0)
   }                                                     \
 } while(0)
 
-#define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
+#define RPS_INFORMOUT_AT(Fil,Lin,...) \
+  RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
 // typical usage would be RPS_INFORMOUT("annoying x=" << x)
-#define RPS_INFORMOUT(...) RPS_INFORMOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
+#define RPS_INFORMOUT(...) \
+  RPS_INFORMOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 
 /// this macro RPS_NOPRINT and the following one RPS_NOPRINTOUT are
@@ -1075,7 +1080,8 @@ while (0)
     rps_fatal_stop_at(Fil, Lin); }                              \
  } while(0)
 
-#define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
+#define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) \
+  RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
 #define RPS_ASSERTPRINTF(Cond,Fmt,...) \
   RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,\
                       (Cond),Fmt,##__VA_ARGS__)
@@ -1101,7 +1107,7 @@ while (0)
           (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
               Fil, Lin, Func);                                  \
       fprintf(stderr, "!*!*! %s \n\n",                          \
-              str_##Lin.c_str());       \
+              str_##Lin.c_str());                               \
     };                                                          \
     rps_fatal_stop_at(Fil, Lin); }                              \
  } while(0)
