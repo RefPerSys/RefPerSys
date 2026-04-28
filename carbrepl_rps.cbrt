@@ -882,6 +882,12 @@ replnt_factor: replnt_atom                   {
 
 replnt_factor: MINUS replnt_factor            {
   _Pragma("message \"replnt_factor as MINUS replnt_factor in carbrepl_rps.cbrt\"");
+  static Rps_Id id_minus_delim;
+  if (!id_minus_delim)
+    id_minus_delim = Rps_Id("_3isfNUOsxXY02Bww6");  ///$minus!delim∈repl_delimiter
+  static Rps_Id id_negate_monop;
+  if (!id_negate_monop)
+    id_negate_monop = Rps_Id("_9vf47NnQHMx029N0uv"); //$negate∈repl_unary_operator
   // $$ = -$1;
   }
 
