@@ -780,6 +780,7 @@ replnt_expr: replnt_expr PLUS replnt_term            {
   carbdata.cardata_vright = $2;
   carbdata.touch_carbdata();
   _Pragma("message \"take inspiration from parsrepl_rps.cc function Rps_TokenSource::parse_sum\"");
+  _Pragma("GCC warning \"we probably may want to use repl_expression below\"");
   $$ = carbdata.cardata_vinst
     = Rps_InstanceValue(RPS_ROOT_OB(_55Z5Wgzuprq01MU6Br), //repl_binary_operator∈class h:2852622165
                         {carbdata.cardata_obop, $0, $2});
