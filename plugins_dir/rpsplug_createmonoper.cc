@@ -10,6 +10,7 @@
                 --plugin-arg=rpsplug_createmonoper:- \
                 --extra=name=negate \
                 --extra=precedence=8 \
+                --extra=constant=1 \
                 --extra=comment='unary negation operator'
                 --batch --dump=.
  *
@@ -50,7 +51,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (strlen(plugarg) >= MYARGMAXLEN-1)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with too long argument "
-		 << Rps_QuotedC_String(plugarg));
+                 << Rps_QuotedC_String(plugarg));
   if (rooted)
     {
       if (!strcmp(rooted, "true"))
@@ -86,7 +87,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   else
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with bad precedence " << precedence
-		 << " for argument " << Rps_QuotedC_String(plugarg));
+                 << " for argument " << Rps_QuotedC_String(plugarg));
 
   RPS_ASSERT(_f.obclassoper->is_class());
   RPS_ASSERT(_f.obclassrepldelim->is_class());
@@ -96,7 +97,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (strlen(plugarg) >= MYARGMAXLEN-1)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with too long argument "
-		 << Rps_QuotedC_String(plugarg));
+                 << Rps_QuotedC_String(plugarg));
   strncpy(argcopy, plugarg, MYARGMAXLEN);
   if (ispunct(plugarg[0]))
     {
@@ -117,7 +118,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                  <<  Rps_QuotedC_String(plugarg)
                  << " not identifier or all-delim");
   RPS_INFORMOUT("running plugin " << plugin->plugin_name
-		<< " with argument "
+                << " with argument "
                 << Rps_QuotedC_String(plugarg)
                 << " and extra name " << Rps_QuotedC_String(xtraname)
                 << " and  precedence " << precedence);
@@ -137,15 +138,15 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (precedence >= 0)
     {
       _f.obnewoper
-	->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
-		   Rps_Value::make_tagged_int(precedence));
+        ->put_attr(RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp), //repl_precedence∈symbol
+                   Rps_Value::make_tagged_int(precedence));
     }
   if (comment != nullptr)
     {
       _f.strcomment = Rps_StringValue(comment);
       _f.obnewoper
-	->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
-		   _f.strcomment);
+        ->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+                   _f.strcomment);
     }
   if (isrooted)
     {
