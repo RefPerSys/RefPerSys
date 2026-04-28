@@ -38,7 +38,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ **************************************************************************/
 
 
 
@@ -219,7 +219,9 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_JsonZone; // memory for Json values
-class Rps_LexTokenZone; /// memory for reified lexical tokens, mostly in repl_rps.cc
+class Rps_LexTokenZone; /// memory for reified lexical tokens,
+//… mostly in repl_rps.cc
+
 class Rps_DequVal;
 class Rps_GarbageCollector;
 class Rps_Payload;
@@ -306,8 +308,8 @@ extern "C" {
 #include <gnu/libc-version.h>
 
 
-// for programmatic C++ name demangling, see also
-// https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
+// for programmatic C++ name demangling, see also inside GCC code
+// gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>
 
 
