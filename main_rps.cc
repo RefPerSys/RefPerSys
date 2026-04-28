@@ -1776,6 +1776,11 @@ main (int argc, char** argv)
     {
       rps_try_parsing_default_user_preferences();
     };
+  RPS_INFORMOUT("refpersys after load from " << rps_my_load_dir
+		<< " is " 
+		<< (rps_batch?"batch":"interactive")
+		<< " git " << rps_shortgitid
+		<< " pid#" << getpid());
   if (!rps_batch)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);

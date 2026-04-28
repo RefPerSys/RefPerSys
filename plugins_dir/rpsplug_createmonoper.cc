@@ -6,13 +6,13 @@
 /*****
  * Once compiled, use it for example as:
  
-    ./refpersys --plugin-after-load=/tmp/rpsplug_createmonoper.so \
+    ./refpersys --batch --plugin-after-load=/tmp/rpsplug_createmonoper.so \
                 --plugin-arg=rpsplug_createmonoper:- \
                 --extra=name=negate \
                 --extra=precedence=8 \
                 --extra=constant=1 \
                 --extra=comment='unary negation operator'
-                --batch --dump=.
+                --dump=.
  *
  ****/
 
