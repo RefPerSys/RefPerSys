@@ -591,7 +591,8 @@ rps_run_loaded_application(int &argc, char **argv)
                ".. md5sum %s\n"
                ".. in %s\n"
                ".. on host %s pid %d\n",
-               argv[0], argc, rps_gitid, rps_get_major_version(), rps_get_minor_version(),
+               argv[0], argc, rps_gitid,
+               rps_get_major_version(), rps_get_minor_version(),
                rps_timestamp,
                rps_lastgitcommit,
                rps_md5sum,
@@ -603,9 +604,12 @@ rps_run_loaded_application(int &argc, char **argv)
     {
       rps_add_debug_cstr(rps_debugflags_after_load);
       RPS_INFORMOUT("did set after load "
-                    << " of RefPerSys process " << (int)getpid() << std::endl
+                    << " of RefPerSys process "
+                    << (int)getpid() << std::endl
                     << "… on " << rps_hostname()
-                    << " shortgit " << rps_shortgitid << " version " << rps_get_major_version() << "." << rps_get_minor_version()
+                    << " shortgit " << rps_shortgitid
+                    << " version " << rps_get_major_version()
+                    << "." << rps_get_minor_version()
                     << " debug to "
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -1464,7 +1468,7 @@ rps_debug_printf_at(const char *filnam, int fline,
           {
             if (ontty)
               fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
-	    //U+2042 ASTERISM ⁂
+            //U+2042 ASTERISM ⁂
             fprintf(stderr, "⁂ RPS Debug %04ld ~ %s *^*^*",
                     ndbg, datebfr);
             if (ontty)
