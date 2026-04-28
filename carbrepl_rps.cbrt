@@ -177,15 +177,15 @@ extern "C" const char rps_carbrepl_shortgitid[];
 
 %token INT
 %type INT: intptr_t
-%token_action {  _Pragma("message \"token_action for INT\"");	\
-  $$ = carbdata.cardata_i;					\
-  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc	\
-                << " cardata_i=" << carbdata.cardata_i		\
-		<< " $$=" << $$);				\
-  RPS_FATALOUT("INT token_action is incomplete tksrc="		\
-               << tksrc << " sym=" << sym			\
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)		\
-               << RPS_FULL_BACKTRACE(1, "token_action INT"));	\
+%token_action {  _Pragma("message \"token_action for INT\"");   \
+  $$ = carbdata.cardata_i;                                      \
+  RPS_DEBUG_LOG(REPL, "token_action for INT tksrc=" << *tksrc   \
+                << " cardata_i=" << carbdata.cardata_i          \
+                << " $$=" << $$);                               \
+  RPS_FATALOUT("INT token_action is incomplete tksrc="          \
+               << tksrc << " sym=" << sym                       \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)          \
+               << RPS_FULL_BACKTRACE(1, "token_action INT"));   \
  }
 
 
@@ -195,11 +195,11 @@ extern "C" const char rps_carbrepl_shortgitid[];
   /* should assign $$ for DOUBLE */                                     \
   $$ = carbdata.cardata_d;                                              \
   RPS_DEBUG_LOG(REPL, "token_action for DOUBLE tksrc=" << *tksrc        \
-                << " cardata_d=" << carbdata.cardata_d			\
-		<< " $$=" << $$  << " sym=" << sym			\
-		<< ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
-		<< " cardata_d="   << carbdata.cardata_d		\
-		<< RPS_FULL_BACKTRACE(1, "token_action DOUBLE"));	\
+                << " cardata_d=" << carbdata.cardata_d                  \
+                << " $$=" << $$  << " sym=" << sym                      \
+                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                 \
+                << " cardata_d="   << carbdata.cardata_d                \
+                << RPS_FULL_BACKTRACE(1, "token_action DOUBLE"));       \
  }
 
 %token STRING
@@ -209,9 +209,9 @@ extern "C" const char rps_carbrepl_shortgitid[];
   $$ = carbdata.cardata_str;                                            \
   RPS_DEBUG_LOG(REPL, "token_action for STRING tksrc=" << *tksrc        \
                 << " cardata_str="                                      \
-                << Rps_QuotedC_String(carbdata.cardata_str)		\
-                << "$$:" << $$ << " sym=" << sym			\
-                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)			\
+                << Rps_QuotedC_String(carbdata.cardata_str)             \
+                << "$$:" << $$ << " sym=" << sym                        \
+                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                 \
                 << RPS_FULL_BACKTRACE(1, "token_action STRING")); }
 
 %token NAME
@@ -221,26 +221,27 @@ extern "C" const char rps_carbrepl_shortgitid[];
   RPS_DEBUG_LOG(REPL, "token_action for NAME tksrc=" << *tksrc   \
                 << " cardata_str=" << carbdata.cardata_str       \
                 << " $$=" << $$                                  \
-		<< " sym=" << sym				 \
-		<< ":" << RPS_CARBREPL_SYMBOL_NAME(sym)		 \
-		<< std::endl					 \
-		<< RPS_FULL_BACKTRACE(1, "token_action NAME"));  }
+                << " sym=" << sym                                \
+                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)          \
+                << std::endl                                     \
+                << RPS_FULL_BACKTRACE(1, "token_action NAME"));  }
 
 %token OID
 %type OID: Rps_Id
-%token_action { _Pragma("message \"token_action for OID\"");	\
-  carbdata.cardata_oid = Rps_Id(*tksrc);			\
-  $$ = carbdata.cardata_oid;					\
-  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc	\
-                << " $$=" << $$					\
-		<< " sym=" << sym				\
-		<< ":" << RPS_CARBREPL_SYMBOL_NAME(sym); }
+%token_action { _Pragma("message \"token_action for OID\"");    \
+  carbdata.cardata_oid = Rps_Id(*tksrc);                        \
+  $$ = carbdata.cardata_oid;                                    \
+  RPS_DEBUG_LOG(REPL, "token_action for OID tksrc=" << *tksrc   \
+                << " $$=" << $$                                 \
+                << " sym=" << sym                               \
+                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym); }
 
 
 
 
 //// Adding new KEYW_ keywords could require the
 //// plugins_dir/rpsplug_createsymbol.cc to create a symbol for them
+//// unless the symbol exists (e.g. `tuple` or `set`)
 //// using
 /***
  ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
@@ -594,7 +595,7 @@ replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    RPS_ASSERT(tksrc != nullptr);
    RPS_POSSIBLE_BREAKPOINT();
    rps_carbrepl_do_display_command(callframe,
-				   rps_get_first_repl_environment(), $2);
+                                   rps_get_first_repl_environment(), $2);
    RPS_POSSIBLE_BREAKPOINT();
    tksrc->clear_token_dequeue();
    RPS_POSSIBLE_BREAKPOINT();
@@ -1064,7 +1065,7 @@ rps_carbrepl_destructor_replnt_value(Rps_Value&val, int lin)
 int
 rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                         int& sym, struct rps_carbrepl_data_st&carbdata,
-			int lin)
+                        int lin)
 {
   static thread_local int callcnt;
   /// used by %on_next_token above:
@@ -1094,12 +1095,13 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
   //// temporary trick to help debugging with GDB,
   //// in some cases in GDB do: b carbrepl_rps_issue
   asm volatile (".global carbrepl_rps_issue; nop; nop;\n"
-		" carbrepl_rps_issue: nop; nop; nop");
+                " carbrepl_rps_issue: nop; nop; nop");
   _f.tokv = tksrc->lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
                 << __FILE__ << ":" << lin
                 << " tksrc=" << *tksrc
-                << " tokv=" << _f.tokv);
+                << " tokv=" << _f.tokv
+                << " sym=" << sym);
   RPS_POSSIBLE_BREAKPOINT();
   if (!_f.tokv) {
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
@@ -1159,7 +1161,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
           termname=rpscarbrepl_symbol_names_[carbrank];
         if (!termname) {
           snprintf(carbtermbuf, sizeof(carbtermbuf)-1, "#?Carb-%d",
-		   carbrank);
+                   carbrank);
           termname = carbtermbuf;
         };        
         RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
@@ -1178,11 +1180,11 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << " tokv=" << _f.tokv);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum
-		<< "- tksrc=" << *tksrc << std::endl
-		<< "… tokv=" << _f.tokv
-		<< " kindtokob=" << _f.kindtokob
-		<< " valtokv=" << _f.valtokv
-		<< RPS_FULL_BACKTRACE(1, "rps_carbrepl_next_token°"));
+                << "- tksrc=" << *tksrc << std::endl
+                << "… tokv=" << _f.tokv
+                << " kindtokob=" << _f.kindtokob
+                << " valtokv=" << _f.valtokv
+                << RPS_FULL_BACKTRACE(1, "rps_carbrepl_next_token°"));
   ////
   RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_carbrepl_next_token
@@ -1376,7 +1378,7 @@ rps_carburetta_fill_keyword(Rps_ObjectRef obkeyw, int num, int line)
   RPS_ASSERT(num>0 && num<rpscarbrepl_symbol_names_length_
              && rpscarbrepl_symbol_names_[num] != nullptr
              && strncmp(rpscarbrepl_symbol_names_[num],
-			"KEYW_", sizeof("KEYW_")-1)==0);
+                        "KEYW_", sizeof("KEYW_")-1)==0);
   Rps_ObjectRef obcarbkeyw = rpskob_083n2ydb4Zm03bbZW1/*carburetta_keyword*/;
   Rps_Value atv = obkeyw->get_physical_attr(obcarbkeyw);
   if (atv != Rps_Value::make_tagged_int(num)) {
@@ -1503,7 +1505,7 @@ rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
   int numkeyw = -1;
   _f.cval = _f.obkeyw->get_physical_attr(rpskob_083n2ydb4Zm03bbZW1); //!carburetta_keyword∈named_attribute;
   RPS_DEBUG_LOG(REPL, "rps_carbrepl_keyword_lexer keystr=" << keystr
-		<< " obkeyw=" << _f.obkeyw << " cval=" << _f.cval);
+                << " obkeyw=" << _f.obkeyw << " cval=" << _f.cval);
   if (_f.cval.is_int()) {
     numkeyw = _f.cval.as_int();
     const char*keywname = RPS_CARBREPL_SYMBOL_NAME(numkeyw);
