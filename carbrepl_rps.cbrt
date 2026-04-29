@@ -572,6 +572,7 @@ extern "C" const char rps_carbrepl_shortgitid[];
 replnt_input: EOF {
   _Pragma("message \"replnt_input as EOF in carbrepl_rps.cbrt\"");
   RPS_ASSERT("empty replnt_input" && tksrc != nullptr);
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "replnt_input as EOF tksrc=" << *tksrc);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
   $$ = 0;
@@ -581,24 +582,29 @@ replnt_input: replnt_command replnt_input {
    _Pragma("message \"replnt_input as replnt_command replnt_input in carbrepl_rps.cbrt\"");
    RPS_ASSERT("command replnt_input" && tksrc != nullptr);
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+   RPS_ASSERT(tksrc != nullptr);
    RPS_DEBUG_LOG(REPL, "replnt_input as command:" << $1
                  << " tksrc=" << *tksrc);
-   RPS_ASSERT(tksrc != nullptr);
+   RPS_POSSIBLE_BREAKPOINT();
    $$ = $1 + 1;
 }
 
 replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    _Pragma("message \"replnt_command as KEYW_DISPLAY replnt_expr in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "display carburetta command $2 is:" << $2
-                 << RPS_FULL_BACKTRACE(1, "display carburetta command"));
+   RPS_DEBUG_LOG(REPL, "display carburetta command expr:$2 is:" << $2
+                 << RPS_FULL_BACKTRACE(1, "replnt_command@DISPLAY"));
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    RPS_POSSIBLE_BREAKPOINT();
+   RPS_DEBUG_LOG(REPL, "display carburetta command tksrc="
+		 << *tksrc);
    rps_carbrepl_do_display_command(callframe,
                                    rps_get_first_repl_environment(), $2);
    RPS_POSSIBLE_BREAKPOINT();
    tksrc->clear_token_dequeue();
    RPS_POSSIBLE_BREAKPOINT();
+   RPS_DEBUG_LOG(REPL, "display carburetta command ending tksrc="
+		 << *tksrc);
    $$ = 1;
 }
 
@@ -606,11 +612,18 @@ replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_ex
    _Pragma("message \"replnt_command as KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_expr in carbrepl_rps.cbrt\"");
    RPS_DEBUG_LOG(REPL, "put carburetta command $2 is:" << $2
                  << ", attr $4 is " << $4 << ", expr $6 is " << $6);
+   RPS_DEBUG_LOG(REPL, "put carburetta command tksrc="
+		 << *tksrc
+		 << RPS_FULL_BACKTRACE(1, "replnt_command@PUT"));
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    tksrc->clear_token_dequeue();
    RPS_POSSIBLE_BREAKPOINT();
+   RPS_DEBUG_LOG(REPL, "put carburetta command ended tksrc="
+		 << *tksrc << " in ob $2:" << RPS_OBJECT_DISPLAY($2)
+		 << std::endl
+		 << ", attr $4=" << $4 << ", expr $6="<< $6);
    $$ = 1;
 }
 
