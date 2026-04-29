@@ -597,14 +597,14 @@ replnt_command: ATSIGN KEYW_DISPLAY replnt_expr {
    RPS_ASSERT(tksrc != nullptr);
    RPS_POSSIBLE_BREAKPOINT();
    RPS_DEBUG_LOG(REPL, "display carburetta command tksrc="
-		 << *tksrc);
+                 << *tksrc);
    rps_carbrepl_do_display_command(callframe,
                                    rps_get_first_repl_environment(), $2);
    RPS_POSSIBLE_BREAKPOINT();
    tksrc->clear_token_dequeue();
    RPS_POSSIBLE_BREAKPOINT();
    RPS_DEBUG_LOG(REPL, "display carburetta command ending tksrc="
-		 << *tksrc);
+                 << *tksrc);
    $$ = 1;
 }
 
@@ -613,17 +613,17 @@ replnt_command: ATSIGN KEYW_PUT replnt_object DOT replnt_object ASSIGN replnt_ex
    RPS_DEBUG_LOG(REPL, "put carburetta command $2 is:" << $2
                  << ", attr $4 is " << $4 << ", expr $6 is " << $6);
    RPS_DEBUG_LOG(REPL, "put carburetta command tksrc="
-		 << *tksrc
-		 << RPS_FULL_BACKTRACE(1, "replnt_command@PUT"));
+                 << *tksrc
+                 << RPS_FULL_BACKTRACE(1, "replnt_command@PUT"));
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
    RPS_ASSERT(tksrc != nullptr);
    tksrc->clear_token_dequeue();
    RPS_POSSIBLE_BREAKPOINT();
    RPS_DEBUG_LOG(REPL, "put carburetta command ended tksrc="
-		 << *tksrc << " in ob $2:" << RPS_OBJECT_DISPLAY($2)
-		 << std::endl
-		 << ", attr $4=" << $4 << ", expr $6="<< $6);
+                 << *tksrc << " in ob $2:" << RPS_OBJECT_DISPLAY($2)
+                 << std::endl
+                 << ", attr $4=" << $4 << ", expr $6="<< $6);
    $$ = 1;
 }
 
@@ -633,18 +633,20 @@ replnt_command: ATSIGN KEYW_DO replnt_action {
    RPS_ASSERT(tksrc != nullptr);
    RPS_DEBUG_LOG(REPL, "do carburetta action $2 is:" << $2
                  << " tksrc=" << tksrc
-              << RPS_FULL_BACKTRACE(1, "replnt_action@DO-action"));
+                 << RPS_FULL_BACKTRACE(1, "replnt_action@DO-action"));
    RPS_POSSIBLE_BREAKPOINT();
    $$ = $2;
 }
 
 
 replnt_action: replnt_expr {
+   RPS_ASSERT(tksrc != nullptr);
    _Pragma("message \"replnt_action in carbrepl_rps.cbrt\"");
-   RPS_DEBUG_LOG(REPL, "do carburetta action $0 is:" << $0);
+   RPS_DEBUG_LOG(REPL, "do carburetta action $0 is:" << $0
+                 << " tksrc=" << tksrc
+                 << RPS_FULL_BACKTRACE(1, "replnt_action@expr"));
    RPS_POSSIBLE_BREAKPOINT();
    RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
-   RPS_ASSERT(tksrc != nullptr);
    $$ = $0;
 }
 
@@ -653,6 +655,9 @@ replnt_action: replnt_expr {
 replnt_action: ATSIGN KEYW_DO {
   RPS_POSSIBLE_BREAKPOINT();
   _Pragma("message \"replnt_action incomplete for @DO in carbrepl_rps.cbrt\"");
+   RPS_DEBUG_LOG(REPL, "do carburetta command tksrc="
+                 << *tksrc
+                 << RPS_FULL_BACKTRACE(1, "replnt_action@DO"));
   RPS_WARNOUT("missing code for @DO replnt_action tksrc=" << tksrc
               << RPS_FULL_BACKTRACE(1, "replnt_action@DO"));
   RPS_POSSIBLE_BREAKPOINT();
@@ -661,6 +666,9 @@ replnt_action: ATSIGN KEYW_DO {
 replnt_action: error {
   RPS_POSSIBLE_BREAKPOINT();
   _Pragma("message \"replnt_action incomplete in carbrepl_rps.cbrt\"");
+   RPS_DEBUG_LOG(REPL, "do carburetta command tksrc="
+                 << *tksrc
+                 << RPS_FULL_BACKTRACE(1, "replnt_action°error"));
   RPS_WARNOUT("missing code for `error` replnt_action tksrc=" << tksrc);
   RPS_POSSIBLE_BREAKPOINT();
   $$ = 0;
@@ -669,6 +677,8 @@ replnt_action: error {
 
 replnt_command: error {
   RPS_POSSIBLE_BREAKPOINT();
+   RPS_DEBUG_LOG(REPL, "do carburetta command tksrc=" << *tksrc
+                 << RPS_FULL_BACKTRACE(1, "replnt_command@error"));
   RPS_WARNOUT("invalid syntax for command tksrc=" << tksrc);
   RPS_POSSIBLE_BREAKPOINT();
   $$ = 0;
@@ -678,33 +688,44 @@ replnt_atom: INT {
 _Pragma("message \"replnt_atom as INT in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
   $$ = Rps_Value::make_tagged_int($0);
-  RPS_DEBUG_LOG(REPL, "atom is INT " << $$ << " from integer " << $0);
+  RPS_DEBUG_LOG(REPL, "atom is INT " << $$ << " from integer " << $0
+                <<" tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_atom@INT"));
 }
 
 replnt_atom: DOUBLE {
 _Pragma("message \"replnt_atom as DOUBLE in carbrepl_rps.cbrt\"");
   $$ = Rps_DoubleValue($0);
-  RPS_DEBUG_LOG(REPL, "atom is DOUBLE " << $$ << " from double " << $0);
+  RPS_DEBUG_LOG(REPL, "atom is DOUBLE " << $$ << " from double " << $0
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_atom@DOUBLE"));
 }
 
 replnt_atom: STRING {
 _Pragma("message \"replnt_atom as STRING in carbrepl_rps.cbrt\"");
   $$ = Rps_StringValue($0);
-  RPS_DEBUG_LOG(REPL, "atom is STRING " << $$ << " from string " << Rps_QuotedC_String($0));
+  RPS_DEBUG_LOG(REPL, "atom is STRING " << $$ << " from string "
+                << Rps_QuotedC_String($0)
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_atom@STRING"));
 }
 
 replnt_atom: replnt_object {
   _Pragma("message \"replnt_atom as replnt_object in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectValue($0);
-  RPS_DEBUG_LOG(REPL, "atom is object " << $$);
+  RPS_DEBUG_LOG(REPL, "atom is object " << $$
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_atom@ntobject"));
 }
 
 replnt_atom: replnt_set {
 _Pragma("message \"replnt_atom as replnt_set in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
  //// the set should be computed at evaluation time, not parsing time!
+  _Pragma("GCC warning \"bad code for replnt_atom as replnt_set\");
  $$ = ($0);
- RPS_DEBUG_LOG(REPL, "atom is set " << $$);
+ RPS_DEBUG_LOG(REPL, "atom is set " << $$
+                << " tksrc=" << *tksrc);
 }
 
 %type replnt_set: Rps_InstanceValue
@@ -712,8 +733,11 @@ _Pragma("message \"replnt_atom as replnt_set in carbrepl_rps.cbrt\"");
 replnt_set: LEFTBRACE replnt_objectseq RIGHTBRACE {
   _Pragma("message \"replnt_set in carbrepl_rps.cbrt\"");
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_DEBUG_LOG(REPL, "set $1: " << $1);
+  RPS_DEBUG_LOG(REPL, "set $1: " << $1
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_set@ntobseq"));
   //$$ = Rps_SetValue($1);
+  _Pragma("GCC warning \"incomplete code for replnt_set\"");
   RPS_DEBUG_LOG(REPL, "set " << $$);
 }
 
@@ -721,7 +745,9 @@ replnt_objectseq: /*empty*/ {
 _Pragma("message \"replnt_objectseq empty in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
  $$ = Rps_ObjectVector();
- RPS_DEBUG_LOG(REPL, "empty objectseq " << $$);
+ RPS_DEBUG_LOG(REPL, "empty objectseq " << $$
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_objectseq@empty"));
 }
 
 replnt_objectseq: replnt_object replnt_restobjectseq {
@@ -730,53 +756,69 @@ replnt_objectseq: replnt_object replnt_restobjectseq {
  $$.push_back($0);
  for (Rps_ObjectRef compob: $1)
    $$.push_back(compob);
- RPS_DEBUG_LOG(REPL, "replnt_objectseq is " << $$);
+ RPS_DEBUG_LOG(REPL, "replnt_objectseq is " << $$ << " $1=" << $1
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_objectseq@@1"));
 }
 
 replnt_restobjectseq: /*empty*/ {
 _Pragma("message \"replnt_restobjectseq empty in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
  $$ = Rps_ObjectVector();
- RPS_DEBUG_LOG(REPL, "empty restobjectseq " << $$);
+ RPS_DEBUG_LOG(REPL, "empty restobjectseq " << $$
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_restobjectseq@empty"));
 }
 
 replnt_restobjectseq: COMMA replnt_objectseq {
 _Pragma("message \"replnt_restobjectseq with comma in carbrepl_rps.cbrt\"");
  RPS_POSSIBLE_BREAKPOINT();
  $$ = $1;
- RPS_DEBUG_LOG(REPL, "comma restobjectseq " << $$);
+ RPS_DEBUG_LOG(REPL, "comma restobjectseq " << $$
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_restobjectseq@@Comma"));
 }
 
 replnt_object: NAME {
   _Pragma("message \"replnt_object as NAME in carbrepl_rps.cbrt\"");
   $$ = Rps_PayloadSymbol::find_named_object($0);
   RPS_DEBUG_LOG(REPL, "object is name " << $$ << " from name "
-		<< Rps_QuotedC_String($0));
+                << Rps_QuotedC_String($0)
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_object@NAME"));
 }
 
 replnt_object: OID {
   _Pragma("message \"replnt_object as OID in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectRef::really_find_object_by_oid($0);
-  RPS_DEBUG_LOG(REPL, "object is oid " << $$ << " from oid " << $0);
+  RPS_DEBUG_LOG(REPL, "object is oid " << $$ << " from oid " << $0
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_object@OID"));
 }
 
 
 replnt_expr: KEYW_OBJECT replnt_object {
   _Pragma("message \"replnt_expr as KEYW_OBJECT replnt_object in carbrepl_rps.cbrt\"");
   $$ = Rps_ObjectValue($1);
-  RPS_DEBUG_LOG(REPL, "expr is object " << $$);
+  RPS_DEBUG_LOG(REPL, "expr is object " << $$
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_expr@@object"));
 }
 
 
 replnt_expr: replnt_term                      {
   _Pragma("message \"replnt_expr as replnt_term in carbrepl_rps.cbrt\"");
-  RPS_DEBUG_LOG(REPL, "expr is term " << $$);
+  RPS_DEBUG_LOG(REPL, "expr is term " << $$
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_expr@@term"));
   $$ = $0;
 }
 
 replnt_expr: replnt_expr PLUS replnt_term            {            
   _Pragma("message \"replnt_expr as replnt_expr PLUS replnt_term in carbrepl_rps.cbrt\"");
-  RPS_DEBUG_LOG(REPL, "expr is sum of " << $0 << " and " << $2);
+  RPS_DEBUG_LOG(REPL, "expr is sum of " << $0 << " and " << $2
+                << " tksrc=" << *tksrc
+                << RPS_FULL_BACKTRACE(1, "replnt_expr@@PlusSum"));
   RPS_ASSERT(carbdata.cardata_magic == rps_magic_carbrepl_data);
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
@@ -1116,7 +1158,7 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 << " tksrc=" << *tksrc
                 << " tokv=" << _f.tokv
                 << " sym=" << sym << ":"
-		<< RPS_CARBREPL_SYMBOL_NAME(sym));
+                << RPS_CARBREPL_SYMBOL_NAME(sym));
   RPS_POSSIBLE_BREAKPOINT();
   if (!_f.tokv) {
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_next_token#" << callnum << " from "
