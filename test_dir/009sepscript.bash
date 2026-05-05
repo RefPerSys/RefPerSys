@@ -35,7 +35,7 @@ fi
 ulimit -S -t 15
 ulimit -H -t 18
 ## memory limit in kilobytes (2 Gbytes)
-ulimit -S -m $[[2 * 1024]]
+ulimit -S -m $[2 * 1024]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
 
