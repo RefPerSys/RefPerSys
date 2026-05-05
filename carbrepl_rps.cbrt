@@ -49,8 +49,6 @@ const char rps_carbrepl_shortgitid[]= RPS_SHORTGITID;
 extern "C" const char rps_carbrepl_timestamp[];
 const char rps_carbrepl_timestamp[]= __TIMESTAMP__;
 
-
-
 extern "C" const char rps_carbrepl_basename[];
 const char rps_carbrepl_basename[] = RPS_BASENAME;
 
