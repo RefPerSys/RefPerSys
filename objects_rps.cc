@@ -2081,7 +2081,7 @@ const
       if (out.tellp() - linpos > linemax)
         {
           out << std::endl;
-          for (int j=0; j<depth%16; j++)
+          for (int j=0; j<(int)depth%16; j++)
             out << ' ';
           linpos = out.tellp();
         };
