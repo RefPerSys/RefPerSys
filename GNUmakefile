@@ -396,11 +396,11 @@ __timestamp.o: __timestamp.c |GNUmakefile
 #refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
 #               $(REFPERSYS_DUMPED_CPP_OBJECTS) \
 #                   __timestamp.c |  GNUmakefile
-refpersys: objects |  GNUmakefile _config-refpersys.mk
+refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-refpersys.mk
 	$(MAKE) __timestamp.o
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	/bin/sleep 0.05
-	$(MAKE) objects
+	$(MAKE) objects $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	/bin/sleep 0.05
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
