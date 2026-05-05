@@ -36,12 +36,10 @@
 // comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
-//@@PKGCONFIG glib-2.0
-//@@PKGCONFIG cairo
 
 
 
-#include "glib.h"
+
 #include "libgccjit.h"
 
 extern "C" const char rps_utilities_gitid[];
@@ -780,9 +778,6 @@ rps_show_version(void)
             << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
             << " with " << nbsubdirs << " subdirectories." << std::endl
             << " GNU glibc: " << gnu_get_libc_version() << std::endl
-            << " Glib: " << glib_major_version
-            << "." << glib_minor_version
-            << "." << glib_micro_version << std::endl
             << " executable: " << exepath;
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;
