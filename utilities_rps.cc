@@ -730,7 +730,8 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
           nl= true;
         };
       nbshownfiles++;
-      if (snprintf(msgbuf, sizeof(msgbuf)-1, "#¤ %-20s git %.10s built %s",
+      if (snprintf(msgbuf, sizeof(msgbuf)-1,
+		   " #¤ %-20s git %.10s built %s",
                    curfile, symgit, symdat)>0)
         std::cout << msgbuf << std::flush;
     };
@@ -824,7 +825,7 @@ rps_show_version(void)
     char cwdbuf[rps_path_byte_size+4];
     memset (cwdbuf, 0, sizeof(cwdbuf));
     if (getcwd(cwdbuf, rps_path_byte_size))
-      std::cout << " in: " << cwdbuf;
+      std::cout << std::endl << " in: " << cwdbuf;
   };
   std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
             << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
