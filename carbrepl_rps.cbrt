@@ -1378,6 +1378,8 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
                   callerframe,
                   Rps_ObjectRef obenv;
                   Rps_Value exprv;
+		  Rps_Value mainv;
+		  Rps_Value xtrav;
                  );
    _f.obenv = obenvarg;
    _f.exprv = exprarg;
@@ -1395,9 +1397,26 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
                 << RPS_FULL_BACKTRACE(1, "carburetta command display"));
   RPS_POSSIBLE_BREAKPOINT();
 #warning incomplete rps_do_display_carburetta_command
-  // TODO: should evaluate exprv in obenv and display it
-  RPS_WARNOUT("incomplete rps_carbrepl_do_display_command obenv=" << _f.obenv
-              << " exprv=" << _f.exprv);
+  {
+    Rps_TwoValues twov =
+      rps_full_evaluate_repl_expr(&_, _f.exprv, _f.obenv);
+    _f.mainv = twov.mainv();
+    _f.xtrav = twov.xtrav();
+    RPS_POSSIBLE_BREAKPOINT();
+    RPS_DEBUG_LOG(REPL, "rps_carbrepl_do_display_command after eval"
+                << " expr=" << _f.exprv
+		<< " obenv=" << _f.obenv
+		<< " mainv=" << _f.mainv
+		<< " xtrav=" << _f.xtrav);
+#warning rps_do_display_carburetta_command after eval
+  };
+  // TODO: did evaluate exprv in obenv and display it
+  RPS_WARNOUT("in rps_carbrepl_do_display_command EVAL obenv="
+	      << _f.obenv
+              << " exprv=" << _f.exprv
+	      << " gave mainv=" << _f.mainv
+	      << " xtrav=" << _f.xtrav
+	      << " see also cmdrepl_rps.cc");
  } // end rps_carbrepl_do_display_command
 
 
