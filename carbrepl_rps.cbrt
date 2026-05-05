@@ -1542,7 +1542,7 @@ rps_carbrepl_symname_at(int symnum, int lin) {
   RPS_POSSIBLE_BREAKPOINT();
   if (symnum>0 && symnum<rpscarbrepl_symbol_names_length_
       && rpscarbrepl_symbol_names_[symnum]) {
-    RPS_DEBUG_LOG(REPL, "°carbrepl_symname symnum#" << symnum
+    RPS_DEBUG_LOG(LOW_REPL, "°carbrepl_symname symnum#" << symnum
                   << " lin:" << lin
                   << " is "
                   << rpscarbrepl_symbol_names_[symnum]);
