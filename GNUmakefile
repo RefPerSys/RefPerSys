@@ -62,7 +62,7 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 
 .DEFAULT_GOAL: all
 
-.PHONY: all config objects showtests clean distclean gitpush gitpush2 \
+.PHONY: all everything config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent \
         redump altredump altdump clean-plugins plugins \
         print-gmake-features \
@@ -186,10 +186,15 @@ all:
 	$(MAKE) do-build-refpersys-plugin
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
+
+
+everything: all
+	@echo Making everything
 	@/usr/bin/printf "\n\nMaking q6refpersys\n\n"
 	$(MAKE) q6refpersys
-#	@/usr/bin/printf "\n\nMaking fox-refpersys\n\n"
-#	$(MAKE) fox-refpersys
+	@/usr/bin/printf "\n\nMaking fox-refpersys\n\n"
+	$(MAKE) fox-refpersys
+
 
 fox-refpersys: tools/fox-refpersys.cc __timestamp.o | GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
