@@ -465,11 +465,16 @@ const char*rps_type_name(std::int16_t typenum)
     return "Rps_PayloadTasklet"; // in agenda_rps.cc
   case (int)Rps_Type::PaylStringDict:
     return "Rps_PayloadStringDict"; // in strbufdict_rps.cc
-  case (int)Rps_Type::PaylAgenda:
-  case (int)Rps_Type::PaylSymbol:
-  case (int)Rps_Type::PaylSpace:
   case (int)Rps_Type::PaylStrBuf:
+    return "Rps_PayloadStrBuf"; // in strbufdict_rps.cc
+  case (int)Rps_Type::PaylAgenda:
+    return "Rps_PayloadAgenda"; // in agenda_rps.cc
+  case (int)Rps_Type::PaylSymbol:
+    return "Rps_PayloadSymbol"; // in utilities_rps.cc & object_rps.cc
+  case (int)Rps_Type::PaylSpace:
+    return "Rps_PayloadSpace"; // in utilities_rps.cc & object_rps.cc
   case (int)Rps_Type::PaylRelation:
+    return nullptr;		// not implemented Rps_PayloadRelation
   case (int)Rps_Type::PaylAssoc:
   case (int)Rps_Type::PaylVectVal:
   case (int)Rps_Type::PaylVectOb:
