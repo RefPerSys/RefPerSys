@@ -6,7 +6,7 @@
 echo $0 Starting in $(pwd)
 rm -rfv RefPerSys-PFIA-2026-Starynkevitch.{aux,bcf,blg,log,pdf} generated-pfia2026-gitid.tex
 
-printf "\n\n generating generated-pfia2026.tex\n"
+printf "\n\n generating generated/tmp-pfia2026.tex\n"
 
 rawgittag="$(git log --format=oneline -1 --abbrev=16 --abbrev-commit -q|cut -d' ' -f1)"
 
@@ -16,10 +16,10 @@ else
     gittag=$(printf "%s..." "$rawgittag")
 fi
 
-echo '%generated file generated-pfia2026.tex by build-pfia2026-refpersys.sh' > generated-pfia2026.tex
+echo '%generated file generated/tmp-pfia2026.tex by build-pfia2026-refpersys.sh' > generated/pfia2026.tex
 printf "\\\\newcommand{\\\\rpsgitcommit}[0]{%s}\n" "$gittag" >> generated-pfia2026.tex
 env LANG=fr_FR.UTF-8 date +"\\newcommand{\\rpsgitdate}[0]{%d %b %Y}%n" >> generated-pfia2026.tex
-echo '%end of generated file generated-pfia2026.tex' >> generated-pfia2026.tex
+echo '%end of generated file generated/tmp-pfia2026.tex' >> generated-pfia2026.tex
 
 printf "\n\n ================ SVG processing by inkscape of "; echo *.svg "files."
 for svgfile in *.svg ; do
