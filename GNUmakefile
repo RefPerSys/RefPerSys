@@ -43,7 +43,7 @@ RPS_MAKE:= $(MAKE)
 RPS_BISON := bison
 # bisonc++ is another parser generator by Frank B. Brokken on
 # fbb-git.gitlab.io/bisoncpp/
-RPS_BISONCPP := bisonc++
+#RPS_BISONCPP := bisonc++
 RPS_HOST := $(shell /bin/hostname -f)
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
@@ -323,7 +323,7 @@ clean: clean-plugins
 	$(RM) -vf core*
 #	$(RM) -v _gramrepl_rps.*
 	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
-	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
+#	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys
 	$(RM) do-build-refpersys-plugin 
 	$(RM) refpersys lto-refpersys
@@ -339,12 +339,6 @@ clean: clean-plugins
 	$(RM) core*
 	$(RM) .gdb_history */.gdb_history
 	$(RM) Make-dependencies/__*
-
-_bispprepl_rps.cc _bispprepl_rps.hh: bispprepl_rps.yyp |GNUmakefile
-	$(RPS_BISONCPP) --verbose --thread-safe --show-filenames \
-              --baseclass-preinclude=refpersys.hh \
-              --parsefun-source=_bispprepl_rps.cc \
-               $^
 
 
 _carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
