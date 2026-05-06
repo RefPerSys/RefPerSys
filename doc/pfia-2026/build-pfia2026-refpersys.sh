@@ -16,10 +16,10 @@ else
     gittag=$(printf "%s..." "$rawgittag")
 fi
 
-echo '%generated file generated/tmp-pfia2026.tex by build-pfia2026-refpersys.sh' > generated/pfia2026.tex
-printf "\\\\newcommand{\\\\rpsgitcommit}[0]{%s}\n" "$gittag" >> generated-pfia2026.tex
-env LANG=fr_FR.UTF-8 date +"\\newcommand{\\rpsgitdate}[0]{%d %b %Y}%n" >> generated-pfia2026.tex
-echo '%end of generated file generated/tmp-pfia2026.tex' >> generated-pfia2026.tex
+echo '%generated file generated/tmp-pfia2026.tex by build-pfia2026-refpersys.sh' > generated/tmp-pfia2026.tex
+printf "\\\\newcommand{\\\\rpsgitcommit}[0]{%s}\n" "$gittag" >> generated/tmp-pfia2026.tex
+env LANG=fr_FR.UTF-8 date +"\\newcommand{\\rpsgitdate}[0]{%d %b %Y}%n" >> generated/tmp-pfia2026.tex
+echo '%end of generated file generated/tmp-pfia2026.tex' >> generated/tmp-pfia2026.tex
 
 printf "\n\n ================ SVG processing by inkscape of "; echo *.svg "files."
 for svgfile in *.svg ; do
