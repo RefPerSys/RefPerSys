@@ -446,18 +446,25 @@ const char*rps_type_name(std::int16_t typenum)
 {
   switch (typenum) {
   case (int)Rps_Type::PaylLightCodeGen:
-  case (int)Rps_Type::PaylMachlearn:
+    return "Rps_PayloadLightningCodeGen"; // in lightgen_rps.cc
   case (int)Rps_Type::PaylCplusplusGen:
+    return "Rps_PayloadCplusplusGen"; // in cppgen_rps.cc
   case (int)Rps_Type::PaylGccjit:
+    return "Rps_PayloadGccjit"; // in gccjit_rps.cc
   case (int)Rps_Type::PaylEnviron:
+    return "Rps_PayloadEnviron"; // in cmdrepl_rps.cc & repl_rps.cc
   case (int)Rps_Type::PaylObjMap:
+    return "Rps_PayloadObjMap"; // in morevalues_rps.cc
   case (int)Rps_Type::PaylCppStream:
+    return "Rps_PayloadCppStream"; // in transientobj_rps.cc
   case (int)Rps_Type::PaylPopenedFile:
+    return "Rps_PayloadPopenedFile"; // in transientobj_rps.cc
   case (int)Rps_Type::PaylUnixProcess:
-  case (int)Rps_Type::PaylWebHandler:
-  case (int)Rps_Type::PaylWebex:
+    return "Rps_PayloadUnixProcess"; // in transientobj_rps.cc
   case (int)Rps_Type::PaylTasklet:
+    return "Rps_PayloadTasklet"; // in agenda_rps.cc
   case (int)Rps_Type::PaylStringDict:
+    return "Rps_PayloadStringDict"; // in strbufdict_rps.cc
   case (int)Rps_Type::PaylAgenda:
   case (int)Rps_Type::PaylSymbol:
   case (int)Rps_Type::PaylSpace:
@@ -468,6 +475,15 @@ const char*rps_type_name(std::int16_t typenum)
   case (int)Rps_Type::PaylVectOb:
   case (int)Rps_Type::PaylSetOb:
   case (int)Rps_Type::PaylClassInfo:
+    ///
+    /// obsolete payloads:
+  case (int)Rps_Type::PaylMachlearn:
+    return nullptr; // in .attic/machlearn_rps.cc
+  case (int)Rps_Type::PaylWebHandler:
+    return nullptr; // in .attic/httpweb_rps.cc
+  case (int)Rps_Type::PaylWebex:
+    return nullptr; // in .attic/httpweb_rps.cc
+#warning very incomplete rps_type_name
   case (int)Rps_Type::Int:
   case (int)Rps_Type::Double:
   case (int)Rps_Type::Set:
@@ -476,6 +492,8 @@ const char*rps_type_name(std::int16_t typenum)
   case (int)Rps_Type::Closure:
   case (int)Rps_Type::Json:
   case (int)Rps_Type::LexToken:
+    RPS_WARNOUT("very incomplete rps_type_name typenum=" << typenum
+		<< RPS_FULL_BACKTRACE(1, "rps_type_name?"));
   default:
     return nullptr;
   };
