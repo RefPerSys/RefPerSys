@@ -338,6 +338,7 @@ clean: clean-plugins
 	$(RM) *.ii
 	$(RM) core*
 	$(RM) .gdb_history */.gdb_history
+	$(RM) -vf generated/tmp* generated/*/tmp*
 	$(RM) Make-dependencies/__*
 
 
