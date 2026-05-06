@@ -1212,7 +1212,7 @@ Rps_Dumper::write_generated_constants_file(void)
          << ":" << (__LINE__-1) << std::endl;
   *pouts << "///! To add a new generated constant, use rps_add_constant_object"
 	 << std::endl
-	 << "///! or several plugins under plugins_dir/"
+	 << "///! or several plugins under plugins_dir/";
   *pouts << std::endl
          << "#ifndef RPS_INSTALL_CONSTANT_OB" << std::endl
          << "#error RPS_INSTALL_CONSTANT_OB(Oid) macro undefined" << std::endl
