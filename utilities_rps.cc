@@ -442,10 +442,49 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
     };
 } // end rps_emit_lgplv3_copyright_notice_AT
 
+const char*rps_type_name(std::int16_t typenum)
+{
+  switch (typenum) {
+  case (int)Rps_Type::PaylLightCodeGen:
+  case (int)Rps_Type::PaylMachlearn:
+  case (int)Rps_Type::PaylCplusplusGen:
+  case (int)Rps_Type::PaylGccjit:
+  case (int)Rps_Type::PaylEnviron:
+  case (int)Rps_Type::PaylObjMap:
+  case (int)Rps_Type::PaylCppStream:
+  case (int)Rps_Type::PaylPopenedFile:
+  case (int)Rps_Type::PaylUnixProcess:
+  case (int)Rps_Type::PaylWebHandler:
+  case (int)Rps_Type::PaylWebex:
+  case (int)Rps_Type::PaylTasklet:
+  case (int)Rps_Type::PaylStringDict:
+  case (int)Rps_Type::PaylAgenda:
+  case (int)Rps_Type::PaylSymbol:
+  case (int)Rps_Type::PaylSpace:
+  case (int)Rps_Type::PaylStrBuf:
+  case (int)Rps_Type::PaylRelation:
+  case (int)Rps_Type::PaylAssoc:
+  case (int)Rps_Type::PaylVectVal:
+  case (int)Rps_Type::PaylVectOb:
+  case (int)Rps_Type::PaylSetOb:
+  case (int)Rps_Type::PaylClassInfo:
+  case (int)Rps_Type::Int:
+  case (int)Rps_Type::Double:
+  case (int)Rps_Type::Set:
+  case (int)Rps_Type::Tuple:
+  case (int)Rps_Type::Object:
+  case (int)Rps_Type::Closure:
+  case (int)Rps_Type::Json:
+  case (int)Rps_Type::LexToken:
+  default:
+    return nullptr;
+  };
+} // end stub for rps_type_name
+
+
 #pragma message "perhaps some rps_emit_proprietary_copyright_notice is needed here"
 
 ////////////////
-
 /// run   ./refpersys --type-info   to get this
 void
 rps_print_types_info(void)

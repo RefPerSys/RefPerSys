@@ -1714,7 +1714,7 @@ enum class Rps_Type : std::int16_t
   /// Boxed genuine values, are "first class citizens" that could be
   /// in Rps_Value's data. Of course they are both GC-allocated and
   /// GC-scanned.
-  String,
+  String= _FirstValueType,
   Double,
   Set,
   Tuple,
@@ -1726,7 +1726,8 @@ enum class Rps_Type : std::int16_t
   _LastValueType= (int)LexToken
 };
 
-extern "C" const char* rps_type_name(std::int16_t typenum);
+extern "C" // gives nullptr when bad type number
+const char* rps_type_name(std::int16_t typenum); // in utilities_rps.cc
 
 //////////////////////////////////////////////////////////////// values
 
