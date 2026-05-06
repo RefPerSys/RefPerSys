@@ -1674,6 +1674,7 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  _FirstPayloadType= -24,
   PaylLightCodeGen = -24,
   PaylMachlearn = -23,
   PaylCplusplusGen = -22,    // for C++ code generation
@@ -1706,6 +1707,7 @@ enum class Rps_Type : std::int16_t
   ///
   Int = -1, // for tagged integers
   None = 0, // for nil
+  _FirstValueType= (int)None+1,
   ////////////////
   ///
   /// Values that could go into Rps_Value:
@@ -1721,7 +1723,10 @@ enum class Rps_Type : std::int16_t
   Instance,
   Json,
   LexToken,
+  _LastValueType= (int)LexToken
 };
+
+extern "C" const char* rps_type_name(std::int16_t typenum);
 
 //////////////////////////////////////////////////////////////// values
 
@@ -2642,6 +2647,9 @@ public:
   {
     return qz_type;
   };
+  /// when is_flexible gives true the memory zone need more space
+  /// à la C flexible array member
+  virtual bool is_flexible() const { return false; };
 } __attribute__((aligned(rps_allocation_unit)));
 // end class Rps_QuasiZone;
 
@@ -2748,6 +2756,7 @@ class Rps_String : public Rps_LazyHashedZoneValue
     const char _sbuf[RPS_FLEXIBLE_DIM];
     char _alignbuf[rps_allocation_unit] __attribute__((aligned(rps_allocation_unit)));
   };
+  virtual bool is_flexible() const { return true; };
 protected:
   inline Rps_String (const char*cstr, int len= -1);
   static inline const char*normalize_cstr(const char*cstr);
@@ -3817,6 +3826,7 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
   Rps_QuasiZone::rps_allocate_with_wordgap<RpsSeq,unsigned>(unsigned,unsigned);
   const unsigned _seqlen;
   Rps_ObjectRef _seqob[RPS_FLEXIBLE_DIM+1];
+  virtual bool is_flexible() const { return true; };
   Rps_SeqObjRef(unsigned len) : Rps_LazyHashedZoneValue(seqty), _seqlen(len)
   {
     memset ((void*)_seqob, 0, sizeof(Rps_ObjectRef)*len);
@@ -4125,6 +4135,7 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
   mutable std::atomic<Rps_ObjectZone*> _treemetaob;
   Rps_ObjectRef _treeconnob;
   Rps_Value _treesons[RPS_FLEXIBLE_DIM+1];
+  virtual bool is_flexible() const { return true; };
   Rps_TreeZone(unsigned len, Rps_ObjectRef obr=nullptr)
     : Rps_LazyHashedZoneValue(treety), _treelen(len),
       _treetransient(false), _treemetatransient(false),
