@@ -442,7 +442,10 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
     };
 } // end rps_emit_lgplv3_copyright_notice_AT
 
-const char*rps_type_name(std::int16_t typenum)
+
+
+const char*
+rps_type_name(std::int16_t typenum)
 {
   switch (typenum) {
   case (int)Rps_Type::PaylLightCodeGen:
@@ -476,10 +479,15 @@ const char*rps_type_name(std::int16_t typenum)
   case (int)Rps_Type::PaylRelation:
     return nullptr;		// not implemented Rps_PayloadRelation
   case (int)Rps_Type::PaylAssoc:
+    return nullptr;		// not implemented Rps_PayloadAssoc
   case (int)Rps_Type::PaylVectVal:
+    return "Rps_PayloadVectVal"; // in object_rps.cc
   case (int)Rps_Type::PaylVectOb:
+    return "Rps_PayloadVectOb"; // in object_rps.cc 
   case (int)Rps_Type::PaylSetOb:
+    return "Rps_PayloadSetOb"; // in object_rps.cc
   case (int)Rps_Type::PaylClassInfo:
+    return "Rps_PayloadClassInfo"; // in object_rps.cc
     ///
     /// obsolete payloads:
   case (int)Rps_Type::PaylMachlearn:
@@ -488,21 +496,31 @@ const char*rps_type_name(std::int16_t typenum)
     return nullptr; // in .attic/httpweb_rps.cc
   case (int)Rps_Type::PaylWebex:
     return nullptr; // in .attic/httpweb_rps.cc
-#warning very incomplete rps_type_name
   case (int)Rps_Type::Int:
+    return "intptr_t";
   case (int)Rps_Type::Double:
+    return "Rps_Double"; // in scalar_rps.cc
   case (int)Rps_Type::Set:
+    return "Rps_SetOb"; // in values_rps.cc
   case (int)Rps_Type::Tuple:
+    return "Rps_TupleOb"; // in values_rps.cc
   case (int)Rps_Type::Object:
+    return "Rps_ObjectZone"; // in object_rps.cc
   case (int)Rps_Type::Closure:
+    return "Rps_ClosureZone"; // in values_rps.cc
   case (int)Rps_Type::Json:
+    return "Rps_JsonZone"; // in morevalues_rps.cc
+  case (int)Rps_Type::Instance: 
+    return "Rps_InstanceZone";  // in morevalues_rps.cc
   case (int)Rps_Type::LexToken:
-    RPS_WARNOUT("very incomplete rps_type_name typenum=" << typenum
-		<< RPS_FULL_BACKTRACE(1, "rps_type_name?"));
+    return "Rps_LexTokenZone"; // in repl_rps.cc
+#warning rps_type_name need code review
   default:
+    RPS_WARNOUT("rps_type_name strange typenum=" << typenum
+		<< RPS_FULL_BACKTRACE(1, "rps_type_name?"));
     return nullptr;
   };
-} // end stub for rps_type_name
+} // end rps_type_name
 
 
 #pragma message "perhaps some rps_emit_proprietary_copyright_notice is needed here"
