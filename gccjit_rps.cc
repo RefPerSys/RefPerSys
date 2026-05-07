@@ -1,5 +1,5 @@
 /****************************************************************
- * file lightgen_rps.cc
+ * file RefPerSys/gccjit_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
@@ -75,6 +75,22 @@ const std::string rps_gccjit_prefix_field="_rps_FIELD";
 extern "C" void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
 
+enum class Rps_GccJitType {
+  gjit__NONE,
+  gjit_ScalarType,
+  gjit_NumberType,
+  gjit_PtrType,
+  gjit_StructType,
+  gjit_Field,
+  gjit_Function,
+  gjit_Block,
+  gjit_Rvalue,
+  gjit_Param,
+  gjit_LeftValue,
+  gjit_Cast,
+  gjit_Asm,
+  git__LAST
+};
 
 /// payload for GNU libgccjit code generation:
 class Rps_PayloadGccjit : public Rps_Payload
@@ -140,11 +156,14 @@ public:
   Json::Value src_location_to_json(struct gcc_jit_location*loc) const;
   // an arbitrary refpersys object may represent a fictuous "source file"
   struct gcc_jit_location* make_rpsobj_location(Rps_ObjectRef ob, int line, int col=0);
-  void locked_register_object_jit(Rps_ObjectRef ob,  struct gcc_jit_object* jit);
+  void locked_register_object_jit(Rps_ObjectRef ob, Rps_GccJitType jty,
+				  struct gcc_jit_object* jit);
   void locked_unregister_object_jit(Rps_ObjectRef ob);
 protected:
   void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
-  void raw_register_object_jit(Rps_ObjectRef ob, struct gcc_jit_object* jit);
+  void raw_register_object_jit(Rps_ObjectRef ob,
+			       Rps_GccJitType jty,
+			       struct gcc_jit_object* jit);
   void raw_unregister_object_jit(Rps_ObjectRef ob);
   ///
   //////////////// GCCJIT TYPES
@@ -336,7 +355,7 @@ Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const Rps_ObjectRef ob,
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   struct gcc_jit_struct* newst= raw_new_gccjit_opaque_struct(ob, loc);
-  raw_register_object_jit(ob,
+  raw_register_object_jit(ob, Rps_GccJitType::gjit_StructType,
                           gcc_jit_type_as_object(gcc_jit_struct_as_type (newst)));
   return newst;
 } // end Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type
@@ -389,7 +408,8 @@ Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type,
 ////// managing RefPerSys objects and their gccjit
 void
 Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,
-    struct gcc_jit_object* jit)
+					   Rps_GccJitType jty,
+					   struct gcc_jit_object* jit)
 {
   RPS_ASSERT(ob);
   RPS_ASSERT(owner());
@@ -399,13 +419,14 @@ Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,
 
 void
 Rps_PayloadGccjit::locked_register_object_jit(Rps_ObjectRef ob,
-    struct gcc_jit_object* jit)
+					      Rps_GccJitType jty,
+					      struct gcc_jit_object* jit)
 {
   RPS_ASSERT(ob);
   RPS_ASSERT(owner());
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   std::lock_guard<std::recursive_mutex> guob(*ob->objmtxptr());
-  raw_register_object_jit(ob, jit);
+  raw_register_object_jit(ob, jty, jit);
 } // end Rps_PayloadGccjit::locked_register_object_jit
 
 void
@@ -600,15 +621,7 @@ void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
 #warning incomplete rpsldpy_gccjit
 } // end of rpsldpy_gccjit
 
-struct gcc_jit_object*
-Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
-{
-  if (jv.isNull())
-    return nullptr;
-  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::json_to_jit_object jv="
-               << jv);
-#warning unimplemented Rps_PayloadGccjit::json_to_jit_object
-} // end Rps_PayloadGccjit::json_to_jit_object
+
 
 Json::Value
 Rps_PayloadGccjit::jit_object_to_json(struct gcc_jit_object*jitob)
@@ -620,6 +633,16 @@ Rps_PayloadGccjit::jit_object_to_json(struct gcc_jit_object*jitob)
 #warning unimplemented Rps_PayloadGccjit::json_to_jit_object
 } // end Rps_PayloadGccjit::jit_object_to_json
 
+
+struct gcc_jit_object*
+Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
+{
+  if (jv.isNull())
+    return nullptr;
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::json_to_jit_object jv="
+               << jv);
+#warning unimplemented Rps_PayloadGccjit::json_to_jit_object
+} // end Rps_PayloadGccjit::json_to_jit_object
 
 void
 rps_gccjit_initialize(void)
