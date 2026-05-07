@@ -133,6 +133,10 @@ public:
     return nullptr;
   };
   struct gcc_jit_location* json_to_src_location(const Json::Value &jv);
+  // json_to_jit_object is needed by load_jit_josn
+  struct gcc_jit_object* json_to_jit_object(const Json::Value&jv);
+  // symmetric routine
+  Json::Value jit_object_to_json(struct gcc_jit_object*jitob);
   Json::Value src_location_to_json(struct gcc_jit_location*loc) const;
   // an arbitrary refpersys object may represent a fictuous "source file"
   struct gcc_jit_location* make_rpsobj_location(Rps_ObjectRef ob, int line, int col=0);
@@ -332,7 +336,8 @@ Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const Rps_ObjectRef ob,
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   struct gcc_jit_struct* newst= raw_new_gccjit_opaque_struct(ob, loc);
-  raw_register_object_jit(ob,gcc_jit_type_as_object(gcc_jit_struct_as_type (newst)));
+  raw_register_object_jit(ob,
+                          gcc_jit_type_as_object(gcc_jit_struct_as_type (newst)));
   return newst;
 } // end Rps_PayloadGccjit::locked_new_gccjit_opaque_struct_type
 
@@ -388,6 +393,7 @@ Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,
 {
   RPS_ASSERT(ob);
   RPS_ASSERT(owner());
+  RPS_ASSERT(jit);
   _gji_rpsobj2jit.insert(std::pair{ob,jit});
 } // end protected Rps_PayloadGccjit::raw_register_object_jit
 
@@ -469,7 +475,7 @@ Json::Value
 Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
 {
   if (!loc)
-    return Json::nullValue;
+    return Json::Value(Json::nullValue);
   RPS_ASSERT(owner());
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   Json::Value job(Json::objectValue);
@@ -481,8 +487,11 @@ Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
   //job["srcloc_is_created_by_user"] = loc->is_created_by_user();
   // https://gcc.gnu.org/pipermail/gcc-help/2025-January/143958.html
   // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=118587
-  RPS_FATALOUT("Rps_PayloadGccjit::src_location_to_json owner="
-               << owner() << " unimplemented: job=" << job);
+  RPS_WARNOUT("Rps_PayloadGccjit::src_location_to_json owner="
+              << owner() << " unimplemented: job=" << job
+              << RPS_FULL_BACKTRACE
+              (1, "Rps_PayloadGccjit::src_location_to_json"));
+  return Json::nullValue;
 } // end of Rps_PayloadGccjit::src_location_to_json
 
 
@@ -590,6 +599,26 @@ void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
     }
 #warning incomplete rpsldpy_gccjit
 } // end of rpsldpy_gccjit
+
+struct gcc_jit_object*
+Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
+{
+  if (jv.isNull())
+    return nullptr;
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::json_to_jit_object jv="
+               << jv);
+#warning unimplemented Rps_PayloadGccjit::json_to_jit_object
+} // end Rps_PayloadGccjit::json_to_jit_object
+
+Json::Value
+Rps_PayloadGccjit::jit_object_to_json(struct gcc_jit_object*jitob)
+{
+  if (!jitob)
+    return Json::Value(Json::nullValue);
+  RPS_FATALOUT("unimplemented Rps_PayloadGccjit::jit_object_to_json jitob@"
+               << (void*)jitob);
+#warning unimplemented Rps_PayloadGccjit::json_to_jit_object
+} // end Rps_PayloadGccjit::jit_object_to_json
 
 
 void
