@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 - 2025 The Reflective Persistent System Team
+ *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -54,6 +54,12 @@ const char rps_gccjit_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" const char rps_gccjit_timestamp[];
 const char rps_gccjit_timestamp[]= __TIMESTAMP__;
+
+extern "C" const char rps_gccjit_basename[];
+const char rps_gccjit_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_gccjit_baseid[];
+const char rps_gccjit_baseid[]= RPS_BASEID;
 
 /// We use the C API to GCCJIT and conventionally explicit with struct
 /// keyword all the opaque structures in it.
@@ -287,11 +293,13 @@ Rps_PayloadGccjit::locked_new_gccjit_array_type(struct gcc_jit_type* elemtype, i
 
 /// Opaque struct types are global but could have a location
 struct gcc_jit_struct*
-Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const std::string&strname, struct gcc_jit_location*loc)
+Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const std::string&strname,
+    struct gcc_jit_location*loc)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(!strname.empty());
-  return  gcc_jit_context_new_opaque_struct(_gji_ctxt,loc,strname.c_str());
+  return  gcc_jit_context_new_opaque_struct(_gji_ctxt,loc,
+          strname.c_str());
 }// end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct_type
 
 struct gcc_jit_struct*
@@ -306,16 +314,21 @@ Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const std::string&strname, st
 /// Opaque struct types are global; they could be defined by a
 /// RefPerSys object, but could have a location
 struct gcc_jit_struct*
-Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const Rps_ObjectRef ob, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::raw_new_gccjit_opaque_struct(const Rps_ObjectRef ob,
+    struct gcc_jit_location* loc)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(ob);
   /// the prefix is rps_stru defined before class Rps_PayloadGccjit
-  return  gcc_jit_context_new_opaque_struct(_gji_ctxt, loc, (rps_gccjit_prefix_struct+ob->oid().to_string()).c_str());
+  return
+    gcc_jit_context_new_opaque_struct
+    (_gji_ctxt, loc,
+     (rps_gccjit_prefix_struct+ob->oid().to_string()).c_str());
 } // end Rps_PayloadGccjit::raw_new_gccjit_opaque_struct
 
 struct gcc_jit_struct*
-Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const Rps_ObjectRef ob, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const Rps_ObjectRef ob,
+    struct gcc_jit_location* loc)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   struct gcc_jit_struct* newst= raw_new_gccjit_opaque_struct(ob, loc);
@@ -325,24 +338,32 @@ Rps_PayloadGccjit::locked_new_gccjit_opaque_struct(const Rps_ObjectRef ob, struc
 
 
 struct gcc_jit_field*
-Rps_PayloadGccjit::raw_new_gccjit_field(struct gcc_jit_type* type, const std::string&name, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::raw_new_gccjit_field(struct gcc_jit_type* type,
+                                        const std::string&name,
+                                        struct gcc_jit_location* loc)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(!name.empty());
-  return  gcc_jit_context_new_field(_gji_ctxt, loc, type, name.c_str());
+  return
+    gcc_jit_context_new_field(_gji_ctxt, loc, type, name.c_str());
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
 struct gcc_jit_field*
-Rps_PayloadGccjit::raw_new_gccjit_field(struct gcc_jit_type* type, const Rps_ObjectRef obf, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::raw_new_gccjit_field(struct gcc_jit_type* type,
+                                        const Rps_ObjectRef obf,
+                                        struct gcc_jit_location* loc)
 {
   RPS_ASSERT(owner());
   RPS_ASSERT(obf);
   std::string fstr = rps_gccjit_prefix_field+obf->oid().to_string();
-  return  gcc_jit_context_new_field(_gji_ctxt, loc, type, fstr.c_str());
+  return
+    gcc_jit_context_new_field(_gji_ctxt, loc, type, fstr.c_str());
 } // end Rps_PayloadGccjit::raw_new_gccjit_field
 
 struct gcc_jit_field*
-Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type, const std::string&name, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type,
+    const std::string&name,
+    struct gcc_jit_location* loc)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   return raw_new_gccjit_field(type, name, loc);
@@ -350,7 +371,9 @@ Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type, const std:
 
 
 struct gcc_jit_field*
-Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type, const Rps_ObjectRef obf, struct gcc_jit_location* loc)
+Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type,
+    const Rps_ObjectRef obf,
+    struct gcc_jit_location* loc)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   return raw_new_gccjit_field(type, obf, loc);
@@ -360,7 +383,8 @@ Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type, const Rps_
 ////////////////////////////////////////////////////////////////
 ////// managing RefPerSys objects and their gccjit
 void
-Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,  struct gcc_jit_object* jit)
+Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,
+    struct gcc_jit_object* jit)
 {
   RPS_ASSERT(ob);
   RPS_ASSERT(owner());
@@ -368,7 +392,8 @@ Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,  struct gcc_jit_obj
 } // end protected Rps_PayloadGccjit::raw_register_object_jit
 
 void
-Rps_PayloadGccjit::locked_register_object_jit(Rps_ObjectRef ob,  struct gcc_jit_object* jit)
+Rps_PayloadGccjit::locked_register_object_jit(Rps_ObjectRef ob,
+    struct gcc_jit_object* jit)
 {
   RPS_ASSERT(ob);
   RPS_ASSERT(owner());
@@ -398,7 +423,8 @@ Rps_PayloadGccjit::locked_unregister_object_jit(Rps_ObjectRef ob)
 
 
 struct gcc_jit_location*
-Rps_PayloadGccjit::make_rpsobj_location(Rps_ObjectRef ob, int line, int col)
+Rps_PayloadGccjit::make_rpsobj_location(Rps_ObjectRef ob,
+                                        int line, int col)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   RPS_ASSERT(ob);
@@ -434,8 +460,10 @@ Rps_PayloadGccjit::json_to_src_location(const Json::Value &jv)
       if (jv["srcloc_col"].type() == Json::intValue)
         col = jv["srcloc_col"].asInt();
     };
-  return  gcc_jit_context_new_location(_gji_ctxt, srcfil.c_str(), lin, col);
+  return  gcc_jit_context_new_location(_gji_ctxt,
+                                       srcfil.c_str(), lin, col);
 } // end Rps_PayloadGccjit::json_to_src_location
+
 
 Json::Value
 Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
@@ -445,9 +473,16 @@ Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
   RPS_ASSERT(owner());
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   Json::Value job(Json::objectValue);
+  /// once GCC has accepted gcc-patches/2025-January/674439.html
+  /// or gcc-patches/2026-May/716001.html
+  //job["srcloc_file"] = loc->get_filename();
+  //job["srcloc_line"] = loc->get_line();
+  //job["srcloc_col"] = loc->get_column();
+  //job["srcloc_is_created_by_user"] = loc->is_created_by_user();
   // https://gcc.gnu.org/pipermail/gcc-help/2025-January/143958.html
   // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=118587
-  RPS_FATALOUT("unimplemented ps_PayloadGccjit::src_location_to_json owner=" << owner());
+  RPS_FATALOUT("Rps_PayloadGccjit::src_location_to_json owner="
+               << owner() << " unimplemented: job=" << job);
 } // end of Rps_PayloadGccjit::src_location_to_json
 
 
@@ -455,17 +490,17 @@ Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
 /* Should transform a JSON value into data relevant to GCCJIT and
    create if needed the necessary code. */
 void
-Rps_PayloadGccjit::load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq)
+Rps_PayloadGccjit::load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&job)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
-  if (jseq.type() != Json::objectValue)
+  if (job.type() != Json::objectValue)
     {
-      RPS_WARNOUT("Rps_PayloadGccjit::load_jit_json bad jseq=" << jseq
+      RPS_WARNOUT("Rps_PayloadGccjit::load_jit_json bad job=" << job
                   << "in spacid=" << spacid
                   << " lineno=" << lineno);
     };
   RPS_FATALOUT("unimplemented Rps_PayloadGccjit::load_jit_json spacid="
-               << spacid << " lineno=" << lineno << " jseq=" << jseq);
+               << spacid << " lineno=" << lineno << " job=" << job);
 #warning unimplemented load_jit_json
 } // end Rps_PayloadGccjit::load_jit_json
 
