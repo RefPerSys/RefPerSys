@@ -1932,6 +1932,15 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
                                         alignof(std::uint16_t)
                                        );
   
+  ld->set_primitive_type_size_and_align(rpskob_0UD0Z1w1enq00j4Zgv, //code_uint16_type
+                                        sizeof(std::uint16_t),
+                                        alignof(std::uint16_t)
+                                       );
+  
+ ld->set_primitive_type_size_and_align(rpskob_2xeqZrbl5Pg04s46er, //code_uint32_type
+                                        sizeof(std::uint32_t),
+                                        alignof(std::uint32_t)
+                                       );
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
 
