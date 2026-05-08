@@ -78,14 +78,15 @@ obtained from mutable objects of superclass `_8kK8HUqCBlj02e7YGQ` =
 *`code_class`* and immutable instances of superclass
 `_7VRJKpau2Nn04oeUER` = *`code_instance`*.
 
-Subclasses of *`code_class`* (i.e. `_8kK8HUqCBlj02e7YGQ`...) are used to represent types,
-fields, functions, blocks, assignable lvalues, parameters, primitive
-operators (e.g. floating point addition or integer multiplication).
+Subclasses of *`code_class`* (i.e. `_8kK8HUqCBlj02e7YGQ`...) are used
+to represent RefPerSys objects for types, fields, functions, blocks,
+assignable lvalues, parameters, primitive operators (e.g. floating
+point addition or integer multiplication).
 
 Subclasses of *`code_instance`* (i.e. `_7VRJKpau2Nn04oeUER`) are used
-to represent statements (added to blocks), rvalues so expressions and
-most constants... RefPerSys literal strings, doubles, tagged integers
-represent literal constants...
+to represent RefPerSys instances for statements (added to blocks),
+rvalues so expressions and most constants... RefPerSys literal
+strings, doubles, tagged integers represent literal constants...
 
 #### code type representations
 
