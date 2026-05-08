@@ -71,6 +71,21 @@ objid of some *existing* RefPerSys object.  Hence `Rps_PayloadGccjit`
 has member functions `make_csrc_location`, `make_string_src_location`,
 and `make_rpsobj_location`.
 
+
+### types and data structure representations
+
+Every data type representable in (hand-written or generated) C++ code
+(and machine code) is represented by a RefPerSys object whose class is
+a subclass of `_6tO6CMeGvdt035Ed0O/cplusplus_type∊class`
+
+For example the machine integer is represented by
+`_4nZ0jIKUbGr01OixPV:code_int!//$code_int∈cplusplus_primitive_type`
+(and *not* by `_2A2mrPpR3Qf03p6o5b:int/CLASS!//$int∈class`)
+
+To add a new code type, use the
+`plugins_dir/rpsplug_create_cplusplus_primitive_type.cc`
+
+
 ### top-level representations.
 
 Outside of "source" locations described above, the generated code is
