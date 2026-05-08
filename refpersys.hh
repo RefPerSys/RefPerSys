@@ -1092,6 +1092,7 @@ while (0)
 
 #define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {       \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
+    /* Rps_Assert_Log */                                        \
     std::ostringstream outs_##Lin;                              \
       outs_##Lin << __VA_ARGS__  << std::flush;                 \
       const std::string str_##Lin = outs_##Lin.str();           \
