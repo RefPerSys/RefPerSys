@@ -1093,9 +1093,9 @@ while (0)
 #define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {       \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
     /* Rps_Assert_Log */                                        \
-    std::ostringstream outs_##Lin;                              \
-      outs_##Lin << __VA_ARGS__  << std::flush;                 \
-      const std::string str_##Lin = outs_##Lin.str();           \
+    std::ostringstream asslogouts_##Lin;                        \
+    asslogouts_##Lin << __VA_ARGS__  << std::flush;		\
+      const std::string str_##Lin = asslogouts_##Lin.str();     \
     if (rps_syslog_enabled)                                     \
       syslog(LOG_CRIT,                                          \
        "*** RefPerSys ASSERT_LOG failed:"                       \
