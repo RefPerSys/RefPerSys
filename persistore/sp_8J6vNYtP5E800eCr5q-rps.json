@@ -3403,7 +3403,7 @@
 
 
 
-//+ob_5oS6nYn6Z8A01hSF44:native_uint8_type!//$native_uint8_type∈cplusplus_primitive_type h:3734356368
+//+ob_5oS6nYn6Z8A01hSF44:code_uint8_type!//$code_uint8_type∈cplusplus_primitive_type h:3734356368
 {
  "oid": "_5oS6nYn6Z8A01hSF44",
  "mtime": 1778238209.13,
@@ -3414,12 +3414,12 @@
   	},
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
-  		"va" : "native_uint8_type"
+  		"va" : "code_uint8_type"
   	}
   ],
  "class" : "_1XswYkom3Jm02YR3Vi"
 }
-//-ob_5oS6nYn6Z8A01hSF44:native_uint8_type
+//-ob_5oS6nYn6Z8A01hSF44:code_uint8_type
 
 
 

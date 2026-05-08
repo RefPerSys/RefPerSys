@@ -1913,6 +1913,10 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
                                         sizeof(char),
                                         alignof(char)
                                        );
+  ld->set_primitive_type_size_and_align(rpskob_5oS6nYn6Z8A01hSF44, //code_uint8_type
+                                        sizeof(std::uint8_t),
+                                        alignof(std::uint8_t)
+                                       );
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
 
