@@ -11,7 +11,7 @@
 /*****
       Once compiled, use it for example as:
       ./refpersys --plugin-after-load=/tmp/rpsplug_create_cplusplus_primitive_type.so \
-      --plugin-arg=rpsplug_create_cplusplus_create_primitive_type:native_int_type \
+      --plugin-arg=rpsplug_create_cplusplus_primitive_type:native_int_type \
       --extra=comment='the native int type' \
       --batch --dump=.
 
