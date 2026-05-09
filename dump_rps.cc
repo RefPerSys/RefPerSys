@@ -1699,7 +1699,7 @@ Rps_Dumper::write_manifest_file(void)
   char dtimbuf[64];
   memset(dtimbuf, 0, sizeof(dtimbuf));
   gmtime_r (&dtim, &dtm);
-  strftime(dtimbuf, sizeof(dtimbuf)-1, "%Y-%b-%D", &dtm);
+  strftime(dtimbuf, sizeof(dtimbuf)-1, "%Y-%b-%d", &dtm);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
   jmanifest["jsoncppversion"] = JSONCPP_VERSION_STRING;
   jmanifest["rpsmajorversion"] = Json::Value(rps_get_major_version());
@@ -1774,22 +1774,6 @@ Rps_Dumper::write_manifest_file(void)
   }
   /// this is not used for loading, but could be useful for other purposes.
   jmanifest["origitid"] = Json::Value (rps_gitid);
-  {
-    time_t nowt = 0;
-    time(&nowt);
-    if (nowt > 0)
-      {
-        struct tm nowtm = {};
-        memset (&nowtm, 0, sizeof(nowtm));
-        if (gmtime_r(&nowt, &nowtm) != nullptr)
-          {
-            char datbuf[64];
-            memset (datbuf, 0, sizeof(datbuf));
-            if (strftime(datbuf, sizeof(datbuf), "%Y %b %d", &nowtm) && datbuf[0])
-              jmanifest["dumpdate"] = Json::Value (datbuf);
-          }
-      }
-  }
   jmanifest["progname"] = Json::Value (rps_progname);
   jmanifest["progtimestamp"] = Json::Value (rps_timestamp);
   jmanifest["progmd5sum"] = Json::Value(rps_md5sum);
@@ -1837,7 +1821,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     char dtimbuf[64];
     memset(dtimbuf, 0, sizeof(dtimbuf));
     gmtime_r (&dtim, &dtm);
-    strftime(dtimbuf, sizeof(dtimbuf)-1, "%Y-%b-%D", &dtm);
+    strftime(dtimbuf, sizeof(dtimbuf)-1, "%Y-%b-%d", &dtm);
     jprologue["format"] = Json::Value (RPS_MANIFEST_FORMAT);
     jprologue["spaceid"] = Json::Value (spacid.to_string());
     jprologue["jsoncppversion"] =  JSONCPP_VERSION_STRING;
