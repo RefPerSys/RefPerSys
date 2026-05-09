@@ -1694,12 +1694,19 @@ Rps_Dumper::write_manifest_file(void)
                                   /*prefix:*/ "//!!", /*suffix:*/"",
                                   /*owner:*/"", /*reason:*/"");
   Json::Value jmanifest(Json::objectValue);
+  time_t dtim = time(nullptr);
+  struct tm dtm = {};
+  char dtimbuf[64];
+  memset(dtimbuf, 0, sizeof(dtimbuf));
+  gmtime_r (&dtim, &dtm);
+  strftime(dtimbuf, sizeof(dtimbuf)-1, "%Y-%b-%D", &dtm);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
   jmanifest["jsoncppversion"] = JSONCPP_VERSION_STRING;
   jmanifest["rpsmajorversion"] = Json::Value(rps_get_major_version());
   jmanifest["rpsminorversion"] = Json::Value(rps_get_minor_version());
   jmanifest["shortgitid"] = rps_shortgitid;
   jmanifest["gitbranch"] = rps_gitbranch;
+  jmanifest["dumpgmdate"] = Json::Value(dtimbuf);
   {
     int nbroots=0;
     Json::Value jglobalroots(Json::arrayValue);
@@ -1835,7 +1842,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     jprologue["spaceid"] = Json::Value (spacid.to_string());
     jprologue["jsoncppversion"] =  JSONCPP_VERSION_STRING;
     jprologue["shortgit"] = Json::Value(rps_shortgitid);
-    jprologue["dumpgmtime"] = Json::Value(dtimbuf);
+    jprologue["dumpgmdate"] = Json::Value(dtimbuf);
     jprologue["nbobjects"] = Json::Value ((int)(curspaset.size()));
     jprologue["rpsmajorversion"] = Json::Value(rps_get_major_version());
     jprologue["rpsminorversion"] = Json::Value(rps_get_minor_version());
