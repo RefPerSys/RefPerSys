@@ -114,12 +114,13 @@ They all are created (once and for all each) with our
 `plugins_dir/rpsplug_create_cplusplus_primitive_type.cc` (it has a
 comment describing how to use it).
 
-Some of them are indeed subclasses of *`cplusplus_primitive_type`* (so
+All of them are indeed objects of *`cplusplus_primitive_type`* (so
 `_1XswYkom3Jm02YR3Vi`) but are also valid for direct machine code
 generation (see files `cppgen_rps.cc` and `lightgen_rps.cc` and
 `gccjit_rps.cc`). In other words the *`cplusplus_primitive_type`* is
 perhaps confusingly named. Objects of that class includes:
 
+* *`_67REK2JYbAV04jPmf2`* or `code_bool`
 * *`_2c32kYjX53f04obwxm`* or `code_char`
 * *`_3NYlqvmSuTm024LDuD`* or `code_long`
 * *`_4nZ0jIKUbGr01OixPV`* or `code_int`
@@ -133,6 +134,9 @@ perhaps confusingly named. Objects of that class includes:
 * *`_8Fphnj5nJGe006qeEy`* or `code_int32_type`
 * *`_9kO7yLMH7NY00asRHK`* or `code_int16_type`
 
+
+We need to update our `rps_set_native_data_in_loader` function in
+`load_rps.cc` when adding such a new predefined type above.
 
 
 ##### enumerated type representations
