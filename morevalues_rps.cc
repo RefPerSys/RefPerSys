@@ -761,7 +761,7 @@ Rps_PayloadObjMap::output_payload(std::ostream&out, unsigned depth, unsigned max
       if (out.tellp() - linpos > linemax)
         {
           out << std::endl;
-          for (int j=0; j<depth%16; j++)
+          for (int j=0; j<(int)depth%16; j++)
             out << ' ';
           linpos = out.tellp();
         };
