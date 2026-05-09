@@ -108,17 +108,17 @@ strings, doubles, tagged integers represent literal constants...
 
 They are either predefined types (for `int` etc....) or user defined types.
 
-##### predefined type representations
+##### predefined or primitive type representations
 
 They all are created (once and for all each) with our
-`plugins_dir/rpsplug_create_cplusplus_predefined_type.cc` (it has a
+`plugins_dir/rpsplug_create_cplusplus_primitive_type.cc` (it has a
 comment describing how to use it).
 
 Some of them are indeed subclasses of *`cplusplus_primitive_type`* (so
 `_1XswYkom3Jm02YR3Vi`) but are also valid for direct machine code
 generation (see files `cppgen_rps.cc` and `lightgen_rps.cc` and
 `gccjit_rps.cc`). In other words the *`cplusplus_primitive_type`* is
-perhaps confusingly named. Instances of it includes:
+perhaps confusingly named. Objects of that class includes:
 
 * *`_2c32kYjX53f04obwxm`* or `code_char`
 * *`_3NYlqvmSuTm024LDuD`* or `code_long`
@@ -132,6 +132,9 @@ perhaps confusingly named. Instances of it includes:
 * *`_6EHFY6bC8PU01OfVRZ`* or `code_int8_type`
 * *`_8Fphnj5nJGe006qeEy`* or `code_int32_type`
 * *`_9kO7yLMH7NY00asRHK`* or `code_int16_type`
-  
+
+
+
+##### enumerated type representations
 The class *`cplusplus_enum_type`* (so `_8J6vNYtP5E800eCr5q`) represents
 enumeration types.
