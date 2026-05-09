@@ -122,6 +122,8 @@ perhaps confusingly named. Objects of that class includes:
 
 * *`_67REK2JYbAV04jPmf2`* or `code_bool`
 * *`_2c32kYjX53f04obwxm`* or `code_char`
+* *`_3zFAzRIb8BK03FqLbT`* or `code_double`
+* *`_74qVHPNZj2201OVIfI`* or `code_float`
 * *`_3NYlqvmSuTm024LDuD`* or `code_long`
 * *`_4nZ0jIKUbGr01OixPV`* or `code_int`
 * *`_4V1oeUOvmxo041XLTm`* or `code_intptr_t`
