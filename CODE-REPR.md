@@ -85,6 +85,7 @@ For example the machine integer is represented by
 To add a new code type, use the
 `plugins_dir/rpsplug_create_cplusplus_primitive_type.cc`
 
+See below for more.
 
 ### top-level representations.
 
@@ -110,7 +111,8 @@ They are either predefined types (for `int` etc....) or user defined types.
 ##### predefined type representations
 
 They all are created (once and for all each) with our
-plugins_dir/rpsplug_create_cplusplus_predefined_type.cc
+`plugins_dir/rpsplug_create_cplusplus_predefined_type.cc` (it has a
+comment describing how to use it).
 
 Some of them are indeed subclasses of *`cplusplus_primitive_type`* (so
 `_1XswYkom3Jm02YR3Vi`) but are also valid for direct machine code
@@ -122,6 +124,14 @@ perhaps confusingly named. Instances of it includes:
 * *`_3NYlqvmSuTm024LDuD`* or `code_long`
 * *`_4nZ0jIKUbGr01OixPV`* or `code_int`
 * *`_4V1oeUOvmxo041XLTm`* or `code_intptr_t`
-
-The class *`cplusplus_enum_type`* (so `_8J6vNYtP5E800eCr5q`) represent
+* *`_0UD0Z1w1enq00j4Zgv`or `code_uint16_type` 
+* *`_1kuc4QnBUC101rmpkg` or `code_int64_type`
+* *`_2xeqZrbl5Pg04s46er` or `code_uint32_type`
+* *`_43NEOkhFOI602pgEn9` or `code_uint64_type`
+* *`_5oS6nYn6Z8A01hSF44` or `code_uint8_type`
+* *`_6EHFY6bC8PU01OfVRZ` or `code_int8_type`
+* *`_8Fphnj5nJGe006qeEy` or `code_int32_type`
+* *`_9kO7yLMH7NY00asRHK` or `code_int16_type`
+  
+The class *`cplusplus_enum_type`* (so `_8J6vNYtP5E800eCr5q`) represents
 enumeration types.
