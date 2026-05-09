@@ -1913,6 +1913,7 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   // the below RPSDCL_PRIM_TYPE macro is incomplete and should use
   // Name... The Kob has to be a full "rpskob" prefixed constant since
   // this source code is scanned by
+  // Rps_Dumper::scan_source_file_for_constants ...
 #define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {		\
     ld->set_primitive_type_size_and_align		\
       (Kob,						\
