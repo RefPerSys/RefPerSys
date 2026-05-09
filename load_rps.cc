@@ -1899,7 +1899,8 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   /* all the constants below have class cplusplus_primitive_type*/
 
   // the below RPSDCL_PRIM_TYPE macro is incomplete and should use
-  // Name...
+  // Name... The Kob has to be a full "rpskob" prefixed constant since
+  // this source code is scanned by
 #define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {	\
     ld->set_primitive_type_size_and_align	\
       (Kob,					\
@@ -1907,75 +1908,25 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   } while(0)
 
   RPSDCL_PRIM_TYPE(rpskob_67REK2JYbAV04jPmf2,code_bool,bool);
-  /***
-  ld->set_primitive_type_size_and_align(rpskob_67REK2JYbAV04jPmf2, //code_bool
-                                        sizeof(bool),
-                                        alignof(bool)
-                                       );
-  ***/
-  ld->set_primitive_type_size_and_align(rpskob_2c32kYjX53f04obwxm, //code_char
-                                        sizeof(char),
-                                        alignof(char)
-                                       );
-  ld->set_primitive_type_size_and_align(rpskob_4V1oeUOvmxo041XLTm, //code_intptr_t
-                                        sizeof(intptr_t),
-                                        alignof(intptr_t)
-                                       );
-  ld->set_primitive_type_size_and_align(rpskob_4nZ0jIKUbGr01OixPV, //code_int
-                                        sizeof(int),
-                                        alignof(int)
-                                       );
-  ld->set_primitive_type_size_and_align(rpskob_3NYlqvmSuTm024LDuD, //code_long
-                                        sizeof(long),
-                                        alignof(long)
-                                       );
-  ld->set_primitive_type_size_and_align(rpskob_2c32kYjX53f04obwxm, //code_char
-                                        sizeof(char),
-                                        alignof(char)
-                                       );
-  ld->set_primitive_type_size_and_align(rpskob_5oS6nYn6Z8A01hSF44, //code_uint8_type
-                                        sizeof(std::uint8_t),
-                                        alignof(std::uint8_t)
-                                       );
-  ld->set_primitive_type_size_and_align(rpskob_6EHFY6bC8PU01OfVRZ, //code_int8_type
-                                        sizeof(std::int8_t),
-                                        alignof(std::int8_t)
-                                       );
-
-  ld->set_primitive_type_size_and_align(rpskob_9kO7yLMH7NY00asRHK, //code_int16_type
-                                        sizeof(std::int16_t),
-                                        alignof(std::int16_t)
-                                       );
-  
-  ld->set_primitive_type_size_and_align(rpskob_0UD0Z1w1enq00j4Zgv, //code_uint16_type
-                                        sizeof(std::uint16_t),
-                                        alignof(std::uint16_t)
-                                       );
-  
-  ld->set_primitive_type_size_and_align(rpskob_0UD0Z1w1enq00j4Zgv, //code_uint16_type
-                                        sizeof(std::uint16_t),
-                                        alignof(std::uint16_t)
-                                       );
-  
- ld->set_primitive_type_size_and_align(rpskob_2xeqZrbl5Pg04s46er, //code_uint32_type
-                                        sizeof(std::uint32_t),
-                                        alignof(std::uint32_t)
-                                       );
- 
- ld->set_primitive_type_size_and_align(rpskob_8Fphnj5nJGe006qeEy, //code_int32_type
-                                        sizeof(std::int32_t),
-                                        alignof(std::int32_t)
-                                       );
- 
- ld->set_primitive_type_size_and_align(rpskob_43NEOkhFOI602pgEn9, //code_uint64_type
-                                        sizeof(std::uint64_t),
-                                        alignof(std::uint64_t)
-                                       );
- 
- ld->set_primitive_type_size_and_align(rpskob_1kuc4QnBUC101rmpkg, //code_int64_type
-                                        sizeof(std::int64_t),
-                                        alignof(std::int64_t)
-                                       );
+  RPSDCL_PRIM_TYPE(rpskob_2c32kYjX53f04obwxm,code_char,char);
+  RPSDCL_PRIM_TYPE(rpskob_4V1oeUOvmxo041XLTm,code_intptr,intptr_t);
+  RPSDCL_PRIM_TYPE(rpskob_4nZ0jIKUbGr01OixPV,code_int,int);
+  RPSDCL_PRIM_TYPE(rpskob_3NYlqvmSuTm024LDuD,code_long,long);
+  RPSDCL_PRIM_TYPE(rpskob_2c32kYjX53f04obwxm,code_char,char);
+  RPSDCL_PRIM_TYPE(rpskob_5oS6nYn6Z8A01hSF44,code_uint8_type,
+		   std::uint8_t);
+  RPSDCL_PRIM_TYPE(rpskob_9kO7yLMH7NY00asRHK,code_int16_type,
+		   std::int16_t);
+  RPSDCL_PRIM_TYPE(rpskob_0UD0Z1w1enq00j4Zgv,code_uint16_type,
+		   std::uint16_t);
+  RPSDCL_PRIM_TYPE(rpskob_2xeqZrbl5Pg04s46er,code_uint32_type,
+		   std::uint32_t);
+  RPSDCL_PRIM_TYPE(rpskob_8Fphnj5nJGe006qeEy,code_int32_type,
+		   std::int32_t);
+  RPSDCL_PRIM_TYPE(rpskob_43NEOkhFOI602pgEn9,code_uint64_type,
+		   std::uint64_t);
+  RPSDCL_PRIM_TYPE(rpskob_1kuc4QnBUC101rmpkg,code_int64_type,
+		   std::int64_t);
 #undef  RPSDCL_PRIM_TYPE
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
