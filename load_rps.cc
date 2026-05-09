@@ -1926,6 +1926,7 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   RPSDCL_PRIM_TYPE(rpskob_4nZ0jIKUbGr01OixPV,code_int,int);
   RPSDCL_PRIM_TYPE(rpskob_3NYlqvmSuTm024LDuD,code_long,long);
   RPSDCL_PRIM_TYPE(rpskob_2c32kYjX53f04obwxm,code_char,char);
+  RPSDCL_PRIM_TYPE(rpskob_3zFAzRIb8BK03FqLbT,code_double,double);
   RPSDCL_PRIM_TYPE(rpskob_5oS6nYn6Z8A01hSF44,code_uint8_type,
                    std::uint8_t);
   RPSDCL_PRIM_TYPE(rpskob_9kO7yLMH7NY00asRHK,code_int16_type,
@@ -1940,6 +1941,8 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
                    std::uint64_t);
   RPSDCL_PRIM_TYPE(rpskob_1kuc4QnBUC101rmpkg,code_int64_type,
                    std::int64_t);
+  /// Use plugins_dir/rpsplug_create_cplusplus_primitive_type.cc
+  /// to add more primitives types above
 #undef  RPSDCL_PRIM_TYPE
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
