@@ -1900,8 +1900,7 @@ void
 rps_set_native_data_in_loader(Rps_Loader*ld)
 {
   RPS_ASSERT(ld != nullptr);
-  RPS_WARNOUT("incomplete rps_set_native_data_in_loader" << std::endl
-              << RPS_FULL_BACKTRACE(1, "rps_set_native_data_in_loader"));
+  RPS_WARNOUT("incomplete rps_set_native_data_in_loader");
   /* Some loaded objects are representing machine types, and their
      attributes _6EsfxShTuwH02waeLE !byte_alignment∈named_attribute
      and _8IRzlYX53kN00tC3fG !byte_size∈named_attribute need to be set
@@ -1910,10 +1909,9 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   /* TODO: use ld->set_primitive_type_size_and_align here */
   /* all the constants below have class cplusplus_primitive_type*/
 
-  // the below RPSDCL_PRIM_TYPE macro is incomplete and should use
-  // Name... The Kob has to be a full "rpskob" prefixed constant since
-  // this source code is scanned by
-  // Rps_Dumper::scan_source_file_for_constants ...
+  // In the below RPSDCL_PRIM_TYPE macro, the Kob argument has to be a
+  // full "rpskob" prefixed constant since this source code is scanned
+  // by Rps_Dumper::scan_source_file_for_constants ...
 #define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {		\
     ld->set_primitive_type_size_and_align		\
       (Kob,						\
@@ -1929,6 +1927,8 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   RPSDCL_PRIM_TYPE(rpskob_2c32kYjX53f04obwxm,code_char,char);
   RPSDCL_PRIM_TYPE(rpskob_3zFAzRIb8BK03FqLbT,code_double,double);
   RPSDCL_PRIM_TYPE(rpskob_74qVHPNZj2201OVIfI,code_float,float);
+  RPSDCL_PRIM_TYPE(rpskob_6EHFY6bC8PU01OfVRZ,code_int8_type,
+                   std::int8_t);
   RPSDCL_PRIM_TYPE(rpskob_5oS6nYn6Z8A01hSF44,code_uint8_type,
                    std::uint8_t);
   RPSDCL_PRIM_TYPE(rpskob_9kO7yLMH7NY00asRHK,code_int16_type,
