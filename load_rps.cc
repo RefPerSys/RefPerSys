@@ -1913,11 +1913,11 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   // the below RPSDCL_PRIM_TYPE macro is incomplete and should use
   // Name... The Kob has to be a full "rpskob" prefixed constant since
   // this source code is scanned by
-#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {   \
-    ld->set_primitive_type_size_and_align   \
-      (Kob,           \
-       sizeof(Cpp),alignof(Cpp));     \
-    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);  \
+#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {		\
+    ld->set_primitive_type_size_and_align		\
+      (Kob,						\
+       sizeof(Cpp),alignof(Cpp));			\
+    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);	\
   } while(0)
 
   RPSDCL_PRIM_TYPE(rpskob_67REK2JYbAV04jPmf2,code_bool,bool);
@@ -1927,6 +1927,7 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   RPSDCL_PRIM_TYPE(rpskob_3NYlqvmSuTm024LDuD,code_long,long);
   RPSDCL_PRIM_TYPE(rpskob_2c32kYjX53f04obwxm,code_char,char);
   RPSDCL_PRIM_TYPE(rpskob_3zFAzRIb8BK03FqLbT,code_double,double);
+  RPSDCL_PRIM_TYPE(rpskob_74qVHPNZj2201OVIfI,code_float,float);
   RPSDCL_PRIM_TYPE(rpskob_5oS6nYn6Z8A01hSF44,code_uint8_type,
                    std::uint8_t);
   RPSDCL_PRIM_TYPE(rpskob_9kO7yLMH7NY00asRHK,code_int16_type,

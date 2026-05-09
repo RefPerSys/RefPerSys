@@ -73,14 +73,15 @@ RPS_INSTALL_CONSTANT_OB(_6EsfxShTuwH02waeLE) //!byte_alignment∈named_attribute
 RPS_INSTALL_CONSTANT_OB(_6EHFY6bC8PU01OfVRZ) //!code_int8_type∈cplusplus_primitive_type h:3758262250
 RPS_INSTALL_CONSTANT_OB(_6WwOXKVFFBC03obqki) //!let∈symbol h:2588766932
 RPS_INSTALL_CONSTANT_OB(_6X1MXqp9J5v02Q7Usl) //!star_at∈repl_delimiter h:1427764733
+RPS_INSTALL_CONSTANT_OB(_74qVHPNZj2201OVIfI) //!code_float∈cplusplus_primitive_type h:490163562
 RPS_INSTALL_CONSTANT_OB(_78wsBiJhJj1025DIs1) //!dot!delim∈repl_delimiter h:978046233
 RPS_INSTALL_CONSTANT_OB(_7oLVM0fd4a5020iEEM) //!put∈symbol h:2103424257
 RPS_INSTALL_CONSTANT_OB(_7CG9m1NXpMo01edTUl) //!rightparen!delim∈repl_delimiter h:1793223902
 RPS_INSTALL_CONSTANT_OB(_7LMYzEqjeDH00ZI1CO) //!at_sign∈repl_delimiter h:150658742
 RPS_INSTALL_CONSTANT_OB(_7X9eGs8601M021nMue) //!object∈symbol h:277142528
 RPS_INSTALL_CONSTANT_OB(_8Fphnj5nJGe006qeEy) //!code_int32_type∈cplusplus_primitive_type h:2124757181
-RPS_INSTALL_CONSTANT_OB(_8IRzlYX53kN00tC3fG) //!byte_size∈named_attribute h:940907523
 
+RPS_INSTALL_CONSTANT_OB(_8IRzlYX53kN00tC3fG) //!byte_size∈named_attribute h:940907523
 RPS_INSTALL_CONSTANT_OB(_8Z5o3cF6CsP02Iy81d) //!define∈symbol h:3813415143
 RPS_INSTALL_CONSTANT_OB(_9iNXvyeEY9r03Znyaj) //!end∈symbol h:836368046
 RPS_INSTALL_CONSTANT_OB(_9kO7yLMH7NY00asRHK) //!code_int16_type∈cplusplus_primitive_type h:4170459979
@@ -92,6 +93,6 @@ RPS_INSTALL_CONSTANT_OB(_9wxka7OAIaG00LS3Db) //!do∈symbol h:2996501575
 
 
 #undef  RPS_NB_CONSTANT_OB
-#define RPS_NB_CONSTANT_OB 46
+#define RPS_NB_CONSTANT_OB 47
 
 /// end of RefPerSys constants file generated/rps-constants.hh
