@@ -469,7 +469,8 @@ Rps_Dumper::scan_source_file_for_constants(const std::string&relfilename)
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "Rps_Dumper::scan_source_file_for_constants"));
   RPS_ASSERT(relfilename.size()>2 && isalpha(relfilename[0]));
-  std::string fullpath = std::string(rps_topdirectory) + "/" + relfilename;
+  std::string fullpath = std::string(rps_topdirectory)
+    + "/" + relfilename;
   std::ifstream ins(fullpath);
   unsigned lincnt = 0;
   for (std::string linbuf; std::getline(ins, linbuf); )
@@ -499,8 +500,9 @@ Rps_Dumper::scan_source_file_for_constants(const std::string&relfilename)
                   nbconst++;
                   std::lock_guard<std::recursive_mutex> gu(du_mtx);
                   if (du_constantobset.find(obr) != du_constantobset.end())
-                    RPS_DEBUG_LOG(DUMP, "scan_source_file_for_constants const#" << nbconst
-                                  << " is " << obr);
+                    RPS_DEBUG_LOG(DUMP,
+				  "scan_source_file_for_constants const#"
+				  << nbconst << " is " << obr);
                   du_constantobset.insert(obr);
                 }
               else
@@ -513,7 +515,8 @@ Rps_Dumper::scan_source_file_for_constants(const std::string&relfilename)
     }
   if (nbconst>0)
     RPS_INFORMOUT("found " << nbconst
-                  << " constant[s] prefixed by " << RPS_CONSTANTOBJ_PREFIX
+                  << " constant[s] prefixed by "
+		  << RPS_CONSTANTOBJ_PREFIX
                   << " in file " << fullpath
                   << " of " << lincnt << " lines.");
   else
@@ -622,18 +625,21 @@ Rps_Dumper::rename_opened_files(void)
               (void) rename(bak0path.c_str(), bak1path.c_str());
             };
           if (rename(curpath.c_str(), bak0path.c_str()))
-            RPS_WARNOUT("dump failed to backup " << curpath << " to " << bak0path << ":" << strerror(errno));
+            RPS_WARNOUT("dump failed to backup " << curpath
+			<< " to " << bak0path << ":" << strerror(errno));
         };
       std::string tempath = temporary_opened_path(curelpath);
       if (rename(tempath.c_str(), curpath.c_str()))
-        RPS_FATALOUT("dump failed to rename " << tempath << " as " << curpath);
+        RPS_FATALOUT("dump failed to rename " << tempath
+		     << " as " << curpath);
     };
   du_openedpathset.clear();
 } // end Rps_Dumper::rename_opened_files
 
 
 //////////////// public interface to dumper::::
-bool rps_is_dumpable_objref(Rps_Dumper*du, const Rps_ObjectRef obr)
+bool
+rps_is_dumpable_objref(Rps_Dumper*du, const Rps_ObjectRef obr)
 {
   RPS_ASSERT(du != nullptr);
   return du->is_dumpable_objref(obr);
@@ -2101,9 +2107,15 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 /// NB rpsapply_5Q5E0Lw9v4f046uAKZ is installed as
 /// "generate_code°the_system_class" in commit  a87e55f74f78537 and before
 /***
- * We need to manually edit the persistore/sp_8J6vNYtP5E800eCr5q-rps.json to avoid:::
+ * We had to manually edit the persistore/sp_8J6vNYtP5E800eCr5q-rps.json to avoid:::
 
- RefPerSys WARN! dump_rps.cc:1020:: Rps_Dumper::write_all_generated_files failed to send ◌_5VC4IuJ0dyr01b8lA0/generate_code to ◌_1Io89yIORqn02SXx4p/RefPerSys_system (of class ◌_10YXWeY7lYc01RpQTA/the_system_class and payload type symbol) genstoreob:◌_9wFykw9FYCj01qGGmB with "/tmp/refpersys-822d425661847d20+_144752" & "_2Z5MwS-p144753%"
+ RefPerSys WARN! dump_rps.cc:1020::
+ Rps_Dumper::write_all_generated_files failed to send
+ ◌_5VC4IuJ0dyr01b8lA0/generate_code to
+ ◌_1Io89yIORqn02SXx4p/RefPerSys_system (of class
+ ◌_10YXWeY7lYc01RpQTA/the_system_class and payload type symbol)
+ genstoreob:◌_9wFykw9FYCj01qGGmB with
+ "/tmp/refpersys-822d425661847d20+_144752" & "_2Z5MwS-p144753%"
 
 ***/
 
@@ -2138,19 +2150,21 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe, /// "generate_code°the_s
   const char*cwds = getcwd(cwdbuf, sizeof(cwdbuf)-1);
   if (!cwds)
     cwds = ".";
-  RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"
+  RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ"
+	      << std::endl << "… generate_code°the_system_class"
               << std::endl
               << "… sysob=" << RPS_OBJECT_DISPLAY(_f.sysob) << std::endl
-              << " dumpstr=" <<  Rps_OutputValue(_f.dumpstrv,0)
+              << "… dumpstr=" <<  Rps_OutputValue(_f.dumpstrv,0)
               << " suffixstr=" << Rps_OutputValue(_f.suffixstrv,0)
               << std::endl
               << "… dumpob=" << RPS_OBJECT_DISPLAY(_f.dumpob) << std::endl
-              << " closurev=" << Rps_OutputValue(_f.closurev,0)
+              << "… closurev=" << Rps_OutputValue(_f.closurev,0)
               << std::endl
               << "… cwds=" << cwds << " pid:" << (int)getpid()
               << " from " << (rps_is_main_thread()?"main":"other")
               << " thread"
-              << std::endl << RPS_FULL_BACKTRACE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
+              << std::endl
+	      << RPS_FULL_BACKTRACE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
   // arg1 is the dumped directory string, e.g. ~/RefPerSys
   RPS_ASSERT(_f.dumpstrv.is_string());
   // arg2 is a temporary suffix like "_3MPAZx-p1084952%"
