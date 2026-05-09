@@ -1891,7 +1891,9 @@ rps_set_cppname_for_primitive_type(Rps_Loader*ld,
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(kobarg);
   RPS_ASSERT(namarg != nullptr);
-#warning incomplete rps_set_cppname_for_primitive_type
+  kobarg->put_attr
+  (rpskob_0fx0GtCX90Z03VI9mo, //!cplusplus_name∈named_attribute)
+   Rps_StringValue(namarg));
 } // end rps_set_cppname_for_primitive_type
 
 void
