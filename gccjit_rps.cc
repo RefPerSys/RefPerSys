@@ -665,6 +665,8 @@ rps_gccjit_initialize_tmpdir(const char*tempdir)
 	  rps_building_opersysname, rps_building_machine, rps_timestamp);
   fprintf(f, "generated %s\n", timbuf);
   fflush(f);
+  fprintf(f, "### eof generated %s ###\n", rdmbuf);
+  fclose(f);
 } // end rps_gccjit_initialize_tmpdir
 
 void
