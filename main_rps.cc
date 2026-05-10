@@ -1744,9 +1744,7 @@ main (int argc, char** argv)
 #if RPS_USE_CURL
   rps_initialize_curl();
 #endif /*RPS_USE_CURL*/
-  //// initialize the gccjit
-  rps_gccjit_initialize ();
-  rps_atexit(rps_gccjit_finalize);
+  rps_gccjit_initialize();
   if (rps_my_load_dir.empty())
     {
       const char* rpld = realpath(rps_topdirectory, nullptr);

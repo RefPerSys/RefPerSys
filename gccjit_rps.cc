@@ -61,10 +61,8 @@ const char rps_gccjit_basename[]= RPS_BASENAME;
 extern "C" const char rps_gccjit_baseid[];
 const char rps_gccjit_baseid[]= RPS_BASEID;
 
-/// We use the C API to GCCJIT and conventionally explicit with struct
-/// keyword all the opaque structures in it.
-extern "C" struct gcc_jit_context* rps_gccjit_top_ctxt;
-struct gcc_jit_context* rps_gccjit_top_ctxt;
+extern "C" char rps_gccjit_tmp_dirpath[rps_path_byte_size];
+char rps_gccjit_tmp_dirpath[rps_path_byte_size];
 
 extern "C" const std::string rps_gccjit_prefix_struct;
 const std::string rps_gccjit_prefix_struct="_rps_STRUCT";
@@ -103,7 +101,7 @@ class Rps_PayloadGccjit : public Rps_Payload
    * dlopen-able plugin) from some libgccjit compatible and rather
    * portable representation.
    **/
-  struct gcc_jit_context* _gji_ctxt;  // child context for code generation
+  struct gcc_jit_context* _gji_ctxt;  // context for code generation
   /// We maintain a mapping between RefPerSys objects representing
   /// code and the gccjit::object-s for them.
   /// TODO: document the representation of GCCJIT code.
@@ -206,7 +204,7 @@ protected:
 
 Rps_PayloadGccjit::Rps_PayloadGccjit(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylGccjit,owner), // is that thread-safe?
-    _gji_ctxt(rps_gccjit_top_ctxt),
+    _gji_ctxt(nullptr),
     _gji_rpsobj2jit()
 {
 #warning incomplete Rps_PayloadGccjit::Rps_PayloadGccjit
@@ -647,8 +645,24 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 void
 rps_gccjit_initialize(void)
 {
+  ///called from main
   RPS_ASSERT(rps_is_main_thread());
-  rps_gccjit_top_ctxt = gcc_jit_context_acquire  ();
+  RPS_DEBUG_LOG(REPL, "rps_gccjit_initialize-d" << std::endl
+		<< RPS_FULL_BACKTRACE(1, "rps_gccjit_initialize"));
+  RPS_ASSERT(rps_gccjit_tmp_dirpath[0] == 0);
+  snprintf(rps_gccjit_tmp_dirpath, sizeof(rps_gccjit_tmp_dirpath),
+	   "/tmp/rpsgccjit-p%d-%s-XXXXXXX",
+	   (int)getpid(), rps_shortgitid);
+  char*tempdir = mkdtemp(rps_gccjit_tmp_dirpath);
+  if (!tempdir || tempdir != rps_gccjit_tmp_dirpath)
+    RPS_FATALOUT("failed to make gccjit temporary directory "
+		 << rps_gccjit_tmp_dirpath);
+  RPS_POSSIBLE_BREAKPOINT();
+  rps_atexit(rps_gccjit_finalize);
+#warning incomplete rps_gccjit_initialize
+  /* TODO: add a generated README in tempdir, and test that GCCJIT
+     works there by generating some unique function (in a *.so plugin)
+     returning the equivalent of __DATE__ */
 } // end rps_gccjit_initialize
 
 static volatile std::atomic_flag rps_gccjit_finalized = ATOMIC_FLAG_INIT;
@@ -658,7 +672,14 @@ void rps_gccjit_finalize(void)
 {
   if (std::atomic_flag_test_and_set(&rps_gccjit_finalized))
     return;
-  gcc_jit_context_release(rps_gccjit_top_ctxt);
+  FILE* patcmd = popen("/bin/at -M now + 15 minutes > /dev/null 2>&1", "w");
+  if (!patcmd)
+    RPS_FATALOUT("rps_gccjit_finalize failed to popen /bin/at");
+  fprintf(patcmd, "/bin/rm -rf '%s'\n", rps_gccjit_tmp_dirpath);
+  int fail = pclose(patcmd);
+  if (fail)    
+    RPS_FATALOUT("rps_gccjit_finalize failed to delay remove "
+		 << rps_gccjit_tmp_dirpath);
 #warning rps_gccjit_finalize incomplete
 } // end rps_gccjit_finalize
 
