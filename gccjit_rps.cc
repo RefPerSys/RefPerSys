@@ -642,6 +642,31 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 #warning unimplemented Rps_PayloadGccjit::json_to_jit_object
 } // end Rps_PayloadGccjit::json_to_jit_object
 
+
+static void
+rps_gccjit_initialize_tmpdir(const char*tempdir)
+{
+  char rdmbuf[rps_path_byte_size+4];
+  memset(rdmbuf, 0, sizeof(rdmbuf));
+  char timbuf[64];
+  memset(timbuf, 0, sizeof(timbuf));
+  time_t nowtim = time(nullptr);
+  ctime_r(&nowtim, timbuf);
+  snprintf(rdmbuf, rps_path_byte_size, "%s/!README", tempdir);
+  FILE*f = fopen(rdmbuf, "w");
+  if (!f)
+    RPS_FATALOUT("failed to fopen for write " << rdmbuf);
+  fprintf(f,
+	  "file %s is for temporary libgccjit generated files\n",
+	  tempdir, rdmbuf);
+  fprintf(f, "for refpersys.org & github.com/RefPerSys/RefPerSys git %s\n",
+	  rps_shortgitid);
+  fprintf(f, "on host %s (OS %s machine %s) built %s\n", rps_hostname(),
+	  rps_building_opersysname, rps_building_machine, rps_timestamp);
+  fprintf(f, "generated %s\n", timbuf);
+  fflush(f);
+} // end rps_gccjit_initialize_tmpdir
+
 void
 rps_gccjit_initialize(void)
 {
@@ -659,6 +684,7 @@ rps_gccjit_initialize(void)
 		 << rps_gccjit_tmp_dirpath);
   RPS_POSSIBLE_BREAKPOINT();
   rps_atexit(rps_gccjit_finalize);
+  rps_gccjit_initialize_tmpdir(tempdir);
 #warning incomplete rps_gccjit_initialize
   /* TODO: add a generated README in tempdir, and test that GCCJIT
      works there by generating some unique function (in a *.so plugin)
