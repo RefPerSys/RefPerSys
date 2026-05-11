@@ -73,7 +73,8 @@ const std::string rps_gccjit_prefix_field="_rps_FIELD";
 extern "C" void rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
 
-enum class Rps_GccJitType {
+enum class Rps_GccJitType
+{
   gjit__NONE,
   gjit_ScalarType,
   gjit_NumberType,
@@ -128,14 +129,16 @@ public:
     return false;
   };
   virtual ~Rps_PayloadGccjit();
-  struct gcc_jit_location* make_csrc_location(const char*filename, int line, int col)
+  struct gcc_jit_location* make_csrc_location(const char*filename,
+      int line, int col)
   {
     RPS_ASSERT(filename);
     RPS_ASSERT(filename[0] != '_');
     std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
     return gcc_jit_context_new_location(_gji_ctxt, filename, line, col);
   };
-  struct gcc_jit_location* make_string_src_location(const std::string&filen, int line, int col)
+  struct gcc_jit_location* make_string_src_location(const std::string&filen,
+      int line, int col)
   {
     RPS_ASSERT(!filen.empty());
     RPS_ASSERT(filen[0] != '_');
@@ -155,13 +158,13 @@ public:
   // an arbitrary refpersys object may represent a fictuous "source file"
   struct gcc_jit_location* make_rpsobj_location(Rps_ObjectRef ob, int line, int col=0);
   void locked_register_object_jit(Rps_ObjectRef ob, Rps_GccJitType jty,
-				  struct gcc_jit_object* jit);
+                                  struct gcc_jit_object* jit);
   void locked_unregister_object_jit(Rps_ObjectRef ob);
 protected:
   void load_jit_json(Rps_Loader*ld, Rps_Id spacid, unsigned lineno, Json::Value&jseq);
   void raw_register_object_jit(Rps_ObjectRef ob,
-			       Rps_GccJitType jty,
-			       struct gcc_jit_object* jit);
+                               Rps_GccJitType jty,
+                               struct gcc_jit_object* jit);
   void raw_unregister_object_jit(Rps_ObjectRef ob);
   ///
   //////////////// GCCJIT TYPES
@@ -406,8 +409,8 @@ Rps_PayloadGccjit::locked_new_gccjit_field(struct gcc_jit_type* type,
 ////// managing RefPerSys objects and their gccjit
 void
 Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,
-					   Rps_GccJitType jty,
-					   struct gcc_jit_object* jit)
+    Rps_GccJitType jty,
+    struct gcc_jit_object* jit)
 {
   RPS_ASSERT(ob);
   RPS_ASSERT(owner());
@@ -417,8 +420,8 @@ Rps_PayloadGccjit::raw_register_object_jit(Rps_ObjectRef ob,
 
 void
 Rps_PayloadGccjit::locked_register_object_jit(Rps_ObjectRef ob,
-					      Rps_GccJitType jty,
-					      struct gcc_jit_object* jit)
+    Rps_GccJitType jty,
+    struct gcc_jit_object* jit)
 {
   RPS_ASSERT(ob);
   RPS_ASSERT(owner());
@@ -642,6 +645,21 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 #warning unimplemented Rps_PayloadGccjit::json_to_jit_object
 } // end Rps_PayloadGccjit::json_to_jit_object
 
+static void
+rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
+{
+  char timbuf[64];
+  memset(timbuf, 0, sizeof(timbuf));
+  time_t nowtim = time(nullptr);
+  ctime_r(&nowtim, timbuf);
+  /* TODO: test that GCCJIT works there by generating some unique
+     function (in a *.so plugin) returning the timbuf string */
+  RPS_WARNOUT("unimplemented rps_gccjit_try_simple_jit_in_tempdir"
+              << std::endl
+              << "… tempdir=" << tempdir
+              << " timbuf=" << Rps_QuotedC_String(timbuf));
+#warning unimplemented rps_gccjit_try_simple_jit_in_tempdir
+} // end rps_gccjit_try_simple_jit_in_tempdir
 
 static void
 rps_gccjit_initialize_tmpdir(const char*tempdir)
@@ -657,12 +675,12 @@ rps_gccjit_initialize_tmpdir(const char*tempdir)
   if (!f)
     RPS_FATALOUT("failed to fopen for write " << rdmbuf);
   fprintf(f,
-	  "file %s is for temporary libgccjit generated files\n",
-	  tempdir, rdmbuf);
+          "file %s is for temporary libgccjit generated files\n",
+          tempdir, rdmbuf);
   fprintf(f, "for refpersys.org & github.com/RefPerSys/RefPerSys git %s\n",
-	  rps_shortgitid);
+          rps_shortgitid);
   fprintf(f, "on host %s (OS %s machine %s) built %s\n", rps_hostname(),
-	  rps_building_opersysname, rps_building_machine, rps_timestamp);
+          rps_building_opersysname, rps_building_machine, rps_timestamp);
   fprintf(f, "generated %s\n", timbuf);
   fflush(f);
   fprintf(f, "### eof generated %s ###\n", rdmbuf);
@@ -676,39 +694,38 @@ rps_gccjit_initialize(void)
   ///called from main
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "rps_gccjit_initialize-d" << std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_gccjit_initialize"));
+                << RPS_FULL_BACKTRACE(1, "rps_gccjit_initialize"));
   RPS_ASSERT(rps_gccjit_tmp_dirpath[0] == 0);
   snprintf(rps_gccjit_tmp_dirpath, sizeof(rps_gccjit_tmp_dirpath),
-	   "/tmp/rpsgccjit-p%d-%s-XXXXXXX",
-	   (int)getpid(), rps_shortgitid);
+           "/tmp/rpsgccjit-p%d-g%s-XXXXXXX",
+           (int)getpid(), rps_shortgitid);
   char*tempdir = mkdtemp(rps_gccjit_tmp_dirpath);
   if (!tempdir || tempdir != rps_gccjit_tmp_dirpath)
     RPS_FATALOUT("failed to make gccjit temporary directory "
-		 << rps_gccjit_tmp_dirpath);
+                 << rps_gccjit_tmp_dirpath);
   RPS_POSSIBLE_BREAKPOINT();
   rps_atexit(rps_gccjit_finalize);
   rps_gccjit_initialize_tmpdir(tempdir);
-#warning incomplete rps_gccjit_initialize
-  /* TODO: add a generated README in tempdir, and test that GCCJIT
-     works there by generating some unique function (in a *.so plugin)
-     returning the equivalent of __DATE__ */
+  rps_gccjit_try_simple_jit_in_tempdir(tempdir);
 } // end rps_gccjit_initialize
 
 static volatile std::atomic_flag rps_gccjit_finalized = ATOMIC_FLAG_INIT;
 
 /// the finalize routine is called thru atexit
-void rps_gccjit_finalize(void)
+void
+rps_gccjit_finalize(void)
 {
   if (std::atomic_flag_test_and_set(&rps_gccjit_finalized))
     return;
-  FILE* patcmd = popen("/bin/at -M now + 15 minutes > /dev/null 2>&1", "w");
+  FILE* patcmd = popen("/bin/at -M now + 15 minutes > /dev/null 2>&1",
+                       "w");
   if (!patcmd)
     RPS_FATALOUT("rps_gccjit_finalize failed to popen /bin/at");
   fprintf(patcmd, "/bin/rm -rf '%s'\n", rps_gccjit_tmp_dirpath);
   int fail = pclose(patcmd);
-  if (fail)    
+  if (fail)
     RPS_FATALOUT("rps_gccjit_finalize failed to delay remove "
-		 << rps_gccjit_tmp_dirpath);
+                 << rps_gccjit_tmp_dirpath);
 #warning rps_gccjit_finalize incomplete
 } // end rps_gccjit_finalize
 
