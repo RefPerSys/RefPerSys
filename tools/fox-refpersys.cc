@@ -309,6 +309,8 @@ static void
 foxrps_usage(void)
 {
   std::cout << foxrps_argv[0] << " usage:" << std::endl;
+  std::cout << "*incomplete* on "
+	    << __FILE__ << ":" << __LINE__ << std::endl;
 #warning incomplete foxrps_usage
 } // end foxrps_usage
 
@@ -337,12 +339,16 @@ main(int argc, char**argv)
                     << " compiled by " << rps_cxx_compiler_realpath
                     << ": " << rps_cxx_compiler_version
                     << " on " __DATE__ "@" __TIME__ << std::endl
-                    << "using FOX toolkit " << FOX_MAJOR << "." << FOX_MINOR
-                    << "." << FOX_LEVEL << "-" << FXApp::copyright << std::endl;
+                    << "using FOX toolkit "
+		    << FOX_MAJOR << "." << FOX_MINOR
+                    << "." << FOX_LEVEL << "-"
+		    << FXApp::copyright << std::endl;
+	  return 0;
         }
       else if (!strcmp(foxrps_argv[1], "--help"))
         {
           foxrps_usage();
+	  return 0;
         };
     };
   if (fxversion[0]!=FOX_MAJOR || fxversion[1]!=FOX_MINOR)
