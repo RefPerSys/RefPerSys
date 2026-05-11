@@ -645,7 +645,7 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 #warning unimplemented Rps_PayloadGccjit::json_to_jit_object
 } // end Rps_PayloadGccjit::json_to_jit_object
 
-static void
+static char*
 rps_gccjit_create_test_code(const char*tempdir, gcc_jit_context*ctxt,
                             const char*timbuf, const char*suffix)
 {
@@ -664,8 +664,15 @@ rps_gccjit_create_test_code(const char*tempdir, gcc_jit_context*ctxt,
                                   routname,
                                   0, nullptr,
                                   0);
-#warning incomplete rps_gccjit_create_test_code
+  gcc_jit_block* block =
+    gcc_jit_function_new_block(func, "_simple_block_");
+  gcc_jit_rvalue* retval =
+    gcc_jit_context_new_string_literal(ctxt, timbuf);
+  gcc_jit_block_end_with_return(block,
+                                (gcc_jit_location*)nullptr,
+                                retval);
   RPS_POSSIBLE_BREAKPOINT();
+  return strdup(routname);
 } // end rps_gccjit_create_test_code
 
 static void
@@ -689,20 +696,26 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   ctxt = gcc_jit_context_acquire();
   if (!ctxt)
     RPS_FATALOUT("failed to acquire gccjit context for " << tempdir);
-  RPS_WARNOUT("unimplemented rps_gccjit_try_simple_jit_in_tempdir"
+  RPS_WARNOUT("incomplete rps_gccjit_try_simple_jit_in_tempdir"
               << std::endl
               << "… tempdir=" << tempdir
               << std::endl
               << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
               << " timbuf=" << Rps_QuotedC_String(timbuf));
-#warning unimplemented rps_gccjit_try_simple_jit_in_tempdir
+#warning incomplete rps_gccjit_try_simple_jit_in_tempdir
   RPS_POSSIBLE_BREAKPOINT();
-  rps_gccjit_create_test_code(tempdir, ctxt, timbuf, tempsuffix);
+  char*funame =
+    rps_gccjit_create_test_code(tempdir, ctxt, timbuf, tempsuffix);
   char genfile[rps_path_byte_size];
   memset(genfile, 0, sizeof(genfile));
   snprintf(genfile, sizeof(genfile)-1, "%s/_dumpedgen_.c", tempdir);
   RPS_POSSIBLE_BREAKPOINT();
   gcc_jit_context_dump_to_file(ctxt, genfile, 1 /*update locations*/);
+  result = gcc_jit_context_compile(ctxt);
+  void* resfunad = gcc_jit_result_get_code(result, funame);
+  RPS_ASSERT(resfunad != nullptr);
+#warning should cast resfunad to a function pointer and call it
+  free(funame), funame = NULL;
 } // end rps_gccjit_try_simple_jit_in_tempdir
 
 static void
