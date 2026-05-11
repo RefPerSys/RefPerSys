@@ -650,7 +650,7 @@ rps_gccjit_create_test_code(const char*tempdir, gcc_jit_context*ctxt,
                             const char*timbuf, const char*suffix)
 {
   /* create a routine rpsgccjit_<suffix>_<pid> without parameters and
-     returninng the literal string timbuf */
+     returning the literal string timbuf */
   char routname[64];
   memset(routname, 0, sizeof(routname));
   snprintf(routname, sizeof(routname)-2, "rpsgccjit_%s_%d",
@@ -658,7 +658,7 @@ rps_gccjit_create_test_code(const char*tempdir, gcc_jit_context*ctxt,
   gcc_jit_type* void_type =
     gcc_jit_context_get_type(ctxt, GCC_JIT_TYPE_VOID);
   gcc_jit_function *func =
-    gcc_jit_context_new_function (ctxt, NULL,
+    gcc_jit_context_new_function (ctxt, (gcc_jit_location*)nullptr,
                                   GCC_JIT_FUNCTION_EXPORTED,
                                   void_type,
                                   routname,
@@ -698,6 +698,11 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
 #warning unimplemented rps_gccjit_try_simple_jit_in_tempdir
   RPS_POSSIBLE_BREAKPOINT();
   rps_gccjit_create_test_code(tempdir, ctxt, timbuf, tempsuffix);
+  char genfile[rps_path_byte_size];
+  memset(genfile, 0, sizeof(genfile));
+  snprintf(genfile, sizeof(genfile)-1, "%s/_dumpedgen_.c", tempdir);
+  RPS_POSSIBLE_BREAKPOINT();
+  gcc_jit_context_dump_to_file(ctxt, genfile, 1 /*update locations*/);
 } // end rps_gccjit_try_simple_jit_in_tempdir
 
 static void
