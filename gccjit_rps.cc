@@ -732,7 +732,7 @@ rps_gccjit_initialize_tmpdir(const char*tempdir)
   if (!f)
     RPS_FATALOUT("failed to fopen for write " << rdmbuf);
   fprintf(f,
-          "file %s is for temporary libgccjit generated files\n",
+          "file %s is for temporary libgccjit generated files with %s\n",
           tempdir, rdmbuf);
   fprintf(f, "for refpersys.org & github.com/RefPerSys/RefPerSys git %s\n",
           rps_shortgitid);
