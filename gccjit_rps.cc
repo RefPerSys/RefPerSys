@@ -647,8 +647,25 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 
 static void
 rps_gccjit_create_test_code(const char*tempdir, gcc_jit_context*ctxt,
-			    const char*timbuf, const char*suffix)
+                            const char*timbuf, const char*suffix)
 {
+  /* create a routine rpsgccjit_<suffix>_<pid> without parameters and
+     returninng the literal string timbuf */
+  char routname[64];
+  memset(routname, 0, sizeof(routname));
+  snprintf(routname, sizeof(routname)-2, "rpsgccjit_%s_%d",
+           suffix, (int)getpid());
+  gcc_jit_type* void_type =
+    gcc_jit_context_get_type(ctxt, GCC_JIT_TYPE_VOID);
+  gcc_jit_function *func =
+    gcc_jit_context_new_function (ctxt, NULL,
+                                  GCC_JIT_FUNCTION_EXPORTED,
+                                  void_type,
+                                  routname,
+                                  0, nullptr,
+                                  0);
+#warning incomplete rps_gccjit_create_test_code
+  RPS_POSSIBLE_BREAKPOINT();
 } // end rps_gccjit_create_test_code
 
 static void
