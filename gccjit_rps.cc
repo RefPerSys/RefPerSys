@@ -646,6 +646,12 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 } // end Rps_PayloadGccjit::json_to_jit_object
 
 static void
+rps_gccjit_create_test_code(const char*tempdir, gcc_jit_context*ctxt,
+			    const char*timbuf, const char*suffix)
+{
+} // end rps_gccjit_create_test_code
+
+static void
 rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
 {
   /// The tempdir has been obtained with mkdtemp(3) so ends with six
@@ -663,6 +669,9 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
     timbuf[strlen(timbuf)-1] = (char)0; //remove ending newline
   /* TODO: test that GCCJIT works there by generating some unique
      function (in a *.so plugin) returning the timbuf string */
+  ctxt = gcc_jit_context_acquire();
+  if (!ctxt)
+    RPS_FATALOUT("failed to acquire gccjit context for " << tempdir);
   RPS_WARNOUT("unimplemented rps_gccjit_try_simple_jit_in_tempdir"
               << std::endl
               << "… tempdir=" << tempdir
@@ -670,6 +679,8 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
               << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
               << " timbuf=" << Rps_QuotedC_String(timbuf));
 #warning unimplemented rps_gccjit_try_simple_jit_in_tempdir
+  RPS_POSSIBLE_BREAKPOINT();
+  rps_gccjit_create_test_code(tempdir, ctxt, timbuf, tempsuffix);
 } // end rps_gccjit_try_simple_jit_in_tempdir
 
 static void
