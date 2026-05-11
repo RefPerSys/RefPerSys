@@ -719,6 +719,7 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
                 << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
                 << " timbuf=" << Rps_QuotedC_String(timbuf)
                 << " reslit=" << Rps_QuotedC_String(reslit));
+#if 0 && oldcode
   RPS_WARNOUT("rps_gccjit_try_simple_jit_in_tempdir"
               << std::endl
               << "… tempdir=" << tempdir
@@ -728,11 +729,13 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
               << " reslit=" << Rps_QuotedC_String(reslit)
               << " resfunad=" << resfunad);
   {
-    char pmapcmd[80];
+    char pmapcmd[64];
     memset(pmapcmd, 0, sizeof(pmapcmd));
-    snprintf(pmapcmd, sizeof(pmapcmd)-2, "/usr/bin/pmap %d", (int)getpid());
+    snprintf(pmapcmd, sizeof(pmapcmd)-2, "/usr/bin/pmap %d",
+	     (int)getpid());
     system(pmapcmd);
   }
+#endif // obsolete code
   free(funame), funame = NULL;
 } // end rps_gccjit_try_simple_jit_in_tempdir
 

@@ -750,9 +750,10 @@ inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst)
 
 
 /// TODO: if allowed we could define
-///    extern "C" void rps_initialize_indented_ostream(std::ostream&out, unsigned linewidth=80);
+extern "C" void rps_initialize_indented_ostream(std::ostream&out,
+						unsigned linewidth=80);
 /// which would use register_callback and xalloc and pword and iword
-/// and we would have some rps_indentnl C++ output manipulator
+/// and we would have some rps_nl C++ output manipulator
 extern "C" void rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr, int indent=0);
 inline std::ostream& operator << (std::ostream&out, const std::vector<std::string>&vecstr)
 {

@@ -2106,10 +2106,12 @@ void rps_debug_warn_at_msg(const char*file, int line, const char*msg)
     {
       if (msg)
         syslog(LOG_WARNING,
-               "** REFPERSYS WARNING AT %s:%d : [%s] (git %s pid %d) **", file, line, msg,
+               "** REFPERSYS WARNING AT %s:%d :\n"
+	       " [%s] (git %s pid %d) **", file, line, msg,
                rps_shortgitid, (int)getpid());
       else
-        syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d (git %s pid %d) **", file, line,
+        syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d\n"
+	       " (git %s pid %d) **", file, line,
                rps_shortgitid, (int)getpid());
     }
   else
@@ -2117,8 +2119,8 @@ void rps_debug_warn_at_msg(const char*file, int line, const char*msg)
       std::cerr << std::flush;
       if (msg)
         std::cerr << std::endl << "**!** REFPERSYS WARNING at "
-                  << file << ":" << line
-                  << " [" << msg << "]" << std::endl;
+                  << file << ":" << line << std::endl
+                  << " " << msg << std::endl;
       else
         std::cerr << std::endl << "**!** REFPERSYS WARNING at "
                   << file << ":" << line
@@ -2129,7 +2131,7 @@ void rps_debug_warn_at_msg(const char*file, int line, const char*msg)
     {
       if (msg)
         fprintf(rps_debug_file,
-                "\n*** REFPERSYS WARNING at %s:%d [%s] ***\n",
+                "\n*** REFPERSYS WARNING at %s:%d\n %s ***\n",
                 file, line, msg);
       else
         fprintf(rps_debug_file,
@@ -2669,7 +2671,20 @@ rps_stringprintf(const char*fmt, ...)
 } // end rps_stringprintf
 
 
-#warning we need some rps_initialize_indented_ostream and some rps_indentnl C++ output manipulator
+#warning we need some rps_initialize_indented_ostream
+
+void
+rps_initialize_indented_ostream(std::ostream&out, unsigned linewidth)
+{
+#warning unimplemented rps_initialize_indented_ostream
+  /// which would use register_callback and xalloc and pword and iword
+  /// and we would have some rps_nl C++ output manipulator
+  //! https://en.cppreference.com/cpp/io/ios_base/register_callback
+} // end rps_initialize_indented_ostream
+
+/// which would use register_callback and xalloc and pword and iword
+
+#warning and also need some rps_nl C++ output manipulator
 void
 rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr, int indent)
 {
@@ -2681,7 +2696,7 @@ rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr
   RPS_ASSERT(sizln>0);
   out << bufsiz;
   int vecix=0;
-#warning TODO: use rps_indentnl once defined
+#warning TODO: use rps_nl once defined
   for (const std::string& curstr: vecstr)
     {
       char bufidx[16];
@@ -2696,7 +2711,7 @@ rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr
       out << Rps_QuotedC_String(curstr) << std::flush;
     }
   out << ")endvecstr" << std::flush;
-#warning TODO: use rps_indentnl once defined
+#warning TODO: use rps_nl once defined
 } // end rps_output_vector_string
 
 
