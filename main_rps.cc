@@ -585,12 +585,12 @@ rps_run_loaded_application(int &argc, char **argv)
       RPS_FATALOUT("rps_run_loaded_application failed to getcwd " << strerror(errno)
                    << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application"));
     RPS_INFORM("rps_run_loaded_application: start of %s (with %d args)\n"
-               ".. gitid %s version %d.%d\n"
-               ".. build timestamp %s\n"
-               ".. last git commit %s\n"
-               ".. md5sum %s\n"
-               ".. in %s\n"
-               ".. on host %s pid %d\n",
+               "… gitid %s version %d.%d\n"
+               "… build timestamp %s\n"
+               "… last git commit %s\n"
+               "…  md5sum %s\n"
+               "…  in cwd %s\n"
+               "…  on host %s pid %d\n",
                argv[0], argc, rps_gitid,
                rps_get_major_version(), rps_get_minor_version(),
                rps_timestamp,

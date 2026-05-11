@@ -655,12 +655,12 @@ rps_gccjit_create_test_code(const char*tempdir, gcc_jit_context*ctxt,
   memset(routname, 0, sizeof(routname));
   snprintf(routname, sizeof(routname)-2, "rpsgccjit_%s_%d",
            suffix, (int)getpid());
-  gcc_jit_type* void_type =
-    gcc_jit_context_get_type(ctxt, GCC_JIT_TYPE_VOID);
+  gcc_jit_type* cstr_type =
+    gcc_jit_context_get_type(ctxt, GCC_JIT_TYPE_CONST_CHAR_PTR);
   gcc_jit_function *func =
     gcc_jit_context_new_function (ctxt, (gcc_jit_location*)nullptr,
                                   GCC_JIT_FUNCTION_EXPORTED,
-                                  void_type,
+                                  cstr_type,
                                   routname,
                                   0, nullptr,
                                   0);
@@ -696,13 +696,6 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   ctxt = gcc_jit_context_acquire();
   if (!ctxt)
     RPS_FATALOUT("failed to acquire gccjit context for " << tempdir);
-  RPS_WARNOUT("incomplete rps_gccjit_try_simple_jit_in_tempdir"
-              << std::endl
-              << "… tempdir=" << tempdir
-              << std::endl
-              << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
-              << " timbuf=" << Rps_QuotedC_String(timbuf));
-#warning incomplete rps_gccjit_try_simple_jit_in_tempdir
   RPS_POSSIBLE_BREAKPOINT();
   char*funame =
     rps_gccjit_create_test_code(tempdir, ctxt, timbuf, tempsuffix);
@@ -714,7 +707,32 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   result = gcc_jit_context_compile(ctxt);
   void* resfunad = gcc_jit_result_get_code(result, funame);
   RPS_ASSERT(resfunad != nullptr);
-#warning should cast resfunad to a function pointer and call it
+  RPS_POSSIBLE_BREAKPOINT();
+  typedef const char* resfuntype_sig_t(void);
+  resfuntype_sig_t*funptr = (resfuntype_sig_t*)resfunad;
+  const char*reslit = (*funptr)();
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL,"rps_gccjit_try_simple_jit_in_tempdir"
+                << std::endl
+                << "… tempdir=" << tempdir
+                << std::endl
+                << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
+                << " timbuf=" << Rps_QuotedC_String(timbuf)
+                << " reslit=" << Rps_QuotedC_String(reslit));
+  RPS_WARNOUT("rps_gccjit_try_simple_jit_in_tempdir"
+              << std::endl
+              << "… tempdir=" << tempdir
+              << std::endl
+              << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
+              << " timbuf=" << Rps_QuotedC_String(timbuf)
+              << " reslit=" << Rps_QuotedC_String(reslit)
+              << " resfunad=" << resfunad);
+  {
+    char pmapcmd[80];
+    memset(pmapcmd, 0, sizeof(pmapcmd));
+    snprintf(pmapcmd, sizeof(pmapcmd)-2, "/usr/bin/pmap %d", (int)getpid());
+    system(pmapcmd);
+  }
   free(funame), funame = NULL;
 } // end rps_gccjit_try_simple_jit_in_tempdir
 
