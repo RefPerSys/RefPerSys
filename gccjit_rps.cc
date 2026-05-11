@@ -648,15 +648,26 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 static void
 rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
 {
+  /// The tempdir has been obtained with mkdtemp(3) so ends with six
+  /// alphanumerical bytes.
+  gcc_jit_context *ctxt = NULL;
+  gcc_jit_result *result = NULL;
+  /// see https://gcc.gnu.org/onlinedocs/jit/intro/tutorial02.html
+  RPS_ASSERT(tempdir && strlen(tempdir)>10);
+  const char*tempsuffix = tempdir + strlen(tempdir)-6;
   char timbuf[64];
   memset(timbuf, 0, sizeof(timbuf));
   time_t nowtim = time(nullptr);
   ctime_r(&nowtim, timbuf);
+  if (timbuf[0])
+    timbuf[strlen(timbuf)-1] = (char)0; //remove ending newline
   /* TODO: test that GCCJIT works there by generating some unique
      function (in a *.so plugin) returning the timbuf string */
   RPS_WARNOUT("unimplemented rps_gccjit_try_simple_jit_in_tempdir"
               << std::endl
               << "… tempdir=" << tempdir
+              << std::endl
+              << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
               << " timbuf=" << Rps_QuotedC_String(timbuf));
 #warning unimplemented rps_gccjit_try_simple_jit_in_tempdir
 } // end rps_gccjit_try_simple_jit_in_tempdir
