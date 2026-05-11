@@ -447,79 +447,80 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
 const char*
 rps_type_name(std::int16_t typenum)
 {
-  switch (typenum) {
-  case (int)Rps_Type::PaylLightCodeGen:
-    return "Rps_PayloadLightningCodeGen"; // in lightgen_rps.cc
-  case (int)Rps_Type::PaylCplusplusGen:
-    return "Rps_PayloadCplusplusGen"; // in cppgen_rps.cc
-  case (int)Rps_Type::PaylGccjit:
-    return "Rps_PayloadGccjit"; // in gccjit_rps.cc
-  case (int)Rps_Type::PaylEnviron:
-    return "Rps_PayloadEnviron"; // in cmdrepl_rps.cc & repl_rps.cc
-  case (int)Rps_Type::PaylObjMap:
-    return "Rps_PayloadObjMap"; // in morevalues_rps.cc
-  case (int)Rps_Type::PaylCppStream:
-    return "Rps_PayloadCppStream"; // in transientobj_rps.cc
-  case (int)Rps_Type::PaylPopenedFile:
-    return "Rps_PayloadPopenedFile"; // in transientobj_rps.cc
-  case (int)Rps_Type::PaylUnixProcess:
-    return "Rps_PayloadUnixProcess"; // in transientobj_rps.cc
-  case (int)Rps_Type::PaylTasklet:
-    return "Rps_PayloadTasklet"; // in agenda_rps.cc
-  case (int)Rps_Type::PaylStringDict:
-    return "Rps_PayloadStringDict"; // in strbufdict_rps.cc
-  case (int)Rps_Type::PaylStrBuf:
-    return "Rps_PayloadStrBuf"; // in strbufdict_rps.cc
-  case (int)Rps_Type::PaylAgenda:
-    return "Rps_PayloadAgenda"; // in agenda_rps.cc
-  case (int)Rps_Type::PaylSymbol:
-    return "Rps_PayloadSymbol"; // in utilities_rps.cc & object_rps.cc
-  case (int)Rps_Type::PaylSpace:
-    return "Rps_PayloadSpace"; // in utilities_rps.cc & object_rps.cc
-  case (int)Rps_Type::PaylRelation:
-    return nullptr;		// not implemented Rps_PayloadRelation
-  case (int)Rps_Type::PaylAssoc:
-    return nullptr;		// not implemented Rps_PayloadAssoc
-  case (int)Rps_Type::PaylVectVal:
-    return "Rps_PayloadVectVal"; // in object_rps.cc
-  case (int)Rps_Type::PaylVectOb:
-    return "Rps_PayloadVectOb"; // in object_rps.cc 
-  case (int)Rps_Type::PaylSetOb:
-    return "Rps_PayloadSetOb"; // in object_rps.cc
-  case (int)Rps_Type::PaylClassInfo:
-    return "Rps_PayloadClassInfo"; // in object_rps.cc
+  switch (typenum)
+    {
+    case (int)Rps_Type::PaylLightCodeGen:
+      return "Rps_PayloadLightningCodeGen"; // in lightgen_rps.cc
+    case (int)Rps_Type::PaylCplusplusGen:
+      return "Rps_PayloadCplusplusGen"; // in cppgen_rps.cc
+    case (int)Rps_Type::PaylGccjit:
+      return "Rps_PayloadGccjit"; // in gccjit_rps.cc
+    case (int)Rps_Type::PaylEnviron:
+      return "Rps_PayloadEnviron"; // in cmdrepl_rps.cc & repl_rps.cc
+    case (int)Rps_Type::PaylObjMap:
+      return "Rps_PayloadObjMap"; // in morevalues_rps.cc
+    case (int)Rps_Type::PaylCppStream:
+      return "Rps_PayloadCppStream"; // in transientobj_rps.cc
+    case (int)Rps_Type::PaylPopenedFile:
+      return "Rps_PayloadPopenedFile"; // in transientobj_rps.cc
+    case (int)Rps_Type::PaylUnixProcess:
+      return "Rps_PayloadUnixProcess"; // in transientobj_rps.cc
+    case (int)Rps_Type::PaylTasklet:
+      return "Rps_PayloadTasklet"; // in agenda_rps.cc
+    case (int)Rps_Type::PaylStringDict:
+      return "Rps_PayloadStringDict"; // in strbufdict_rps.cc
+    case (int)Rps_Type::PaylStrBuf:
+      return "Rps_PayloadStrBuf"; // in strbufdict_rps.cc
+    case (int)Rps_Type::PaylAgenda:
+      return "Rps_PayloadAgenda"; // in agenda_rps.cc
+    case (int)Rps_Type::PaylSymbol:
+      return "Rps_PayloadSymbol"; // in utilities_rps.cc & object_rps.cc
+    case (int)Rps_Type::PaylSpace:
+      return "Rps_PayloadSpace"; // in utilities_rps.cc & object_rps.cc
+    case (int)Rps_Type::PaylRelation:
+      return nullptr;   // not implemented Rps_PayloadRelation
+    case (int)Rps_Type::PaylAssoc:
+      return nullptr;   // not implemented Rps_PayloadAssoc
+    case (int)Rps_Type::PaylVectVal:
+      return "Rps_PayloadVectVal"; // in object_rps.cc
+    case (int)Rps_Type::PaylVectOb:
+      return "Rps_PayloadVectOb"; // in object_rps.cc
+    case (int)Rps_Type::PaylSetOb:
+      return "Rps_PayloadSetOb"; // in object_rps.cc
+    case (int)Rps_Type::PaylClassInfo:
+      return "Rps_PayloadClassInfo"; // in object_rps.cc
     ///
     /// obsolete payloads:
-  case (int)Rps_Type::PaylMachlearn:
-    return nullptr; // in .attic/machlearn_rps.cc
-  case (int)Rps_Type::PaylWebHandler:
-    return nullptr; // in .attic/httpweb_rps.cc
-  case (int)Rps_Type::PaylWebex:
-    return nullptr; // in .attic/httpweb_rps.cc
-  case (int)Rps_Type::Int:
-    return "intptr_t";
-  case (int)Rps_Type::Double:
-    return "Rps_Double"; // in scalar_rps.cc
-  case (int)Rps_Type::Set:
-    return "Rps_SetOb"; // in values_rps.cc
-  case (int)Rps_Type::Tuple:
-    return "Rps_TupleOb"; // in values_rps.cc
-  case (int)Rps_Type::Object:
-    return "Rps_ObjectZone"; // in object_rps.cc
-  case (int)Rps_Type::Closure:
-    return "Rps_ClosureZone"; // in values_rps.cc
-  case (int)Rps_Type::Json:
-    return "Rps_JsonZone"; // in morevalues_rps.cc
-  case (int)Rps_Type::Instance: 
-    return "Rps_InstanceZone";  // in morevalues_rps.cc
-  case (int)Rps_Type::LexToken:
-    return "Rps_LexTokenZone"; // in repl_rps.cc
+    case (int)Rps_Type::PaylMachlearn:
+      return nullptr; // in .attic/machlearn_rps.cc
+    case (int)Rps_Type::PaylWebHandler:
+      return nullptr; // in .attic/httpweb_rps.cc
+    case (int)Rps_Type::PaylWebex:
+      return nullptr; // in .attic/httpweb_rps.cc
+    case (int)Rps_Type::Int:
+      return "intptr_t";
+    case (int)Rps_Type::Double:
+      return "Rps_Double"; // in scalar_rps.cc
+    case (int)Rps_Type::Set:
+      return "Rps_SetOb"; // in values_rps.cc
+    case (int)Rps_Type::Tuple:
+      return "Rps_TupleOb"; // in values_rps.cc
+    case (int)Rps_Type::Object:
+      return "Rps_ObjectZone"; // in object_rps.cc
+    case (int)Rps_Type::Closure:
+      return "Rps_ClosureZone"; // in values_rps.cc
+    case (int)Rps_Type::Json:
+      return "Rps_JsonZone"; // in morevalues_rps.cc
+    case (int)Rps_Type::Instance:
+      return "Rps_InstanceZone";  // in morevalues_rps.cc
+    case (int)Rps_Type::LexToken:
+      return "Rps_LexTokenZone"; // in repl_rps.cc
 #warning rps_type_name need code review
-  default:
-    RPS_WARNOUT("rps_type_name strange typenum=" << typenum
-		<< RPS_FULL_BACKTRACE(1, "rps_type_name?"));
-    return nullptr;
-  };
+    default:
+      RPS_WARNOUT("rps_type_name strange typenum=" << typenum
+                  << RPS_FULL_BACKTRACE(1, "rps_type_name?"));
+      return nullptr;
+    };
 } // end rps_type_name
 
 
@@ -811,7 +812,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
         };
       nbshownfiles++;
       if (snprintf(msgbuf, sizeof(msgbuf)-1,
-		   " #¤ %-20s git %.10s built %s",
+                   " #¤ %-20s git %.10s built %s",
                    curfile, symgit, symdat)>0)
         std::cout << msgbuf << std::flush;
     };
@@ -864,7 +865,8 @@ rps_show_version(void)
     std::cout <<  " really " << realexepath;
   std::cout << std::endl;
   std::cout << " GCCJIT version:" << gcc_jit_version_major()
-            << "." << gcc_jit_version_minor() << "." << gcc_jit_version_patchlevel() << std::endl;
+            << "." << gcc_jit_version_minor()
+            << "." << gcc_jit_version_patchlevel() << std::endl;
   std::cout << std::endl
             /* TODO: near commit 191d55e1b31c, march 2023; decide
                which parser generator to really use... and drop the
@@ -2737,7 +2739,7 @@ rps_real_shell_file_path(const std::string& filpath)
                         << Rps_QuotedC_String(filpath));
           std::string realdirpath;
           char*rp = realpath(dirpath.c_str(), nullptr);
-	  RPS_POSSIBLE_BREAKPOINT();
+          RPS_POSSIBLE_BREAKPOINT();
           if (!rp)
             {
               RPS_WARNOUT("rps_real_shell_file_path realpath("
