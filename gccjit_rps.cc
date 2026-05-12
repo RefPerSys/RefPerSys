@@ -522,7 +522,7 @@ Rps_PayloadGccjit::src_location_to_json(struct gcc_jit_location*loc) const
    create if needed the necessary code. */
 void
 Rps_PayloadGccjit::load_jit_json(Rps_Loader*ld, Rps_Id spacid,
-				 unsigned lineno, Json::Value&job)
+                                 unsigned lineno, Json::Value&job)
 {
   std::lock_guard<std::recursive_mutex> guown(*owner()->objmtxptr());
   if (job.type() != Json::objectValue)
@@ -591,7 +591,7 @@ Rps_PayloadGccjit::~Rps_PayloadGccjit()
 
 void
 rpsldpy_gccjit(Rps_ObjectZone*obz, Rps_Loader*ld,
-	       const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+               const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
@@ -648,16 +648,16 @@ Rps_PayloadGccjit::json_to_jit_object(const Json::Value&jv)
 #warning unimplemented Rps_PayloadGccjit::json_to_jit_object
 } // end Rps_PayloadGccjit::json_to_jit_object
 
-// create a code in memory
+// create a code in memory, return the strdup-ed function name
 static char*
 rps_gccjit_create_test_memcode(const char*tempdir, gcc_jit_context*ctxt,
-			       const char*timbuf, const char*suffix)
+                               const char*timbuf, const char*suffix)
 {
   /* create a routine rpsgccjit_<suffix>_<pid> without parameters and
      returning the literal string timbuf */
   char routname[64];
   memset(routname, 0, sizeof(routname));
-  snprintf(routname, sizeof(routname)-2, "rpsgccjit_%s_%d",
+  snprintf(routname, sizeof(routname)-2, "rpsmemgccjit_%s_%d",
            suffix, (int)getpid());
   gcc_jit_type* cstr_type =
     gcc_jit_context_get_type(ctxt, GCC_JIT_TYPE_CONST_CHAR_PTR);
@@ -678,6 +678,20 @@ rps_gccjit_create_test_memcode(const char*tempdir, gcc_jit_context*ctxt,
   RPS_POSSIBLE_BREAKPOINT();
   return strdup(routname);
 } // end rps_gccjit_create_test_memcode
+
+// create a code in a dlopen-able plugin, return the strdup-ed
+// function name
+static
+char*
+rps_gccjit_create_test_plugin(const char*tempdir, gcc_jit_context*ctxt,
+                               const char*timbuf, const char*suffix)
+{
+#warning unimplemented rps_gccjit_create_test_plugin
+  RPS_ASSERT(ctxt != nullptr);
+  RPS_FATALOUT("unimplemented rps_gccjit_create_test_plugin"
+	       << " tempdir=" << tempdir << "timbuf=" << timbuf
+	       << " suffix=" << suffix);
+} // end rps_gccjit_create_test_plugin
 
 static void
 rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
@@ -707,13 +721,13 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   RPS_POSSIBLE_BREAKPOINT();
   char*memjitfuname =
     rps_gccjit_create_test_memcode(tempdir, memjitctxt,
-				   timbuf, tempsuffix);
+                                   timbuf, tempsuffix);
   char genfile[rps_path_byte_size];
   memset(genfile, 0, sizeof(genfile));
   snprintf(genfile, sizeof(genfile)-1, "%s/_dumpedgen_.c", tempdir);
   RPS_POSSIBLE_BREAKPOINT();
   gcc_jit_context_dump_to_file(memjitctxt, genfile,
-			       1 /*update locations*/);
+                               1 /*update locations*/);
   memjitresult = gcc_jit_context_compile(memjitctxt);
   void* memjitresfunad = gcc_jit_result_get_code(memjitresult, memjitfuname);
   RPS_ASSERT(memjitresfunad != nullptr);
