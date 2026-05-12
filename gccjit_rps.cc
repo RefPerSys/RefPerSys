@@ -730,11 +730,12 @@ rps_gccjit_create_test_plugin(const char*tempdir, gcc_jit_context*ctxt,
   gcc_jit_block_end_with_return (block,
                                  (gcc_jit_location*)nullptr,
                                  retval);
-  gcc_jit_context_add_command_line_option(ctxt, "-O -g -fPIC -Wall");
+  gcc_jit_context_add_command_line_option(ctxt, "-O1 -g -fPIC -Wall");
   char sopath[rps_path_byte_size];
   memset(sopath, 0, sizeof(sopath));
   snprintf(sopath, sizeof(sopath)-2, "%s/pluginrpsjit_%s.so",
 	   tempdir, suffix);
+  RPS_POSSIBLE_BREAKPOINT();
   gcc_jit_context_compile_to_file
     (ctxt,
      GCC_JIT_OUTPUT_KIND_DYNAMIC_LIBRARY,
@@ -743,6 +744,11 @@ rps_gccjit_create_test_plugin(const char*tempdir, gcc_jit_context*ctxt,
   if (!sohdlr)
     RPS_FATALOUT("failed to dlopen " << sopath
 		 << " : " << dlerror());
+  void*funad = dlsym(sohdlr, funame);
+  if (!funad)
+    RPS_FATALOUT("failed to dlsym " << funame
+		 << " : " << dlerror());
+  RPS_POSSIBLE_BREAKPOINT();
 #warning incomplete rps_gccjit_create_test_plugin
   return strdup(funame);
 } // end rps_gccjit_create_test_plugin
@@ -784,6 +790,8 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   gcc_jit_context_dump_to_file(memjitctxt, genfile,
                                1 /*update locations*/);
   memjitresult = gcc_jit_context_compile(memjitctxt);
+  gcc_jit_context_release(memjitctxt);
+  memjitctxt = nullptr;
   void* memjitresfunad = gcc_jit_result_get_code(memjitresult, memjitfuname);
   RPS_ASSERT(memjitresfunad != nullptr);
   RPS_POSSIBLE_BREAKPOINT();
@@ -807,9 +815,6 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   char*pluginfuname =
     rps_gccjit_create_test_plugin(tempdir, pluginctxt,
                                   timbuf, tempsuffix);
-  char plugfile[rps_path_byte_size];
-  memset(plugfile, 0, sizeof(plugfile));
-  snprintf(plugfile, sizeof(plugfile)-1, "%s/_plugingen_.so", tempdir);
 #warning should compile the plugin in rps_gccjit_try_simple_jit_in_tempdir
 } // end rps_gccjit_try_simple_jit_in_tempdir
 
