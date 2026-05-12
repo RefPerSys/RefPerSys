@@ -730,7 +730,19 @@ rps_gccjit_create_test_plugin(const char*tempdir, gcc_jit_context*ctxt,
   gcc_jit_block_end_with_return (block,
                                  (gcc_jit_location*)nullptr,
                                  retval);
-  /// we need to compile...
+  gcc_jit_context_add_command_line_option(ctxt, "-O -g -fPIC -Wall");
+  char sopath[rps_path_byte_size];
+  memset(sopath, 0, sizeof(sopath));
+  snprintf(sopath, sizeof(sopath)-2, "%s/pluginrpsjit_%s.so",
+	   tempdir, suffix);
+  gcc_jit_context_compile_to_file
+    (ctxt,
+     GCC_JIT_OUTPUT_KIND_DYNAMIC_LIBRARY,
+     sopath);
+  void*sohdlr = dlopen(sopath, RTLD_GLOBAL|RTLD_NOW);
+  if (!sohdlr)
+    RPS_FATALOUT("failed to dlopen " << sopath
+		 << " : " << dlerror());
 #warning incomplete rps_gccjit_create_test_plugin
   return strdup(funame);
 } // end rps_gccjit_create_test_plugin
