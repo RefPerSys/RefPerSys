@@ -684,13 +684,55 @@ rps_gccjit_create_test_memcode(const char*tempdir, gcc_jit_context*ctxt,
 static
 char*
 rps_gccjit_create_test_plugin(const char*tempdir, gcc_jit_context*ctxt,
-                               const char*timbuf, const char*suffix)
+                              const char*timbuf, const char*suffix)
 {
-#warning unimplemented rps_gccjit_create_test_plugin
   RPS_ASSERT(ctxt != nullptr);
-  RPS_FATALOUT("unimplemented rps_gccjit_create_test_plugin"
-	       << " tempdir=" << tempdir << "timbuf=" << timbuf
-	       << " suffix=" << suffix);
+  char funame[64];
+  memset (funame, 0, sizeof(funame));
+  snprintf(funame, sizeof(funame)-1, "rpsjitplug_%s", suffix);
+  /* Create the function named `funame` above which takes two integer
+     arguments x, y and returns x+pid*y where pid is the current
+     pid */
+  gcc_jit_type *int_type =
+    gcc_jit_context_get_type (ctxt, GCC_JIT_TYPE_INT);
+  RPS_ASSERT(int_type != nullptr);
+  gcc_jit_param *param_x =
+    gcc_jit_context_new_param (ctxt, NULL, int_type, "x");
+  RPS_ASSERT(param_x != nullptr);
+  gcc_jit_param *param_y =
+    gcc_jit_context_new_param (ctxt, NULL, int_type, "y");
+  RPS_ASSERT(param_y != nullptr);
+  gcc_jit_param* arr_param[] = { param_x, param_y };
+  gcc_jit_function *func =
+    gcc_jit_context_new_function (ctxt, NULL,
+                                  GCC_JIT_FUNCTION_EXPORTED,
+                                  int_type,
+                                  funame,
+                                  2, arr_param,
+                                  /*nonvariadic*/0);
+  gcc_jit_block* block =
+    gcc_jit_function_new_block(func, "_pluginblock_");
+  gcc_jit_rvalue*pidval
+    = gcc_jit_context_new_rvalue_from_int(ctxt, int_type, (int)getpid());
+  gcc_jit_rvalue*prodval
+    = gcc_jit_context_new_binary_op
+      (ctxt,
+       (gcc_jit_location*)nullptr,
+       GCC_JIT_BINARY_OP_MULT, int_type, pidval,
+       gcc_jit_param_as_rvalue(param_y));
+  gcc_jit_rvalue *retval
+    = gcc_jit_context_new_binary_op
+      (ctxt,
+       (gcc_jit_location*)nullptr,
+       GCC_JIT_BINARY_OP_PLUS, int_type,
+       gcc_jit_param_as_rvalue(param_x),
+       prodval);
+  gcc_jit_block_end_with_return (block,
+                                 (gcc_jit_location*)nullptr,
+                                 retval);
+  /// we need to compile...
+#warning incomplete rps_gccjit_create_test_plugin
+  return strdup(funame);
 } // end rps_gccjit_create_test_plugin
 
 static void
@@ -706,7 +748,7 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   gcc_jit_result *pluginresult = nullptr;
   /// see https://gcc.gnu.org/onlinedocs/jit/intro/tutorial02.html
   RPS_ASSERT(tempdir && strlen(tempdir)>10);
-  const char*tempsuffix = tempdir + strlen(tempdir)-6;
+  const char*tempsuffix = tempdir + strlen(tempdir) -7;
   char timbuf[64];
   memset(timbuf, 0, sizeof(timbuf));
   time_t nowtim = time(nullptr);
@@ -717,7 +759,8 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
      function (in a *.so plugin) returning the timbuf string */
   memjitctxt = gcc_jit_context_acquire();
   if (!memjitctxt)
-    RPS_FATALOUT("failed to acquire gccjit context for " << tempdir);
+    RPS_FATALOUT("failed to acquire gccjit memjit context for "
+                 << tempdir);
   RPS_POSSIBLE_BREAKPOINT();
   char*memjitfuname =
     rps_gccjit_create_test_memcode(tempdir, memjitctxt,
@@ -743,7 +786,19 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
                 << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
                 << " timbuf=" << Rps_QuotedC_String(timbuf)
                 << " memjitreslit=" << Rps_QuotedC_String(memjitreslit));
+  RPS_POSSIBLE_BREAKPOINT();
   free(memjitfuname), memjitfuname = NULL;
+  pluginctxt = gcc_jit_context_acquire();
+  if (!pluginctxt)
+    RPS_FATALOUT("failed to acquire gccjit plugin context for "
+                 << tempdir);
+  char*pluginfuname =
+    rps_gccjit_create_test_plugin(tempdir, pluginctxt,
+                                  timbuf, tempsuffix);
+  char plugfile[rps_path_byte_size];
+  memset(plugfile, 0, sizeof(plugfile));
+  snprintf(plugfile, sizeof(plugfile)-1, "%s/_plugingen_.so", tempdir);
+#warning should compile the plugin in rps_gccjit_try_simple_jit_in_tempdir
 } // end rps_gccjit_try_simple_jit_in_tempdir
 
 static void
