@@ -1912,11 +1912,11 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   // In the below RPSDCL_PRIM_TYPE macro, the Kob argument has to be a
   // full "rpskob" prefixed constant since this source code is scanned
   // by Rps_Dumper::scan_source_file_for_constants ...
-#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {		\
-    ld->set_primitive_type_size_and_align		\
-      (Kob,						\
-       sizeof(Cpp),alignof(Cpp));			\
-    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);	\
+#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {   \
+    ld->set_primitive_type_size_and_align   \
+      (Kob,           \
+       sizeof(Cpp),alignof(Cpp));     \
+    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);  \
   } while(0)
 
   RPSDCL_PRIM_TYPE(rpskob_67REK2JYbAV04jPmf2,code_bool,bool);

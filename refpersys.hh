@@ -264,6 +264,7 @@ extern "C" std::string rps_cplusplusflags_str;
 extern "C" std::string rps_dumpdir_str;
 extern "C" std::vector<std::string> rps_command_vec;
 extern "C" std::string rps_test_repl_string;
+extern "C" std::string rps_file_repl_string;
 extern "C" std::string rps_publisher_url_str;
 extern "C" bool rps_without_quick_tests;
 
@@ -751,7 +752,7 @@ inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst)
 
 /// TODO: if allowed we could define
 extern "C" void rps_initialize_indented_ostream(std::ostream&out,
-						unsigned linewidth=80);
+    unsigned linewidth=80);
 /// which would use register_callback and xalloc and pword and iword
 /// and we would have some rps_nl C++ output manipulator
 extern "C" void rps_output_vector_string(std::ostream&out, const std::vector<std::string>&vecstr, int indent=0);
@@ -822,6 +823,7 @@ enum rps_progoption_en
   RPSPROGOPT_NO_ASLR,
   RPSPROGOPT_NO_QUICK_TESTS,
   RPSPROGOPT_TEST_REPL_LEXER,
+  RPSPROGOPT_FILE_REPL_LEXER,
   RPSPROGOPT_RUN_DELAY,
   RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_AFTER_LOAD,
@@ -877,7 +879,7 @@ void rps_set_debug_output_path(const char*filepath);
 /// newline before....
 void
 rps_debug_printf_at(const char *fname, int fline, const char*funcname,
-		    Rps_Debug dbgopt,
+                    Rps_Debug dbgopt,
                     const char *fmt, ...)  /// defined in main_rps.cc
 __attribute__ ((format (printf, 5, 6)));
 
@@ -1095,7 +1097,7 @@ while (0)
   if (RPS_UNLIKELY(!(Cond))) {                                  \
     /* Rps_Assert_Log */                                        \
     std::ostringstream asslogouts_##Lin;                        \
-    asslogouts_##Lin << __VA_ARGS__  << std::flush;		\
+    asslogouts_##Lin << __VA_ARGS__  << std::flush;   \
       const std::string str_##Lin = asslogouts_##Lin.str();     \
     if (rps_syslog_enabled)                                     \
       syslog(LOG_CRIT,                                          \
@@ -2652,7 +2654,10 @@ public:
   };
   /// when is_flexible gives true the memory zone need more space
   /// à la C flexible array member
-  virtual bool is_flexible() const { return false; };
+  virtual bool is_flexible() const
+  {
+    return false;
+  };
 } __attribute__((aligned(rps_allocation_unit)));
 // end class Rps_QuasiZone;
 
@@ -2759,7 +2764,10 @@ class Rps_String : public Rps_LazyHashedZoneValue
     const char _sbuf[RPS_FLEXIBLE_DIM];
     char _alignbuf[rps_allocation_unit] __attribute__((aligned(rps_allocation_unit)));
   };
-  virtual bool is_flexible() const { return true; };
+  virtual bool is_flexible() const
+  {
+    return true;
+  };
 protected:
   inline Rps_String (const char*cstr, int len= -1);
   static inline const char*normalize_cstr(const char*cstr);
@@ -3829,7 +3837,10 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
   Rps_QuasiZone::rps_allocate_with_wordgap<RpsSeq,unsigned>(unsigned,unsigned);
   const unsigned _seqlen;
   Rps_ObjectRef _seqob[RPS_FLEXIBLE_DIM+1];
-  virtual bool is_flexible() const { return true; };
+  virtual bool is_flexible() const
+  {
+    return true;
+  };
   Rps_SeqObjRef(unsigned len) : Rps_LazyHashedZoneValue(seqty), _seqlen(len)
   {
     memset ((void*)_seqob, 0, sizeof(Rps_ObjectRef)*len);
@@ -4138,7 +4149,10 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
   mutable std::atomic<Rps_ObjectZone*> _treemetaob;
   Rps_ObjectRef _treeconnob;
   Rps_Value _treesons[RPS_FLEXIBLE_DIM+1];
-  virtual bool is_flexible() const { return true; };
+  virtual bool is_flexible() const
+  {
+    return true;
+  };
   Rps_TreeZone(unsigned len, Rps_ObjectRef obr=nullptr)
     : Rps_LazyHashedZoneValue(treety), _treelen(len),
       _treetransient(false), _treemetatransient(false),

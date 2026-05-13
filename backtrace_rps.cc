@@ -525,7 +525,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
         }
         default:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output bad kind "
-			<< bt->bkindname());
+                        << bt->bkindname());
         }
       break;
     case Todo::Do_Print:

@@ -97,6 +97,7 @@ std::string rps_cplusplusflags_str;
 std::string rps_dumpdir_str;
 std::vector<std::string> rps_command_vec;
 std::string rps_test_repl_string;
+std::string rps_file_repl_string;
 char*rps_pidfile_path;
 /// the … is unicode U+2026 HORIZONTAL ELLIPSIS in UTF8 \xe2\x80\xA6
 
@@ -435,13 +436,23 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Use daemon(3) ...\n", //
     /*group:*/0 ///
   },
-  /* ======= test the read-eval-print lexer ======== */
+  /* ======= test the read-eval-print lexer on string ======== */
   {/*name:*/ "test-repl-lexer", ///
     /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
     /*arg:*/ "TESTLEXSTRING", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Test the read-eval-print-loop lexer on given TESTLEXSTRING."
     " (this option might become obsolete).\n", //
+    /*group:*/0 ///
+  },
+  /* ======= test the read-eval-print lexer on file or pipe ======== */
+  {/*name:*/ "file-repl-lexer", ///
+    /*key:*/ RPSPROGOPT_FILE_REPL_LEXER, ///
+    /*arg:*/ "TESTLEX", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Test the REPL lexer on given <TESTLEX> file\n"
+    " (or pipe if starting with | or !)"
+    " [this option might become obsolete].\n", //
     /*group:*/0 ///
   },
   /* ======= type information ======= */
@@ -1775,10 +1786,10 @@ main (int argc, char** argv)
       rps_try_parsing_default_user_preferences();
     };
   RPS_INFORMOUT("refpersys after load from " << rps_my_load_dir
-		<< " is " 
-		<< (rps_batch?"batch":"interactive")
-		<< " git " << rps_shortgitid
-		<< " pid#" << getpid());
+                << " is "
+                << (rps_batch?"batch":"interactive")
+                << " git " << rps_shortgitid
+                << " pid#" << getpid());
   if (!rps_batch)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);

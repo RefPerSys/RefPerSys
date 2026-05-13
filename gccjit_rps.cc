@@ -737,20 +737,20 @@ rps_gccjit_create_test_plugin(const char*tempdir, gcc_jit_context*ctxt,
   char sopath[rps_path_byte_size];
   memset(sopath, 0, sizeof(sopath));
   snprintf(sopath, sizeof(sopath)-2, "%s/pluginrpsjit_%s.so",
-	   tempdir, suffix);
+           tempdir, suffix);
   RPS_POSSIBLE_BREAKPOINT();
   gcc_jit_context_compile_to_file
-    (ctxt,
-     GCC_JIT_OUTPUT_KIND_DYNAMIC_LIBRARY,
-     sopath);
+  (ctxt,
+   GCC_JIT_OUTPUT_KIND_DYNAMIC_LIBRARY,
+   sopath);
   void*sohdlr = dlopen(sopath, RTLD_GLOBAL|RTLD_NOW);
   if (!sohdlr)
     RPS_FATALOUT("failed to dlopen " << sopath
-		 << " : " << dlerror());
+                 << " : " << dlerror());
   void*funad = dlsym(sohdlr, funame);
   if (!funad)
     RPS_FATALOUT("failed to dlsym " << funame
-		 << " : " << dlerror());
+                 << " : " << dlerror());
   RPS_POSSIBLE_BREAKPOINT();
 #warning incomplete rps_gccjit_create_test_plugin
   return strdup(funame);

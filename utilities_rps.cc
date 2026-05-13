@@ -1618,9 +1618,30 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                          " be given, but already got "
                          << rps_test_repl_string);
           rps_test_repl_string = arg;
-          RPS_INFORMOUT("will test the REPL lexer on:" << rps_test_repl_string
+          RPS_INFORMOUT("will test the REPL lexer on string:"
+                        << rps_test_repl_string
                         << std::endl << "… that is the " << rps_test_repl_string.size()
                         << " bytes string " << Rps_QuotedC_String(rps_test_repl_string));
+        }
+    }
+    return 0;
+    case RPSPROGOPT_FILE_REPL_LEXER:
+    {
+      if (side_effect)
+        {
+          if (!rps_file_repl_string.empty())
+            RPS_FATALOUT("only one --file-repl-lexer=TESTLEX can"
+                         " be given, but already got "
+                         << rps_file_repl_string);
+          rps_file_repl_string = arg;
+          bool isfile=arg[0] != '!' && arg[0] != '|';
+          RPS_FATALOUT("will test the REPL lexer on "
+                       << (isfile?"file":"pipe") << " "
+                       << rps_file_repl_string
+                       << std::endl << "… that is the "
+                       << rps_file_repl_string.size()
+                       << " bytes string "
+                       << Rps_QuotedC_String(rps_test_repl_string));
         }
     }
     return 0;
@@ -2107,11 +2128,11 @@ void rps_debug_warn_at_msg(const char*file, int line, const char*msg)
       if (msg)
         syslog(LOG_WARNING,
                "** REFPERSYS WARNING AT %s:%d :\n"
-	       " [%s] (git %s pid %d) **", file, line, msg,
+               " [%s] (git %s pid %d) **", file, line, msg,
                rps_shortgitid, (int)getpid());
       else
         syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d\n"
-	       " (git %s pid %d) **", file, line,
+                            " (git %s pid %d) **", file, line,
                rps_shortgitid, (int)getpid());
     }
   else

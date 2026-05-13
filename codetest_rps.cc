@@ -53,16 +53,16 @@ extern "C" const char rps_codetest_baseid[];
 const char rps_codetest_baseid[]= RPS_BASEID;
 
 extern "C" void rps_codetest_fun_from(const char*fil, int lin)
-  __attribute__((cold));
+__attribute__((cold));
 
 void
 rps_codetest_fun_from(const char*fil, int lin)
 {
   RPS_INFORMOUT("rps_codetest_fun_from fil="
-		<< Rps_QuotedC_String(fil)
-		<< " lin=" << lin
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_codetest_fun_from"));
+                << Rps_QuotedC_String(fil)
+                << " lin=" << lin
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_codetest_fun_from"));
 } // end rps_codetest_fun_from
 
 

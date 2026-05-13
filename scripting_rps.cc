@@ -64,14 +64,14 @@ extern "C" const char rps_scripting_help_english_text[];
 extern "C" void rps_run_one_script_file(Rps_CallFrame*, int ix);
 
 extern "C" void rps_run_script_carbon_mode(Rps_CallFrame*,
-					   Rps_MemoryFileTokenSource&,
-					   int ix, int loopcnt);
+    Rps_MemoryFileTokenSource&,
+    int ix, int loopcnt);
 extern "C" void rps_run_script_parse_mode(Rps_CallFrame*,
-					   Rps_MemoryFileTokenSource&,
-					   int ix, int loopcnt);
+    Rps_MemoryFileTokenSource&,
+    int ix, int loopcnt);
 extern "C" void rps_run_script_echo_mode(Rps_CallFrame*,
-					 Rps_MemoryFileTokenSource&,
-					 int ix, int loopcnt);
+    Rps_MemoryFileTokenSource&,
+    int ix, int loopcnt);
 
 
 
@@ -130,7 +130,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-                                 synchronization or mutex is needed to : */
+                                       synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -183,10 +183,10 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
       RPS_ASSERT(rps_scripts_vector.size() <= rps_script_maxnum);
       RPS_POSSIBLE_BREAKPOINT();
       try {
-	RPS_POSSIBLE_BREAKPOINT();
-	rps_run_one_script_file(&_, ix);
-	RPS_POSSIBLE_BREAKPOINT();
-      } catch (std::exception& ex) {
+          RPS_POSSIBLE_BREAKPOINT();
+          rps_run_one_script_file(&_, ix);
+          RPS_POSSIBLE_BREAKPOINT();
+        } catch (std::exception& ex) {
           RPS_FATALOUT("failed to run script#" << ix
                        << " " << rps_scripts_vector[ix]
                        << " got exception "
@@ -215,8 +215,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   const char*shellpath = curpstr.c_str();
   RPS_ASSERT(shellpath != nullptr);
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
-		<< " scriptpath=" << scriptpath
-		<< " shellpath=" << shellpath
+                << " scriptpath=" << scriptpath
+                << " shellpath=" << shellpath
                 << " thread:" << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "+rps_run_one_script_file"));
@@ -229,8 +229,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   tsrc.fill_current_line_buffer();
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
-		<< " scriptpath=" << scriptpath
-		<< " shellpath=" << shellpath
+                << " scriptpath=" << scriptpath
+                << " shellpath=" << shellpath
                 << std::endl << " … tsrc=" << tsrc
                 << " curcptr=" << Rps_QuotedC_String(tsrc.curcptr()));
   RPS_POSSIBLE_BREAKPOINT();
@@ -247,129 +247,129 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
   while (!gotmagic
          && gotlin
          && !tsrc.reached_end()) {
-    loopcnt++;
-    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
-		  << " start loop#" << loopcnt
-		  << " obenv=" << _f.obenv
-		  << " curcptr=" << Rps_QuotedC_String(tsrc.curcptr()));
-    RPS_POSSIBLE_BREAKPOINT();
-    if (!(gotlin=tsrc.get_line())) {
-      RPS_POSSIBLE_BREAKPOINT();
-      continue;
-    };
-    const char*clp = tsrc.curcptr();
-    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file @"
-		  <<  tsrc.position_str()
-		  << " loop#" << loopcnt
-		  << " obenv=" << _f.obenv
-		  << " clp=" << Rps_QuotedC_String(clp));
-    RPS_POSSIBLE_BREAKPOINT();
-    if (!clp) {
+      loopcnt++;
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
-		    << " loop#" << loopcnt
-		    <<  " ¤maybe-eof @" << tsrc.position_str());
+                    << " start loop#" << loopcnt
+                    << " obenv=" << _f.obenv
+                    << " curcptr=" << Rps_QuotedC_String(tsrc.curcptr()));
       RPS_POSSIBLE_BREAKPOINT();
-      if (tsrc.get_line()) {
-	clp = tsrc.curcptr();
-	RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
-		      << " loop#" << loopcnt << " got-line "
-		      << " clp=" << Rps_QuotedC_String(clp));
-      }
-      else {
-	RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
-		      << " loop#" << loopcnt << " eof "
-		      << (tsrc.reached_end()
-			  ?" reached-end"
-			  :" °notReachedEnd"));
-	break;
-      }
-    };
-    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
-		  << Rps_QuotedC_String(clp)
-		  << " loop#" << loopcnt
-		  << " @" << tsrc.position_str());
-    RPS_POSSIBLE_BREAKPOINT();
-    if (!clp) {
-      RPS_DEBUG_LOG(REPL, "rps_run_one_script_file °NULL-clp"
-		    << " loop#" << loopcnt
-		    << " @" << tsrc.position_str()
-		    << " " << (tsrc.reached_end()?"°atend":"°notend")
-		    << std::endl
-		    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file °NULL-clp"));
-      usleep(12345);        // temporary code to slow down
-      // debugging output
+      if (!(gotlin=tsrc.get_line())) {
+          RPS_POSSIBLE_BREAKPOINT();
+          continue;
+        };
+      const char*clp = tsrc.curcptr();
+      RPS_DEBUG_LOG(REPL, "rps_run_one_script_file @"
+                    <<  tsrc.position_str()
+                    << " loop#" << loopcnt
+                    << " obenv=" << _f.obenv
+                    << " clp=" << Rps_QuotedC_String(clp));
       RPS_POSSIBLE_BREAKPOINT();
+      if (!clp) {
+          RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+                        << " loop#" << loopcnt
+                        <<  " ¤maybe-eof @" << tsrc.position_str());
+          RPS_POSSIBLE_BREAKPOINT();
+          if (tsrc.get_line()) {
+              clp = tsrc.curcptr();
+              RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+                            << " loop#" << loopcnt << " got-line "
+                            << " clp=" << Rps_QuotedC_String(clp));
+            }
+          else {
+              RPS_DEBUG_LOG(REPL, "rps_run_one_script_file tsrc=" << tsrc
+                            << " loop#" << loopcnt << " eof "
+                            << (tsrc.reached_end()
+                                ?" reached-end"
+                                :" °notReachedEnd"));
+              break;
+            }
+        };
+      RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+                    << Rps_QuotedC_String(clp)
+                    << " loop#" << loopcnt
+                    << " @" << tsrc.position_str());
+      RPS_POSSIBLE_BREAKPOINT();
+      if (!clp) {
+          RPS_DEBUG_LOG(REPL, "rps_run_one_script_file °NULL-clp"
+                        << " loop#" << loopcnt
+                        << " @" << tsrc.position_str()
+                        << " " << (tsrc.reached_end()?"°atend":"°notend")
+                        << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file °NULL-clp"));
+          usleep(12345);        // temporary code to slow down
+          // debugging output
+          RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file incomplete when clp is null
-    };
-    const char* magp = strstr(clp, rps_scripting_magic_string);
-    if (magp) {
-      static_assert(sizeof(modline)>60);
-      RPS_POSSIBLE_BREAKPOINT();
-      gotmagic= true;
-      memset(modline, 0, sizeof(modline));
-      int p = -1;
-      int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%n",
-		     modline, &p);
-      if (n > 0 && isascii(modline[0]) && p>0) {
-	RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
-		      << Rps_QuotedC_String(clp)
-		      << " @" << tsrc.position_str()
-		      << " modline=" << modline
-		      << " loop#" << loopcnt);
-	RPS_POSSIBLE_BREAKPOINT();
+        };
+      const char* magp = strstr(clp, rps_scripting_magic_string);
+      if (magp) {
+          static_assert(sizeof(modline)>60);
+          RPS_POSSIBLE_BREAKPOINT();
+          gotmagic= true;
+          memset(modline, 0, sizeof(modline));
+          int p = -1;
+          int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%n",
+                         modline, &p);
+          if (n > 0 && isascii(modline[0]) && p>0) {
+              RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
+                            << Rps_QuotedC_String(clp)
+                            << " @" << tsrc.position_str()
+                            << " modline=" << modline
+                            << " loop#" << loopcnt);
+              RPS_POSSIBLE_BREAKPOINT();
 #warning should use modline cleverly
-	if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
-	  RPS_POSSIBLE_BREAKPOINT();
-	  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/CARBON ix=" << ix
-			<< " shellpath=" << shellpath
-			<< " *CARBON* "
-			<< " tsrc=" << tsrc << " @"  << tsrc.position_str()
-			<< " loop#" << loopcnt);
-	  rps_run_script_carbon_mode(&_, tsrc, ix, loopcnt);
-	  RPS_POSSIBLE_BREAKPOINT();
-	}
-	if (!strcmp(modline, "parse")) { 
-	  RPS_POSSIBLE_BREAKPOINT();
-	  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/PARSE ix=" << ix
-			<< " shellpath=" << shellpath
-			<< " *PARSE* "
-			<< " tsrc=" << tsrc << " @"  << tsrc.position_str()
-			<< " loop#" << loopcnt);
-	  rps_run_script_parse_mode(&_, tsrc, ix, loopcnt);
-	  RPS_POSSIBLE_BREAKPOINT();
-	}
-	else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
-	  RPS_POSSIBLE_BREAKPOINT();
-	  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/ECHO ix=" << ix
-			<< " shellpath=" << shellpath
-			<< " *ECHO* "
-			<< " tsrc=" << tsrc
-			<< " @"  << tsrc.position_str()
-			<< " loop#" << loopcnt);
-	  rps_run_script_echo_mode(&_, tsrc, ix, loopcnt);
-	  RPS_POSSIBLE_BREAKPOINT();
-	} // end echo mode
-	else {
-	  RPS_POSSIBLE_BREAKPOINT();
-	  RPS_WARNOUT("rps_run_one_script_file ix#" << ix
-		      << " shellpath=" << shellpath
-		      << " unexpected modline="
-		      << Rps_QuotedC_String(modline)
-		      << " tsrc=" << tsrc
-		      << " @"  << tsrc.position_str()
-		      << " loop#" << loopcnt);
-	  RPS_POSSIBLE_BREAKPOINT();
-	  return;
-	}
-      };
-    };
+              if (!strcmp(modline, "carbon")) { // see test_dir/005script.bash
+                  RPS_POSSIBLE_BREAKPOINT();
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/CARBON ix=" << ix
+                                << " shellpath=" << shellpath
+                                << " *CARBON* "
+                                << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+                                << " loop#" << loopcnt);
+                  rps_run_script_carbon_mode(&_, tsrc, ix, loopcnt);
+                  RPS_POSSIBLE_BREAKPOINT();
+                }
+              if (!strcmp(modline, "parse")) {
+                  RPS_POSSIBLE_BREAKPOINT();
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/PARSE ix=" << ix
+                                << " shellpath=" << shellpath
+                                << " *PARSE* "
+                                << " tsrc=" << tsrc << " @"  << tsrc.position_str()
+                                << " loop#" << loopcnt);
+                  rps_run_script_parse_mode(&_, tsrc, ix, loopcnt);
+                  RPS_POSSIBLE_BREAKPOINT();
+                }
+              else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
+                  RPS_POSSIBLE_BREAKPOINT();
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/ECHO ix=" << ix
+                                << " shellpath=" << shellpath
+                                << " *ECHO* "
+                                << " tsrc=" << tsrc
+                                << " @"  << tsrc.position_str()
+                                << " loop#" << loopcnt);
+                  rps_run_script_echo_mode(&_, tsrc, ix, loopcnt);
+                  RPS_POSSIBLE_BREAKPOINT();
+                } // end echo mode
+              else {
+                  RPS_POSSIBLE_BREAKPOINT();
+                  RPS_WARNOUT("rps_run_one_script_file ix#" << ix
+                              << " shellpath=" << shellpath
+                              << " unexpected modline="
+                              << Rps_QuotedC_String(modline)
+                              << " tsrc=" << tsrc
+                              << " @"  << tsrc.position_str()
+                              << " loop#" << loopcnt);
+                  RPS_POSSIBLE_BREAKPOINT();
+                  return;
+                }
+            };
+        };
 #warning rps_run_one_script_file has missing code here
-    RPS_DEBUG_LOG(REPL, "rps_run_one_script_file endloop @"
-		  <<  tsrc.position_str()
-		  << " loop#" << loopcnt
-		  << (gotmagic?" GOTMAGIC":" noMAGIC"));
-    RPS_POSSIBLE_BREAKPOINT();
-  };                          // end while !gotmagic...
+      RPS_DEBUG_LOG(REPL, "rps_run_one_script_file endloop @"
+                    <<  tsrc.position_str()
+                    << " loop#" << loopcnt
+                    << (gotmagic?" GOTMAGIC":" noMAGIC"));
+      RPS_POSSIBLE_BREAKPOINT();
+    };                          // end while !gotmagic...
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("unimplemented rps_run_one_script_file ix=" << ix
               << std::endl
@@ -388,8 +388,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 
 void
 rps_run_script_carbon_mode(Rps_CallFrame*callfr,
-			   Rps_MemoryFileTokenSource&tsrc,
-			   int ix, int loopcnt)
+                           Rps_MemoryFileTokenSource&tsrc,
+                           int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
@@ -419,8 +419,8 @@ rps_run_script_carbon_mode(Rps_CallFrame*callfr,
 
 void
 rps_run_script_parse_mode(Rps_CallFrame*callfr,
-			   Rps_MemoryFileTokenSource&tsrc,
-			   int ix, int loopcnt)
+                          Rps_MemoryFileTokenSource&tsrc,
+                          int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
@@ -449,14 +449,14 @@ rps_run_script_parse_mode(Rps_CallFrame*callfr,
 
 void
 rps_run_script_echo_mode(Rps_CallFrame*callfr,
-			 Rps_MemoryFileTokenSource&tsrc,
-			 int ix, int loopcnt)
+                         Rps_MemoryFileTokenSource&tsrc,
+                         int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
                  Rps_ObjectRef obenv;);
   RPS_INFORMOUT("rps_run_one_echo_mode ix=" << ix
-		<< " loopcnt=" << loopcnt);
+                << " loopcnt=" << loopcnt);
   RPS_DEBUG_LOG(REPL, "rps_run_script_echo_mode ix=" << ix
                 << " tsrc=" << tsrc << " @"  << tsrc.position_str()
                 << " loop#" << loopcnt

@@ -2176,7 +2176,11 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
                 << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::append_back_new_token/done€"));
 } // end Rps_TokenSource::append_back_new_token
 
+// lexer test on string
 extern "C" void rps_run_test_repl_lexer(const std::string&);
+
+// lexer test on file or pipe
+extern "C" void rps_run_file_repl_lexer(const std::string&);
 
 extern "C" int rps_keyword_lexer (Rps_CallFrame*,
                                   const std::string&keystr,
@@ -2251,7 +2255,21 @@ rps_run_test_repl_lexer(const std::string& teststr)
                 << std::endl);
 
   RPS_TIMER_STOP(REPL);
-} // end rps_test_repl_string
+} // end rps_run_test_repl_lexer
 
+
+void
+rps_run_file_repl_lexer(const std::string& teststr)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
+                           /*callerframe:*/RPS_NULL_CALL_FRAME,
+                           Rps_Value curlextokenv;
+                );
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_FATALOUT("unimplemented rps_run_file_repl_lexer "
+               << Rps_QuotedC_String(teststr));
+  // if teststr[0] is '|' or '!' do a popen otherwise a fopen
+#warning unimplemented rps_run_file_repl_lexer (different for pipe)
+} // end rps_run_file_repl_lexer
 
 //// end of file lexer_rps.cc
