@@ -730,7 +730,10 @@ rps_gccjit_create_test_plugin(const char*tempdir, gcc_jit_context*ctxt,
   gcc_jit_block_end_with_return (block,
                                  (gcc_jit_location*)nullptr,
                                  retval);
-  gcc_jit_context_add_command_line_option(ctxt, "-O1 -g -fPIC -Wall");
+  gcc_jit_context_add_command_line_option(ctxt, "-O1");
+  gcc_jit_context_add_command_line_option(ctxt, "-g");
+  gcc_jit_context_add_command_line_option(ctxt, "-fPIC");
+  gcc_jit_context_add_command_line_option(ctxt, "-Wall");
   char sopath[rps_path_byte_size];
   memset(sopath, 0, sizeof(sopath));
   snprintf(sopath, sizeof(sopath)-2, "%s/pluginrpsjit_%s.so",
