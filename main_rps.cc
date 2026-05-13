@@ -1620,6 +1620,9 @@ main (int argc, char** argv)
     fclose(procversf);
   }
   {
+    /* the pseudo-file /proc/self/exe could be Linux specific.... if
+       you want refpersys to work on non-Linux Posix systems, propose
+       your patch to team<at>refpersys<dot>org */
     memset(rps_progexe, 0, sizeof(rps_progexe));
     ssize_t pxl = readlink("/proc/self/exe",
                            rps_progexe, sizeof(rps_progexe));
@@ -1627,9 +1630,6 @@ main (int argc, char** argv)
         || !rps_progexe[0])
       RPS_FATALOUT("failed to readlink /proc/self/exe (Linux specific):"
                    << strerror(errno));
-#warning perhaps use a popen here
-    // maybe we want a popen of which of the realpath of argv[0]?
-    // strcpy(rps_progexe, "$(/usr/bin/which refpersys)");
   }
   static_assert (sizeof(int64_t) == 8 && alignof(int64_t) == 8);
   static_assert (sizeof(int32_t) == 4 && alignof(int32_t) == 4);
@@ -1640,6 +1640,8 @@ main (int argc, char** argv)
   if (versionwanted)
     rps_show_version();
   RPS_POSSIBLE_BREAKPOINT();
+  rps_parse_program_arguments(argc, argv);
+  fflush(nullptr);
   if (myuserpref && strcmp(myuserpref, ".")
       && strcmp(myuserpref, "/"))
     {
@@ -1663,8 +1665,6 @@ main (int argc, char** argv)
       RPS_INFORMOUT("disabled user preferences");
       disableduserpref = true;
     };
-  rps_parse_program_arguments(argc, argv);
-  fflush(nullptr);
   if (helpwanted)
     printf("%s preference example file is in\n"
            "… %s/etc/user-preferences-refpersys.txt\n"
