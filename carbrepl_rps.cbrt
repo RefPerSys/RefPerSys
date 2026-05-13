@@ -71,6 +71,7 @@ struct rps_carbrepl_data_st {
   Rps_ObjectRef cardata_ob2;
   Rps_ObjectRef cardata_obdelim;
   Rps_ObjectRef cardata_obop;
+  Rps_ObjectRef cardata_obenv;
   Rps_Value cardata_v1;
   Rps_Value cardata_v2;
   Rps_Value cardata_vleft;
@@ -1296,6 +1297,7 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
     gc->mark_obj(carbdata.cardata_ob1);
     gc->mark_obj(carbdata.cardata_ob2);
     gc->mark_obj(carbdata.cardata_obdelim);
+    gc->mark_obj(carbdata.cardata_obenv);
     gc->mark_obj(carbdata.cardata_obop);
     gc->mark_value(carbdata.cardata_v1);
     gc->mark_value(carbdata.cardata_v2);
@@ -1323,6 +1325,8 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
                 << RPS_FULL_BACKTRACE(1, "rps_do_carburetta_tokensrc°+pars"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("rps_do_carburetta_tokensrc perhaps unimplemented"
+	      << std::endl
+	      << " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_do_carburetta_tokensrc°+pars"));
 #warning unimplemented rps_do_carburetta_tokensrc
