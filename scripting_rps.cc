@@ -63,10 +63,15 @@ extern "C" const char rps_scripting_help_english_text[];
 
 extern "C" void rps_run_one_script_file(Rps_CallFrame*, int ix);
 
-extern "C" void rps_run_script_carbon_mode(Rps_CallFrame*, Rps_MemoryFileTokenSource&,
-    int ix, int loopcnt);
-extern "C" void rps_run_script_echo_mode(Rps_CallFrame*, Rps_MemoryFileTokenSource&,
-    int ix, int loopcnt);
+extern "C" void rps_run_script_carbon_mode(Rps_CallFrame*,
+					   Rps_MemoryFileTokenSource&,
+					   int ix, int loopcnt);
+extern "C" void rps_run_script_parse_mode(Rps_CallFrame*,
+					   Rps_MemoryFileTokenSource&,
+					   int ix, int loopcnt);
+extern "C" void rps_run_script_echo_mode(Rps_CallFrame*,
+					 Rps_MemoryFileTokenSource&,
+					 int ix, int loopcnt);
 
 
 
@@ -323,6 +328,16 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 	  rps_run_script_carbon_mode(&_, tsrc, ix, loopcnt);
 	  RPS_POSSIBLE_BREAKPOINT();
 	}
+	if (!strcmp(modline, "parse")) { 
+	  RPS_POSSIBLE_BREAKPOINT();
+	  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/PARSE ix=" << ix
+			<< " shellpath=" << shellpath
+			<< " *PARSE* "
+			<< " tsrc=" << tsrc << " @"  << tsrc.position_str()
+			<< " loop#" << loopcnt);
+	  rps_run_script_parse_mode(&_, tsrc, ix, loopcnt);
+	  RPS_POSSIBLE_BREAKPOINT();
+	}
 	else if (!strcmp(modline, "echo")) { // see test_dir/006echo.bash
 	  RPS_POSSIBLE_BREAKPOINT();
 	  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/ECHO ix=" << ix
@@ -371,8 +386,10 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 
 
 
-void rps_run_script_carbon_mode(Rps_CallFrame*callfr, Rps_MemoryFileTokenSource&tsrc,
-                                int ix, int loopcnt)
+void
+rps_run_script_carbon_mode(Rps_CallFrame*callfr,
+			   Rps_MemoryFileTokenSource&tsrc,
+			   int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
@@ -400,14 +417,46 @@ void rps_run_script_carbon_mode(Rps_CallFrame*callfr, Rps_MemoryFileTokenSource&
 } // end rps_run_script_carbon_mode
 
 
-
-void rps_run_script_echo_mode(Rps_CallFrame*callfr, Rps_MemoryFileTokenSource&tsrc,
-                              int ix, int loopcnt)
+void
+rps_run_script_parse_mode(Rps_CallFrame*callfr,
+			   Rps_MemoryFileTokenSource&tsrc,
+			   int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
                  Rps_ObjectRef obenv;);
-  RPS_INFORMOUT("rps_run_one_echo_mode ix=" << ix << " loopcnt=" << loopcnt);
+  _f.obenv = nullptr;
+  RPS_DEBUG_LOG(REPL, "rps_run_script_carbon_mode clp="
+                << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
+  RPS_WARNOUT("unimplemented rps_run_script_parse_mode ix=" << ix
+              << " tsrc=" << tsrc
+              << " @" << tsrc.position_str()
+              << " loop#" << loopcnt
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_script_parse_mode"));
+  RPS_POSSIBLE_BREAKPOINT();
+  rps_do_carburetta_command(&_, (Rps_ObjectRef)nullptr, &tsrc);
+  RPS_DEBUG_LOG(REPL, "rps_run_script_parse_mode clp="
+                << Rps_QuotedC_String(clp)
+                << " @" << tsrc.position_str() << std::endl
+                << RPS_OBJECT_DISPLAY(_f.obenv)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "-rps_run_script_parse_mode")
+                << " ix=" << ix << " loop#" << loopcnt);
+} // end rps_run_script_parse_mode
+
+
+
+void
+rps_run_script_echo_mode(Rps_CallFrame*callfr,
+			 Rps_MemoryFileTokenSource&tsrc,
+			 int ix, int loopcnt)
+{
+  const char*clp = tsrc.curcptr();
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
+                 Rps_ObjectRef obenv;);
+  RPS_INFORMOUT("rps_run_one_echo_mode ix=" << ix
+		<< " loopcnt=" << loopcnt);
   RPS_DEBUG_LOG(REPL, "rps_run_script_echo_mode ix=" << ix
                 << " tsrc=" << tsrc << " @"  << tsrc.position_str()
                 << " loop#" << loopcnt
