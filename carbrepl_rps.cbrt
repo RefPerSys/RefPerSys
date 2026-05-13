@@ -1265,8 +1265,9 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
 
 
 void
-rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
-                                Rps_TokenSource*tksrc)
+rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
+			   Rps_ObjectRef obenvarg,
+			   Rps_TokenSource*tksrc)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
                  callerframe,
