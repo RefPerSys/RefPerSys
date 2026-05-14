@@ -2198,7 +2198,8 @@ rps_run_test_repl_lexer(const std::string& teststr)
   Rps_StringTokenSource toktestsrc(teststr, "*test-repl-lexer*°lex");
   toktestsrc.set_keyword_lexing_fun(rps_keyword_lexer);
   bool gotl = toktestsrc.get_line();
-  RPS_DEBUG_LOG(REPL, "start rps_run_test_repl_lexer gitid " << rps_gitid
+  RPS_DEBUG_LOG(REPL, "start rps_run_test_repl_lexer shgitid "
+		<< rps_shortgitid
                 << " teststr: " << Rps_QuotedC_String(teststr)
                 << " callframe:" << Rps_ShowCallFrame(&_)
                 << " toktestsrc:" << toktestsrc
