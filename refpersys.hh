@@ -553,36 +553,38 @@ extern "C" const std::string& rps_get_loaddir(void);
 
 extern "C" void rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, const char*fil, int lin, const char*fromfunc, std::string path, std::string linprefix, std::string linsuffix, std::string owner="", std::string reason="");
 
-#define rps_emit_gplv3_copyright_notice(Out,...) rps_emit_gplv3_copyright_notice_AT(Out,__FILE__,__LINE__,__PRETTY_FUNCTION__,##__VA_ARGS__)
+#define rps_emit_gplv3_copyright_notice(Out,...) rps_emit_gplv3_copyright_notice_AT(Out,__FILE__,__LINE__,__FUNCTION__,##__VA_ARGS__)
 
 extern "C" void rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs, const char*fil, int lin, const char*fromfunc, std::string path, std::string linprefix, std::string linsuffix, std::string owner="", std::string reason="");
 
-#define rps_emit_lgplv3_copyright_notice(Out,...) rps_emit_gplv3_copyright_notice_AT(Out,__FILE__,__LINE__,__PRETTY_FUNCTION__,##__VA_ARGS__)
+#define rps_emit_lgplv3_copyright_notice(Out,...) rps_emit_gplv3_copyright_notice_AT(Out,__FILE__,__LINE__,__FUNCTION__,##__VA_ARGS__)
 
 extern "C" FILE*rps_debug_file;
 
 //////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
-#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {                          \
-    if (rps_syslog_enabled) {                                           \
-      syslog(LOG_ALERT, "*+* RefPerSys FATAL:%s:%d: {%s} " Fmt,         \
-             Fil, Lin, __PRETTY_FUNCTION__,                             \
-             ##__VA_ARGS__);                                            \
-    } else {                                                            \
-      bool ontty = rps_stderr_istty;                                    \
-      fprintf(stderr, "\n\n"                                            \
-              "%s*** RefPerSys FATAL:%s%s:%d: {%s}\n " Fmt "\n\n",      \
-              (ontty?RPS_TERMINAL_BOLD_ESCAPE:""),                      \
-              (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),                    \
-              Fil, Lin, __PRETTY_FUNCTION__,                            \
-              ##__VA_ARGS__);                                           \
-  };                                                                    \
-  if (rps_debug_file && rps_debug_file != stderr)                       \
-    fprintf(rps_debug_file,                                             \
-            "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",          \
-            Fil, Lin, __PRETTY_FUNCTION__,                              \
-            ##__VA_ARGS__);                                             \
+#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {                  \
+    if (rps_syslog_enabled) {                                   \
+      syslog(LOG_ALERT,                                         \
+             "*+* RefPerSys FATAL:%s:%d: {%s} " Fmt,            \
+             Fil, Lin, __PRETTY_FUNCTION__,                     \
+             ##__VA_ARGS__);                                    \
+    } else {                                                    \
+      bool ontty = rps_stderr_istty;                            \
+      fprintf(stderr, "\n\n"                                    \
+              "%s*§* RefPerSys FATAL:%s%s:%d: {%s}\n "          \
+              Fmt "\n\n",                                       \
+              (ontty?RPS_TERMINAL_BOLD_ESCAPE:""),              \
+              (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),            \
+              Fil, Lin, __FUNCTION__,                           \
+              ##__VA_ARGS__);                                   \
+  };                                                            \
+  if (rps_debug_file && rps_debug_file != stderr)               \
+    fprintf(rps_debug_file,                                     \
+            "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",  \
+            Fil, Lin, __FUNCTION__,                             \
+            ##__VA_ARGS__);                                     \
   rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
@@ -605,13 +607,13 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
               "%s*** RefPerSys FATAL:%s%s:%d: {%s}\n %s\n\n",   \
               (ontty?RPS_TERMINAL_BOLD_ESCAPE:""),              \
               (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),            \
-              Fil, Lin, __PRETTY_FUNCTION__,                    \
+              Fil, Lin, __FUNCTION__,                    \
               outl##Lin.str().c_str());                         \
   };                                                            \
   if (rps_debug_file && rps_debug_file != stderr)               \
     fprintf(rps_debug_file,                                     \
             "\n\n*°* RefPerSys °FATAL° %s:%d:%s %s*°*\n",       \
-            Fil, Lin, __PRETTY_FUNCTION__,                      \
+            Fil, Lin, __FUNCTION__,                      \
             outl##Lin.str().c_str());                           \
   rps_fatal_stop_at (Fil,Lin); } while(0)
 
@@ -639,7 +641,7 @@ extern "C" void rps_debug_warn_at_msg(const char*file, int line, const char*msg=
             "%s*** RefPerSys WARN:%s%s:%d: {%s}\n " Fmt "\n\n", \
             ontty##Lin?RPS_TERMINAL_BOLD_ESCAPE:"",             \
             ontty##Lin?RPS_TERMINAL_NORMAL_ESCAPE:"",           \
-            Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);      \
+            Fil, Lin, __FUNCTION__, ##__VA_ARGS__);      \
     rps_debug_warn_at_msg(Fil,Lin);       \
     fflush(stderr); } } while(0)
 
@@ -988,7 +990,7 @@ while (0)
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
             Fil, Lin,                                           \
             ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",               \
-            __PRETTY_FUNCTION__,                                \
+            __FUNCTION__,                                \
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
             ##__VA_ARGS__);                                     \
       fflush(stdout); };                                        \
@@ -1014,7 +1016,7 @@ while (0)
       <<  (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << " "  \
       << (ontty?RPS_TERMINAL_ITALICS_ESCAPE:"")         \
       << (Fil) << ":" << Lin << ": "                    \
-      <<  __PRETTY_FUNCTION__                           \
+      <<  __FUNCTION__                           \
       << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")          \
       << ' ' << __VA_ARGS__  << std::flush;             \
     fputs(outs_##Lin.str().c_str(), stdout);            \
@@ -1050,8 +1052,8 @@ while (0)
   if (RPS_UNLIKELY(!(Cond))) {                                  \
     if (rps_syslog_enabled)                                     \
       syslog(LOG_CRIT,                                          \
-       "*** RefPerSys ASSERT failed: %s *** [%s:%d:%s]",        \
-       #Cond, Fil, Lin, Func);                                  \
+       "*** RefPerSys ASSERT failed: %s *** [%s:%d:%s/%s]",     \
+             #Cond, Fil, Lin, Func,__PRETTY_FUNCTION__);        \
     else                                                        \
       fprintf(stderr, "\n\n"                                    \
         "%s*** RefPerSys ASSERT failed: %s%s\n"                 \
@@ -1063,7 +1065,7 @@ while (0)
   rps_fatal_stop_at(Fil,Lin); }} while(0)
 
 #define RPS_ASSERT_AT(Fil,Lin,Func,Cond) RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond)
-#define RPS_ASSERT(Cond) RPS_ASSERT_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond))
+#define RPS_ASSERT(Cond) RPS_ASSERT_AT(__FILE__,__LINE__,__FUNCTION__,(Cond))
 
 #define RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,...) do { \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
@@ -1088,7 +1090,7 @@ while (0)
 #define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) \
   RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
 #define RPS_ASSERTPRINTF(Cond,Fmt,...) \
-  RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,\
+  RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__FUNCTION__,\
                       (Cond),Fmt,##__VA_ARGS__)
 
 
@@ -1121,7 +1123,7 @@ while (0)
 #define RPS_ASSERT_LOG_AT(Fil,Lin,Func,Cond,...) \
   RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,##__VA_ARGS__)
 #define RPS_ASSERT_LOG(Cond,...) \
-  RPS_ASSERT_LOG_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,\
+  RPS_ASSERT_LOG_AT(__FILE__,__LINE__,__FUNCTION__,\
                     (Cond),##__VA_ARGS__)
 
 
