@@ -77,7 +77,8 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a test07x \
         test08 test09 test-load testq6-01 \
-        testcarb1 testcarb2 testcarb3
+        testcarb1 testcarb2 testcarb3 \
+        testlex0 testlex1 testlex2
 
 
 
@@ -959,7 +960,16 @@ test10: refpersys |GNUmakefile
 
 testq6-01: refpersys q6refpersys |GNUmakefile
 	$(RM) -vf /tmp/rpsjson*
-	q6refpersys -D --jsonrpc /tmp/rpsjson --geometry 1000x800 --start-refpersys ./refpersys -- -AREPL
+	./q6refpersys -D --jsonrpc /tmp/rpsjson --geometry 1000x800 --start-refpersys ./refpersys -- -AREPL
+
+testlex0: refpersys |GNUmakefile
+	./refpersys --test-repl-lexer='@display 12.3 "abc"' -B -AREPL
+
+testlex1: refpersys test_dir/009sepscript.rps |GNUmakefile
+	./refpersys --file-repl-lexer=test_dir/009sepscript.rps -B -AREPL
+
+testlex2: refpersys test_dir/009sepscript.rps |GNUmakefile
+	./refpersys '--file-repl-lexer=!cat test_dir/009sepscript.rps' -B -AREPL
 
 test-load: refpersys
 	./refpersys --batch --run-name=test-load || (echo test-load failed; exit 1)
