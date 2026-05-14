@@ -1620,8 +1620,10 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           rps_test_repl_string = arg;
           RPS_INFORMOUT("will test the REPL lexer on string:"
                         << rps_test_repl_string
-                        << std::endl << "… that is the " << rps_test_repl_string.size()
-                        << " bytes string " << Rps_QuotedC_String(rps_test_repl_string));
+                        << std::endl << "… that is the "
+			<< rps_test_repl_string.size()
+                        << " bytes string "
+			<< Rps_QuotedC_String(rps_test_repl_string));
         }
     }
     return 0;
@@ -1635,13 +1637,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                          << rps_file_repl_string);
           rps_file_repl_string = arg;
           bool isfile=arg[0] != '!' && arg[0] != '|';
-          RPS_FATALOUT("will test the REPL lexer on "
+          RPS_WARNOUT("should test the REPL lexer on "
                        << (isfile?"file":"pipe") << " "
-                       << rps_file_repl_string
-                       << std::endl << "… that is the "
-                       << rps_file_repl_string.size()
-                       << " bytes string "
-                       << Rps_QuotedC_String(rps_test_repl_string));
+                       <<  Rps_QuotedC_String(rps_file_repl_string));
         }
     }
     return 0;
