@@ -2129,7 +2129,8 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
         throw std::runtime_error("Rps_TokenSource::consume_front_token without any queued token");
       else
         *psuccess=false;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt <<" fail€"
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#"
+                    << callcnt <<" fail€"
                     << " pos:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
@@ -2165,15 +2166,18 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
   _f.lextokv = tokenv;
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token called from:" << std::endl << Rps_ShowCallFrame(&_)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token called from:"
+                << std::endl << Rps_ShowCallFrame(&_)
                 << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::append_back_new_token start")
                 << std::endl
                 << " this-token:" << (*this) << " token_deq:" << toksrc_token_deq
                 << " tokenv:" << _f.lextokv);
   RPS_ASSERT (_f.lextokv && _f.lextokv.is_lextoken());
   toksrc_token_deq.push_back(tokenv);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token done€ token_deq=" << toksrc_token_deq
-                << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::append_back_new_token/done€"));
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token done€"
+                << " token_deq=" << toksrc_token_deq
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::append_back_new_token/done€"));
 } // end Rps_TokenSource::append_back_new_token
 
 // lexer test on string
@@ -2189,6 +2193,7 @@ extern "C" int rps_keyword_lexer (Rps_CallFrame*,
 void
 rps_run_test_repl_lexer(const std::string& teststr)
 {
+  /// related to --test-repl-lexer=<TESTSTRING> program option
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
                            /*callerframe:*/RPS_NULL_CALL_FRAME,
                            Rps_Value curlextokenv;
@@ -2199,7 +2204,7 @@ rps_run_test_repl_lexer(const std::string& teststr)
   toktestsrc.set_keyword_lexing_fun(rps_keyword_lexer);
   bool gotl = toktestsrc.get_line();
   RPS_DEBUG_LOG(REPL, "start rps_run_test_repl_lexer shgitid "
-		<< rps_shortgitid
+                << rps_shortgitid
                 << " teststr: " << Rps_QuotedC_String(teststr)
                 << " callframe:" << Rps_ShowCallFrame(&_)
                 << " toktestsrc:" << toktestsrc
@@ -2210,7 +2215,8 @@ rps_run_test_repl_lexer(const std::string& teststr)
   while (!rps_repl_stopped)
     {
       loopcnt++;
-      RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer toktestsrc:" << toktestsrc
+      RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer toktestsrc:"
+                    << toktestsrc
                     << " at " << toktestsrc.position_str()
                     << " loopcnt#" << loopcnt
                     << std::endl
@@ -2234,7 +2240,9 @@ rps_run_test_repl_lexer(const std::string& teststr)
             }
           else
             {
-              RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer will stop since no token in " << toktestsrc
+              RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer will stop"
+                            << std::endl << "… since no token in "
+                            << toktestsrc
                             << " at:"
                             << toktestsrc.position_str());
               rps_repl_stopped= true;
@@ -2245,7 +2253,8 @@ rps_run_test_repl_lexer(const std::string& teststr)
       if (!toktestsrc.get_line())
         break;
       lincnt++;
-      RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer got fresh line#" << lincnt
+      RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer got fresh line#"
+                    << lincnt
                     << " '"
                     << Rps_Cjson_String(toktestsrc.current_line()) << "' "
                     << toktestsrc.position_str());
@@ -2262,6 +2271,8 @@ rps_run_test_repl_lexer(const std::string& teststr)
 void
 rps_run_file_repl_lexer(const std::string& teststr)
 {
+  /// related to --file-repl-lexer=<TESTFILE> program option
+  /// if <TESTFILE> starts with | or ! it is a command to be popened
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
                            /*callerframe:*/RPS_NULL_CALL_FRAME,
                            Rps_Value curlextokenv;
