@@ -2081,7 +2081,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
       backt.output(std::clog);
       std::clog << "===== end fatal error at " << filnam << ":" << lin
                 << " ======" << std::endl << std::flush;
-      std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp;
+      std::clog << "RefPerSys gitid "
+		<< rps_shortgitid << " built " << rps_timestamp;
       if (!rps_run_name.empty())
         std::clog << " run " << rps_run_name;
       std::clog << std::endl
