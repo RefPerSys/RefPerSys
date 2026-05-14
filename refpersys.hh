@@ -2933,8 +2933,11 @@ extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef o
 
 extern "C" void rps_initialize_carburetta_after_load(Rps_Loader*);
 
-extern "C" void rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps_TokenSource*tksrc);
-extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg,
+extern "C" void rps_do_carburetta_command(Rps_CallFrame*callerframe,
+    Rps_ObjectRef obenvarg,
+    Rps_TokenSource*tksrc);
+extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
+    Rps_ObjectRef obenvarg,
     Rps_TokenSource*tksrc);
 
 typedef int rps_keyword_lexing_sigt(Rps_CallFrame*callframe,
@@ -2975,7 +2978,9 @@ protected:
   std::string lex_quoted_literal_string(Rps_CallFrame*callframe);
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
   Rps_Value lex_code_chunk(Rps_CallFrame*callframe);
-  Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
+  Rps_Value lex_chunk_element(Rps_CallFrame*callframe,
+                              Rps_ObjectRef obchkarg,
+                              Rps_ChunkData_st*chkdata);
   void starting_new_input_line(void)
   {
     //    RPS_POSSIBLE_BREAKPOINT(); /// for issue#30
