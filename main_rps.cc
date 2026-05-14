@@ -579,58 +579,130 @@ rps_set_exit_code(std::uint8_t ex)
 
 int rps_nbjobs = RPS_NBJOBS_MIN + 2;
 
+static void
+rps_inform_after_load(int argc, char**argv)
+{
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    RPS_FATALOUT("rps_run_loaded_application failed to getcwd");
+  std::ostringstream outargs;
+  rps_output_program_arguments(outargs, argc, argv);
+  RPS_INFORMOUT("starting "
+                << argv[0]
+                << " shortgit " << rps_shortgitid
+                << " build-time " << rps_timestamp
+                << " md5 " << rps_md5sum
+                << " version " << rps_get_major_version()
+                << "." << rps_get_minor_version()
+                << " cwd " << cwdbuf
+                << " host " << rps_hostname()
+                << " pid " << (int)getpid()
+                << std::endl << "… " << outargs.str());
+} // end rps_inform_after_load
+
+static void
+rps_do_change_debug_flags_after_load(void)
+{
+  rps_add_debug_cstr(rps_debugflags_after_load);
+  RPS_INFORMOUT("did set after load "
+                << " of RefPerSys process "
+                << (int)getpid() << std::endl
+                << "… on " << rps_hostname()
+                << " shortgit " << rps_shortgitid
+                << " version " << rps_get_major_version()
+                << "." << rps_get_minor_version()
+                << " debug to "
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    rps_output_debug_flags(out);
+  }));
+} // end rps_do_change_debug_flags_after_load
+
+static void
+rps_do_run_command_after_load(void)
+{
+#warning TODO: this needs a code review
+  if (rps_get_fifo_prefix().empty())
+    RPS_INFORM("before running command '%s' after load with environment variables...\n"
+               " REFPERSYS_PID=%ld, REFPERSYS_GITID=%s, REFPERSYS_TOPDIR=%s",
+               rps_run_command_after_load, (long)getpid(), rps_gitid, rps_topdirectory);
+  else
+    RPS_INFORM("before running command '%s' after load with environment variables...\n"
+               "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+               "… REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
+               rps_run_command_after_load, (long)getpid(), rps_gitid,
+               rps_topdirectory, rps_get_fifo_prefix().c_str());
+  fflush(nullptr); /// needed before system
+  int nok = system(rps_run_command_after_load);
+  if (nok)
+    RPS_FATAL("failed to run command '%s' after load (status #%d)",
+              rps_run_command_after_load, nok);
+  else
+    RPS_INFORMOUT("after successfully running command "
+                  << Rps_QuotedC_String(rps_run_command_after_load)
+                  << " after load");
+} // end rps_do_run_command_after_load
+
+static void
+rps_do_run_gui_with_fifo(void)
+{
+  RPS_INFORM("before running default GUI command '%s'  after load"
+             " with environment variables...\n"
+             "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+             " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
+             rps_gui_script_executable, (long)getpid(), rps_gitid,
+             rps_topdirectory, rps_get_fifo_prefix().c_str());
+  std::string fifo_cmd_path, fifo_out_path;
+  fifo_cmd_path = rps_get_fifo_prefix() + ".cmd";
+  fifo_out_path = rps_get_fifo_prefix() + ".out";
+  /* create the fifo if they dont exist */
+  if (!rps_is_fifo(fifo_cmd_path) || !rps_is_fifo(fifo_out_path))
+    rps_do_create_fifos_from_prefix();
+  fflush(nullptr);
+  pid_t guipid = fork();
+  if (guipid < 0)
+    RPS_FATALOUT("failed to fork for running the GUI script"
+                 << rps_gui_script_executable);
+  if (guipid == 0)
+    {
+      // child process
+      // close many file desriptors
+      for (int fd=3; fd<256; fd++)
+        close(fd);
+      close(STDIN_FILENO);
+      int nullfd = open("/dev/null", O_RDONLY);
+      if (nullfd>0) //unlikely
+        dup2(nullfd, STDIN_FILENO);
+      execl(rps_gui_script_executable, rps_gui_script_executable,
+            rps_get_fifo_prefix().c_str(), nullptr);
+      perror(rps_gui_script_executable);
+      _exit(126);
+      return;
+    };
+  rps_gui_pid = guipid;
+  rps_atexit(rps_kill_wait_gui_process);
+} // end rps_do_run_gui_with_fifo
 
 /// the rps_run_loaded_application is called after loading...
 void
 rps_run_loaded_application(int &argc, char **argv)
 {
-
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
                  /*callerframe:*/RPS_NULL_CALL_FRAME,
                  Rps_ObjectRef tempob;
                 );
-  {
-    char cwdbuf[128];
-    memset (cwdbuf, 0, sizeof(cwdbuf));
-    if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
-      RPS_FATALOUT("rps_run_loaded_application failed to getcwd " << strerror(errno)
-                   << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application"));
-    RPS_INFORM("rps_run_loaded_application: start of %s (with %d args)\n"
-               "… gitid %s version %d.%d\n"
-               "… build timestamp %s\n"
-               "… last git commit %s\n"
-               "…  md5sum %s\n"
-               "…  in cwd %s\n"
-               "…  on host %s pid %d\n",
-               argv[0], argc, rps_gitid,
-               rps_get_major_version(), rps_get_minor_version(),
-               rps_timestamp,
-               rps_lastgitcommit,
-               rps_md5sum,
-               cwdbuf,
-               rps_hostname(), (int)getpid());
-  }
+  rps_inform_after_load(argc, argv);
   /// if told, enable extra debugging after load
   if (rps_debugflags_after_load)
-    {
-      rps_add_debug_cstr(rps_debugflags_after_load);
-      RPS_INFORMOUT("did set after load "
-                    << " of RefPerSys process "
-                    << (int)getpid() << std::endl
-                    << "… on " << rps_hostname()
-                    << " shortgit " << rps_shortgitid
-                    << " version " << rps_get_major_version()
-                    << "." << rps_get_minor_version()
-                    << " debug to "
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        rps_output_debug_flags(out);
-      }));
-    }
+    rps_do_change_debug_flags_after_load();
+  // if a command is given run it
+  if (rps_run_command_after_load)
+    rps_do_run_command_after_load();
   ////
   if (rps_without_quick_tests)
     {
-      RPS_INFORM("rps_run_loaded_application dont run quick tests after load");
+      RPS_INFORM("rps_run_loaded_application dont run quick tests");
     }
   else
     {
@@ -655,62 +727,11 @@ rps_run_loaded_application(int &argc, char **argv)
   //// running the given Unix command after load
   if (rps_run_command_after_load)
     {
-#warning TODO: this needs a code review
-      if (rps_get_fifo_prefix().empty())
-        RPS_INFORM("before running command '%s' after load with environment variables...\n"
-                   " REFPERSYS_PID=%ld, REFPERSYS_GITID=%s, REFPERSYS_TOPDIR=%s",
-                   rps_run_command_after_load, (long)getpid(), rps_gitid, rps_topdirectory);
-      else
-        RPS_INFORM("before running command '%s' after load with environment variables...\n"
-                   "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
-                   "… REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
-                   rps_run_command_after_load, (long)getpid(), rps_gitid,
-                   rps_topdirectory, rps_get_fifo_prefix().c_str());
-      fflush(nullptr); /// needed before system
-      int nok = system(rps_run_command_after_load);
-      if (nok)
-        RPS_FATAL("failed to run command '%s' after load (status #%d)",
-                  rps_run_command_after_load, nok);
-      else
-        RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
-    }
-  else if (!rps_get_fifo_prefix().empty())
+      rps_do_run_command_after_load();
+    };
+  if (!rps_get_fifo_prefix().empty())
     {
-      RPS_INFORM("before running default GUI command '%s'  after load"
-                 " with environment variables...\n"
-                 "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
-                 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
-                 rps_gui_script_executable, (long)getpid(), rps_gitid,
-                 rps_topdirectory, rps_get_fifo_prefix().c_str());
-      std::string fifo_cmd_path, fifo_out_path;
-      fifo_cmd_path = rps_get_fifo_prefix() + ".cmd";
-      fifo_out_path = rps_get_fifo_prefix() + ".out";
-      /* create the fifo if they dont exist */
-      if (!rps_is_fifo(fifo_cmd_path) || !rps_is_fifo(fifo_out_path))
-        rps_do_create_fifos_from_prefix();
-      fflush(nullptr);
-      pid_t guipid = fork();
-      if (guipid < 0)
-        RPS_FATALOUT("failed to fork for running the GUI script"
-                     << rps_gui_script_executable);
-      if (guipid == 0)
-        {
-          // child process
-          // close many file desriptors
-          for (int fd=3; fd<256; fd++)
-            close(fd);
-          close(STDIN_FILENO);
-          int nullfd = open("/dev/null", O_RDONLY);
-          if (nullfd>0) //unlikely
-            dup2(nullfd, STDIN_FILENO);
-          execl(rps_gui_script_executable, rps_gui_script_executable,
-                rps_get_fifo_prefix().c_str(), nullptr);
-          perror(rps_gui_script_executable);
-          _exit(126);
-          return;
-        };
-      rps_gui_pid = guipid;
-      rps_atexit(rps_kill_wait_gui_process);
+      rps_do_run_gui_with_fifo();
     }
   //// if told, run an editor for C++ code
   if (!rps_cpluspluseditor_str.empty() || !rps_cplusplusflags_str.empty())
@@ -732,10 +753,15 @@ rps_run_loaded_application(int &argc, char **argv)
           for (auto& curplugin : rps_plugins_vector)
             {
               curplugname = curplugin.plugin_name;
-              void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
+              void* dopluginad = dlsym(curplugin.plugin_dlh,
+                                       RPS_PLUGIN_INIT_NAME);
               if (!dopluginad)
-                RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugname << ":" << dlerror());
-              rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
+                RPS_FATALOUT("cannot find symbol "
+                             << RPS_PLUGIN_INIT_NAME
+                             << " in plugin " << curplugname
+                             << ":" << dlerror());
+              rps_plugin_init_sig_t* pluginit
+                = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
               (*pluginit)(&curplugin);
               RPS_INFORMOUT("rps_run_loaded_application initialized plugin#" << pluginix << " " << curplugname);
               curplugname.erase();
@@ -751,7 +777,7 @@ rps_run_loaded_application(int &argc, char **argv)
         }
     };
   /////
-  ///// testing the REPL lexer
+  ///// testing the REPL lexer with a string
   if (!rps_test_repl_string.empty())
     {
       RPS_DEBUG_LOG(REPL, "running test repl string "
