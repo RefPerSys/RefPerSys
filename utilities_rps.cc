@@ -304,8 +304,11 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
        << linsuffix << std::endl << linprefix << " the RefPerSys "
        << rps_get_major_version() << "." << rps_get_minor_version()
        << linsuffix << std::endl;
-  outs << linprefix << "open source software.  See refpersys.org and" << linsuffix << std::endl;
+  outs << linprefix << "open source software." << linsuffix << std::endl
+       << linprefix << "See refpersys.org and github.com/RefPerSys."
+       << linsuffix << std::endl;
   outs << linprefix << "contact team@refpersys.org"
+       << " (or Basile Starynkevitch in France)"
        << linsuffix << std::endl;
   outs << linprefix
        << "This file is part of the Reflective Persistent System."
@@ -999,6 +1002,8 @@ rps_extend_env(void)
 void
 rps_check_mtime_files(void)
 {
+  time_t nowtim= 0;
+  time(&nowtim);
   struct stat selfstat = {};
   if (stat("/proc/self/exe", &selfstat))
     RPS_FATAL("stat /proc/self/exe: %m");
@@ -1024,12 +1029,11 @@ rps_check_mtime_files(void)
           RPS_WARNOUT("rps_check_mtime_files: stat " << curfullpathstr << " failed: " << strerror(errno));
           continue;
         };
-      if (curstat.st_mtime > (time_t) rps_timelong
+      if (curstat.st_mtime > (time_t) nowtim
           && (curstat.st_mode & S_IFMT) == S_IFREG)
         RPS_WARNOUT("rps_check_mtime_files: " << curfullpathstr.c_str()
                     << " is younger by "
-                    << (curstat.st_mtime - (time_t) rps_timelong)
-                    << " seconds than current executable " << exebuf
+                    << (curstat.st_mtime - (time_t) nowtim)
                     << ", so consider rebuilding with make");
     }
   //// run a make -t command to check that objects are up to date
@@ -2077,7 +2081,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
       std::clog << "===== end fatal error at " << filnam << ":" << lin
                 << " ======" << std::endl << std::flush;
       std::clog << "RefPerSys gitid "
-		<< rps_shortgitid 
+		<< rps_shortgitid; 
       if (!rps_run_name.empty())
         std::clog << " run " << rps_run_name;
       std::clog << std::endl
