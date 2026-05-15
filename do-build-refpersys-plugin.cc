@@ -87,7 +87,7 @@
 
 
 extern "C" {
-#include "__timestamp.c"
+#include "__buildinfo.c"
 
   const char bp_git_id[]=
     GIT_ID; /// actually a short string passed at compilation command
