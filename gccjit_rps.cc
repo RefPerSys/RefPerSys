@@ -834,8 +834,8 @@ rps_gccjit_initialize_tmpdir(const char*tempdir)
           tempdir, rdmbuf);
   fprintf(f, "for refpersys.org & github.com/RefPerSys/RefPerSys git %s\n",
           rps_shortgitid);
-  fprintf(f, "on host %s (OS %s machine %s) built %s\n", rps_hostname(),
-          rps_building_opersysname, rps_building_machine, rps_timestamp);
+  fprintf(f, "on host %s (OS %s machine %s)\n", rps_hostname(),
+          rps_building_opersysname, rps_building_machine);
   fprintf(f, "generated %s\n", timbuf);
   fflush(f);
   fprintf(f, "### eof generated %s ###\n", rdmbuf);
