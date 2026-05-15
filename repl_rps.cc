@@ -1597,7 +1597,11 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
                    const std::string&keystr,
                    Rps_ObjectRef obkw)
 {
-  RPS_ASSERT(callframe&&callframe->is_good_call_frame(callframe));
+  RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
+  RPS_DEBUG_LOG(REPL, "rps_keyword_lexer keystr="
+		<< Rps_QuotedC_String(keystr)
+		<< " obkw=" << RPS_OBJECT_DISPLAY(obkw));
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_FATALOUT("unimplemented rps_keyword_lexer keystr="
                << keystr
                << " obkw=" << RPS_OBJECT_DISPLAY(obkw));
