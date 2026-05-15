@@ -840,8 +840,8 @@ rps_run_loaded_application(int &argc, char **argv)
   ////
   if (!rps_get_fifo_prefix().empty())
     {
-#pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
-      RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:" << rps_get_fifo_prefix() << std::endl
+      RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:"
+		    << rps_get_fifo_prefix() << std::endl
                     << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application JSONRPC"));
       rps_jsonrpc_initialize();
     };
