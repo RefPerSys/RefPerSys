@@ -1619,6 +1619,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                          << rps_test_repl_string);
           rps_test_repl_string = arg;
           RPS_INFORMOUT("will test the REPL lexer on string:"
+			<< std::endl
                         << rps_test_repl_string
                         << std::endl << "… that is the "
 			<< rps_test_repl_string.size()
