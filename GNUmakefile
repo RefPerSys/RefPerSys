@@ -326,6 +326,7 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __buildinfo.c
 
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
+	$(RM) */*.o */*.so */*~
 	$(RM) -vf core*
 #	$(RM) -v _gramrepl_rps.*
 	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
