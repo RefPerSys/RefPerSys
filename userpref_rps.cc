@@ -45,14 +45,9 @@
 extern "C" const char rps_userpref_gitid[];
 const char rps_userpref_gitid[]= RPS_GITID;
 
-extern "C" const char rps_userpref_date[];
-const char rps_userpref_date[]= __DATE__;
-
 extern "C" const char rps_userpref_shortgitid[];
 const char rps_userpref_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_userpref_timestamp[];
-const char rps_userpref_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_userpref_basename[];
 const char rps_userpref_basename[]= RPS_BASENAME;

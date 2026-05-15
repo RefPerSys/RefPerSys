@@ -36,14 +36,10 @@
 extern "C" const char rps_parsrepl_gitid[];
 const char rps_parsrepl_gitid[]= RPS_GITID;
 
-extern "C" const char rps_parsrepl_date[];
-const char rps_parsrepl_date[]= __DATE__;
 
 extern "C" const char rps_parsrepl_shortgitid[];
 const char rps_parsrepl_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_parsrepl_timestamp[];
-const char rps_parsrepl_timestamp[] = __TIMESTAMP__;
 
 extern "C" const char rps_parsrepl_basename[];
 const char rps_parsrepl_basename[]= RPS_BASENAME;

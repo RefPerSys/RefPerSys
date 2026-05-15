@@ -35,14 +35,10 @@
 extern "C" const char rps_values_gitid[];
 const char rps_values_gitid[]= RPS_GITID;
 
-extern "C" const char rps_values_date[];
-const char rps_values_date[]= __DATE__;
 
 extern "C" const char rps_values_shortgitid[];
 const char rps_values_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_values_timestamp[];
-const char rps_values_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_values_basename[];
 const char rps_values_basename[]= RPS_BASENAME;

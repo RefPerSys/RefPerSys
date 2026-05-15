@@ -36,9 +36,6 @@
 extern "C" const char rps_cmdrepl_gitid[];
 const char rps_cmdrepl_gitid[]= RPS_GITID;
 
-extern "C" const char rps_cmdrepl_date[];
-const char rps_cmdrepl_date[]= __DATE__;
-
 extern "C" const char rps_cmdrepl_shortgitid[];
 const char rps_cmdrepl_shortgitid[]= RPS_SHORTGITID;
 

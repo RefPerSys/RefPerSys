@@ -57,15 +57,11 @@ extern "C" {
 extern "C" const char rps_lightgen_gitid[];
 const char rps_lightgen_gitid[]= RPS_GITID;
 
-extern "C" const char rps_lightgen_date[];
-const char rps_lightgen_date[]= __DATE__;
 
 extern "C" const char rps_lightgen_shortgitid[];
 const char rps_lightgen_shortgitid[]= RPS_SHORTGITID;
 
 
-extern "C" const char rps_lightgen_timestamp[];
-const char rps_lightgen_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_lightgen_basename[];
 const char rps_lightgen_basename[]= RPS_BASENAME;

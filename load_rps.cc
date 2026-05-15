@@ -42,14 +42,10 @@
 extern "C" const char rps_load_gitid[];
 const char rps_load_gitid[]= RPS_GITID;
 
-extern "C" const char rps_load_date[];
-const char rps_load_date[]= __DATE__;
 
 extern "C" const char rps_load_shortgitid[];
 const char rps_load_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_load_timestamp[];
-const char rps_load_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_load_basename[];
 const char rps_load_basename[]= RPS_BASENAME;

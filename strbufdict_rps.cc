@@ -37,14 +37,10 @@
 extern "C" const char rps_strbufdict_gitid[];
 const char rps_strbufdict_gitid[]= RPS_GITID;
 
-extern "C" const char rps_strbufdict_date[];
-const char rps_strbufdict_date[]= __DATE__;
 
 extern "C" const char rps_strbufdict_shortgitid[];
 const char rps_strbufdict_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_strbufdict_timestamp[];
-const char rps_strbufdict_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_strbufdict_basename[];
 const char rps_strbufdict_basename[]= RPS_BASENAME;

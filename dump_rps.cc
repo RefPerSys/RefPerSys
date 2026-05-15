@@ -54,14 +54,10 @@ extern "C" {
 extern "C" const char rps_dump_gitid[];
 const char rps_dump_gitid[]= RPS_GITID;
 
-extern "C" const char rps_dump_date[];
-const char rps_dump_date[]= __DATE__;
 
 extern "C" const char rps_dump_shortgitid[];
 const char rps_dump_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_dump_timestamp[];
-const char rps_dump_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_dump_basename[];
 const char rps_dump_basename[]= RPS_BASENAME;

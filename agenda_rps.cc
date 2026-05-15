@@ -47,11 +47,6 @@ extern "C" const char rps_agenda_baseid[];
 const char rps_agenda_baseid[] = RPS_BASEID;
 
 
-extern "C" const char rps_agenda_date[];
-const char rps_agenda_date[]= __DATE__;
-
-extern "C" const char rps_agenda_timestamp[];
-const char rps_agenda_timestamp[]= __TIMESTAMP__;
 
 unsigned int rps_run_delay;
 

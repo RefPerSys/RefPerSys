@@ -43,16 +43,10 @@
 extern "C" const char rps_cppgen_gitid[];
 const char rps_cppgen_gitid[]= RPS_GITID;
 
-extern "C" const char rps_cppgen_date[];
-const char rps_cppgen_date[]= __DATE__;
-
 
 extern "C" const char rps_cppgen_shortgitid[];
 const char rps_cppgen_shortgitid[]= RPS_SHORTGITID;
 
-
-extern "C" const char rps_cppgen_timestamp[];
-const char rps_cppgen_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_cppgen_basename[];
 const char rps_cppgen_basename[]= RPS_BASENAME;

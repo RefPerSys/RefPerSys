@@ -45,14 +45,10 @@
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
 
-extern "C" const char rps_utilities_date[];
-const char rps_utilities_date[]= __DATE__;
 
 extern "C" const char rps_utilities_shortgitid[];
 const char rps_utilities_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_utilities_timestamp[];
-const char rps_utilities_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_utilities_basename[];
 const char rps_utilities_basename[]= RPS_BASENAME;

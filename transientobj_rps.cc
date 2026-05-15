@@ -40,14 +40,10 @@
 extern "C" const char rps_transientobj_gitid[];
 const char rps_transientobj_gitid[]= RPS_GITID;
 
-extern "C" const char rps_transientobj_date[];
-const char rps_transientobj_date[]= __DATE__;
 
 extern "C" const char rps_transientobj_shortgitid[];
 const char rps_transientobj_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_transientobj_timestamp[];
-const char rps_transientobj_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_transientobj_basename[];
 const char rps_transientobj_basename[]= RPS_BASENAME;

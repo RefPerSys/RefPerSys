@@ -38,8 +38,6 @@
 extern "C" const char rps_main_gitid[];
 const char rps_main_gitid[]= RPS_GITID;
 
-extern "C" const char rps_main_date[];
-const char rps_main_date[]= __DATE__;
 
 extern "C" const char rps_main_shortgitid[];
 const char rps_main_shortgitid[]= RPS_SHORTGITID;
@@ -51,8 +49,6 @@ const char rps_main_basename[] = RPS_BASENAME;
 extern "C" const char rps_main_baseid[];
 const char rps_main_baseid[] = RPS_BASEID;
 
-extern "C" const char rps_main_timestamp[];
-const char rps_main_timestamp[]= __TIMESTAMP__;
 
 
 

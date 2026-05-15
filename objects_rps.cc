@@ -36,14 +36,10 @@
 extern "C" const char rps_objects_gitid[];
 const char rps_objects_gitid[]= RPS_GITID;
 
-extern "C" const char rps_objects_date[];
-const char rps_objects_date[]= __DATE__;
 
 extern "C" const char rps_objects_shortgitid[];
 const char rps_objects_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_objects_timestamp[];
-const char rps_objects_timestamp[]= __TIMESTAMP__;
 
 
 extern "C" const char rps_objects_basename[];

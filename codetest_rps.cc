@@ -37,14 +37,10 @@
 extern "C" const char rps_codetest_gitid[];
 const char rps_codetest_gitid[]= RPS_GITID;
 
-extern "C" const char rps_codetest_date[];
-const char rps_codetest_date[]= __DATE__;
 
 extern "C" const char rps_codetest_shortgitid[];
 const char rps_codetest_shortgitid[]= RPS_SHORTGITID;
 
-extern "C" const char rps_codetest_timestamp[];
-const char rps_codetest_timestamp[]= __TIMESTAMP__;
 
 extern "C" const char rps_codetest_basename[];
 const char rps_codetest_basename[]= RPS_BASENAME;
