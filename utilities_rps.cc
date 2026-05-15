@@ -1833,7 +1833,7 @@ rps_parse_program_arguments(int &argc, char**argv)
     " along with this program.  If not, see www.gnu.org/licenses\n"
     " *** NO WARRANTY, not even for FITNESS FOR A PARTICULAR PURPOSE ***\n"
     " +++!!! use at your own risk !!!+++\n"
-    " (shortgitid " RPS_SHORTGITID " built at " __DATE__ ")\n"
+    " (shortgitid " RPS_SHORTGITID ")\n"
     "\n Accepted program options are:\n";
   argparser_rps.children = nullptr;
   argparser_rps.help_filter = nullptr;
