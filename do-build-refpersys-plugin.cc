@@ -188,7 +188,7 @@ void
 bp_version (void)
 {
   std::cout << bp_progname << " version " << bp_git_id
-            << " built " __DATE__ "@" << __TIME__ << " [refpersys.org]"
+	    << " [refpersys.org & github.com/RefPerSys]"
             << std::endl
             << " tool source <" << __FILE__ ":" << __LINE__ << ">"
             << std::endl;
