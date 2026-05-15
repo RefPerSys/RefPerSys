@@ -717,7 +717,9 @@ Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
   const char*startnum = curp;
   bool isfloat = false;
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__number__token#" << (toksrc_counter+1) << "?  startnum=" << Rps_QuotedC_String(startnum)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__number__token#"
+                << (toksrc_counter+1) << "?  startnum="
+                << Rps_QuotedC_String(startnum)
                 << " at " << position_str() << " startpos:" << startpos);
   long long l = strtoll(startnum, &endint, 0);
   double d = strtod(startnum, &endfloat);
@@ -729,7 +731,8 @@ Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
       _f.lextokv = Rps_DoubleValue(d);
       _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__number__token#"
-                    << (toksrc_counter+1) << "? doubleval " << _f.lextokv << " curpos:" << position_str()
+                    << (toksrc_counter+1) << "? doubleval "
+                    << _f.lextokv << " curpos:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr()));
     }
   else
@@ -875,7 +878,8 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                 << " obnamed=" << _f.obnamed
                 << std::endl
                 << "…  tokensrc:" << *this << std::endl
-                << "…  namev=" << _f.namev << ", str=" << Rps_Value(str)<< " at "
+                << "…  namev=" << _f.namev << ", str="
+                << Rps_Value(str)<< " at "
                 << position_str(startcol) << "…" << position_str());
   if (_f.obnamed)
     {
