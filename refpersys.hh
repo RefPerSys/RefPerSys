@@ -255,7 +255,7 @@ extern "C" char rps_debug_path[rps_path_byte_size];
 extern "C" int rps_get_major_version(void);
 extern "C" int rps_get_minor_version(void);
 #define RPS_MAJOR_VERSION_NUM 0
-#define RPS_MINOR_VERSION_NUM 6
+#define RPS_MINOR_VERSION_NUM 7
 
 
 extern "C" std::map<std::string,std::string> rps_pluginargs_map;
@@ -1097,12 +1097,12 @@ while (0)
   if (RPS_UNLIKELY(!(Cond))) {                                  \
     /* Rps_Assert_Log */                                        \
     std::ostringstream asslogouts_##Lin;                        \
-    asslogouts_##Lin << __VA_ARGS__  << std::flush;   \
+    asslogouts_##Lin << __VA_ARGS__  << std::flush;		\
       const std::string str_##Lin = asslogouts_##Lin.str();     \
     if (rps_syslog_enabled)                                     \
       syslog(LOG_CRIT,                                          \
-       "*** RefPerSys ASSERT_LOG failed:"                       \
-       " %s *** [%s:%d:%s] *** %s"                              \
+	     "*** RefPerSys ASSERT_LOG failed:"			\
+	     " %s *** [%s:%d:%s] *** %s"			\
        #Cond, Fil, Lin, Func, str_##Lin.c_str());               \
     else {                                                      \
       fprintf(stderr, "\n\n"                                    \
