@@ -1,3 +1,4 @@
+
 /****************************************************************
  * file carbrepl_rps.cbrt
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -109,8 +110,13 @@ rps_carbrepl_data_st::reset_carbdata(int lin)
   RPS_DEBUG_LOG(REPL, "resetting carbrepl_data@" << (void*)this << " line#" << lin);
 } // end rps_carbrepl_data_st::reset_carbdata
 
-extern "C" int rps_carbrepl_keyword_lexer(Rps_CallFrame*,const std::string&keystr,Rps_ObjectRef obkw);
-extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv, Rps_Value expr);
+extern "C" int rps_carbrepl_keyword_lexer(Rps_CallFrame*,
+					  const std::string&keystr,
+					  Rps_ObjectRef obkw,
+					  Rps_TokenSource*src);
+extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe,
+						Rps_ObjectRef obenv,
+						Rps_Value expr);
 static void rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin);
 static void rps_carbrepl_destructor_replnt_object(Rps_ObjectRef&obr, int lin);
 static const char* rps_carbrepl_symname_at(int symnum, int lin);
@@ -1573,7 +1579,8 @@ rps_carbrepl_symname_at(int symnum, int lin) {
 int
 rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
                             const std::string&keystr,
-                            Rps_ObjectRef obkwarg)
+                            Rps_ObjectRef obkwarg,
+			    Rps_TokenSource*tksrc)
 {
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,

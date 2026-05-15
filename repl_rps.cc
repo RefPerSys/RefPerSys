@@ -61,7 +61,8 @@ std::vector<std::string> rps_completion_vect;
 extern "C" int
 rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
                             const std::string&keystr,
-                            Rps_ObjectRef obkw);
+                            Rps_ObjectRef obkw,
+			    Rps_TokenSource*src);
 /// a C++ closure for getting the REPL lexical token.... with
 /// lookahead=0, next token, with lookahead=1 the second-next token
 std::function<Rps_LexTokenValue(Rps_CallFrame*,unsigned)> rps_repl_cmd_lexer_fun;
@@ -1590,16 +1591,19 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
 
 
 extern "C" int
-rps_keyword_lexer (Rps_CallFrame*,const std::string&keystr,Rps_ObjectRef obkw);
+rps_keyword_lexer (Rps_CallFrame*,const std::string&keystr,
+		   Rps_ObjectRef obkw, Rps_TokenSource*tksrc);
 
 int
 rps_keyword_lexer (Rps_CallFrame*callframe,
                    const std::string&keystr,
-                   Rps_ObjectRef obkw)
+                   Rps_ObjectRef obkw,
+		   Rps_TokenSource* tksrc)
 {
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
   RPS_DEBUG_LOG(REPL, "rps_keyword_lexer keystr="
 		<< Rps_QuotedC_String(keystr)
+		<< " tksrc=" << tksrc
 		<< " obkw=" << RPS_OBJECT_DISPLAY(obkw));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_FATALOUT("unimplemented rps_keyword_lexer keystr="
@@ -1609,8 +1613,9 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
 } // end rps_keyword_lexer
 
 extern "C" int rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
-    const std::string&keystr,
-    Rps_ObjectRef obkw);
+					   const std::string&keystr,
+					   Rps_ObjectRef obkw,
+					   Rps_TokenSource*tksrc);
 
 void
 rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,

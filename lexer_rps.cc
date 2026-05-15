@@ -169,7 +169,7 @@ Rps_TokenSource::position_str(int col) const
     colstr = "°";
   else if (col<0)
     colstr = "<";
-  else if (col > toksrc_linebuf.size())
+  else if (col > (int)toksrc_linebuf.size())
     colstr = ">";
   else
     colstr = std::to_string(col);
@@ -565,7 +565,7 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
   const char* end = toksrcmfil_end;
   const char* eol = nullptr;
   RPS_POSSIBLE_BREAKPOINT();
-  for (pc; pc && pc < end; pc++)
+  for (; pc && pc < end; pc++)
     {
       if (*pc == '\n')
         {
@@ -903,7 +903,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
                             << " lexing keyword " << namestr
                             << " from:" << std::endl
                             <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token/keyw"));
-              int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed);
+              int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed, this);
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                             << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
               Rps_LexTokenZone* lextokz =
@@ -2192,7 +2192,8 @@ extern "C" void rps_run_file_repl_lexer(const std::string&);
 
 extern "C" int rps_keyword_lexer (Rps_CallFrame*,
                                   const std::string&keystr,
-                                  Rps_ObjectRef obkw);
+                                  Rps_ObjectRef obkw,
+				  Rps_TokenSource*tksrc);
 
 void
 rps_run_test_repl_lexer(const std::string& teststr)

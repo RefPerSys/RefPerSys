@@ -2944,7 +2944,8 @@ extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
 
 typedef int rps_keyword_lexing_sigt(Rps_CallFrame*callframe,
                                     const std::string&keystr,
-                                    Rps_ObjectRef obkw);
+                                    Rps_ObjectRef obkw,
+				    Rps_TokenSource*tksrc);
 
 
 ////////////////////////////////// token sources are for lexing
