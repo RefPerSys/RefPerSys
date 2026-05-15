@@ -1645,7 +1645,7 @@ void rps_load_from (const std::string& dirpath)
   strncpy(rps_loaded_directory, dirpath.c_str(), sizeof(rps_loaded_directory)-1);
   RPS_INFORMOUT("rps_load_from completed" << std::endl
                 << "… from directory " << dirpath
-                << " with RefPerSys built " << rps_timestamp << std::endl
+                << " with RefPerSys shortgit " << rps_shortgitid << std::endl
                 << " lastgitcommit " << rps_lastgitcommit << std::endl
                 << " md5sum " << rps_md5sum << std::endl
                 << " loaded " << nbloaded << " objects in " << realtbuf << " elapsed, " << cputbuf << " cpu seconds" << std::endl

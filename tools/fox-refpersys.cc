@@ -69,9 +69,7 @@ extern "C" std::unique_ptr< FX::FXApp> foxrps_ptr_app;
 
 
 
-//// from generated __timestamp.c
-extern "C" const char rps_timestamp[];
-extern "C" const unsigned long rps_timelong;
+//// from generated __buildinfo.c
 extern "C" const char rps_topdirectory[];
 extern "C" const char rps_gitid[];
 extern "C" const char rps_qt6moc[];

@@ -846,7 +846,6 @@ rps_show_version(void)
             << " major version: " << RPS_MAJOR_VERSION_NUM << std::endl
             << " minor version: " << RPS_MINOR_VERSION_NUM << std::endl
             << " program name: " << rps_progname << std::endl
-            << " build time: " << rps_timestamp << std::endl
             << " top directory: " << rps_topdirectory << std::endl
             << " gitid: " << rps_gitid << std::endl
             << " short-gitid: " << rps_shortgitid << std::endl
@@ -1980,10 +1979,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
   snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s", filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
-                    "… build %s pid %d on %s,\n"
+                    "… pid %d on %s,\n"
                     "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
          filnam, lin, rps_shortgitid,
-         rps_timestamp, (int)getpid(), rps_hostname(),
+         (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
          (rps_program_invocation?"… started as ":""),
          (rps_program_invocation?:""),
@@ -2000,20 +1999,19 @@ rps_fatal_stop_at (const char *filnam, int lin)
   if (!rps_syslog_enabled)
     fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
                     " RefPerSys gitid %s,\n"
-                    "\t built timestamp %s,\n"
                     "\t on host %s, md5sum %s,\n"
                     "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
             ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
-            rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
+            rps_gitid,  rps_hostname(), rps_md5sum,
             rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
             rps_current_pthread_name().c_str());
   if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0])
     {
       fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
-      fprintf(rps_debug_file, "RefPerSys gitid %s built %s was started on %s pid %d as:\n",
-              rps_shortgitid, rps_timestamp, rps_hostname(), (int)getpid());
+      fprintf(rps_debug_file, "RefPerSys gitid %s was started on %s pid %d as:\n",
+              rps_shortgitid, rps_hostname(), (int)getpid());
       for (int aix=0; aix<rps_argc; aix++)
         {
           fputc(' ', rps_debug_file);
@@ -2044,7 +2042,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
       backt.output(outl);
       outl << "===== end fatal error at " << filnam << ":" << lin
            << " ======" << std::endl << std::flush;
-      outl << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
+      outl << "RefPerSys gitid " << rps_shortgitid
            << " was started on " << rps_hostname() << " pid "
            << (int)getpid() << " as";
       if (!rps_run_name.empty())
@@ -2079,7 +2077,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
       std::clog << "===== end fatal error at " << filnam << ":" << lin
                 << " ======" << std::endl << std::flush;
       std::clog << "RefPerSys gitid "
-		<< rps_shortgitid << " built " << rps_timestamp;
+		<< rps_shortgitid 
       if (!rps_run_name.empty())
         std::clog << " run " << rps_run_name;
       std::clog << std::endl
@@ -2535,8 +2533,8 @@ rps_set_debug(const std::string &deblev)
     {
       /* first X macro for help debug flag.... */
       didhelp = true;
-      fprintf(stderr, "%s debugging options for git %s built at %s ...\n",
-              rps_progname, rps_shortgitid, rps_timestamp);
+      fprintf(stderr, "%s debugging options for git %s ...\n",
+              rps_progname, rps_shortgitid);
       fprintf(stderr, "Comma separated debugging levels with -D<debug-level>\n"
                       "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
 

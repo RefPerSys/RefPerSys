@@ -197,13 +197,13 @@ everything: all
 	$(MAKE) fox-refpersys
 
 
-fox-refpersys: tools/fox-refpersys.cc __timestamp.o | GNUmakefile
+fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	__timestamp.o \
+	__buildinfo.o \
 	$(shell pkg-config --cflags $(FOXREFPERSYS_PACKAGES)) \
 	$(shell fox-config --cflags) \
         $< \
@@ -211,7 +211,7 @@ fox-refpersys: tools/fox-refpersys.cc __timestamp.o | GNUmakefile
 	$(shell fox-config --libs) \
         -o $@
 
-objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __timestamp.o _carbrepl_rps.o
+objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __buildinfo.o _carbrepl_rps.o
 
 
 _config-refpersys.mk: GNUmakefile tools/do-configure-refpersys.c
@@ -234,7 +234,7 @@ raw-objects: $(REFPERSYS_RAW_OBJECTS)
 ### or JSONRPC protocols with a program for graphical user interface
 ### that program might be a graphical browser or some program
 ### under https://github.com/bstarynk/misc-basile or elsewhere
-raw-refpersys: raw-objects __raw_timestamp.o |  GNUmakefile _config-refpersys.mk
+raw-refpersys: raw-objects __raw_buildinfo.o |  GNUmakefile _config-refpersys.mk
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	-@echo Linking $@
 	$(REFPERSYS_CXX) -rdynamic -o $@ $(REFPERSYS_RAW_OBJECTS) \
@@ -244,8 +244,8 @@ raw-refpersys: raw-objects __raw_timestamp.o |  GNUmakefile _config-refpersys.mk
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	-@echo Linked $@
 
-__raw_timestamp.c: rps-generate-timestamp.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS)
-	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-timestamp.sh $@ > $@
+__raw_buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS)
+	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-buildinfo.sh $@ > $@
 
 #### TODO:fix it, so that make raw-objects work
 %rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
@@ -270,11 +270,11 @@ __raw_timestamp.c: rps-generate-timestamp.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS
 	       -c -o $@ $<
 	$(SYNC)
 
-.SECONDARY:  __timestamp.c 
+.SECONDARY:  __buildinfo.c 
 	$(SYNC)
 
 snapshot: clean
-	$(MAKE) __timestamp.c _carbrepl_rps.cc
+	$(MAKE) __buildinfo.c _carbrepl_rps.cc
 	/bin/tar -cjf $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
 
 lto-refpersys:
@@ -286,7 +286,7 @@ lto-refpersys:
              -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
-             $(REFPERSYS_DUMPED_CPP_OBJECTS) __timestamp.o \
+             $(REFPERSYS_DUMPED_CPP_OBJECTS) __buildinfo.o \
 	      $(RPS_LIBBACKTRACE) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               -rpath /usr/local/lib:$LD_LIBRARY_PATH \
@@ -319,7 +319,7 @@ do-scan-refpersys-pkgconfig: do-scan-refpersys-pkgconfig.c |GNUmakefile rps-gene
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@
 
-do-build-refpersys-plugin: do-build-refpersys-plugin.cc __timestamp.c
+do-build-refpersys-plugin: do-build-refpersys-plugin.cc __buildinfo.c
 	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $(CFLAGS) $(shell pkg-config --cflags guile-3.0) -g $^ -o  $@  $(shell pkg-config --libs guile-3.0) 
 
 
@@ -373,7 +373,7 @@ clean-plugins:
 	$(RM) -v plugins_dir/rpsplug_synsimpinterp.yy.output
 
 distclean: clean
-	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
+	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __buildinfo.*
 	$(RM) __*.mkdep Make-dependencies/__*.mkdep
 	$(RM) do-scan-refpersys-pkgconfig
 
@@ -384,21 +384,21 @@ distclean: clean
 _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-refpersys-pkgconfig
 	./do-scan-refpersys-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
-__timestamp.c: rps-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
+__buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
 	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)"
 	@echo REFPERSYS_GPP is "$(REFPERSYS_GPP)" and GPP is "$(GPP)"
-	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-timestamp.sh $@ > $@
+	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-buildinfo.sh $@ > $@
 
-__timestamp.o: __timestamp.c |GNUmakefile
+__buildinfo.o: __buildinfo.c |GNUmakefile
 	$(CC) -std=gnu2x -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
 
 
 #was
 #refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
 #               $(REFPERSYS_DUMPED_CPP_OBJECTS) \
-#                   __timestamp.c |  GNUmakefile
+#                   __buildinfo.c |  GNUmakefile
 refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-refpersys.mk
-	$(MAKE) __timestamp.o
+	$(MAKE) __buildinfo.o
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	/bin/sleep 0.05
 	$(MAKE) objects $(REFPERSYS_GENERATED_CPP_OBJECTS)
@@ -414,7 +414,7 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
 	@echo REFPERSYS_HUMAN_CPP_OBJECTS is $(REFPERSYS_HUMAN_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	@echo REFPERSYS_DUMPED_CPP_OBJECTS is $(REFPERSYS_DUMPED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
-	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) __timestamp.o
+	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) __buildinfo.o
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	-@echo Linking $@
@@ -422,7 +422,7 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_DUMPED_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
-             __timestamp.o \
+             __buildinfo.o \
               $(RPS_LIBBACKTRACE) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(REFPERSYS_LINKER_FLAGS) \
@@ -766,13 +766,13 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
                          -c $(REFPERSYS_COMPILER_FLAGS) $< -o $@
 
 
-q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __timestamp.o |GNUmakefile
+q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __buildinfo.o |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	__timestamp.o \
+	__buildinfo.o \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
 	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
 
@@ -782,7 +782,7 @@ _q6refpersys.ii:  tools/q6refpersys.cc _q6refpersys-moc.cc  |GNUmakefile
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	__timestamp.o \
+	__buildinfo.o \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
 	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
 

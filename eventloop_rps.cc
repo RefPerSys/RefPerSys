@@ -695,8 +695,6 @@ rps_jsonrpc_initialize(void)
   jvob["shortgit"] = rps_shortgitid;
   jvob["gitid"] = rps_gitid;
   jvob["loaded_dir"] = rps_loaded_directory;
-  jvob["timestamp"] = rps_timestamp;
-  jvob["timelong"] = rps_timelong;
   jvob["topdirectory"] = rps_topdirectory;
   jvob["gitbranch"] = rps_gitbranch;
   jvob["cxx_compiler"] = rps_cxx_compiler_realpath;

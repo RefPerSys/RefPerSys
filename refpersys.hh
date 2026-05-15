@@ -340,9 +340,7 @@ extern "C" {
 
 #define RPS_FRIEND_CLASS(Suffix) friend class Rps_##Suffix
 
-// generated in __timestamp.c by rps-generate-timestamp.sh utility script
-extern "C" const char rps_timestamp[];
-extern "C" unsigned long rps_timelong;
+// generated in __buildinfo.c by rps-generate-buildinfo.sh utility script
 extern "C" const char rps_topdirectory[];
 extern "C" const char rps_gitid[];
 extern "C" const char rps_shortgitid[];

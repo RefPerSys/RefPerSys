@@ -194,7 +194,6 @@ bp_version (void)
             << std::endl;
   std::cout << "\t top directory " << rps_topdirectory << std::endl;
   std::cout << "\t GNUmakefile " << rps_gnumakefile << std::endl;
-  std::cout << "\t timestamp: " << rps_timestamp  <<std::endl;
   std::cout << "\t gnu-make is " << rps_gnu_make
             << "::" << rps_gnu_make_version  << std::endl;
   std::cout << "# run " << bp_progname  <<" --help for details." << std::endl;

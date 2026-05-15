@@ -1771,7 +1771,6 @@ Rps_Dumper::write_manifest_file(void)
   /// this is not used for loading, but could be useful for other purposes.
   jmanifest["origitid"] = Json::Value (rps_gitid);
   jmanifest["progname"] = Json::Value (rps_progname);
-  jmanifest["progtimestamp"] = Json::Value (rps_timestamp);
   jmanifest["progmd5sum"] = Json::Value(rps_md5sum);
   jsonwriter->write(jmanifest, pouts.get());
   *pouts << std::endl <<  std::endl << "//// end of RefPerSys manifest file" << std::endl;

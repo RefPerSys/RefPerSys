@@ -587,7 +587,6 @@ rps_inform_after_load(int argc, char**argv)
   RPS_INFORMOUT("starting "
                 << argv[0]
                 << " shortgit " << rps_shortgitid
-                << " build-time " << rps_timestamp
                 << " md5 " << rps_md5sum
                 << " version " << rps_get_major_version()
                 << "." << rps_get_minor_version()
@@ -873,7 +872,6 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
   fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
   fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
   fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
-  fprintf (tfil, "//// rps_timestamp %s\n", rps_timestamp);
   fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
   fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
   fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
@@ -1319,10 +1317,10 @@ static void rps_close_debug_file(void)
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug file %s ****\n", rps_debug_path);
       else
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
-      fprintf(rps_debug_file, "gitid %s version %d.%d, built %s,\n"
+      fprintf(rps_debug_file, "gitid %s version %d.%d,\n"
                               " on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
               rps_gitid, rps_get_major_version(), rps_get_minor_version(),
-              rps_timestamp, rps_hostname(),  rps_md5sum,
+              rps_hostname(),  rps_md5sum,
               rps_elapsed_real_time(), rps_process_cpu_time());
       fflush(rps_debug_file);
       fsync(fileno(rps_debug_file));
@@ -1347,11 +1345,10 @@ rps_set_debug_output_path(const char*filepath)
   if (!fdbg)
     RPS_FATAL("cannot open debug file %s - %m", filepath);
   fprintf(fdbg, "*@#*@#*@#* RefPerSys debug file %s *@#*@#*@#*\n"
-          "See refpersys.org - built %s\n"
+          "See refpersys.org\n"
           "On host %s pid %d gitid %s version %d.%d topdir %s\n"
           "####################################\n\n",
           filepath,
-          rps_timestamp,
           rps_hostname(), (int)getpid(), rps_gitid,
           rps_get_major_version(), rps_get_minor_version(),
           rps_topdirectory);
@@ -1749,7 +1746,6 @@ main (int argc, char** argv)
                 << " version " << rps_get_major_version()
                 << "." << rps_get_minor_version()
                 << std::endl
-                << "built " << rps_timestamp << std::endl
                 << (rps_batch?"batch":"interactive")
                 << " (" << rps_nbjobs << " jobs)" << std::endl
                 <<             "… This is an open source inference engine software,\n"
@@ -1878,8 +1874,7 @@ main (int argc, char** argv)
                 << " git " << rps_shortgitid
                 << " branch " << rps_gitbranch
                 << std::endl
-                << "… built " << rps_timestamp
-                << " loaded state " << rps_my_load_dir << std::endl
+                << "… loaded state " << rps_my_load_dir << std::endl
                 << "… elapsed " << std::setw(4) << rps_elapsed_real_time()
                 << ", cpu " << rps_process_cpu_time() << " seconds;"
                 << std::endl

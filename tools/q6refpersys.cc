@@ -116,9 +116,7 @@ extern "C" pid_t myqr_refpersys_pid;
 
 extern "C" std::string myqr_json2str(const Json::Value&jv);
 
-//// from generated __timestamp.c
-extern "C" const char rps_timestamp[];
-extern "C" const unsigned long rps_timelong;
+//// from generated __buildinfo.c
 extern "C" const char rps_topdirectory[];
 extern "C" const char rps_gitid[];
 extern "C" const char rps_qt6moc[];
