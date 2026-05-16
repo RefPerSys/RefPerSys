@@ -1980,7 +1980,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   memset (cwdbuf, 0, sizeof(cwdbuf));
   if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
     strcpy(cwdbuf, "./");
-  snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s", filnam, lin, rps_current_pthread_name().c_str());
+  snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s",
+	    filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
                     "… pid %d on %s,\n"
