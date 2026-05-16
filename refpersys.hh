@@ -1092,30 +1092,30 @@ while (0)
                       (Cond),Fmt,##__VA_ARGS__)
 
 
-
-#define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {       \
-  if (RPS_UNLIKELY(!(Cond))) {                                  \
-    /* Rps_Assert_Log */                                        \
-    std::ostringstream asslogouts_##Lin;                        \
-    asslogouts_##Lin << __VA_ARGS__  << std::flush;		\
-      const std::string str_##Lin = asslogouts_##Lin.str();     \
-    if (rps_syslog_enabled)                                     \
-      syslog(LOG_CRIT,                                          \
-	     "*** RefPerSys ASSERT_LOG failed:"			\
-	     " %s *** [%s:%d:%s] *** %s"			\
-       #Cond, Fil, Lin, Func, str_##Lin.c_str());               \
-    else {                                                      \
-      fprintf(stderr, "\n\n"                                    \
-              "%s*** RefPerSys ASSERT_LOG failed:%s %s\n"       \
-              "%s:%d: {%s}\n",                                  \
-          (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),       \
-                #Cond,                                          \
-          (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
-              Fil, Lin, Func);                                  \
-      fprintf(stderr, "!*!*! %s \n\n",                          \
-              str_##Lin.c_str());                               \
-    };                                                          \
-    rps_fatal_stop_at(Fil, Lin); }                              \
+// To debug the below macro, we temporarily use in it %.201s %.202s etc...
+#define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {		\
+  if (RPS_UNLIKELY(!(Cond))) {						\
+    /* Rps_Assert_Log */						\
+    std::ostringstream asslogouts_##Lin;				\
+    asslogouts_##Lin << __VA_ARGS__  << std::flush;			\
+    const std::string str_##Lin = asslogouts_##Lin.str();		\
+    if (rps_syslog_enabled)						\
+      syslog(LOG_CRIT,							\
+	     "*** RefPerSys ASSERT_LOG failed:"				\
+	     " %.201s *** [%.202s:%d:%.203s] *** %.204s"	       	\
+       #Cond, Fil, Lin, Func, str_##Lin.c_str());			\
+    else {								\
+      fprintf(stderr, "\n\n"						\
+              "%.205s*** RefPerSys ASSERT_LOG failed:%.206s %.207s\n"	\
+              "%.208s:%d: {%.209s}\n",					\
+          (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),		\
+                #Cond,							\
+          (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),		\
+              Fil, Lin, Func);						\
+      fprintf(stderr, "!*!*! %.210s \n\n",				\
+              str_##Lin.c_str());					\
+    };									\
+    rps_fatal_stop_at(Fil, Lin); }					\
  } while(0)
 //
 #define RPS_ASSERT_LOG_AT(Fil,Lin,Func,Cond,...) \
