@@ -3020,6 +3020,11 @@ public: //////
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_data;
   };
+  std::pair<Rps_ObjectRef,Rps_Value> fetch_token_source_pair(void) const
+  {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    return {toksrc_object,toksrc_data};
+  };
   void put_token_source_object_data(Rps_ObjectRef obj, Rps_Value val) {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     toksrc_object = obj;
