@@ -2792,6 +2792,31 @@ Rps_ObjectRef::install_own_3_methods(Rps_CallFrame*callerframe, Rps_ObjectRef ob
   paylcl->put_own_method(_f.obsel2, _f.closv2);
 } // end Rps_ObjectRef::install_own_3_methods
 
+void
+rps_delete_payload(Rps_Payload*payl)
+{
+  if (!payl)
+    return;
+  RPS_POSSIBLE_BREAKPOINT();
+  Rps_ObjectRef ownob=payl->owner();
+  if (ownob) {
+    std::lock_guard<std::recursive_mutex> guown(*ownob->objmtxptr());
+    RPS_POSSIBLE_BREAKPOINT();
+    payl->payl_owner = nullptr;
+    if (ownob->get_payload() == payl)
+      ownob->ob_payload.store(nullptr);
+    RPS_POSSIBLE_BREAKPOINT();
+    delete payl;
+  }
+  else {
+    RPS_POSSIBLE_BREAKPOINT();
+    RPS_WARNOUT("deleting unowned payload @" << (void*)payl
+		<< RPS_FULL_BACKTRACE(1, "rps_delete_payload/unowned"));
+    RPS_POSSIBLE_BREAKPOINT();
+    delete payl;
+  };
+} // end rps_delete_payload
 
+   
 
 // end of file objects_rps.cc

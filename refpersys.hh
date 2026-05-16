@@ -209,6 +209,9 @@ extern "C" const char* rps_debug_level_cstr(Rps_Debug dbgopt);
 
 // forward declaration
 class Rps_ProtoCallFrame;
+class Rps_Payload;
+class Rps_ObjectRef;
+class Rps_Value;
 typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 typedef void Rps_EventHandler_sigt(Rps_CallFrame*, int /*fd*/, void* /*data*/);
@@ -3533,9 +3536,12 @@ typedef Rps_TwoValues rps_applyingfun_t (Rps_CallFrame*callerframe,
 // by convention, the extern "C" applying function inside the fictuous connective _45vHaB3kVHiDzT42h0
 // would be named rpsapply_45vHaB3kVHiDzT42h0
 class Rps_Payload;
+extern "C" void rps_delete_payload(Rps_Payload*); // in object_rps.cc
+
 class Rps_ObjectZone : public Rps_ZoneValue
 {
   friend class Rps_Object_Display;
+  friend void rps_delete_payload(Rps_Payload*);
   ///
 public:
   enum registermode_en
@@ -3728,7 +3734,7 @@ public:
     PaylClass*newpayl = Rps_QuasiZone::rps_allocate1<PaylClass>(this);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_plain_payload
   template<class PaylClass, typename Arg1Class>
@@ -3739,7 +3745,7 @@ public:
       Rps_QuasiZone::rps_allocate2<PaylClass,Arg1Class>(this,arg1);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_arg1_payload
   template<class PaylClass, typename Arg1Class, typename Arg2Class>
@@ -3750,7 +3756,7 @@ public:
       Rps_QuasiZone::rps_allocate3<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_arg2_payload
   template<class PaylClass, typename Arg1Class, typename Arg2Class, typename Arg3Class>
@@ -3762,7 +3768,7 @@ public:
       (this,arg1,arg2,arg3);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_arg3_payload
   template<class PaylClass, typename Arg1Class, typename Arg2Class, typename Arg3Class, typename Arg4Class>
@@ -3773,7 +3779,7 @@ public:
       Rps_QuasiZone::rps_allocate5<PaylClass,Arg1Class,Arg2Class,Arg3Class,Arg4Class>(this,arg1,arg2,arg3,arg4);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_arg4_payload
   template<class PaylClass>
@@ -3784,7 +3790,7 @@ public:
       Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass>(wordgap,this);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_plain_payload_with_wordgap
   template<class PaylClass, typename Arg1Class>
@@ -3795,7 +3801,7 @@ public:
       Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class>(wordgap,this,arg1);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_arg1_payload_with_wordgap
   template<class PaylClass, typename Arg1Class, typename Arg2Class>
@@ -3806,7 +3812,7 @@ public:
       Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class,Arg2Class>(wordgap,this,arg1,arg2);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
-      delete oldpayl;
+      rps_delete_payload(oldpayl);
     return newpayl;
   };                            // end put_new_arg2_payload_with_wordgap
   virtual uint32_t wordsize() const
@@ -3867,6 +3873,7 @@ typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& 
 class Rps_Payload : public Rps_QuasiZone
 {
   friend class Rps_ObjectZone;
+  friend void rps_delete_payload(Rps_Payload*);
   Rps_ObjectZone* payl_owner;
 protected:
   inline Rps_Payload(Rps_Type, Rps_ObjectZone*);

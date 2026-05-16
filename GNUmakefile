@@ -250,7 +250,7 @@ __raw_buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS
 
 ### phony target to debug the RPS_ASSERT_LOG_AT_BIS macro and make utilities_rps.o with Clang C++ compiler
 ### could be related to issue#37 on github
-utility-clang: | GNUmakefile _config-refpersys.mk
+utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	$(REFPERSYS_CLANGXX) $(REFPERSYS_CXX_STANDARD) \
               -DRPS_WITH_FLTK=0 -DRPS_IS_RAW=1 -DRPS_UTILITY_CLANG=1 \
               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
