@@ -950,22 +950,32 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
           std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
           if (toksrc_keywfun)
             {
-              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#"
+			    << toksrc_counter
                             << " lexing keyword " << namestr
                             << " from:" << std::endl
-                            <<  RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token/keyw"));
+                            <<  RPS_FULL_BACKTRACE(1,
+						   "Rps_TokenSource::get__namoid__token/keyw"));
+	      RPS_POSSIBLE_BREAKPOINT();
               int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed, this);
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
                             << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
+	      RPS_POSSIBLE_BREAKPOINT();
               Rps_LexTokenZone* lextokz =
                 rps_make_lex_token_zone
                 (this, rpskob_083n2ydb4Zm03bbZW1, //!carburetta_keyword∈named_attribute
                  _f.obnamed,
                  str, curlin, curcol);
+	      RPS_ASSERT(str);
               _f.res = Rps_LexTokenValue(lextokz);
               lextokz->set_serial(++toksrc_counter);
-              RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#" << toksrc_counter
-                            << " from¤ " << *this << " str=" << str << " obnamed=" << _f.obnamed
+	      RPS_POSSIBLE_BREAKPOINT();
+              RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#"
+			    << toksrc_counter
+                            << " from¤ " << *this
+			    << " str=" << (*str)
+			    << std::endl
+			    << "… obnamed=" << _f.obnamed
                             << " ¤keyword lexkindob=" << _f.lexkindob
                             << std::endl
                             << "… startswithalpha=" << startswithalpha
@@ -981,6 +991,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
               {
                 this->display_current_line_with_cursor(out);
               }));
+	      RPS_POSSIBLE_BREAKPOINT();
               return _f.res;
             }
           else
