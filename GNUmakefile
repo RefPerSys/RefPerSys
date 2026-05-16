@@ -65,7 +65,7 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 .PHONY: all everything config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent \
         redump altredump altdump clean-plugins plugins \
-        print-gmake-features \
+        print-gmake-features utility-clang \
         one-plugin \
         lto-refpersys \
         raw-refpersys raw-objects \
@@ -101,6 +101,7 @@ REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
 -include $(REFPERSYS_CONFIG_MAKE)
 
 REFPERSYS_CXX_STANDARD?= -std=gnu++2c
+REFPERSYS_CLANGXX?= clang++
 
 ## Qt6 - see www.qt.io - provides a meta object compiler
 ## See also doc.qt.io/qt-6/moc.html
@@ -246,6 +247,24 @@ raw-refpersys: raw-objects __raw_buildinfo.o |  GNUmakefile _config-refpersys.mk
 
 __raw_buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS)
 	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-buildinfo.sh $@ > $@
+
+### phony target to debug the RPS_ASSERT_LOG_AT_BIS macro and make utilities_rps.o with Clang C++ compiler
+### could be related to issue#37 on github
+utility-clang: | GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CLANGXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_RAW=1 -DRPS_UTILITY_CLANG=1 \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_utilities_rps)) \
+            -DRPS_THIS_SOURCE=\"utilities_rps.cc\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	    -DRPS_BASENAME=\"utilities_rps\" \
+	    -DRPS_BASEID=\"utilities_rps\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o utilities_rps.o utilities_rps.cc
 
 #### TODO:fix it, so that make raw-objects work
 %rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
