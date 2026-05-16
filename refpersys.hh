@@ -1097,31 +1097,31 @@ while (0)
 
 // To debug the below macro, we temporarily use in it %.201s %.202s etc...
 #define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {       \
-  if (RPS_UNLIKELY(!(Cond))) {					\
-    /* Rps_Assert_Log */					\
+  if (RPS_UNLIKELY(!(Cond))) {          \
+    /* Rps_Assert_Log */          \
     const char* cond_##Lin = #Cond;                             \
-    std::ostringstream asslogouts_##Lin;			\
-    asslogouts_##Lin << __VA_ARGS__  << std::flush;		\
-    const std::string str_##Lin = asslogouts_##Lin.str();	\
-    const char*chst_##Lin = str_##Lin.c_str();			\
-    if (rps_syslog_enabled)					\
-      syslog(LOG_CRIT,						\
-	     "*** RefPerSys ASSERT_LOG failed:"			\
-	     " %.201s *** [%.202s:%d:%.203s] *** %.304s",	\
-	     cond_##Lin, Fil, Lin, Func, chst_##Lin);		\
-    else {							\
-      fputs("\n\n", stderr);					\
-      if (rps_stderr_istty)					\
-	fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);		\
-      fputs("*** RefPerSys ASSERT_LOG failed:", stderr);	\
-      fprintf(stderr, "%.207s:%d: {%.208s} [%.209s]\n",		\
-	      Fil,Lin,Func,cond_##Lin);				\
-      if (rps_stderr_istty)					\
-	fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);		\
-      fputs(chst_##Lin, stderr);				\
-      fputs("\n", stderr); fflush(stderr);			\
-    };								\
-    rps_fatal_stop_at(Fil, Lin); }				\
+    std::ostringstream asslogouts_##Lin;      \
+    asslogouts_##Lin << __VA_ARGS__  << std::flush;   \
+    const std::string str_##Lin = asslogouts_##Lin.str(); \
+    const char*chst_##Lin = str_##Lin.c_str();      \
+    if (rps_syslog_enabled)         \
+      syslog(LOG_CRIT,            \
+       "*** RefPerSys ASSERT_LOG failed:"     \
+       " %.201s *** [%.202s:%d:%.203s] *** %.304s", \
+       cond_##Lin, Fil, Lin, Func, chst_##Lin);   \
+    else {              \
+      fputs("\n\n", stderr);          \
+      if (rps_stderr_istty)         \
+  fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);    \
+      fputs("*** RefPerSys ASSERT_LOG failed:", stderr);  \
+      fprintf(stderr, "%.207s:%d: {%.208s} [%.209s]\n",   \
+        Fil,Lin,Func,cond_##Lin);       \
+      if (rps_stderr_istty)         \
+  fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);    \
+      fputs(chst_##Lin, stderr);        \
+      fputs("\n", stderr); fflush(stderr);      \
+    };                \
+    rps_fatal_stop_at(Fil, Lin); }        \
   } while(0)
 //
 #define RPS_ASSERT_LOG_AT(Fil,Lin,Func,Cond,...) \
@@ -2949,7 +2949,7 @@ extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
 typedef int rps_keyword_lexing_sigt(Rps_CallFrame*callframe,
                                     const std::string&keystr,
                                     Rps_ObjectRef obkw,
-				    Rps_TokenSource*tksrc);
+                                    Rps_TokenSource*tksrc);
 
 
 ////////////////////////////////// token sources are for lexing
@@ -3009,20 +3009,22 @@ protected:
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public: //////
   void set_token_source_object(Rps_ObjectRef obj)
-  { 
+  {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     toksrc_object = obj;
   };
-  Rps_ObjectRef fetch_token_source_object(void) const {
+  Rps_ObjectRef fetch_token_source_object(void) const
+  {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_object;
   };
   void set_token_source_data(Rps_Value val)
-  { 
+  {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     toksrc_data = val;
   };
-  Rps_Value fetch_token_source_data(void) const {
+  Rps_Value fetch_token_source_data(void) const
+  {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_data;
   };
@@ -3031,7 +3033,8 @@ public: //////
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return {toksrc_object,toksrc_data};
   };
-  void put_token_source_object_data(Rps_ObjectRef obj, Rps_Value val) {
+  void put_token_source_object_data(Rps_ObjectRef obj, Rps_Value val)
+  {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     toksrc_object = obj;
     toksrc_data = val;
@@ -3083,12 +3086,17 @@ public: //////
   }
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
                                      Rps_ObjectRef lexkind,
-				     Rps_Value lexval,
-				     const Rps_String*sourcev);
+                                     Rps_Value lexval,
+                                     const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
+  void do_on_locked_token_source(Rps_CallFrame*callframe,
+                                 std::function<void(Rps_TokenSource*,
+                                     Rps_CallFrame*,
+                                     void*)> fun,
+                                 void*data= nullptr);
   void display_current_line_with_cursor(std::ostream&out) const;
   virtual void output (std::ostream&out, unsigned depth,
-		       unsigned maxdepth) const = 0;
+                       unsigned maxdepth) const = 0;
   /// TODO: the display method for token source would also show the cursor in a fancy way,
   /// inspired by GCC-12 error messages.  Maybe like
   /// ***** line 345 "abcdef" col 2
@@ -3101,7 +3109,7 @@ public: //////
   };
   void clear_token_dequeue(void);
   void consume_front_token(Rps_CallFrame*callframe,
-			   bool *psuccess=nullptr);
+                           bool *psuccess=nullptr);
   void append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv);
   virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;
@@ -3141,34 +3149,34 @@ public: //////
   //// provided, non-nil, and parsing successful.
   ///////////////////
   Rps_Value parse_using_closure(Rps_CallFrame*callframe,
-				Rps_ClosureValue closval);
+                                Rps_ClosureValue closval);
   ////
   //// Parse an expression. On success, the parsed expression is
   //// returned. On failure, the nil value is returned, and *pokparse
   //// is set to false when given.
   Rps_Value parse_expression(Rps_CallFrame*callframe,
-			     bool*pokparse=nullptr);
+                             bool*pokparse=nullptr);
   //// generic routine to parse symetrical binary operations like
   //// addition +
   Rps_Value parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                                        Rps_ObjectRef binoper,
-				       Rps_ObjectRef bindelim,
+                                       Rps_ObjectRef bindelim,
                                        std::function<Rps_Value(Rps_CallFrame*,bool*)> parser_binop,
                                        bool*pokparse,
-				       const char*opername=nullptr);
+                                       const char*opername=nullptr);
   //// generic routine to parse asymmetrical non commutative
   //// operations like division /
   Rps_Value parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
                                         Rps_ObjectRef binoper,
-					Rps_ObjectRef bindelim,
+                                        Rps_ObjectRef bindelim,
                                         std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,
                                             bool*)> parser_leftop,
                                         std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)>
                                         parser_rightop,
                                         bool*pokparse,
-					const char*opername=nullptr);
+                                        const char*opername=nullptr);
   Rps_Value parse_polyop(Rps_CallFrame*callframe,
-			 Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
+                         Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
                          std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)> parser_suboperand,
                          bool*pokparse, const char*opername=nullptr);
   ///
@@ -3176,40 +3184,40 @@ public: //////
   /// by the logical or operator denoted || (see delimiter
   /// _1HsUfOkNw0W033EIW1)
   Rps_Value parse_disjunction(Rps_CallFrame*callframe,
-			      bool*pokparse=nullptr);
+                              bool*pokparse=nullptr);
   ///
   /// A conjunction is a sequence of one or more conjuncts seperated
   /// by the logical and operator denoted && (see delimiter
   /// _2YVmrhVcwW00120rTK)
   Rps_Value parse_conjunction(Rps_CallFrame*callframe,
-			      bool*pokparse=nullptr);
+                              bool*pokparse=nullptr);
   ///
   /// A comparison is either a simple comparand (or sum) or two of
   /// them deparated by compare operators like != (see delimiter
   /// _1vF5VHnSdhr01VBomx) or <= (see delimiter _1mfq8qfixB401umCL9")
   /// etc..
   Rps_Value parse_comparison(Rps_CallFrame*callframe,
-			     bool*pokparse=nullptr);
+                             bool*pokparse=nullptr);
   Rps_Value parse_comparand(Rps_CallFrame*callframe,
-			    bool*pokparse=nullptr);
+                            bool*pokparse=nullptr);
   Rps_Value parse_sum(Rps_CallFrame*callframe,
-		      bool*pokparse=nullptr);
+                      bool*pokparse=nullptr);
   Rps_Value parse_product(Rps_CallFrame*callframe,
-			  bool*pokparse=nullptr);
+                          bool*pokparse=nullptr);
   Rps_Value parse_factor(Rps_CallFrame*callframe,
-			 bool*pokparse=nullptr);
+                         bool*pokparse=nullptr);
   Rps_Value parse_term(Rps_CallFrame*callframe,
-		       bool*pokparse=nullptr);
+                       bool*pokparse=nullptr);
   /// a primary expression is a simple thing
   Rps_Value parse_primary(Rps_CallFrame*callframe,
-			  bool*pokparse=nullptr);
+                          bool*pokparse=nullptr);
   bool can_start_primary(Rps_CallFrame*callframe);
   /// Once we have parsed a primary, it could be followed by a primary
   /// complement. This routine is given the primary expression and
   /// return, when successful, a larger expression. It accepts fields
   /// and message sending.
   Rps_Value parse_primary_complement(Rps_CallFrame*callframe,
-				     Rps_Value primaryexp, bool*pokparse=nullptr);
+                                     Rps_Value primaryexp, bool*pokparse=nullptr);
 #pragma message "other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md"
   ///////
   int line(void) const
@@ -3226,23 +3234,23 @@ public: //////
   Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
 private:
   Rps_LexTokenValue get__number__token(Rps_CallFrame*callframe,
-				       const char*curp);
+                                       const char*curp);
   Rps_LexTokenValue get__infinity__token(Rps_CallFrame*callframe,
-					 const char*curp);
+                                         const char*curp);
   Rps_LexTokenValue get__namoid__token(Rps_CallFrame*callframe,
-				       const char*curp);
+                                       const char*curp);
   Rps_LexTokenValue get__shortstr__token(Rps_CallFrame*callframe,
-					 const char*curp);
+                                         const char*curp);
   Rps_LexTokenValue get__longlitstr__token(Rps_CallFrame*callframe,
-					   const char*curp);
+      const char*curp);
   Rps_LexTokenValue get__codechunk__token(Rps_CallFrame*callframe,
-					  const char*curp);
+                                          const char*curp);
   Rps_LexTokenValue get__delim__token(Rps_CallFrame*callframe,
-				      const char*curp);
+                                      const char*curp);
 };                              // end Rps_TokenSource
 
 inline std::ostream& operator << (std::ostream&out,
-				  Rps_TokenSource& toksrc)
+                                  Rps_TokenSource& toksrc)
 {
   toksrc.output(out, 0, Rps_Value::debug_maxdepth);
   return out;
@@ -3253,14 +3261,14 @@ class Rps_CinTokenSource : public Rps_TokenSource
 public:
   virtual void fill_current_line_buffer(void);
   virtual void output(std::ostream&out, unsigned depth,
-		      unsigned maxdepth) const
+                      unsigned maxdepth) const
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     if (depth > maxdepth && &out != &std::cout &&
-	&out != &std::cerr && &out != &std::clog)
+        &out != &std::cerr && &out != &std::clog)
       RPS_WARNOUT("Rps_CinTokenSource " << name()
                   << " depth=" << depth
-		  << " greater than maxdepth=" << maxdepth);
+                  << " greater than maxdepth=" << maxdepth);
     out << "CinTokenSource:" << name() << ".S#" << unique_number()
         << '@' << position_str() << " tok.cnt:" << token_count();
   };
@@ -3284,9 +3292,9 @@ public:
     if (depth > maxdepth)
       RPS_WARNOUT("Rps_StreamTokenSource " << name()
                   << " depth=" << depth
-		  << " greater than maxdepth=" << maxdepth);
+                  << " greater than maxdepth=" << maxdepth);
     out << "StreamTokenSource" << name() << '@'
-	<< position_str() << " tok.cnt:" << token_count();
+        << position_str() << " tok.cnt:" << token_count();
   };
   virtual ~Rps_StreamTokenSource();
   virtual bool get_line(void);
@@ -3304,7 +3312,7 @@ public:
   virtual void fill_current_line_buffer(void);
   Rps_StringTokenSource(std::string inpstr, std::string name);
   virtual void output(std::ostream&out, unsigned depth,
-		      unsigned maxdepth) const;
+                      unsigned maxdepth) const;
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
   void restart_string_token_source(void);
