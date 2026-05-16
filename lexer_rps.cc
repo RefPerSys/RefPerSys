@@ -95,17 +95,21 @@ void
 Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
 {
   RPS_ASSERT(gc.is_valid_garbcoll());
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_ASSERT(depth < max_gc_depth);
   if (rps_lexer_token_name_str_val)
     rps_lexer_token_name_str_val.gc_mark(gc,depth);
   if (toksrc_ptrnameval)
     toksrc_ptrnameval->gc_mark(gc, depth+1);
   toksrc_token_deq.gc_mark(gc, depth+1);
+  toksrc_object.gc_mark(gc);
+  toksrc_data.gc_mark(gc, depth+1);
 } // end Rps_TokenSource::really_gc_mark
 
 void
 Rps_TokenSource::clear_token_dequeue(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_ASSERT(rps_is_main_thread());
   toksrc_token_deq.clear();
 } // end Rps_TokenSource::clear_token_dequeue
@@ -119,7 +123,9 @@ Rps_TokenSource::source_name_val(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
-  if (rps_lexer_token_name_str_val && rps_lexer_token_name_str_val.is_string()
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  if (rps_lexer_token_name_str_val
+      && rps_lexer_token_name_str_val.is_string()
       && rps_lexer_token_name_str_val.to_cppstring() == toksrc_name)
     return rps_lexer_token_name_str_val;
   rps_lexer_token_name_str_val = Rps_String::make(toksrc_name);
@@ -132,6 +138,7 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
                             Rps_ObjectRef lexkindarg, Rps_Value lexvalarg,
                             const Rps_String*sourcev)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                  /*callerframe:*/callframe,
                  Rps_ObjectRef lexkindob;
@@ -160,6 +167,7 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
 const std::string
 Rps_TokenSource::position_str(int col) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::string colstr;
   if (toksrc_linebuf.empty())
     colstr = "°";
@@ -179,6 +187,7 @@ Rps_TokenSource::position_str(int col) const
 void
 Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   out << toksrc_linebuf << std::endl;
   int curcol = col();
   const char*nextp = nullptr;
@@ -203,6 +212,7 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
 //// callable from GDB
 const char*Rps_TokenSource::cur_cptr(void) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   return curcptr();
 };
 
@@ -215,6 +225,8 @@ Rps_TokenSource::~Rps_TokenSource()
   toksrc_name.clear();
   toksrc_line= -1;
   toksrc_col= -1;
+  toksrc_object= nullptr;
+  toksrc_data= nullptr;
   toksrc_linebuf.clear();
   toksrc_token_deq.clear();
 } // end Rps_TokenSource::~Rps_TokenSource
@@ -223,6 +235,7 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
   : Rps_TokenSource(std::string{"stream "}+path),
     toksrc_input_stream()
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   wordexp_t wx= {};
   int err = wordexp(path.c_str(), &wx, WRDE_SHOWERR);
   if (err)
@@ -259,6 +272,7 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
 void
 Rps_StreamTokenSource::display(std::ostream&out) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   output(out, 0, Rps_Value::debug_maxdepth);
   out << std::endl;
   if (reached_end())
@@ -268,6 +282,7 @@ Rps_StreamTokenSource::display(std::ostream&out) const
 
 Rps_StreamTokenSource::~Rps_StreamTokenSource()
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   toksrc_input_stream.close();
   RPS_DEBUG_LOG(REPL, "destr °StreamTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(LOWREP, "destr °StreamTokenSource@ " <<(void*)this << " " << *this);
@@ -277,6 +292,7 @@ Rps_StreamTokenSource::~Rps_StreamTokenSource()
 bool
 Rps_StreamTokenSource::get_line(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   if (!toksrc_input_stream && toksrc_linebuf.empty())
     return false;
   starting_new_input_line();
@@ -288,6 +304,7 @@ Rps_StreamTokenSource::get_line(void)
 bool
 Rps_StreamTokenSource::reached_end(void) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   if (toksrc_input_stream && toksrc_input_stream.eof())
     return true;
   return false;
@@ -296,12 +313,14 @@ Rps_StreamTokenSource::reached_end(void) const
 void
 Rps_StreamTokenSource::fill_current_line_buffer(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::getline(toksrc_input_stream, toksrc_linebuf);
 } // end Rps_StreamTokenSource::fill_current_line_buffer
 
 void
 Rps_CinTokenSource::fill_current_line_buffer(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::getline(std::cin, toksrc_linebuf);
 } // end Rps_CinTokenSource::fill_current_line_buffer
 
@@ -329,6 +348,7 @@ Rps_CinTokenSource::~Rps_CinTokenSource()
 bool
 Rps_CinTokenSource::get_line(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   if (!std::cin && toksrc_linebuf.empty())
     return false;
   starting_new_input_line();
@@ -339,6 +359,7 @@ Rps_CinTokenSource::get_line(void)
 bool
 Rps_CinTokenSource::reached_end(void) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   if (std::cin && std::cin.eof())
     return true;
   return false;
@@ -347,6 +368,7 @@ Rps_CinTokenSource::reached_end(void) const
 void
 Rps_CinTokenSource::display(std::ostream&out) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   output(out, 0, Rps_Value::debug_maxdepth);
   if (reached_end())
     out <<  "°";
@@ -380,6 +402,7 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
 void
 Rps_StringTokenSource::restart_string_token_source(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   restart_token_source();
   toksrcstr_inp.seekg(0);
 } // end Rps_StringTokenSource::restart_string_token_source
@@ -403,6 +426,7 @@ Rps_StringTokenSource::~Rps_StringTokenSource()
 bool
 Rps_StringTokenSource::get_line()
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_POSSIBLE_BREAKPOINT();
   if (!toksrcstr_inp && toksrc_linebuf.empty())
     return false;
@@ -414,20 +438,24 @@ Rps_StringTokenSource::get_line()
 void
 Rps_StringTokenSource::fill_current_line_buffer(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::getline(toksrcstr_inp, toksrc_linebuf);
 } // end Rps_StringTokenSource::fill_current_line_buffer
 
 bool
 Rps_StringTokenSource::reached_end(void) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   if (toksrcstr_inp && toksrcstr_inp.eof())
     return true;
   return false;
 } // end Rps_StringTokenSource::reached_end
 
 void
-Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdepth) const
+Rps_StringTokenSource::output (std::ostream&out, unsigned depth,
+			       unsigned maxdepth) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   if (depth > maxdepth)
     {
       out << "??";
@@ -475,6 +503,7 @@ Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdep
 void
 Rps_StringTokenSource::display(std::ostream&out) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   output(out, 0, Rps_Value::debug_maxdepth);
   out << std::endl;
   display_current_line_with_cursor(out);
@@ -554,6 +583,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
 void
 Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   toksrc_linebuf.clear();
   RPS_POSSIBLE_BREAKPOINT();
   const char* pc = toksrcmfil_line;
@@ -588,6 +618,7 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
 Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
 {
   RPS_POSSIBLE_BREAKPOINT();
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_DEBUG_LOG(REPL, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this
                 << " p." << position_str());
   RPS_DEBUG_LOG(LOWREP, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
@@ -611,6 +642,7 @@ Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
 bool
 Rps_MemoryFileTokenSource::get_line(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   const char*c = toksrcmfil_line;
   while (c<toksrcmfil_end && *c != '\n')
     c++;
@@ -638,6 +670,7 @@ rps_toksrc_curcptr(const Rps_TokenSource&tksrc)
 bool
 Rps_MemoryFileTokenSource::reached_end(void) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   const char*c = curcptr();
   RPS_POSSIBLE_BREAKPOINT();
   if (c)
@@ -653,6 +686,7 @@ void
 Rps_MemoryFileTokenSource::output(std::ostream&out,
                                   unsigned depth, unsigned maxdepth) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
 #warning incomplete Rps_MemoryFileTokenSource::output
   const std::string curname = name();
   out << "Rps_MemoryFileTokenSource#S" << unique_number()
@@ -689,6 +723,7 @@ Rps_MemoryFileTokenSource::output(std::ostream&out,
 void
 Rps_MemoryFileTokenSource::display(std::ostream&out) const
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   output(out, 0, Rps_Value::debug_maxdepth);
   out << std::endl;
   display_current_line_with_cursor(out);
@@ -699,6 +734,7 @@ Rps_MemoryFileTokenSource::display(std::ostream&out) const
 Rps_LexTokenValue
 Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
@@ -773,6 +809,7 @@ Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
 Rps_LexTokenValue
 Rps_TokenSource::get__infinity__token(Rps_CallFrame*callframe, const char*curp)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
@@ -821,6 +858,7 @@ Rps_TokenSource::set_keyword_lexing_fun(rps_keyword_lexing_sigt*fun)
 Rps_LexTokenValue
 Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
@@ -999,8 +1037,10 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
 
 
 Rps_LexTokenValue
-Rps_TokenSource::get__shortstr__token(Rps_CallFrame*callframe, const char*curp)
+Rps_TokenSource::get__shortstr__token(Rps_CallFrame*callframe,
+				      const char*curp)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
@@ -1035,8 +1075,10 @@ Rps_TokenSource::get__shortstr__token(Rps_CallFrame*callframe, const char*curp)
 
 
 Rps_LexTokenValue
-Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe, const char*curp)
+Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe,
+					const char*curp)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
@@ -1060,7 +1102,8 @@ Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe, const char*curp
   lextok->set_serial(++toksrc_counter);
   RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                 << " from¤ " << *this << std::endl
-                << " multi-line literal string :-◑> " << _f.res << " @! " << position_str()
+                << " multi-line literal string :-◑> " << _f.res
+		<< " @! " << position_str()
                 << " curcptr:" <<  Rps_QuotedC_String(curcptr())
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
@@ -1072,8 +1115,10 @@ Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe, const char*curp
 
 
 Rps_LexTokenValue
-Rps_TokenSource::get__codechunk__token(Rps_CallFrame*callframe, const char*curp)
+Rps_TokenSource::get__codechunk__token(Rps_CallFrame*callframe,
+				       const char*curp)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
@@ -1083,7 +1128,8 @@ Rps_TokenSource::get__codechunk__token(Rps_CallFrame*callframe, const char*curp)
                 );
   int linestart = toksrc_line;
   int colstart = toksrc_col;
-  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get__codechunk__token#" << toksrc_counter
+  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get__codechunk__token#"
+		<< toksrc_counter
                 << " from¤ " << *this << " start");
   const Rps_String* str = _f.namev.to_string();
   _f.namev= source_name_val(&_);
@@ -1110,8 +1156,10 @@ Rps_TokenSource::get__codechunk__token(Rps_CallFrame*callframe, const char*curp)
 
 
 Rps_LexTokenValue
-Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
+Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe,
+				   const char*curp)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value delimv;
@@ -1122,14 +1170,17 @@ Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
   //int startcol = toksrc_col;
   _f.delimv = get_delimiter(&_);
   std::string delimstartstr {curp};
-  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get__delim__token#" << (toksrc_counter+1) << "? after "
+  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get__delim__token#"
+		<< (toksrc_counter+1) << "? after "
                 << " get_delimiter_object delimv="
                 << _f.delimv << " at " << position_str() << std::endl
                 << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
                 << Rps_QuotedC_String(curcptr()));
   if (!_f.delimv)
     {
-      RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos
+      RPS_WARNOUT("invalid delimiter "
+		  << Rps_QuotedC_String(delimstartstr)
+		  << " at " << delimpos
                   << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
                   <<  Rps_QuotedC_String(curcptr())
                   << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_token")
@@ -1162,6 +1213,7 @@ Rps_TokenSource::get__delim__token(Rps_CallFrame*callframe, const char*curp)
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
@@ -1181,8 +1233,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       curp = curcptr();
     };
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
-                << Rps_QuotedC_String(curp) << " at " << startpos << std::endl
+  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get_token#"
+		<< (toksrc_counter+1) << "? start curp="
+                << Rps_QuotedC_String(curp) << " at "
+		<< startpos << std::endl
                 << "… token_deq:" << toksrc_token_deq
                 << std::endl << "… source:" << *this
                 << std::endl
@@ -1379,6 +1433,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 Rps_Value
 Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/callframe,
                  Rps_Value res;
@@ -1402,7 +1457,9 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
   unsigned startcol = toksrc_col;
   ucs4_t curuc=0;
   RPS_ASSERT(startp);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter start " << *this << Rps_QuotedC_String(startp) << " at startpos:" << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter start "
+		<< *this << Rps_QuotedC_String(startp)
+		<< " at startpos:" << startpos);
   curp = startp;
   do
     {
@@ -1436,7 +1493,8 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
         again = false;
     }
   while (again);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimstr='" << Rps_Cjson_String(delimstr) << "' nbdelimch="
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimstr='"
+		<< Rps_Cjson_String(delimstr) << "' nbdelimch="
                 << nbdelimch << " startpos:" << startpos);
   /***
    * TODO: we need to find the longest substring in delimstr which is a known delimiter
@@ -1533,6 +1591,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
 std::string
 Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   std::string rstr;
   const char* curp = curcptr();
@@ -1681,6 +1740,7 @@ lexical_error_backslash:
 std::string
 Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::string result;
 #warning some code from rps_lex_raw_literal_string file repl_rps.cc lines 1050-1115 should go here
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -1711,7 +1771,8 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
   char endstr[24];
   memset(endstr, 0, sizeof(endstr));
   snprintf(endstr, sizeof(endstr)-1, ")%s\"", delim);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_raw_literal_string start L" << startlineno
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_raw_literal_string start"
+		" L" << startlineno
                 << ",C" << startcolno
                 << "@" << toksrc_name
                 << " endstr " << endstr << " in " << *this);
@@ -1747,6 +1808,7 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
 Rps_Value
 Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
                            /*callerframe:*/callframe,
                            Rps_ObjectRef obchunk;
@@ -1763,7 +1825,8 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
   chkdata.chunkdata_name = toksrc_name;
   const char* curp = curcptr();
   _f.namev= source_name_val(&_);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk start " << *this << " curp:" << Rps_QuotedC_String(curp));
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk start " << *this
+		<< " curp:" << Rps_QuotedC_String(curp));
   RPS_ASSERT(curp != nullptr && *curp != (char)0);
   char startchunk[12];
   memset(startchunk, 0, sizeof(startchunk));
@@ -1774,9 +1837,11 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
       startchunk[0] = (char)0;
       strcpy(chkdata.chunkdata_endstr, "}#");
     }
-  else if (sscanf(curp,  "#%6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
+  else if (sscanf(curp,  "#%6[a-zA-Z]{%n", startchunk, &pos)>0
+	   && pos>0 && isalpha(startchunk[0]))
     {
-      snprintf(chkdata.chunkdata_endstr, sizeof(chkdata.chunkdata_endstr), "}%s#", startchunk);
+      snprintf(chkdata.chunkdata_endstr, sizeof(chkdata.chunkdata_endstr),
+	       "}%s#", startchunk);
     }
   else // should never happen
     RPS_FATALOUT("corrupted Rps_TokenSource::lex_code_chunk @ " << position_str()
@@ -1832,6 +1897,7 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
 Rps_Value
 Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(chkdata && chkdata->chunkdata_magic == rps_chunkdata_magicnum);
@@ -1844,12 +1910,14 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
   _f.obchunk = obchkarg;
   RPS_DEBUG_LOG(LOW_REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno=" << chkdata->chunkdata_colno
                 << " curpos:" << position_str()
-                << " linebuf:'" << toksrc_linebuf << "' of size:" << toksrc_linebuf.size());
+                << " linebuf:'" << toksrc_linebuf << "'"
+		<< " of size:" << toksrc_linebuf.size());
   RPS_ASSERT(chkdata->chunkdata_colno>=0
              && chkdata->chunkdata_colno <= (int)toksrc_linebuf.size());
   const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
   const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='" << Rps_Cjson_String(pc) << "'"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='"
+		<< Rps_Cjson_String(pc) << "'"
                 << " @" << position_str(chkdata->chunkdata_colno));
   if (!pc || pc[0] == (char)0 || pc == eol)
     {
@@ -2014,6 +2082,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
 Rps_Value
 Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/callframe,
                  Rps_Value lextokv;
@@ -2096,6 +2165,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
 void
 Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_ASSERT(rps_is_main_thread());
   static unsigned callcnt;
   callcnt++;
@@ -2159,6 +2229,7 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
 void
 Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/callframe,
                  Rps_Value lextokv;

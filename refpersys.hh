@@ -2960,10 +2960,12 @@ class Rps_TokenSource           // this is *not* a value .....
   int toksrc_line, toksrc_col;  // current position
   int toksrc_counter;           // count the number of lexed token
   const unsigned toksrc_number; // unique number
-  mutable std::recursive_mutex toksrc_mtx;
   rps_keyword_lexing_sigt* toksrc_keywfun;
+  Rps_ObjectRef toksrc_object;
+  Rps_Value toksrc_data;
   static std::atomic<unsigned> toksrc_instance_count_;
 protected:
+  mutable std::recursive_mutex toksrc_mtx;
   void restart_token_source(void);
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
@@ -2973,6 +2975,7 @@ protected:
   Rps_TokenSource(std::string name);
   void set_name(std::string name)
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     toksrc_name = name;
   };
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
@@ -2984,6 +2987,7 @@ protected:
                               Rps_ChunkData_st*chkdata);
   void starting_new_input_line(void)
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     //    RPS_POSSIBLE_BREAKPOINT(); /// for issue#30
     toksrc_col=0;
     toksrc_line++;
@@ -2991,18 +2995,43 @@ protected:
   };
   void advance_cursor_bytes(unsigned nb)
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     toksrc_col += nb;
     if (toksrc_col > (int) toksrc_linebuf.size())
       toksrc_col = toksrc_linebuf.size();
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public: //////
+  void set_token_source_object(Rps_ObjectRef obj)
+  { 
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    toksrc_object = obj;
+  };
+  Rps_ObjectRef fetch_token_source_object(void) const {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    return toksrc_object;
+  };
+  void set_token_source_data(Rps_Value val)
+  { 
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    toksrc_data = val;
+  };
+  Rps_Value fetch_token_source_data(void) const {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    return toksrc_data;
+  };
+  void put_token_source_object_data(Rps_ObjectRef obj, Rps_Value val) {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    toksrc_object = obj;
+    toksrc_data = val;
+  };
   virtual void fill_current_line_buffer(void) =0;
   virtual bool reached_end(void) const =0;
   void set_keyword_lexing_fun(rps_keyword_lexing_sigt*fun);
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     if (toksrc_linebuf.empty())
       return nullptr;
     auto linesiz = toksrc_linebuf.size();
@@ -3016,6 +3045,7 @@ public: //////
   /// multi-byte character.
   char previous_ascii(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     if (toksrc_linebuf.empty())
       return (char)0;
     const char* buf = toksrc_linebuf.c_str();
@@ -3032,17 +3062,22 @@ public: //////
   }
   const std::string current_line(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_linebuf;
   };
   unsigned unique_number(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_number;
   }
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
-                                     Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
+                                     Rps_ObjectRef lexkind,
+				     Rps_Value lexval,
+				     const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
   void display_current_line_with_cursor(std::ostream&out) const;
-  virtual void output (std::ostream&out, unsigned depth, unsigned maxdepth) const = 0;
+  virtual void output (std::ostream&out, unsigned depth,
+		       unsigned maxdepth) const = 0;
   /// TODO: the display method for token source would also show the cursor in a fancy way,
   /// inspired by GCC-12 error messages.  Maybe like
   /// ***** line 345 "abcdef" col 2
@@ -3050,21 +3085,25 @@ public: //////
   virtual void display (std::ostream&out) const = 0;
   const Rps_DequVal& token_dequeue(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_token_deq;
   };
   void clear_token_dequeue(void);
-  void consume_front_token(Rps_CallFrame*callframe, bool *psuccess=nullptr);
+  void consume_front_token(Rps_CallFrame*callframe,
+			   bool *psuccess=nullptr);
   void append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv);
   virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
   const std::string& name(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_name;
   };
   const std::string position_str(int col= -1) const;
   int token_count(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return  toksrc_counter;
   };
   // return the source name as a string value, hopefully memoized
@@ -3090,83 +3129,109 @@ public: //////
   //// lookahead... The flag pointed by `pokparse` is set to true if
   //// provided, non-nil, and parsing successful.
   ///////////////////
-  Rps_Value parse_using_closure(Rps_CallFrame*callframe, Rps_ClosureValue closval);
+  Rps_Value parse_using_closure(Rps_CallFrame*callframe,
+				Rps_ClosureValue closval);
   ////
   //// Parse an expression. On success, the parsed expression is
   //// returned. On failure, the nil value is returned, and *pokparse
   //// is set to false when given.
-  Rps_Value parse_expression(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  Rps_Value parse_expression(Rps_CallFrame*callframe,
+			     bool*pokparse=nullptr);
   //// generic routine to parse symetrical binary operations like
   //// addition +
   Rps_Value parse_symmetrical_binaryop(Rps_CallFrame*callframe,
-                                       Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
+                                       Rps_ObjectRef binoper,
+				       Rps_ObjectRef bindelim,
                                        std::function<Rps_Value(Rps_CallFrame*,bool*)> parser_binop,
-                                       bool*pokparse, const char*opername=nullptr);
+                                       bool*pokparse,
+				       const char*opername=nullptr);
   //// generic routine to parse asymmetrical non commutative
   //// operations like division /
   Rps_Value parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
-                                        Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
+                                        Rps_ObjectRef binoper,
+					Rps_ObjectRef bindelim,
                                         std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,
                                             bool*)> parser_leftop,
                                         std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)>
                                         parser_rightop,
-                                        bool*pokparse, const char*opername=nullptr);
-  Rps_Value parse_polyop(Rps_CallFrame*callframe,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
+                                        bool*pokparse,
+					const char*opername=nullptr);
+  Rps_Value parse_polyop(Rps_CallFrame*callframe,
+			 Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
                          std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)> parser_suboperand,
                          bool*pokparse, const char*opername=nullptr);
   ///
   /// A disjunction is a sequence of one or more disjuncts separated
   /// by the logical or operator denoted || (see delimiter
   /// _1HsUfOkNw0W033EIW1)
-  Rps_Value parse_disjunction(Rps_CallFrame*callframe,  bool*pokparse=nullptr);
+  Rps_Value parse_disjunction(Rps_CallFrame*callframe,
+			      bool*pokparse=nullptr);
   ///
   /// A conjunction is a sequence of one or more conjuncts seperated
   /// by the logical and operator denoted && (see delimiter
   /// _2YVmrhVcwW00120rTK)
-  Rps_Value parse_conjunction(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  Rps_Value parse_conjunction(Rps_CallFrame*callframe,
+			      bool*pokparse=nullptr);
   ///
   /// A comparison is either a simple comparand (or sum) or two of
   /// them deparated by compare operators like != (see delimiter
   /// _1vF5VHnSdhr01VBomx) or <= (see delimiter _1mfq8qfixB401umCL9")
   /// etc..
-  Rps_Value parse_comparison(Rps_CallFrame*callframe, bool*pokparse=nullptr);
-  Rps_Value parse_comparand(Rps_CallFrame*callframe, bool*pokparse=nullptr);
-  Rps_Value parse_sum(Rps_CallFrame*callframe, bool*pokparse=nullptr);
-  Rps_Value parse_product(Rps_CallFrame*callframe, bool*pokparse=nullptr);
-
-  Rps_Value parse_factor(Rps_CallFrame*callframe, bool*pokparse=nullptr);
-  Rps_Value parse_term(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  Rps_Value parse_comparison(Rps_CallFrame*callframe,
+			     bool*pokparse=nullptr);
+  Rps_Value parse_comparand(Rps_CallFrame*callframe,
+			    bool*pokparse=nullptr);
+  Rps_Value parse_sum(Rps_CallFrame*callframe,
+		      bool*pokparse=nullptr);
+  Rps_Value parse_product(Rps_CallFrame*callframe,
+			  bool*pokparse=nullptr);
+  Rps_Value parse_factor(Rps_CallFrame*callframe,
+			 bool*pokparse=nullptr);
+  Rps_Value parse_term(Rps_CallFrame*callframe,
+		       bool*pokparse=nullptr);
   /// a primary expression is a simple thing
-  Rps_Value parse_primary(Rps_CallFrame*callframe,  bool*pokparse=nullptr);
+  Rps_Value parse_primary(Rps_CallFrame*callframe,
+			  bool*pokparse=nullptr);
   bool can_start_primary(Rps_CallFrame*callframe);
   /// Once we have parsed a primary, it could be followed by a primary
   /// complement. This routine is given the primary expression and
   /// return, when successful, a larger expression. It accepts fields
   /// and message sending.
-  Rps_Value parse_primary_complement(Rps_CallFrame*callframe, Rps_Value primaryexp, bool*pokparse=nullptr);
+  Rps_Value parse_primary_complement(Rps_CallFrame*callframe,
+				     Rps_Value primaryexp, bool*pokparse=nullptr);
 #pragma message "other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md"
   ///////
   int line(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_line;
   };
   int col(void) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrc_col;
   };
   /// on lexical error, get_token returns null and does not change the position
   Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
 private:
-  Rps_LexTokenValue get__number__token(Rps_CallFrame*callframe, const char*curp);
-  Rps_LexTokenValue get__infinity__token(Rps_CallFrame*callframe, const char*curp);
-  Rps_LexTokenValue get__namoid__token(Rps_CallFrame*callframe, const char*curp);
-  Rps_LexTokenValue get__shortstr__token(Rps_CallFrame*callframe, const char*curp);
-  Rps_LexTokenValue get__longlitstr__token(Rps_CallFrame*callframe, const char*curp);
-  Rps_LexTokenValue get__codechunk__token(Rps_CallFrame*callframe, const char*curp);
-  Rps_LexTokenValue get__delim__token(Rps_CallFrame*callframe, const char*curp);
+  Rps_LexTokenValue get__number__token(Rps_CallFrame*callframe,
+				       const char*curp);
+  Rps_LexTokenValue get__infinity__token(Rps_CallFrame*callframe,
+					 const char*curp);
+  Rps_LexTokenValue get__namoid__token(Rps_CallFrame*callframe,
+				       const char*curp);
+  Rps_LexTokenValue get__shortstr__token(Rps_CallFrame*callframe,
+					 const char*curp);
+  Rps_LexTokenValue get__longlitstr__token(Rps_CallFrame*callframe,
+					   const char*curp);
+  Rps_LexTokenValue get__codechunk__token(Rps_CallFrame*callframe,
+					  const char*curp);
+  Rps_LexTokenValue get__delim__token(Rps_CallFrame*callframe,
+				      const char*curp);
 };                              // end Rps_TokenSource
 
-inline std::ostream& operator << (std::ostream&out, Rps_TokenSource& toksrc)
+inline std::ostream& operator << (std::ostream&out,
+				  Rps_TokenSource& toksrc)
 {
   toksrc.output(out, 0, Rps_Value::debug_maxdepth);
   return out;
@@ -3176,11 +3241,15 @@ class Rps_CinTokenSource : public Rps_TokenSource
 {
 public:
   virtual void fill_current_line_buffer(void);
-  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  virtual void output(std::ostream&out, unsigned depth,
+		      unsigned maxdepth) const
   {
-    if (depth > maxdepth && &out != &std::cout && &out != &std::cerr && &out != &std::clog)
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    if (depth > maxdepth && &out != &std::cout &&
+	&out != &std::cerr && &out != &std::clog)
       RPS_WARNOUT("Rps_CinTokenSource " << name()
-                  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
+                  << " depth=" << depth
+		  << " greater than maxdepth=" << maxdepth);
     out << "CinTokenSource:" << name() << ".S#" << unique_number()
         << '@' << position_str() << " tok.cnt:" << token_count();
   };
@@ -3200,10 +3269,13 @@ public:
   Rps_StreamTokenSource(std::string path);
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     if (depth > maxdepth)
       RPS_WARNOUT("Rps_StreamTokenSource " << name()
-                  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
-    out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
+                  << " depth=" << depth
+		  << " greater than maxdepth=" << maxdepth);
+    out << "StreamTokenSource" << name() << '@'
+	<< position_str() << " tok.cnt:" << token_count();
   };
   virtual ~Rps_StreamTokenSource();
   virtual bool get_line(void);
@@ -3220,12 +3292,14 @@ class Rps_StringTokenSource : public Rps_TokenSource
 public:
   virtual void fill_current_line_buffer(void);
   Rps_StringTokenSource(std::string inpstr, std::string name);
-  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual void output(std::ostream&out, unsigned depth,
+		      unsigned maxdepth) const;
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
   void restart_string_token_source(void);
   const std::string str() const
   {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     return toksrcstr_str;
   };
   virtual bool reached_end(void) const;
