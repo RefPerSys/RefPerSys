@@ -351,19 +351,30 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
           out<<(char)uc;
           break;
         default:
+          // uc is an ucs4_t (unicode 32 bits)
           if (uc>' ' && uc<127)
             out<< (char)uc;
           else
             {
               char ubuf[16];
               memset(ubuf, 0, sizeof(ubuf));
+              RPS_POSSIBLE_BREAKPOINT();
+              if (uc_is_print(uc))
+                if (u8_uctomb(reinterpret_cast<uint8_t*>(ubuf),
+                              uc, sizeof(ubuf)-2)>0)
+                  {
+                    RPS_POSSIBLE_BREAKPOINT();
+                    goto output_ubuf;
+                  };
+              RPS_POSSIBLE_BREAKPOINT();
               if (uc<255)
                 snprintf(ubuf, sizeof(ubuf), "\\x%02x", (unsigned)uc);
               else if (uc<65535)
                 snprintf(ubuf, sizeof(ubuf), "\\u%04x", (unsigned)uc);
               else
                 snprintf(ubuf, sizeof(ubuf), "\\U%08x", (unsigned)uc);
-              out <<ubuf;
+output_ubuf:
+              out << ubuf;
             }
           break;
         }
