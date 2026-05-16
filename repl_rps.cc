@@ -56,7 +56,7 @@ extern "C" int
 rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
                             const std::string&keystr,
                             Rps_ObjectRef obkw,
-			    Rps_TokenSource*src);
+                            Rps_TokenSource*src);
 /// a C++ closure for getting the REPL lexical token.... with
 /// lookahead=0, next token, with lookahead=1 the second-next token
 std::function<Rps_LexTokenValue(Rps_CallFrame*,unsigned)> rps_repl_cmd_lexer_fun;
@@ -1586,31 +1586,62 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
 
 extern "C" int
 rps_keyword_lexer (Rps_CallFrame*,const std::string&keystr,
-		   Rps_ObjectRef obkw, Rps_TokenSource*tksrc);
+                   Rps_ObjectRef obkw, Rps_TokenSource*tksrc);
 
 int
 rps_keyword_lexer (Rps_CallFrame*callframe,
                    const std::string&keystr,
                    Rps_ObjectRef obkw,
-		   Rps_TokenSource* tksrc)
+                   Rps_TokenSource* tksrc)
 {
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
+  RPS_ASSERT(tksrc);
   RPS_DEBUG_LOG(REPL, "rps_keyword_lexer keystr="
-		<< Rps_QuotedC_String(keystr)
-		<< " tksrc=" << tksrc
-		<< " obkw=" << RPS_OBJECT_DISPLAY(obkw));
+                << Rps_QuotedC_String(keystr)
+                << " tksrc=" << *tksrc
+                << " obkw=" << RPS_OBJECT_DISPLAY(obkw));
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_FATALOUT("unimplemented rps_keyword_lexer keystr="
+  struct rps_local_keywlex_st
+  {
+    Rps_ObjectRef lockwlex_object;
+    const std::string* lockwlex_pstr;
+  } localdata;
+  localdata.lockwlex_object = obkw;
+  localdata.lockwlex_pstr = &keystr;
+  RPS_POSSIBLE_BREAKPOINT();
+  tksrc->do_on_locked_token_source
+  (callframe,
+   [=](Rps_TokenSource*argtksrc, Rps_CallFrame*argcallframe,
+       void*argdata)
+  {
+    RPS_POSSIBLE_BREAKPOINT();
+    struct rps_local_keywlex_st*locdata
+      = (struct rps_local_keywlex_st*)argdata;
+    RPS_ASSERT(argtksrc && argtksrc == tksrc);
+    RPS_ASSERT(argcallframe && argcallframe == callframe);
+    RPS_ASSERT(locdata->lockwlex_object == obkw);
+    RPS_ASSERT(locdata->lockwlex_pstr == &keystr);
+    RPS_DEBUG_LOG(REPL, "rps_keyword_lexer/lambda argtksrc="
+                  << argtksrc
+                  << " lockwlex_object="
+                  << locdata->lockwlex_object);
+#warning should do something in rps_keyword_lexer/lambda
+    RPS_POSSIBLE_BREAKPOINT();
+  },
+  &localdata);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_FATALOUT("incomplete rps_keyword_lexer keystr="
                << keystr << std::endl
-	       << "… tksrc=" << tksrc << std::endl
+               << "… tksrc=" << *tksrc << std::endl
                << "… obkw=" << RPS_OBJECT_DISPLAY(obkw));
+  memset((void*)&localdata,0,sizeof(localdata));
   return -1;
 } // end rps_keyword_lexer
 
 extern "C" int rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
-					   const std::string&keystr,
-					   Rps_ObjectRef obkw,
-					   Rps_TokenSource*tksrc);
+    const std::string&keystr,
+    Rps_ObjectRef obkw,
+    Rps_TokenSource*tksrc);
 
 void
 rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg,
