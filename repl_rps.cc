@@ -1596,6 +1596,9 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
 {
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
   RPS_ASSERT(tksrc);
+  // in commit e32da39ab4b0 running testlex0 ie
+  /// ./refpersys "--test-repl-lexer=@display 12.3 \"abc\"" -B -AREPL
+  // it is called from Rps_TokenSource::get__namoid__token.
   RPS_DEBUG_LOG(REPL, "rps_keyword_lexer keystr="
                 << Rps_QuotedC_String(keystr)
                 << " tksrc=" << *tksrc
@@ -1603,11 +1606,9 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
   RPS_POSSIBLE_BREAKPOINT();
   struct rps_local_keywlex_st
   {
-    Rps_ObjectRef lockwlex_object;
+    const Rps_ObjectRef lockwlex_object;
     const std::string* lockwlex_pstr;
-  } localdata;
-  localdata.lockwlex_object = obkw;
-  localdata.lockwlex_pstr = &keystr;
+  } localdata= {obkw, &keystr};
   RPS_POSSIBLE_BREAKPOINT();
   tksrc->do_on_locked_token_source
   (callframe,
@@ -1620,11 +1621,13 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
     RPS_ASSERT(argtksrc && argtksrc == tksrc);
     RPS_ASSERT(argcallframe && argcallframe == callframe);
     RPS_ASSERT(locdata->lockwlex_object == obkw);
-    RPS_ASSERT(locdata->lockwlex_pstr == &keystr);
+    RPS_ASSERT(*locdata->lockwlex_pstr == keystr);
     RPS_DEBUG_LOG(REPL, "rps_keyword_lexer/lambda argtksrc="
-                  << argtksrc
-                  << " lockwlex_object="
-                  << locdata->lockwlex_object);
+                  << *argtksrc << std::endl
+                  << "… lockwlex_object="
+                  << locdata->lockwlex_object << std::endl
+                  << "… lockwlex_pstr="
+                  << Rps_QuotedC_String(*locdata->lockwlex_pstr));
 #warning should do something in rps_keyword_lexer/lambda
     RPS_POSSIBLE_BREAKPOINT();
   },
