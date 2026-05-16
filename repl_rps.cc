@@ -1601,8 +1601,9 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
 		<< " obkw=" << RPS_OBJECT_DISPLAY(obkw));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_FATALOUT("unimplemented rps_keyword_lexer keystr="
-               << keystr
-               << " obkw=" << RPS_OBJECT_DISPLAY(obkw));
+               << keystr << std::endl
+	       << "… tksrc=" << tksrc << std::endl
+               << "… obkw=" << RPS_OBJECT_DISPLAY(obkw));
   return -1;
 } // end rps_keyword_lexer
 
