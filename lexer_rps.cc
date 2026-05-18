@@ -961,7 +961,17 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#"
 			    << toksrc_counter
                             << " lexed keyword " << namestr
+			    << " obnamed=" << _f.obnamed
 			    << " as kwdcode=" << kwdcode);
+	      if (kwdcode <= 0) {
+		RPS_WARNOUT("failed to lex keyword " << namestr
+			    << " obnamed=" << _f.obnamed
+			    << " token#" << toksrc_counter
+			    << " from " << *this
+			    << std::endl
+			    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token"));
+		return nullptr;
+	      };
 	      RPS_POSSIBLE_BREAKPOINT();
               Rps_LexTokenZone* lextokz =
                 rps_make_lex_token_zone
