@@ -1594,7 +1594,17 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
                    Rps_ObjectRef obkw,
                    Rps_TokenSource* tksrc)
 {
+  int res = 0;
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 callframe,
+		 Rps_ObjectRef obkw;
+		 Rps_Value val;
+		);
+  _f.obkw = obkw;
+  _f.val =
+    _f.obkw->get_attr1(&_,
+		       rpskob_083n2ydb4Zm03bbZW1); //!carburetta_keyword∈named_attribute
   RPS_ASSERT(tksrc);
   // in commit e32da39ab4b0 running testlex0 ie
   /// ./refpersys "--test-repl-lexer=@display 12.3 \"abc\"" -B -AREPL
@@ -1635,14 +1645,13 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
   RPS_DEBUG_LOG(REPL, "rps_keyword_lexer local.object="
 		<< localdata.lockwlex_object
 		<< " local.pstr="
-		<< Rps_QuotedC_String(*localdata.lockwlex_pstr));
+		<< Rps_QuotedC_String(*localdata.lockwlex_pstr)
+		<< " val="<< _f.val);
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_FATALOUT("incomplete rps_keyword_lexer keystr="
-               << keystr << std::endl
-               << "… tksrc=" << *tksrc << std::endl
-               << "… obkw=" << RPS_OBJECT_DISPLAY(obkw));
+  if (_f.val.is_int())
+    res = _f.val.as_int();
   memset((void*)&localdata,0,sizeof(localdata));
-  return -1;
+  return res;
 } // end rps_keyword_lexer
 
 extern "C" int rps_carbrepl_keyword_lexer (Rps_CallFrame*callframe,
