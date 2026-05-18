@@ -958,8 +958,10 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
 						   "Rps_TokenSource::get__namoid__token/keyw"));
 	      RPS_POSSIBLE_BREAKPOINT();
               int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed, this);
-              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#" << toksrc_counter
-                            << " lexed keyword " << namestr << " as kwdcode=" << kwdcode);
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#"
+			    << toksrc_counter
+                            << " lexed keyword " << namestr
+			    << " as kwdcode=" << kwdcode);
 	      RPS_POSSIBLE_BREAKPOINT();
               Rps_LexTokenZone* lextokz =
                 rps_make_lex_token_zone
