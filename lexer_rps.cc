@@ -510,7 +510,11 @@ Rps_StringTokenSource::output (std::ostream&out, unsigned depth,
   out << '@' << position_str() << " tok.cnt:" << token_count()
       << " str: " << Rps_QuotedC_String(toksrcstr_inp.str());
   if (depth == 0)
-    out << " deq:" << token_dequeue();
+    {
+      auto pair = fetch_token_source_pair();
+      out << " deq:" << token_dequeue() << std::endl;
+      out << "… obj=" << pair.first << ", data=" << pair.second;
+    };
   if (reached_end())
     out <<  "°";
   out << std::flush;
@@ -951,43 +955,44 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
           if (toksrc_keywfun)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#"
-			    << toksrc_counter
+                            << toksrc_counter
                             << " lexing keyword " << namestr
                             << " from:" << std::endl
                             <<  RPS_FULL_BACKTRACE(1,
-						   "Rps_TokenSource::get__namoid__token/keyw"));
-	      RPS_POSSIBLE_BREAKPOINT();
+                                                   "Rps_TokenSource::get__namoid__token/keyw"));
+              RPS_POSSIBLE_BREAKPOINT();
               int kwdcode = toksrc_keywfun(&_, namestr, _f.obnamed, this);
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get__namoid__token#"
-			    << toksrc_counter
+                            << toksrc_counter
                             << " lexed keyword " << namestr
-			    << " obnamed=" << _f.obnamed
-			    << " as kwdcode=" << kwdcode);
-	      if (kwdcode <= 0) {
-		RPS_WARNOUT("failed to lex keyword " << namestr
-			    << " obnamed=" << _f.obnamed
-			    << " token#" << toksrc_counter
-			    << " from " << *this
-			    << std::endl
-			    << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token"));
-		return nullptr;
-	      };
-	      RPS_POSSIBLE_BREAKPOINT();
+                            << " obnamed=" << _f.obnamed
+                            << " as kwdcode=" << kwdcode);
+              if (kwdcode <= 0)
+                {
+                  RPS_WARNOUT("failed to lex keyword " << namestr
+                              << " obnamed=" << _f.obnamed
+                              << " token#" << toksrc_counter
+                              << " from " << *this
+                              << std::endl
+                              << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get__namoid__token"));
+                  return nullptr;
+                };
+              RPS_POSSIBLE_BREAKPOINT();
               Rps_LexTokenZone* lextokz =
                 rps_make_lex_token_zone
                 (this, rpskob_083n2ydb4Zm03bbZW1, //!carburetta_keyword∈named_attribute
                  _f.obnamed,
                  str, curlin, curcol);
-	      RPS_ASSERT(str);
+              RPS_ASSERT(str);
               _f.res = Rps_LexTokenValue(lextokz);
               lextokz->set_serial(++toksrc_counter);
-	      RPS_POSSIBLE_BREAKPOINT();
+              RPS_POSSIBLE_BREAKPOINT();
               RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__namoid__token#"
-			    << toksrc_counter
+                            << toksrc_counter
                             << " from¤ " << *this
-			    << " str=" << (*str)
-			    << std::endl
-			    << "… obnamed=" << _f.obnamed
+                            << " str=" << (*str)
+                            << std::endl
+                            << "… obnamed=" << _f.obnamed
                             << " ¤keyword lexkindob=" << _f.lexkindob
                             << std::endl
                             << "… startswithalpha=" << startswithalpha
@@ -1003,7 +1008,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
               {
                 this->display_current_line_with_cursor(out);
               }));
-	      RPS_POSSIBLE_BREAKPOINT();
+              RPS_POSSIBLE_BREAKPOINT();
               return _f.res;
             }
           else
