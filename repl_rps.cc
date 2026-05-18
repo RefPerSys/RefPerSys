@@ -1632,6 +1632,10 @@ rps_keyword_lexer (Rps_CallFrame*callframe,
     RPS_POSSIBLE_BREAKPOINT();
   },
   &localdata);
+  RPS_DEBUG_LOG(REPL, "rps_keyword_lexer local.object="
+		<< localdata.lockwlex_object
+		<< " local.pstr="
+		<< Rps_QuotedC_String(*localdata.lockwlex_pstr));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_FATALOUT("incomplete rps_keyword_lexer keystr="
                << keystr << std::endl
