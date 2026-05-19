@@ -206,6 +206,7 @@ void
 rps_output_utf8_html(std::ostream&out, const char*str, int bytlen,
                      bool nl2br)
 {
+  /// This is used thru Rps_Html_String and Rps_Html_Nl2br_String...
   if (!str)
     return;
   if (bytlen<0)
@@ -299,6 +300,7 @@ rps_output_utf8_html(std::ostream&out, const char*str, int bytlen,
 void
 rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
 {
+  /// This is used thru rps_output_utf8_cjson
   if (!str)
     return;
   if (bytlen<0)
