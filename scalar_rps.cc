@@ -168,15 +168,31 @@ Rps_String::compute_class(Rps_CallFrame*) const
 } // end Rps_String::compute_class
 
 void
-Rps_Double::val_output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+Rps_Double::val_output(std::ostream&out, unsigned depth,
+                       unsigned maxdepth) const
 {
   if (depth > maxdepth)
     {
       out << "??";
       return;
     }
-  out << dval();
+  double d = dval();
+  char buf[40];
+  memset(buf, 0, sizeof(buf));
+  snprintf(buf, sizeof(buf)-1, "%g", d);
+  // dont output +12 for a double value (it looks like an integer), so...
+  if (strchr(buf, 'N') || strchr(buf, 'n') // for INF or NaN
+      || strchr(buf, 'e') || strchr(buf, 'E') // for 12e4
+      || strchr(buf, '.'))
+    out << buf;
+  else
+    {
+      snprintf(buf, sizeof(buf)-1, "%f");
+      RPS_ASSERT(strchr(buf, '.'));
+      out << buf;
+    }
 } // end Rps_Double::val_output
+
 
 Rps_ObjectRef
 Rps_Double::compute_class(Rps_CallFrame*) const
@@ -187,12 +203,14 @@ Rps_Double::compute_class(Rps_CallFrame*) const
 ////////////////////////////////////////////////////////////////
 ///// UTF8 encoded string output
 void
-rps_output_utf8_html(std::ostream&out, const char*str, int bytlen, bool nl2br)
+rps_output_utf8_html(std::ostream&out, const char*str, int bytlen,
+                     bool nl2br)
 {
   if (!str)
     return;
   if (bytlen<0)
     bytlen = strlen(str);
+  RPS_POSSIBLE_BREAKPOINT();
   const char*end = str + bytlen;
   const uint8_t *next;
   const uint8_t* uend =(const uint8_t*)end;
@@ -285,6 +303,7 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
     return;
   if (bytlen<0)
     bytlen = strlen(str);
+  RPS_POSSIBLE_BREAKPOINT();
   const char*end = str + bytlen;
   const uint8_t *next;
   const uint8_t* uend =(const uint8_t*)end;
@@ -433,7 +452,8 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
     {
       /// absolute file path
       glob_t g = {};
-      if (glob(shellpatt, GLOB_ERR|GLOB_MARK|GLOB_TILDE_CHECK, nullptr, &g))
+      if (glob(shellpatt, GLOB_ERR|GLOB_MARK|GLOB_TILDE_CHECK,
+               nullptr, &g))
         {
           globfree(&g);
           return std::string();
@@ -460,7 +480,8 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
     std::string dirstr(dirpath);
     const char* pc=nullptr;
     const char* colon=nullptr;
-    for (pc = dirstr.c_str(); pc && *pc; pc = (colon?(colon+1):nullptr))
+    for (pc = dirstr.c_str(); pc && *pc;
+         pc = (colon?(colon+1):nullptr))
       {
         colon = strchr(pc, ':');
         std::string curdir;
