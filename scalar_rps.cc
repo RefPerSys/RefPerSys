@@ -209,6 +209,8 @@ rps_output_utf8_html(std::ostream&out, const char*str, int bytlen,
   /// This is used thru Rps_Html_String and Rps_Html_Nl2br_String...
   if (!str)
     return;
+  char ubuf[16];
+  memset(ubuf, 0, sizeof(ubuf));
   if (bytlen<0)
     bytlen = strlen(str);
   RPS_POSSIBLE_BREAKPOINT();
@@ -283,11 +285,22 @@ rps_output_utf8_html(std::ostream&out, const char*str, int bytlen,
           out<<(char)uc;
           break;
         default:
-          if (uc>' ' && uc<127) out<< (char)uc;
-          else
+          if (uc>' ' && uc<127)
+            out<< (char)uc;
+          else if (uc_is_print(uc))   // printable Unicode UTF8
             {
-              char ubuf[16];
-              memset(ubuf, 0, sizeof(ubuf));
+              if (u8_uctomb(reinterpret_cast<uint8_t*>(ubuf),
+                            uc, sizeof(ubuf)-2)>0)
+                {
+                  RPS_POSSIBLE_BREAKPOINT();
+                  out << ubuf;
+                }
+              else
+                goto output_ubuf;
+            }
+          else
+output_ubuf:
+            {
               snprintf(ubuf, sizeof(ubuf), "&#%u;", (unsigned)uc);
               out <<ubuf;
             }
