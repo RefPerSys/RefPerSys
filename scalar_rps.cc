@@ -187,7 +187,7 @@ Rps_Double::val_output(std::ostream&out, unsigned depth,
     out << buf;
   else
     {
-      snprintf(buf, sizeof(buf)-1, "%f");
+      snprintf(buf, sizeof(buf)-1, "%f", d);
       RPS_ASSERT(strchr(buf, '.'));
       out << buf;
     }
@@ -414,7 +414,6 @@ output_ubuf:
 std::string
 rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
 {
-#warning unimplemented rps_glob_plain_file_path
   if (!shellpatt || !shellpatt[0])
     return std::string();
   if (shellpatt[0] == '~')
@@ -423,6 +422,32 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
       int err = wordexp(shellpatt, &wx, WRDE_NOCMD|WRDE_UNDEF);
       if (err)
         {
+          const char *errmsg= "???";
+          switch(err)
+            {
+            case WRDE_BADCHAR:
+              errmsg="bad character";
+              break;
+            case WRDE_BADVAL:
+              errmsg="bad shellvar";
+              break;
+            case WRDE_CMDSUB:
+              errmsg="bad commandsubst";
+              break;
+            case WRDE_NOSPACE:
+              errmsg="out of memory";
+              break;
+            case WRDE_SYNTAX:
+              errmsg="syntax error";
+              break;
+            };
+          RPS_WARNOUT("rps_glob_plain_file_path fail on shellpatt="
+                      << Rps_QuotedC_String(shellpatt)
+                      << " dirpath=" << Rps_QuotedC_String(dirpath)
+                      << " err#" << err << "=" << errmsg
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1,
+          "rps_glob_plain_file_path"));
           wordfree(&wx);
           return std::string();
         };
