@@ -1703,12 +1703,14 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         strcpy(cwdbuf, "./");
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
       if (!dlh)
-        RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror()
+        RPS_FATALOUT("failed to dlopen plugin " << arg
+		     << " : " << dlerror()
                      << " in " << cwdbuf);
       const char* bnplug = basename(arg);
       Rps_Plugin curplugin(bnplug, dlh);
       RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size()
-                    << " from " << arg << " from process pid#" << (int)getpid()
+                    << " from " << arg << " from process pid#"
+		    << (int)getpid()
                     << " basenamed " << Rps_QuotedC_String(bnplug)
                     << " in " << cwdbuf);
       rps_plugins_vector.push_back(curplugin);
@@ -1724,7 +1726,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         RPS_FATALOUT("missing --plugin-arg");
       if (strlen(arg) >= sizeof(plugname) + sizeof(plugarg) - 1)
         RPS_FATALOUT("too long --plugin-arg" << arg
-                     << " should be shorter than " << ( sizeof(plugname) + sizeof(plugarg)) << " bytes");
+                     << " should be shorter than "
+		     << (sizeof(plugname) + sizeof(plugarg)) << " bytes");
       if (sscanf(arg, "%78[a-zA-Z0-9_]:%126s", plugname, plugarg) < 2)
         RPS_FATALOUT("expecting --plugin-arg=<plugin-name>:<plugin-arg-string but got " << arg);
       int pluginix= -1;
@@ -1747,7 +1750,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       RPS_POSSIBLE_BREAKPOINT();
       if (pluginix<0)
         RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
-                     << " without such loaded plugin (loaded " << plugcnt << " plugins)");
+                     << " without such loaded plugin"
+		     << " (loaded " << plugcnt << " plugins)");
       Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
       rps_pluginargs_map[plugname] = std::string{plugarg};
       RPS_INFORMOUT("registering plugin argument of --plugin-arg " << arg
@@ -1852,7 +1856,8 @@ rps_parse_program_arguments(int &argc, char**argv)
 
 /// most of the time this function is used thru RPS_OUT_PROGARGS macro
 void
-rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
+rps_output_program_arguments(std::ostream& out, int argc,
+			     const char*const*argv)
 {
   for (int i=0; i<argc; i++)
     {

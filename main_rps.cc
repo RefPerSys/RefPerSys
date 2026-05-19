@@ -435,20 +435,20 @@ struct argp_option rps_progoptions[] =
   /* ======= test the read-eval-print lexer on string ======== */
   {/*name:*/ "test-repl-lexer", ///
     /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
-    /*arg:*/ "TESTLEXSTRING", ///
+    /*arg:*/ "TESTSTRING", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Test the read-eval-print-loop lexer on given TESTLEXSTRING."
-    " (this option might become obsolete).\n", //
+    /*doc:*/ "Test the read-eval-print-loop lexer on given TESTSTRING.\n"
+    " [may become obsolete, see also --file-repl-lexer=… ]\n", //
     /*group:*/0 ///
   },
   /* ======= test the read-eval-print lexer on file or pipe ======== */
   {/*name:*/ "file-repl-lexer", ///
     /*key:*/ RPSPROGOPT_FILE_REPL_LEXER, ///
-    /*arg:*/ "TESTLEX", ///
+    /*arg:*/ "TESTFILE", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Test the REPL lexer on given <TESTLEX> file\n"
-    " (or pipe if starting with | or !)"
-    " [this option might become obsolete].\n", //
+    /*doc:*/ "Test the REPL lexer on given <TESTFILE> file\n"
+    " (or pipe if starting with | or !)\n"
+    " [may become obsolete, see also --test-repl-lexer=… ]\n", //
     /*group:*/0 ///
   },
   /* ======= type information ======= */
