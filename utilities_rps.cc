@@ -1618,12 +1618,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                          << rps_test_repl_string);
           rps_test_repl_string = arg;
           RPS_INFORMOUT("will test the REPL lexer on string:"
-			<< std::endl
+                        << std::endl
                         << rps_test_repl_string
                         << std::endl << "… that is the "
-			<< rps_test_repl_string.size()
+                        << rps_test_repl_string.size()
                         << " bytes string "
-			<< Rps_QuotedC_String(rps_test_repl_string));
+                        << Rps_QuotedC_String(rps_test_repl_string));
         }
     }
     return 0;
@@ -1638,8 +1638,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           rps_file_repl_string = arg;
           bool isfile=arg[0] != '!' && arg[0] != '|';
           RPS_WARNOUT("should test the REPL lexer on "
-                       << (isfile?"file":"pipe") << " "
-                       <<  Rps_QuotedC_String(rps_file_repl_string));
+                      << (isfile?"file":"pipe") << " "
+                      <<  Rps_QuotedC_String(rps_file_repl_string));
         }
     }
     return 0;
@@ -1704,13 +1704,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
       if (!dlh)
         RPS_FATALOUT("failed to dlopen plugin " << arg
-		     << " : " << dlerror()
+                     << " : " << dlerror()
                      << " in " << cwdbuf);
       const char* bnplug = basename(arg);
       Rps_Plugin curplugin(bnplug, dlh);
       RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size()
                     << " from " << arg << " from process pid#"
-		    << (int)getpid()
+                    << (int)getpid()
                     << " basenamed " << Rps_QuotedC_String(bnplug)
                     << " in " << cwdbuf);
       rps_plugins_vector.push_back(curplugin);
@@ -1727,7 +1727,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       if (strlen(arg) >= sizeof(plugname) + sizeof(plugarg) - 1)
         RPS_FATALOUT("too long --plugin-arg" << arg
                      << " should be shorter than "
-		     << (sizeof(plugname) + sizeof(plugarg)) << " bytes");
+                     << (sizeof(plugname) + sizeof(plugarg)) << " bytes");
       if (sscanf(arg, "%78[a-zA-Z0-9_]:%126s", plugname, plugarg) < 2)
         RPS_FATALOUT("expecting --plugin-arg=<plugin-name>:<plugin-arg-string but got " << arg);
       int pluginix= -1;
@@ -1751,7 +1751,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       if (pluginix<0)
         RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
                      << " without such loaded plugin"
-		     << " (loaded " << plugcnt << " plugins)");
+                     << " (loaded " << plugcnt << " plugins)");
       Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
       rps_pluginargs_map[plugname] = std::string{plugarg};
       RPS_INFORMOUT("registering plugin argument of --plugin-arg " << arg
@@ -1857,7 +1857,7 @@ rps_parse_program_arguments(int &argc, char**argv)
 /// most of the time this function is used thru RPS_OUT_PROGARGS macro
 void
 rps_output_program_arguments(std::ostream& out, int argc,
-			     const char*const*argv)
+                             const char*const*argv)
 {
   for (int i=0; i<argc; i++)
     {
@@ -1986,7 +1986,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
   if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
     strcpy(cwdbuf, "./");
   snprintf (errbuf, sizeof(errbuf)-1, "FATAL STOP (%s:%d)/%s",
-	    filnam, lin, rps_current_pthread_name().c_str());
+            filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
                     "… pid %d on %s,\n"
@@ -2087,7 +2087,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
       std::clog << "===== end fatal error at " << filnam << ":" << lin
                 << " ======" << std::endl << std::flush;
       std::clog << "RefPerSys gitid "
-		<< rps_shortgitid; 
+                << rps_shortgitid;
       if (!rps_run_name.empty())
         std::clog << " run " << rps_run_name;
       std::clog << std::endl
