@@ -420,6 +420,105 @@ Rps_FileTokenSource::fill_current_line_buffer(void)
     }
   while(!feof(toksrc_input_file));
 } // end Rps_FileTokenSource::fill_current_line_buffer
+////////////////////////////////////////////////////////////////
+
+
+Rps_PipeTokenSource::Rps_PipeTokenSource(std::string path)
+  : Rps_TokenSource(std::string{"PIPE "}+path),
+    toksrc_input_pipe(nullptr)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  toksrc_input_pipe = popen(path.c_str(), "r");
+  if (!toksrc_input_pipe)
+    {
+      RPS_WARNOUT("pipe token source for '" << Rps_Cjson_String(path)
+                  << "' failed to popen " << strerror(errno));
+      throw std::runtime_error(std::string{"bad pipe token source:"}
+                               + path);
+    }
+  set_name(std::string("PIPE ") + std::string(path));
+  RPS_DEBUG_LOG(REPL, "constr PipeTokenSource@ " <<(void*)this
+                << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "constr PipeTokenSource@ " <<(void*)this
+                << " " << *this);
+  RPS_DEBUG_LOG(CMD, "constr PipeTokenSource@ " <<(void*)this
+                << " " << *this);
+} // end Rps_PipeTokenSource::Rps_PipeTokenSource
+
+
+
+void
+Rps_PipeTokenSource::display(std::ostream&out) const
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  output(out, 0, Rps_Value::debug_maxdepth);
+  out << std::endl;
+  if (reached_end())
+    out <<  "°";
+  display_current_line_with_cursor(out);
+} // end Rps_PipeTokenSource::display
+
+Rps_PipeTokenSource::~Rps_PipeTokenSource()
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  int e = pclose(toksrc_input_pipe);
+  toksrc_input_pipe = nullptr;
+  if (e)
+    {
+      RPS_WARNOUT("pipe token source for '"
+                  << Rps_Cjson_String(name())
+                  << "' failed pclose with exit #" << e);
+      throw
+      std::runtime_error(std::string{"bad pipe token source:"
+                                     + name()});
+    };
+  RPS_DEBUG_LOG(REPL, "destr °PipeTokenSource@ " <<(void*)this
+                << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "destr °PipeTokenSource@ " <<(void*)this
+                << " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr °PipeTokenSource@ " <<(void*)this
+                << " " << *this);
+} // end Rps_PipeTokenSource::~Rps_PipeTokenSource
+
+bool
+Rps_PipeTokenSource::get_line(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  if (!toksrc_input_pipe)
+    return false;
+  starting_new_input_line();
+  return true;
+} // end Rps_PipeTokenSource::get_line
+
+
+
+bool
+Rps_PipeTokenSource::reached_end(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  if (!toksrc_input_pipe || feof(toksrc_input_pipe));
+  return true;
+  return false;
+} // end Rps_PipeTokenSource::reached_end
+
+void
+Rps_PipeTokenSource::fill_current_line_buffer(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  char linbuf[512];
+  toksrc_linebuf.clear();
+  do
+    {
+      memset(linbuf, 0, sizeof(linbuf));
+      // NB: we assume no null byte in the file....
+      if (!fgets(linbuf, sizeof(linbuf)-1, toksrc_input_pipe))
+        break;
+      toksrc_linebuf.append(linbuf);
+      if (strchr(linbuf, '\n'))
+        break;
+    }
+  while(!feof(toksrc_input_pipe));
+} // end Rps_PipeTokenSource::fill_current_line_buffer
 
 
 ////////////////////////////////////////////////////////////////

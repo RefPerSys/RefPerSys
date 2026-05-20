@@ -447,7 +447,7 @@ extern "C" void rps_parse_program_arguments(int& argc, char**argv);
 ////////////////
 /// in lexer_rps.cc
 /// lexer test on string
-extern "C" void rps_run_test_repl_lexer(const std::string&); 
+extern "C" void rps_run_test_repl_lexer(const std::string&);
 
 // lexer test on file or pipe
 extern "C" void rps_run_file_repl_lexer(const std::string&);
@@ -3335,7 +3335,7 @@ public:
 
 class Rps_PipeTokenSource : public Rps_TokenSource
 {
-  FILE* tokrsrc_input_pipe;
+  FILE* toksrc_input_pipe;
 public:
   virtual void fill_current_line_buffer(void);
   Rps_PipeTokenSource(std::string path);
