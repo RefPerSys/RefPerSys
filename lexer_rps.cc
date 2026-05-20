@@ -334,6 +334,95 @@ Rps_StreamTokenSource::fill_current_line_buffer(void)
   std::getline(toksrc_input_stream, toksrc_linebuf);
 } // end Rps_StreamTokenSource::fill_current_line_buffer
 
+////////////////////////////////////////////////////////////////
+
+
+Rps_FileTokenSource::Rps_FileTokenSource(std::string path)
+  : Rps_TokenSource(std::string{"file "}+path),
+    toksrc_input_file(nullptr)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  toksrc_input_file = fopen(path.c_str(), "r");
+  if (!toksrc_input_file)
+    {
+      RPS_WARNOUT("file token source for '" << Rps_Cjson_String(path)
+                  << "' failed to fopen " << strerror(errno));
+      throw std::runtime_error(std::string{"bad file token source:"} + path);
+    }
+  set_name(std::string("FILE ") + std::string(path));
+  RPS_DEBUG_LOG(REPL, "constr FileTokenSource@ " <<(void*)this
+                << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "constr FileTokenSource@ " <<(void*)this
+                << " " << *this);
+  RPS_DEBUG_LOG(CMD, "constr FileTokenSource@ " <<(void*)this
+                << " " << *this);
+} // end Rps_FileTokenSource::Rps_FileTokenSource
+
+
+
+void
+Rps_FileTokenSource::display(std::ostream&out) const
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  output(out, 0, Rps_Value::debug_maxdepth);
+  out << std::endl;
+  if (reached_end())
+    out <<  "°";
+  display_current_line_with_cursor(out);
+} // end Rps_FileTokenSource::display
+
+Rps_FileTokenSource::~Rps_FileTokenSource()
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  fclose(toksrc_input_file);
+  toksrc_input_file = nullptr;
+  RPS_DEBUG_LOG(REPL, "destr °FileTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "destr °FileTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr °FileTokenSource@ " <<(void*)this << " " << *this);
+} // end Rps_FileTokenSource::~Rps_FileTokenSource
+
+bool
+Rps_FileTokenSource::get_line(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  if (!toksrc_input_file)
+    return false;
+  starting_new_input_line();
+  return true;
+} // end Rps_FileTokenSource::get_line
+
+
+
+bool
+Rps_FileTokenSource::reached_end(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  if (!toksrc_input_file || feof(toksrc_input_file));
+  return true;
+  return false;
+} // end Rps_FileTokenSource::reached_end
+
+void
+Rps_FileTokenSource::fill_current_line_buffer(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  char linbuf[512];
+  toksrc_linebuf.clear();
+  do
+    {
+      memset(linbuf, 0, sizeof(linbuf));
+      // NB: we assume no null byte in the file....
+      if (!fgets(linbuf, sizeof(linbuf)-1, toksrc_input_file))
+        break;
+      toksrc_linebuf.append(linbuf);
+      if (strchr(linbuf, '\n'))
+        break;
+    }
+  while(!feof(toksrc_input_file));
+} // end Rps_FileTokenSource::fill_current_line_buffer
+
+
+////////////////////////////////////////////////////////////////
 void
 Rps_CinTokenSource::fill_current_line_buffer(void)
 {
@@ -394,8 +483,9 @@ Rps_CinTokenSource::display(std::ostream&out) const
 } // end Rps_CinTokenSource::display
 
 
-////////////////
-Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string name)
+////////////////////////////////
+Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr,
+    std::string name)
   : Rps_TokenSource(name), toksrcstr_inp(inptstr), toksrcstr_str(inptstr)
 {
   RPS_POSSIBLE_BREAKPOINT();
@@ -2395,9 +2485,10 @@ rps_run_file_repl_lexer(const std::string& teststr)
                            Rps_Value curlextokenv;
                 );
   RPS_ASSERT(rps_is_main_thread());
-  RPS_FATALOUT("unimplemented rps_run_file_repl_lexer "
-               << Rps_QuotedC_String(teststr));
   // if teststr[0] is '|' or '!' do a popen otherwise a fopen
+  if (teststr[0] == '|' || teststr[0] == '!')
+    RPS_FATALOUT("unimplemented pipe rps_run_file_repl_lexer "
+                 << Rps_QuotedC_String(teststr));
 #warning unimplemented rps_run_file_repl_lexer (different for pipe)
 } // end rps_run_file_repl_lexer
 

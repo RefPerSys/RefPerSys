@@ -3310,6 +3310,52 @@ public:
 };             // end Rps_StreamTokenSource
 
 
+class Rps_FileTokenSource : public Rps_TokenSource
+{
+  FILE* toksrc_input_file;
+public:
+  virtual void fill_current_line_buffer(void);
+  Rps_FileTokenSource(std::string path);
+  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    if (depth > maxdepth)
+      RPS_WARNOUT("Rps_FileTokenSource " << name()
+                  << " depth=" << depth
+                  << " greater than maxdepth=" << maxdepth);
+    out << "FileTokenSource" << name() << '@'
+        << position_str() << " tok.cnt:" << token_count();
+  };
+  virtual ~Rps_FileTokenSource();
+  virtual bool get_line(void);
+  virtual bool reached_end(void) const;
+  virtual void display(std::ostream&out) const;
+};             // end Rps_FileTokenSource
+
+
+class Rps_PipeTokenSource : public Rps_TokenSource
+{
+  FILE* tokrsrc_input_pipe;
+public:
+  virtual void fill_current_line_buffer(void);
+  Rps_PipeTokenSource(std::string path);
+  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  {
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    if (depth > maxdepth)
+      RPS_WARNOUT("Rps_PipeTokenSource " << name()
+                  << " depth=" << depth
+                  << " greater than maxdepth=" << maxdepth);
+    out << "PipeTokenSource" << name() << '@'
+        << position_str() << " tok.cnt:" << token_count();
+  };
+  virtual ~Rps_PipeTokenSource();
+  virtual bool get_line(void);
+  virtual bool reached_end(void) const;
+  virtual void display(std::ostream&out) const;
+};             // end Rps_PipeTokenSource
+
+
 ////////////////
 class Rps_StringTokenSource : public Rps_TokenSource
 {
