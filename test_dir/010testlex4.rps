@@ -1,0 +1,18 @@
+# file RefPerSys/test_dir/010testlex4.rps
+# SPDX-License-Identifier: GPL-3.0-or-later
+#  © Copyright (C) 2026 The Reflective Persistent System Team
+#      team@refpersys.org & http://refpersys.org/
+# contributed by Basile Starynkevitch, France <basile@starynkevitch.net>
+
+# this file is not valid syntax but just testing lexing
+# use make testlex4
+#########################################################
+
+
+int 1 -23 0x34 0b01 0o12 013
+float 1.2 1e3 +NaN +INF
+string "ab" "\ncd" "€°être"
+## objectid
+cplusplus_name _0fx0GtCX90Z03VI9mo
+code_chunk #{ 'a' if ($x) $$ }#
+           #ab{ int x[$y]; }ab#

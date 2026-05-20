@@ -991,6 +991,9 @@ testlex1: refpersys test_dir/009sepscript.rps |GNUmakefile
 testlex2: refpersys test_dir/009sepscript.rps |GNUmakefile
 	./refpersys '--file-repl-lexer=!cat test_dir/009sepscript.rps' -B -AREPL
 
+testlex4: refpersys test_dir/009sepscript.rps |GNUmakefile
+	./refpersys --file-repl-lexer=test_dir/010testlex4.rps -B -AREPL
+
 test-load: refpersys
 	./refpersys --batch --run-name=test-load || (echo test-load failed; exit 1)
 	@printf '\n\n\n////test-load FINISHED¤\n'
