@@ -360,7 +360,8 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsign
       }
     else
       {
-        out << BOLD_esc << "C++ data vector has " <<  nbdata << " elements."
+        out << BOLD_esc << "C++ data vector has "
+            <<  nbdata << " elements."
             << NORM_esc << std::endl;
       }
   };
@@ -605,15 +606,18 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
     {
       RPS_WARNOUT("too long C++ (" << ssz << "bytes) comment"
                   " to emit generator=" << _f.obgenerator << ", module=" << _f.obmodule
-                  << std::endl << RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/toolong"));
+                  << std::endl <<
+                  RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/toolong"));
       throw RPS_RUNTIME_ERROR_OUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
-                                  " generator=" << _f.obgenerator
+                                  << " generator=" << _f.obgenerator
                                   << " module=" << _f.obgenerator
-                                  << "too long C++ (" << ssz << "bytes) comment");
+                                  << "too long C++ ("
+                                  << ssz << "bytes) comment");
     };
   if (u8_check((const uint8_t*)str.c_str(), ssz))
     {
-      RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment generator=" << _f.obgenerator
+      RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
+                  << " generator=" << _f.obgenerator
                   << " module=" << _f.obgenerator
                   << " Bad non-UTF8 str=" << Rps_QuotedC_String(str));
       throw RPS_RUNTIME_ERROR_OUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
