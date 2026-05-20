@@ -793,6 +793,27 @@ rps_run_loaded_application(int &argc, char **argv)
           return;
         };
     }
+  ///// testing the REPL lexer with a file
+  if (!rps_file_repl_string.empty())
+    {
+      RPS_DEBUG_LOG(REPL, "running test repl file "
+                    << Rps_QuotedC_String(rps_file_repl_string));
+      try
+        {
+          rps_run_file_repl_lexer(rps_file_repl_string);
+          RPS_INFORMOUT("successfully done rps_run_file_repl_lexer on "
+                        << Rps_QuotedC_String(rps_file_repl_string));
+        }
+      catch (std::exception& exc)
+        {
+          RPS_WARNOUT("rps_run_file_repl_lexer failed on "
+                      << Rps_QuotedC_String(rps_test_repl_string)
+                      << " with exception " << exc.what()
+                      << std::endl
+                      << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/filerepl"));
+          return;
+        };
+    }
   /////
 #if RPS_USE_CURL
   /// publish using web techniques information about this process

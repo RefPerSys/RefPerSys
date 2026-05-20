@@ -444,7 +444,14 @@ extern "C" bool rps_is_fifo(std::string path); // in eventloop_rps.cc
 
 extern "C" void rps_parse_program_arguments(int& argc, char**argv);
 
-extern "C" void rps_run_test_repl_lexer(const std::string&); // defined in file lexer_rps.cc
+////////////////
+/// in lexer_rps.cc
+/// lexer test on string
+extern "C" void rps_run_test_repl_lexer(const std::string&); 
+
+// lexer test on file or pipe
+extern "C" void rps_run_file_repl_lexer(const std::string&);
+////////////////
 
 /// actually, in function main we have something like:
 ///              asm volatile ("rps_end_of_main: nop");
