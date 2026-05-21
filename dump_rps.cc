@@ -1431,6 +1431,19 @@ Rps_Dumper::write_generated_data_file(void)
            << "#define RPS_LIGHTNING_JIT_V_NUM " << JIT_V_NUM << std::endl
            << "#define RPS_LIGHTNING_JIT_F_NUM " << JIT_F_NUM << std::endl;
   }
+  ////
+  // emit the libgccjit version constants
+  {
+    *pouts << "/// GCC libgccjit version constants at dump" << std::endl
+	   << "/// See gcc.gnu.org/onlinedocs/jit/" << std::endl
+	   << "#define RPS_LIBGCCJIT_MAJOR_VERSION " << gcc_jit_version_major()
+	   << std::endl
+	   << "#define RPS_LIBGCCJIT_MINOR_VERSION " << gcc_jit_version_minor()
+	   << std::endl
+	   << "#define RPS_LIBGCCJIT_PATCHLEVEL " << gcc_jit_version_patchlevel()
+	   << std::endl;
+  }
+  ////
   {
     /// unless compiled with RPS_SILENT_COMPILE emit a pragma message
     *pouts << "#ifndef RPS_SILENT_COMPILE" << std::endl;
