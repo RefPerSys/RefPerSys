@@ -993,23 +993,26 @@ testlex1: refpersys test_dir/009sepscript.rps |GNUmakefile
 testlex2: refpersys test_dir/009sepscript.rps |GNUmakefile
 	./refpersys '--file-repl-lexer=!cat test_dir/009sepscript.rps' -B -AREPL
 
+testlex3:    |GNUmakefile
+	@printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
+
 testlex4: refpersys test_dir/009sepscript.rps |GNUmakefile
 	./refpersys --file-repl-lexer=test_dir/010testlex4.rps -B -AREPL
 
 testlex5:    |GNUmakefile
-	printf "no testlex5 yet\n" $(warning no $@) > /dev/stderr; exit 1
+	@printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
 
 testlex6:    |GNUmakefile
-	printf "no testlex6 yet\n" $(warning no $@) > /dev/stderr; exit 1
+	@printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
 
 testlex7:    |GNUmakefile
-	printf "no testlex7 yet\n" $(warning no $@) > /dev/stderr; exit 1
+	printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
 
 testlex8:    |GNUmakefile
-	printf "no testlex8 yet\n" $(warning no $@) > /dev/stderr; exit 1
+	printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
 
 testlex9:    |GNUmakefile
-	printf "no testlex9 yet\n" $(warning no $@) > /dev/stderr; exit 1
+	printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
 
 test-load: refpersys
 	./refpersys --batch --run-name=test-load || (echo test-load failed; exit 1)
