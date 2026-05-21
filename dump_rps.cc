@@ -48,6 +48,7 @@
 /// GNU lightning
 extern "C" {
 #include "lightning.h"
+#include "libgccjit.h"
 };
 
 
