@@ -78,7 +78,8 @@ const char rps_lightgen_baseid[]= RPS_BASEID;
 ////////////////////////////////////////////////////////////////
 
 
-extern "C" void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
+extern "C" void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, 
+    Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
 /// temporary payload for GNU lightning code generation:
 class Rps_PayloadLightningCodeGen : public Rps_Payload
