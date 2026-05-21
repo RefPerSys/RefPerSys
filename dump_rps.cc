@@ -1435,13 +1435,13 @@ Rps_Dumper::write_generated_data_file(void)
   // emit the libgccjit version constants
   {
     *pouts << "/// GCC libgccjit version constants at dump" << std::endl
-	   << "/// See gcc.gnu.org/onlinedocs/jit/" << std::endl
-	   << "#define RPS_LIBGCCJIT_MAJOR_VERSION " << gcc_jit_version_major()
-	   << std::endl
-	   << "#define RPS_LIBGCCJIT_MINOR_VERSION " << gcc_jit_version_minor()
-	   << std::endl
-	   << "#define RPS_LIBGCCJIT_PATCHLEVEL " << gcc_jit_version_patchlevel()
-	   << std::endl;
+           << "/// See gcc.gnu.org/onlinedocs/jit/" << std::endl
+           << "#define RPS_LIBGCCJIT_MAJOR_VERSION " << gcc_jit_version_major()
+           << std::endl
+           << "#define RPS_LIBGCCJIT_MINOR_VERSION " << gcc_jit_version_minor()
+           << std::endl
+           << "#define RPS_LIBGCCJIT_PATCHLEVEL " << gcc_jit_version_patchlevel()
+           << std::endl;
   }
   ////
   {
