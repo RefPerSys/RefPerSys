@@ -1593,6 +1593,36 @@ rps_locale(void)
   return rps_stored_locale;
 } // end rps_locale
 
+extern "C" void rps_check_main_cpp_source(void);
+
+void
+rps_check_main_cpp_source(void)
+{
+  char buf[rps_path_byte_size];
+  memset (buf, 0, sizeof(buf));
+  snprintf(buf, sizeof(buf)-1, "%s/" __FILE__,
+	   getenv("REFPERSYS_TOPDIR"));
+  FILE* srcf = fopen(buf, "r");
+  if (!srcf)
+    RPS_FATALOUT("failed to open "<< buf
+		 << " : " << strerror(errno));
+  bool foundrefpersysorg = false;
+  char linbuf[256];
+  do
+    {
+      memset(linbuf, 0, sizeof(linbuf));
+      if (!fgets(linbuf, sizeof(linbuf)-4, srcf))
+	break;
+      if (strstr(linbuf, "refpersys.org"))
+	foundrefpersysorg = true;
+    }
+  while (!foundrefpersysorg);
+  if (!foundrefpersysorg)
+    RPS_FATALOUT("file " << buf << " does not mention refpersys.org");
+  fclose(srcf);
+} // end rps_check_main_cpp_source
+
+
 int
 main (int argc, char** argv)
 {
@@ -1643,29 +1673,7 @@ main (int argc, char** argv)
     RPS_FATALOUT("missing $REFPERSYS_TOPDIR in environment");
   /// read $REFPERSYS_TOPDIR/main_rps.cc which should be this file and
   /// mention refpersys.org
-  {
-    char buf[rps_path_byte_size];
-    memset (buf, 0, sizeof(buf));
-    snprintf(buf, sizeof(buf)-1, "%s/" __FILE__, getenv("REFPERSYS_TOPDIR"));
-    FILE* srcf = fopen(buf, "r");
-    if (!srcf)
-      RPS_FATALOUT("failed to open "<< buf
-                   << " : " << strerror(errno));
-    bool foundrefpersysorg = false;
-    char linbuf[256];
-    do
-      {
-        memset(linbuf, 0, sizeof(linbuf));
-        if (!fgets(linbuf, sizeof(linbuf)-4, srcf))
-          break;
-        if (strstr(linbuf, "refpersys.org"))
-          foundrefpersysorg = true;
-      }
-    while (!foundrefpersysorg);
-    if (!foundrefpersysorg)
-      RPS_FATALOUT("file " << buf << " does not mention refpersys.org");
-    fclose(srcf);
-  }
+  rps_check_main_cpp_source();
   ///// read /proc/version which hopefully is GNU/Linux specific
   {
     FILE* procversf = fopen("/proc/version", "r");
@@ -1736,7 +1744,8 @@ main (int argc, char** argv)
     {
       FILE* fpid = fopen(rps_pidfile_path, "w");
       if (!fpid)
-        RPS_FATALOUT("failed to open pid file " << rps_pidfile_path << " - " << strerror(errno));
+        RPS_FATALOUT("failed to open pid file "
+		     << rps_pidfile_path << " - " << strerror(errno));
       fprintf(fpid, "%ld\n", (long)getpid());
       fflush(nullptr);
       fclose(fpid);
@@ -1776,8 +1785,11 @@ main (int argc, char** argv)
                 << (rps_batch?"batch":"interactive")
                 << " (" << rps_nbjobs << " jobs)" << std::endl
                 <<             "… This is an open source inference engine software,\n"
-                 "…  GPLv3+ licensed, no warranty !\n"
-                 "…  See refpersys.org and https://www.gnu.org/licenses/ ....\n"
+                <<  "…  GPLv3+ or LGPLv3+ or CeCILL licensed,"
+		<< " no warranty !\n"
+                << "…  See refpersys.org & www.gnu.org/licenses"
+		<< "& cecill.info …\n"
+		<< std::flush
                 << "fullgit " << rps_gitid << " branch " << rps_gitbranch
                 << std::endl
                 << RPS_OUT_PROGARGS(argc, argv) << std::endl);
