@@ -1,0 +1,100 @@
+name: RefPerSys CI (Linux)
+
+on:
+  push:
+    branches:
+      - master
+      - "chore/**"
+      - "feat/**"
+  pull_request:
+    branches:
+      - master
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build-linux:
+    name: Build & Test (Ubuntu Linux)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+
+          REQUIRED_PACKAGES="make pkg-config libunistring-dev libjsoncpp-dev libssl-dev libgmp-dev libreadline-dev libncurses-dev libinih-dev libssh2-1-dev binutils-dev libiberty-dev gpp bison at"
+          FAILED_PACKAGES=""
+          for pkg in $REQUIRED_PACKAGES; do
+            echo "=== Installing $pkg ==="
+            if ! sudo apt-get install -y "$pkg"; then
+              echo "!!! ERROR: Failed to install $pkg !!!"
+              FAILED_PACKAGES="$FAILED_PACKAGES $pkg"
+            fi
+          done
+
+          if [ -n "$FAILED_PACKAGES" ]; then
+            echo "List of failed packages: $FAILED_PACKAGES"
+            exit 1
+          fi
+
+          echo "=== Installing libgccjit ==="
+          if sudo apt-get install -y libgccjit-14-dev; then
+            echo "Installed libgccjit-14-dev"
+            echo "GCC_VERSION=14" >> "$GITHUB_ENV"
+          elif sudo apt-get install -y libgccjit-13-dev; then
+            echo "Installed libgccjit-13-dev"
+            echo "GCC_VERSION=13" >> "$GITHUB_ENV"
+          else
+            echo "!!! ERROR: Failed to install libgccjit-14-dev or libgccjit-13-dev !!!"
+            exit 1
+          fi
+
+      - name: Build GNU lightning 2.2.3
+        run: |
+          set -euo pipefail
+          wget https://ftp.gnu.org/gnu/lightning/lightning-2.2.3.tar.gz
+          tar -xzf lightning-2.2.3.tar.gz
+          cd lightning-2.2.3
+          ./configure --with-gnu-ld --enable-disassembler \
+              --enable-devel-disassembler --enable-devel-get-jit-size \
+              --disable-silent-rules 'CFLAGS=-O2 -g2'
+          make -j$(nproc)
+          sudo make install
+          sudo ldconfig
+
+      - name: Build Carburetta
+        run: |
+          set -euo pipefail
+          git clone https://github.com/kingletbv/carburetta.git
+          cd carburetta
+          make
+          sudo make install
+
+      - name: Configure RefPerSys
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/tmp"
+          export CC=$(which gcc-"$GCC_VERSION")
+          export CXX=$(which g++-"$GCC_VERSION")
+          export CXXFLAGS="-O1 -g -fPIC"
+          export RPS_BUILDER_PERSON="GitHub Actions"
+          export RPS_BUILDER_EMAIL="actions@github.com"
+          export REFPERSYS_TOPDIR="$GITHUB_WORKSPACE"
+          make config
+
+      - name: Build RefPerSys
+        run: |
+          set -euo pipefail
+          export REFPERSYS_TOPDIR="$GITHUB_WORKSPACE"
+          make -j$(nproc) refpersys
+
+      - name: Run test00
+        run: |
+          set -euo pipefail
+          export REFPERSYS_TOPDIR="$GITHUB_WORKSPACE"
+          make test00

@@ -681,7 +681,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	        $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \ \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
                -DRPS_HOST=\"$(RPS_HOST)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
