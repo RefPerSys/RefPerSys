@@ -66,6 +66,11 @@ char rps_buffer_proc_version[rps_path_byte_size];
 #pragma message "Compiling " __FILE__ " for 64 bits x86/amd64"
 #endif
 
+
+#if RPS_HAS_ARCH_aarch64
+#pragma message "Compiling " __FILE__ " for 64 bits Aarch64 (RaspberryPi?)"
+#endif
+
 struct utsname rps_utsname;
 
 char rps_progexe[rps_path_byte_size];
