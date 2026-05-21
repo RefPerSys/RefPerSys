@@ -78,7 +78,9 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         test05 test06 test07 test07a test07x \
         test08 test09 test-load testq6-01 \
         testcarb1 testcarb2 testcarb3 \
-        testlex0 testlex1 testlex2
+        testlex0 testlex1 testlex2 \
+        testlex3 testlex4 testlex5 \
+        testlex6 testlex7 testlex8 testlex9 \
 
 
 
@@ -993,6 +995,21 @@ testlex2: refpersys test_dir/009sepscript.rps |GNUmakefile
 
 testlex4: refpersys test_dir/009sepscript.rps |GNUmakefile
 	./refpersys --file-repl-lexer=test_dir/010testlex4.rps -B -AREPL
+
+testlex5:
+	printf "no testlex5 yet\n" > /dev/stderr; exit 1
+
+testlex6:
+	printf "no testlex6 yet\n" > /dev/stderr; exit 1
+
+testlex7:
+	printf "no testlex7 yet\n" > /dev/stderr; exit 1
+
+testlex8:
+	printf "no testlex8 yet\n" > /dev/stderr; exit 1
+
+testlex9:
+	printf "no testlex9 yet\n" > /dev/stderr; exit 1
 
 test-load: refpersys
 	./refpersys --batch --run-name=test-load || (echo test-load failed; exit 1)
