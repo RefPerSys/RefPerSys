@@ -2577,6 +2577,8 @@ rps_run_test_repl_lexer(const std::string& teststr)
 void
 rps_run_file_repl_lexer(const std::string& teststr)
 {
+  Rps_TokenSource*srcptr = nullptr;
+  RPS_ASSERT(rps_is_main_thread());
   /// related to --file-repl-lexer=<TESTFILE> program option
   /// if <TESTFILE> starts with | or ! it is a command to be popened
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
@@ -2584,11 +2586,88 @@ rps_run_file_repl_lexer(const std::string& teststr)
                            Rps_Value curlextokenv;
                 );
   RPS_ASSERT(rps_is_main_thread());
+  RPS_TIMER_START();
   // if teststr[0] is '|' or '!' do a popen otherwise a fopen
   if (teststr[0] == '|' || teststr[0] == '!')
-    RPS_FATALOUT("unimplemented pipe rps_run_file_repl_lexer "
-                 << Rps_QuotedC_String(teststr));
-#warning unimplemented rps_run_file_repl_lexer (different for pipe)
+    {
+      if (!teststr[1])
+        RPS_FATALOUT("invalid empty pipe for --file-repl-lexer="
+                     << teststr);
+      srcptr = new Rps_PipeTokenSource(teststr.substr(1));
+      RPS_DEBUG_LOG(REPL, "rps_run_file_repl_lexer with pipe "
+                    << *srcptr);
+    }
+  else
+    {
+      srcptr = new Rps_StreamTokenSource(teststr);
+      RPS_DEBUG_LOG(REPL, "rps_run_file_repl_lexer with stream "
+                    << *srcptr);
+    };
+  (*srcptr).set_keyword_lexing_fun(rps_keyword_lexer);
+  bool gotl = (*srcptr).get_line();
+  RPS_DEBUG_LOG(REPL, "start rps_run_file_repl_lexer shgitid "
+                << rps_shortgitid
+                << " teststr: " << Rps_QuotedC_String(teststr)
+                << " callframe:" << Rps_ShowCallFrame(&_)
+                << " (*srcptr):" << (*srcptr)
+                << (gotl?" got line": " no line"));
+  int tokcnt=0;
+  int lincnt = 0;
+  int loopcnt=0;
+  while (!rps_repl_stopped)
+    {
+      loopcnt++;
+      RPS_DEBUG_LOG(REPL, "rps_run_file_repl_lexer (*srcptr):"
+                    << (*srcptr)
+                    << " at " << (*srcptr).position_str()
+                    << " loopcnt#" << loopcnt
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        (*srcptr).display_current_line_with_cursor(out);
+      }));
+      do
+        {
+          _f.curlextokenv = (*srcptr).get_token(&_);
+          if (_f.curlextokenv)
+            {
+              tokcnt++;
+              RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
+                            << " from " << (*srcptr).position_str()
+                            << std::endl
+                            << Rps_Do_Output([&](std::ostream& out)
+              {
+                (*srcptr).display_current_line_with_cursor(out);
+              }));
+            }
+          else
+            {
+              RPS_DEBUG_LOG(REPL, "rps_run_file_repl_lexer will stop"
+                            << std::endl << "… since no token in "
+                            << (*srcptr)
+                            << " at:"
+                            << (*srcptr).position_str());
+              rps_repl_stopped= true;
+              break;
+            }
+        }
+      while (_f.curlextokenv);
+      if (!(*srcptr).get_line())
+        break;
+      lincnt++;
+      RPS_DEBUG_LOG(REPL, "rps_run_file_repl_lexer got fresh line#"
+                    << lincnt
+                    << " '"
+                    << Rps_Cjson_String((*srcptr).current_line()) << "' "
+                    << (*srcptr).position_str());
+    }
+  RPS_DEBUG_LOG(REPL, "end rps_run_file_repl_lexer lincnt=" << lincnt
+                << " tokcnt=" << tokcnt
+                << " at " << (*srcptr).position_str()
+                << std::endl);
+  RPS_TIMER_STOP(REPL);
+  if (srcptr)
+    delete srcptr;
 } // end rps_run_file_repl_lexer
 
 //// end of file lexer_rps.cc
