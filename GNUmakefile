@@ -80,8 +80,8 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         testcarb1 testcarb2 testcarb3 \
         testlex0 testlex1 testlex2 \
         testlex3 testlex4 testlex5 \
-        testlex6 testlex7 testlex8 testlex9 \
-
+        testlex6 testlex7 testlex8 \
+         testlex9
 
 
 SYNC=/bin/sync
