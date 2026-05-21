@@ -10,7 +10,9 @@ site on http://refpersys.org/ where more details are given.
 *RefPerSys* is aiming to become a free software symbolic artificial
 intelligence system or [inference
 engine](https://en.wikipedia.org/wiki/Inference_engine), e.g. a better
-alternative to [CLIPSrules](https://clipsrules.net/).
+improved alternative to
+[CLIPSrules](https://clipsrules.net/). Compatibility with its syntax
+is not a goal (unless funded and contributed) in mid 2026.
 
 Contributions to *RefPerSys* are welcome. Contact by email
 [Basile STARYNKEVITCH](http://starynkevitch.net/Basile/) (near Paris, France)
@@ -27,9 +29,26 @@ since commit 559ea329f46a (2024, Nov, 20).
 
 [HorizonEurope](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/programmes/horizon)
 or [ITEA](https://itea4.org/) consortia interested by
-[RefPerSys](http://refpersys.org/) are welcome to contact us. Likewise for students or academics or passionate open source developers 
-wanting to contribute.
+[RefPerSys](http://refpersys.org/) are welcome to contact us. Likewise
+for students or academics or passionate open source developers wanting
+to contribute.
 
+
+# open source license and lack of warranty
+
+This free software is licensed under three licenses (*at user choice*)
+
+* the French [CeCILL](https://cecill.info/) license (version 2.1)
+
+* the GNU General Public License [GPL](https://www.gnu.org/licenses/)
+  version 3 or following
+
+* The GNU Lesser General Public License
+  [LGPL](https://www.gnu.org/licenses/lgpl.html) version 3 or
+  following
+
+Hence there is *NO WARRANTY* on the code, not even of usability or of
+it being compilable.
 
 
 # related repositories

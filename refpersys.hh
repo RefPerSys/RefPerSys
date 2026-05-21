@@ -14,14 +14,17 @@
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
- * You can consider RefPerSys as either GPLv3+ or LGPLv3+ licensed (at
- * your choice)
+ * You can consider RefPerSys as either GPLv3+ or CeCILL or LGPLv3+
+ * licensed (at your choice)
  *
  * License: GPLv3+ (file COPYING-GPLv3)
  *    This software is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
+ *
+ * Equivalent license in France: CeCILL
+ *    on https://cecill.info/licences.fr.html
  *
  * Alternative license: LGPLv3+ (file COPYING-LGPLv3)
  *    This software is is free software: you can
