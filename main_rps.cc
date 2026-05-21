@@ -888,12 +888,18 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
   FILE* tfil = fopen(tempcppfilename, "w");
-  fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n", tempcppfilename);
+  fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n",
+	   tempcppfilename);
   fprintf (tfil, "//// see refpersys.org website\n");
   fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
   fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
   fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
-  fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
+  fprintf (tfil, "//// GPLv3+ licensed - "
+	   "see www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
+  fprintf (tfil, "//// or LGPLv3+ licensed - "
+	   "see www.gnu.org/licenses/lgpl-3.0.html\n");
+  fprintf (tfil, "//// or CeCILL v2.1 licensed - "
+	   "see cecill.info\n");
   fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
   fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
   fprintf (tfil,
