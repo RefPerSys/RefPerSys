@@ -889,17 +889,17 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
                 << Rps_ShowCallFrame(&_));
   FILE* tfil = fopen(tempcppfilename, "w");
   fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n",
-	   tempcppfilename);
+           tempcppfilename);
   fprintf (tfil, "//// see refpersys.org website\n");
   fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
   fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
   fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
   fprintf (tfil, "//// GPLv3+ licensed - "
-	   "see www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
+           "see www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
   fprintf (tfil, "//// or LGPLv3+ licensed - "
-	   "see www.gnu.org/licenses/lgpl-3.0.html\n");
+           "see www.gnu.org/licenses/lgpl-3.0.html\n");
   fprintf (tfil, "//// or CeCILL v2.1 licensed - "
-	   "see cecill.info\n");
+           "see cecill.info\n");
   fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
   fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
   fprintf (tfil,
@@ -1601,20 +1601,20 @@ rps_check_main_cpp_source(void)
   char buf[rps_path_byte_size];
   memset (buf, 0, sizeof(buf));
   snprintf(buf, sizeof(buf)-1, "%s/" __FILE__,
-	   getenv("REFPERSYS_TOPDIR"));
+           getenv("REFPERSYS_TOPDIR"));
   FILE* srcf = fopen(buf, "r");
   if (!srcf)
     RPS_FATALOUT("failed to open "<< buf
-		 << " : " << strerror(errno));
+                 << " : " << strerror(errno));
   bool foundrefpersysorg = false;
   char linbuf[256];
   do
     {
       memset(linbuf, 0, sizeof(linbuf));
       if (!fgets(linbuf, sizeof(linbuf)-4, srcf))
-	break;
+        break;
       if (strstr(linbuf, "refpersys.org"))
-	foundrefpersysorg = true;
+        foundrefpersysorg = true;
     }
   while (!foundrefpersysorg);
   if (!foundrefpersysorg)
@@ -1745,7 +1745,7 @@ main (int argc, char** argv)
       FILE* fpid = fopen(rps_pidfile_path, "w");
       if (!fpid)
         RPS_FATALOUT("failed to open pid file "
-		     << rps_pidfile_path << " - " << strerror(errno));
+                     << rps_pidfile_path << " - " << strerror(errno));
       fprintf(fpid, "%ld\n", (long)getpid());
       fflush(nullptr);
       fclose(fpid);
@@ -1786,10 +1786,10 @@ main (int argc, char** argv)
                 << " (" << rps_nbjobs << " jobs)" << std::endl
                 <<             "… This is an open source inference engine software,\n"
                 <<  "…  GPLv3+ or LGPLv3+ or CeCILL licensed,"
-		<< " no warranty !\n"
+                << " no warranty !\n"
                 << "…  See refpersys.org & www.gnu.org/licenses"
-		<< "& cecill.info …\n"
-		<< std::flush
+                << "& cecill.info …\n"
+                << std::flush
                 << "fullgit " << rps_gitid << " branch " << rps_gitbranch
                 << std::endl
                 << RPS_OUT_PROGARGS(argc, argv) << std::endl);
