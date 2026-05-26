@@ -397,8 +397,8 @@ bool
 Rps_FileTokenSource::reached_end(void) const
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  if (!toksrc_input_file || feof(toksrc_input_file));
-  return true;
+  if (!toksrc_input_file || feof(toksrc_input_file))
+    return true;
   return false;
 } // end Rps_FileTokenSource::reached_end
 
@@ -496,8 +496,8 @@ bool
 Rps_PipeTokenSource::reached_end(void) const
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  if (!toksrc_input_pipe || feof(toksrc_input_pipe));
-  return true;
+  if (!toksrc_input_pipe || feof(toksrc_input_pipe))
+    return true;
   return false;
 } // end Rps_PipeTokenSource::reached_end
 
