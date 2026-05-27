@@ -32,3 +32,6 @@ do-scan-pkgconfig
 q6refpersys
 fox-refpersys
 generated-pfia2026.tex
+
+## see RefPerSys commit 4bc27d67c9e64ad35d52cca
+codetest_rps*class
