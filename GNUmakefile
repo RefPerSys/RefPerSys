@@ -62,7 +62,9 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 
 .DEFAULT_GOAL: all
 
-.PHONY: all everything config objects showtests clean distclean gitpush gitpush2 \
+.PHONY: all everything config objects showtests clean distclean \
+        gitpush gitpush2 \
+        show-vtable \
         print-plugin-settings indent \
         redump altredump altdump clean-plugins plugins \
         print-gmake-features utility-clang \
@@ -81,7 +83,7 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         testlex0 testlex1 testlex2 \
         testlex3 testlex4 testlex5 \
         testlex6 testlex7 testlex8 \
-         testlex9
+        testlex9
 
 
 SYNC=/bin/sync
@@ -351,6 +353,27 @@ do-build-refpersys-plugin: do-build-refpersys-plugin.cc __buildinfo.c
 
 
 
+## phony target to show the vtable using -fdump-lang-class
+## https://peter0x44.github.io/posts/vtables-itanium-abi/
+show-vtable: codetest_rps.cc |refpersys GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+		-fdump-lang-class \
+               -U_Rps_vtable1 $(REFPERSYS_PREPRO_FLAGS) \
+               -U_Rps_vtable2 $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+		-U_Rps_vtable3 \
+	       -U_Rps_vtable4 $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               -U_Rps_vtable5 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c $<
+	/bin/ls -l codetest_rps*.class
+
 clean: clean-plugins
 	$(RM) tmp* *~ *.o
 	$(RM) */*.o */*.so */*~
@@ -371,6 +394,7 @@ clean: clean-plugins
 	$(RM) */*.so
 	$(RM) *.ii
 	$(RM) core*
+	$(RM) -f codetest*class
 	$(RM) .gdb_history */.gdb_history
 	$(RM) -vf generated/tmp* generated/*/tmp*
 	$(RM) Make-dependencies/__*
