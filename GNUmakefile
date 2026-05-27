@@ -95,6 +95,7 @@ ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
 ## uncrustify from github.com/uncrustify
 ## if you don't have or don't want it, replace by /bin/cat
+## it is a source code beautifier/indenter
 #UNCRUSTIFY?= uncrustify -lcpp
 
 
@@ -140,6 +141,9 @@ REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_DUMPED_CPP_SOURCE
 ## altredump is dumping into....
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
+## By our convention, preprocessor flags starting with _Rps_ are not
+## expected to be used.  We use them to debug this makefile, and to
+## show the commands
 
 ## Ian Lance Taylor libbacktrace is often in GCC
 ifndef RPS_LIBBACKTRACE
@@ -202,16 +206,17 @@ everything: all
 
 fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-U_Rps_FoX_RefPerSys \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
 	__buildinfo.o \
-	$(shell pkg-config --cflags $(FOXREFPERSYS_PACKAGES)) \
-	$(shell fox-config --cflags) \
+	-U_Rps_FoxPack $(shell pkg-config --cflags $(FOXREFPERSYS_PACKAGES)) \
+	-U_Rps_FoxCflags $(shell fox-config --cflags) \
         $< \
-	$(shell pkg-config --libs $(FOXREFPERSYS_PACKAGES)) \
-	$(shell fox-config --libs) \
+	-U_Rps_FoxLibsA $(shell pkg-config --libs $(FOXREFPERSYS_PACKAGES)) \
+	-U_Rps_FoxLibsB $(shell fox-config --libs) \
         -o $@
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __buildinfo.o _carbrepl_rps.o
@@ -255,6 +260,7 @@ __raw_buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS
 utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	$(REFPERSYS_CLANGXX) $(REFPERSYS_CXX_STANDARD) \
               -DRPS_WITH_FLTK=0 -DRPS_IS_RAW=1 -DRPS_UTILITY_CLANG=1 \
+              -U_Rps_UtilClang \
               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_utilities_rps)) \
@@ -441,6 +447,7 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	-@echo Linking $@
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
+             -U_Rps_Linking \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_DUMPED_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
@@ -482,6 +489,7 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -U_Rps_OnePlugin \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(REFPERSYS_PLUGIN_SOURCE)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH) \
@@ -670,6 +678,10 @@ else
 endif
 	$(SYNC)
 
+
+
+
+################################################################
 load_rps.o: load_rps.cc refpersys.hh \
             generated/rps-constants.hh  generated/rps-names.hh generated/rps-roots.hh |GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
@@ -677,6 +689,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+		-U_Rps_LoadA \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	        $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
@@ -704,8 +717,11 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
-	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               -U_Rps_CompilPre $(REFPERSYS_PREPRO_FLAGS) \
+               -U_Rps_CompilFla $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+		-U_Rps_CompilP1 \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
@@ -727,6 +743,7 @@ raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
                $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
+               -U_Rps_CompilRaw \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
@@ -790,6 +807,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 
 q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __buildinfo.o |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-U_Rps_Compilq6r \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
