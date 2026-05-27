@@ -214,6 +214,29 @@ Rps_PayloadStrBuf::clear_buffer()
   strbuf_buffer = std::stringbuf("");
 } // end Rps_PayloadStrBuf::clear_buffer
 
+void
+Rps_PayloadStrBuf::output_payload(std::ostream&out,
+                                  unsigned depth, unsigned maxdepth) const
+{
+  RPS_ASSERT(depth <= maxdepth);
+  bool ontty =
+    (&out == &std::cout)?isatty(STDOUT_FILENO)
+    :(&out == &std::cerr)?isatty(STDERR_FILENO)
+    :false;
+  if (rps_without_terminal_escape)
+    ontty = false;
+  const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
+  const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+  std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
+  const std::string&str = strbuf_buffer.str();
+  out << std::endl << BOLD_esc << "*C++ stringbuffer payload"
+      << NORM_esc << " of " << str.size() << " bytes." << std::endl;
+  if (depth > 1)
+    return;
+  out << "… " << Rps_QuotedC_String(str) << std::endl;
+} // end Rps_PayloadStrBuf::output_payload
+
+
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
