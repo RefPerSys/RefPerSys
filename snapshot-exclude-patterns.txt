@@ -1,0 +1,5 @@
+# file RefPerSys/snapshot-exclude-patterns.txt
+*.o
+*.so
+*~
+tmp*
