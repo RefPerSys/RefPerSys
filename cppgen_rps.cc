@@ -235,7 +235,8 @@ Rps_PayloadCplusplusGen::checked_nth_const_data(int n) const
     n += (int)cppgen_datavect.size();
   if (RPS_UNLIKELY(n<0 || n>=(int)cppgen_datavect.size()))
     {
-      RPS_WARNOUT("out of index access #" << orign << " of data size "<< data_size()
+      RPS_WARNOUT("out of index access #" << orign
+                  << " of data size "<< data_size()
                   << " in C++ generator " << owner()
                   << std::endl
                   << RPS_FULL_BACKTRACE(1,
@@ -254,7 +255,8 @@ Rps_PayloadCplusplusGen::checked_nth_data(int n)
     n += (int)cppgen_datavect.size();
   if (RPS_UNLIKELY(n<0 || n>=(int)cppgen_datavect.size()))
     {
-      RPS_WARNOUT("out of index access #" << orign << " of data size "<< data_size()
+      RPS_WARNOUT("out of index access #" << orign
+                  << " of data size "<< data_size()
                   << " in C++ generator " << owner()
                   << std::endl
                   << RPS_FULL_BACKTRACE(1,
@@ -291,7 +293,7 @@ Rps_PayloadCplusplusGen::output(std::function<void(std::ostringstream&out)> fun,
 
 void
 Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc,
-					     struct cppgen_data_st*d, unsigned depth)
+    struct cppgen_data_st*d, unsigned depth)
 {
   if (!d)
     return;
@@ -303,7 +305,7 @@ Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc,
 
 void
 Rps_PayloadCplusplusGen::output_payload(std::ostream&out,
-					unsigned depth, unsigned maxdepth) const
+                                        unsigned depth, unsigned maxdepth) const
 {
   RPS_ASSERT(depth <= maxdepth);
   bool ontty =
@@ -319,7 +321,8 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out,
       << NORM_esc << " " << data_size() << " data"
       << BOLD_esc << "*" << NORM_esc << " indent:" << cppgen_indentation
       << std::endl;
-  out << BOLD_esc << "*C++ generator path:" << NORM_esc << cppgen_path << std::endl;
+  out << BOLD_esc << "*C++ generator path:" << NORM_esc
+      << cppgen_path << std::endl;
   {
     const std::string& outcod = cppgen_outcod.str();
     if (depth == 0)
@@ -331,12 +334,13 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out,
             if (c=='\n') outnblin++;
           };
         out << BOLD_esc << "C++ code buffer of " << outcod.size()
-            << " bytes and " << outnblin << " lines:" << NORM_esc << std::endl;
+            << " bytes and " << outnblin << " lines:"
+            << NORM_esc << std::endl;
         out << outcod;
         if (outcod.size() > 0 && outcod.at(outcod.size()-1) != '\n')
           out << std::endl;
         out << BOLD_esc << "///°*end of C++ code buffer in "
-	    << owner() << NORM_esc << std::endl;
+            << owner() << NORM_esc << std::endl;
       }
     else
       {
@@ -349,7 +353,8 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out,
     size_t nbdata = cppgen_datavect.size();
     if (depth < cppgen_depth_threshold)
       {
-        out << BOLD_esc << "C++ data vector of " << nbdata << " elements:"
+        out << BOLD_esc << "C++ data vector of "
+            << nbdata << " elements:"
             << NORM_esc << std::endl;
         for (int i=0; i<(int)nbdata; i++)
           {
@@ -372,7 +377,8 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out,
   RPS_ASSERT(nbincl == (int) cppgen_includepriomap.size());
   if (nbincl>0)
     {
-      out << BOLD_esc << nbincl << " C++ includes " << NORM_esc << std::endl;
+      out << BOLD_esc << nbincl << " C++ includes "
+          << NORM_esc << std::endl;
       for (Rps_ObjectRef curinclob: cppgen_includeset)
         {
           auto curit = cppgen_includepriomap.find(curinclob);
@@ -380,16 +386,14 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out,
           if (curit != cppgen_includepriomap.end())
             curprio = curit->second;
           out << BOLD_esc << "include " << NORM_esc << curinclob
-              << BOLD_esc << " of prio " << curprio << NORM_esc << std::endl;
+              << BOLD_esc << " of prio " << curprio
+              << NORM_esc << std::endl;
         }
     }
   else
     {
       out << BOLD_esc << "no C++ includes" << NORM_esc << std::endl;
     }
-
-#warning incomplete Rps_PayloadCplusplusGen::output_payload
-  ///TODO: output the included things: cppgen_includeset, cppgen_includepriomap
 } // end of Rps_PayloadCplusplusGen::output_payload
 
 void
