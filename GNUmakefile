@@ -302,9 +302,11 @@ utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 .SECONDARY:  __buildinfo.c 
 	$(SYNC)
 
-snapshot: clean
+### snapshot expect a GNU tar...
+snapshot: refpersys snapshot-exclude-patterns.txt
 	$(MAKE) __buildinfo.c _carbrepl_rps.cc
-	/bin/tar -cjf $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
+	/bin/tar -c -j --exclude-from=snapshot-exclude-patterns.txt \
+	   -f $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
 
 lto-refpersys:
 	$(MAKE) clean
