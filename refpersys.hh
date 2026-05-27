@@ -3296,14 +3296,15 @@ class Rps_StreamTokenSource : public Rps_TokenSource
 public:
   virtual void fill_current_line_buffer(void);
   Rps_StreamTokenSource(std::string path);
-  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  virtual void output(std::ostream&out,
+                      unsigned depth, unsigned maxdepth) const
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     if (depth > maxdepth)
       RPS_WARNOUT("Rps_StreamTokenSource " << name()
                   << " depth=" << depth
                   << " greater than maxdepth=" << maxdepth);
-    out << "StreamTokenSource" << name() << '@'
+    out << "StreamTokenSource{" << name() << "}@"
         << position_str() << " tok.cnt:" << token_count();
   };
   virtual ~Rps_StreamTokenSource();
@@ -3319,7 +3320,8 @@ class Rps_FileTokenSource : public Rps_TokenSource
 public:
   virtual void fill_current_line_buffer(void);
   Rps_FileTokenSource(std::string path);
-  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  virtual void output(std::ostream&out,
+                      unsigned depth, unsigned maxdepth) const
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     if (depth > maxdepth)
@@ -3342,7 +3344,8 @@ class Rps_PipeTokenSource : public Rps_TokenSource
 public:
   virtual void fill_current_line_buffer(void);
   Rps_PipeTokenSource(std::string path);
-  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
+  virtual void output(std::ostream&out,
+                      unsigned depth, unsigned maxdepth) const
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     if (depth > maxdepth)
@@ -5130,7 +5133,8 @@ public:
       };
     return Rps_TupleValue(vecob);
   };
-  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual void output_payload(std::ostream&out,
+                              unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadSetOb
 
 
@@ -5200,7 +5204,8 @@ public:
   {
     return Rps_TupleValue(pvectob);
   };
-  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual void output_payload(std::ostream&out,
+                              unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadVectOb
 
 
@@ -5276,7 +5281,8 @@ public:
   /* make a new instance of a given class and the values inside the
      vector payload: */
   const Rps_InstanceZone* make_instance_zone_from_vector(Rps_ObjectRef classob);
-  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual void output_payload(std::ostream&out,
+                              unsigned depth, unsigned maxdepth) const;
 };                              // end Rps_PayloadVectVal
 
 
@@ -5364,7 +5370,8 @@ public:
   void clear_buffer(void);
   void append_string(const std::string&str);
   void prepend_string(const std::string&str);
-  //  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual void output_payload(std::ostream&out,
+                              unsigned depth, unsigned maxdepth) const;
 };                              // end of class Rps_PayloadStrBuf
 
 
@@ -5415,7 +5422,8 @@ public:
   /// iterate by applying a closure to the owner, a fresh string value
   /// and associated value till the closure returns nil
   void iterate_apply(Rps_CallFrame*callframe, Rps_Value closv);
-  virtual void output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual void output_payload(std::ostream&out,
+                              unsigned depth, unsigned maxdepth) const;
 private:
   std::map<std::string, Rps_Value> dict_map;
   bool dict_is_transient;
