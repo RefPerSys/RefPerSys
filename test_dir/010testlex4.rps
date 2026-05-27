@@ -15,4 +15,5 @@ string "ab" "\ncd" "€°être"
 ## objectid
 cplusplus_name _0fx0GtCX90Z03VI9mo
 code_chunk #{ 'a' if ($x) $$ }#
+
            #ab{ int x[$y]; }ab#
