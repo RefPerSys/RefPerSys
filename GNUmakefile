@@ -722,8 +722,8 @@ load_rps.o: load_rps.cc refpersys.hh \
                -U_Rps_CompilFla $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 		-U_Rps_CompilP1 \
-	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
-               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+	       -U_RpsCompilPkg $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               -U_Rps_CompilP2 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
