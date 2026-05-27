@@ -290,7 +290,8 @@ Rps_PayloadCplusplusGen::output(std::function<void(std::ostringstream&out)> fun,
 } // end Rps_PayloadCplusplusGen::output
 
 void
-Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc, struct cppgen_data_st*d, unsigned depth)
+Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc,
+					     struct cppgen_data_st*d, unsigned depth)
 {
   if (!d)
     return;
@@ -301,7 +302,8 @@ Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc, struct cpp
 } // end Rps_PayloadCplusplusGen::mark_gc_cppgen_data
 
 void
-Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+Rps_PayloadCplusplusGen::output_payload(std::ostream&out,
+					unsigned depth, unsigned maxdepth) const
 {
   RPS_ASSERT(depth <= maxdepth);
   bool ontty =
@@ -333,7 +335,8 @@ Rps_PayloadCplusplusGen::output_payload(std::ostream&out, unsigned depth, unsign
         out << outcod;
         if (outcod.size() > 0 && outcod.at(outcod.size()-1) != '\n')
           out << std::endl;
-        out << BOLD_esc << "///°*end of C++ code buffer in " << owner() << NORM_esc << std::endl;
+        out << BOLD_esc << "///°*end of C++ code buffer in "
+	    << owner() << NORM_esc << std::endl;
       }
     else
       {
