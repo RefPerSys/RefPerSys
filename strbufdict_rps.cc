@@ -421,7 +421,9 @@ Rps_PayloadStringDict::iterate_apply(Rps_CallFrame*callerframe, Rps_Value closar
     {
       _f.curstrv = Rps_StringValue(it.first);
       _f.curval = it.second;
-      Rps_TwoValues pair = Rps_ClosureValue(_f.closv).apply3(&_, _f.obown, _f.curstrv, _f.curval);
+      Rps_TwoValues pair =
+        Rps_ClosureValue(_f.closv).apply3(&_, _f.obown, _f.curstrv,
+                                          _f.curval);
       if (!pair)
         return;
       _f.curstrv = nullptr;
@@ -436,7 +438,9 @@ Rps_PayloadStringDict::the_string_dictionary_class(void)
 } // end Rps_PayloadStringDict::the_string_dictionary_class
 
 Rps_ObjectRef
-Rps_PayloadStringDict::make_string_dictionary_object(Rps_CallFrame*callframe, Rps_ObjectRef obclassarg, Rps_ObjectRef obspacearg)
+Rps_PayloadStringDict::make_string_dictionary_object
+(Rps_CallFrame*callframe, Rps_ObjectRef obclassarg,
+ Rps_ObjectRef obspacearg)
 {
   RPS_ASSERT(!callframe || callframe->is_good_call_frame());
   RPS_LOCALFRAME(the_string_dictionary_class(),
@@ -452,9 +456,18 @@ Rps_PayloadStringDict::make_string_dictionary_object(Rps_CallFrame*callframe, Rp
   if (_f.obclass != the_string_dictionary_class()
       && !Rps_Value(_f.obclass).is_subclass_of(&_,
           the_string_dictionary_class()))
-    throw std::runtime_error("invalid class for make_string_dictionary_object");
+    {
+      RPS_WARNOUT("make_string_dictionary_object invalid class "
+                  << _f.obclass
+                  << std::endl
+                  << "… "
+                  << RPS_FULL_BACKTRACE(1,
+      "make_string_dictionary_object"));
+      throw std::runtime_error("invalid class for make_string_dictionary_object");
+    }
   _f.obstrdict = Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
-  auto payldict = _f.obstrdict->put_new_plain_payload<Rps_PayloadStringDict>();
+  auto payldict =
+    _f.obstrdict->put_new_plain_payload<Rps_PayloadStringDict>();
   RPS_ASSERT(payldict);
   return _f.obstrdict;
 } // end of Rps_PayloadStringDict::make_string_dictionary_object
@@ -462,7 +475,8 @@ Rps_PayloadStringDict::make_string_dictionary_object(Rps_CallFrame*callframe, Rp
 
 
 void
-Rps_PayloadStringDict::output_payload(std::ostream&out, unsigned depth, unsigned maxdepth) const
+Rps_PayloadStringDict::output_payload(std::ostream&out, unsigned depth,
+                                      unsigned maxdepth) const
 {
   RPS_ASSERT(depth <= maxdepth);
   bool ontty =
@@ -474,8 +488,10 @@ Rps_PayloadStringDict::output_payload(std::ostream&out, unsigned depth, unsigned
   const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
   std::lock_guard<std::recursive_mutex> guown(*(owner()->objmtxptr()));
-  out << std::endl << BOLD_esc << "**" << (dict_is_transient?" transient":"")
-      << " string dictionary payload of " << dict_map.size() << " entries **" << NORM_esc;
+  out << std::endl << BOLD_esc << "**"
+      << (dict_is_transient?" transient":"")
+      << " string dictionary payload of " << dict_map.size()
+      << " entries **" << NORM_esc;
   for (auto it: dict_map)
     {
       const std::string &nam = it.first;
