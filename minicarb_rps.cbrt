@@ -1,0 +1,107 @@
+/****************************************************************
+ * file RefPerSys/minicarb_rps.cbrt
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Description:
+ *      This file is part of the Reflective Persistent System.
+ *      It is its Carburetta grammar and parser
+ *      see https://carburetta.com/
+ *      It should be processed by at least carburetta 0.8.29
+ *      from carburetta.com
+ *
+ * Author(s):
+ *      Basile Starynkevitch, France   <basile@starynkevitch.net>
+ *
+ *      © Copyright (C) 2026 - 2026 The Reflective Persistent System Team
+ *      team@refpersys.org & http://refpersys.org/
+ *
+ * License: GPLv3+ (file COPYING-GPLv3)
+ *    This software is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version. NO WARRANTY
+ ****************************************************************/
+
+#include "refpersys.hh"
+#pragma message "prologue part of minicarb_rps.cbrt"
+
+#ifndef RPS_GITID
+#error RPS_GITID is not defined by compilation command
+#endif
+
+#ifndef RPS_SHORTGITID
+#error RPS_SHORTGITID is not defined by compilation command
+#endif
+
+#ifndef RPS_BASENAME
+#error RPS_BASENAME not defined by compilation command
+#endif
+
+extern "C" const char rps_minicarb_gitid[];
+const char rps_minicarb_gitid[]= RPS_GITID;
+
+
+extern "C" const char rps_minicarb_shortgitid[];
+const char rps_minicarb_shortgitid[]= RPS_SHORTGITID;
+
+
+extern "C" const char rps_minicarb_basename[];
+const char rps_minicarb_basename[] = RPS_BASENAME;
+
+/// as long as this source file has no dash it is the same as above...
+extern "C" const char rps_minicarb_baseid[];
+const char rps_minicarb_baseid[] = RPS_BASEID;
+
+
+constexpr unsigned rps_magic_minicarb_data = 196145743; // 0xbb0f24f
+struct rps_minicarb_data_st {
+  unsigned minicarb_magic;       // always  rps_magic_minicarb_data
+  unsigned minicarb_touchline;
+  double minicarb_mtime;         // elapsed realtime
+  intptr_t minicarb_i;
+  double minicarb_d;
+  std::string minicarb_str;
+  void* minicarb_ptr;
+  Rps_Id minicarb_oid;
+  Rps_ObjectRef minicarb_ob1;
+  Rps_ObjectRef minicarb_ob2;
+  Rps_ObjectRef minicarb_obdelim;
+  Rps_ObjectRef minicarb_obop;
+  Rps_ObjectRef minicarb_obenv;
+  Rps_Value minicarb_v1;
+  Rps_Value minicarb_v2;
+  Rps_Value minicarb_vleft;
+  Rps_Value minicarb_vright;
+  Rps_InstanceValue minicarb_vinst;
+  inline void touch_carbdata(int li=__builtin_LINE());
+  inline void reset_carbdata(int li=__builtin_LINE());
+};
+
+
+void
+rps_minicarb_data_st::touch_carbdata(int lin)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(lin>0);
+  minicarb_touchline=lin;
+  minicarb_mtime=rps_elapsed_real_time();
+  RPS_DEBUG_LOG(REPL, "touching minicarb_data@" << (void*)this << " line#" << lin);
+} // end rps_minicarb_data_st::touch_carbdata
+
+
+void
+rps_minicarb_data_st::reset_carbdata(int lin)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(lin>0);
+  minicarb_i = 0;
+  minicarb_d = 0.0;
+  minicarb_str.erase();
+  memset((void*)&minicarb_ptr, 0,
+         sizeof(*this)-offsetof(rps_minicarb_data_st, minicarb_ptr));
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  minicarb_touchline=lin;
+  minicarb_mtime=rps_elapsed_real_time();
+  RPS_DEBUG_LOG(REPL, "resetting minicarb_data@"
+  		      << (void*)this << " line#" << lin);
+} // end rps_minicarb_data_st::reset_carbdata
