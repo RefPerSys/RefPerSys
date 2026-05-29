@@ -213,20 +213,39 @@ extern "C" const size_t rpsminicarb_stack_align;
 } // end spaces lexing
 
 LEX_INT: [\+\-]?[0-9]+ { // decimal integer
-   _Pragma("message \"lexical decimal integer in minicarb_rps.cbrt\"");
+   _Pragma("message \"lexical decimal integer° minicarb_rps.cbrt\"");
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
    $$ = (std::intptr_t) atol($text);
-   RPS_DEBUG_LOG(LOW_REPL, "parsed decimal integer " << $$
+   RPS_DEBUG_LOG(LOW_REPL, "lexed decimal integer " << $$
 		 << " from " << $text);
 }
 
 LEX_INT: [\+\-]?0[xX][0-9a-fA-F]+ { // hexadecimal integer
-   _Pragma("message \"lexical hexadecimal integer in minicarb_rps.cbrt\"");
+   _Pragma("message \"lexical hexadecimal integer° minicarb_rps.cbrt\"");
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
-   $$ = (std::intptr_t) atol($text);
-   RPS_DEBUG_LOG(LOW_REPL, "parsed hexadecimal integer" << $$
+   $$ = (std::intptr_t) strtol($text, nullptr, 16);
+   RPS_DEBUG_LOG(LOW_REPL, "lexed hexadecimal integer " << $$
+		 << " from " << $text);
+}
+
+LEX_INT: [\+\-]?0[oO]?[0-7]+ { // octal integer
+   _Pragma("message \"lexical octal integer in minicarb_rps.cbrt\"");
+   data_mc->check_carbdata_callframe(fram_mc);
+   RPS_POSSIBLE_BREAKPOINT();
+   $$ = (std::intptr_t) strtol($text, nullptr, 16);
+   RPS_DEBUG_LOG(LOW_REPL, "lexed octal integer° " << $$
+		 << " from " << $text);
+}
+
+
+LEX_INT: [\+\-]?0[Bb][01]+ { // binary integer
+   _Pragma("message \"lexical binary integer in minicarb_rps.cbrt\"");
+   data_mc->check_carbdata_callframe(fram_mc);
+   RPS_POSSIBLE_BREAKPOINT();
+   $$ = (std::intptr_t) strtol($text, nullptr, 2);
+   RPS_DEBUG_LOG(LOW_REPL, "lexed binary integer° " << $$
 		 << " from " << $text);
 }
 
