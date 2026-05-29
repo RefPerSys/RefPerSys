@@ -91,6 +91,7 @@ struct rps_minicarb_data_st {
   Rps_InstanceValue minicarb_vinst;
   inline void touch_carbdata(int li=__builtin_LINE());
   inline void reset_carbdata(int li=__builtin_LINE());
+  inline void check_carbdata_callframe(Rps_CallFrame*cf, int li==__builtin_LINE());
 };
 
 
@@ -124,7 +125,20 @@ rps_minicarb_data_st::reset_carbdata(int lin)
 } // end rps_minicarb_data_st::reset_carbdata
 
 
-
+void
+rps_minicarb_data_st::check_carbdata_callframe(Rps_CallFrame*cf, int lin)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(lin>0);
+  if (RPS_UNLIKELY(cf==nullptr)) {
+    RPS_POSSIBLE_BREAKPOINT();
+    RPS_WARNOUT("no callframe from line #"
+		<< lin << " of minicarb_rps.cbrt"
+		<< std::endl
+		<<  "… called from"
+		<< RPS_FULL_BACKTRACE(1, "check_carbdata_callframe"));
+  }
+} // end rps_minicarb_data_st::check_carbdata_callframe
 
 extern "C" const size_t rpsminicarb_stack_size;
 extern "C" const size_t rpsminicarb_stack_align;
@@ -132,11 +146,12 @@ extern "C" const size_t rpsminicarb_stack_align;
 
 ////////////////////////////////////////////////////////////////
 %scanner%
+%params Rps_CallFrame*lexfram, rps_minicarb_data_st*lexdata
 
 
 ////////////////////////////////////////////////////////////////
 %grammar%
-%params rps_minicarb_data_st*mcdata, Rps_CallFrame*mcfram, void*mcxtra
+%params rps_minicarb_data_st*syndata, Rps_CallFrame*synfram, void*synxtra
 %%
  /// trailer
 const size_t rpsminicarb_stack_size = sizeof(struct rpsminicarb_stack);
