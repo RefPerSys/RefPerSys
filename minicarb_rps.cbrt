@@ -64,6 +64,7 @@ extern "C" const char rps_minicarb_shortgitid[];
 extern "C" const char rps_minicarb_timestamp[];
 extern "C" const char rps_minicarb_basename[];
 extern "C" const char rps_minicarb_baseid[];
+extern "C" struct rps_minicarb_data_st;
 %%
 
 %prefix rpsminicarb_
@@ -135,7 +136,7 @@ extern "C" const size_t rpsminicarb_stack_align;
 
 ////////////////////////////////////////////////////////////////
 %grammar%
-
+%params rps_minicarb_data_st*mcdata, Rps_CallFrame*mcfram, void*mcxtra
 %%
  /// trailer
 const size_t rpsminicarb_stack_size = sizeof(struct rpsminicarb_stack);
