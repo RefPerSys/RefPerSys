@@ -54,6 +54,20 @@ extern "C" const char rps_minicarb_baseid[];
 const char rps_minicarb_baseid[] = RPS_BASEID;
 
 
+extern "C" struct rpsminicarb_stack;
+
+%header%
+#pragma message "header part of minicarb_rps.cbrt"
+extern "C" const char rps_minicarb_gitid[];
+extern "C" const char rps_minicarb_date[];
+extern "C" const char rps_minicarb_shortgitid[];
+extern "C" const char rps_minicarb_timestamp[];
+extern "C" const char rps_minicarb_basename[];
+extern "C" const char rps_minicarb_baseid[];
+%%
+
+%prefix rpsminicarb_
+
 constexpr unsigned rps_magic_minicarb_data = 196145743; // 0xbb0f24f
 struct rps_minicarb_data_st {
   unsigned minicarb_magic;       // always  rps_magic_minicarb_data
@@ -107,3 +121,29 @@ rps_minicarb_data_st::reset_carbdata(int lin)
   RPS_DEBUG_LOG(REPL, "resetting minicarb_data@"
   		      << (void*)this << " line#" << lin);
 } // end rps_minicarb_data_st::reset_carbdata
+
+
+
+
+extern "C" const size_t rpsminicarb_stack_size;
+extern "C" const size_t rpsminicarb_stack_align;
+
+
+////////////////////////////////////////////////////////////////
+%scanner%
+
+
+////////////////////////////////////////////////////////////////
+%grammar%
+
+%%
+ /// trailer
+const size_t rpsminicarb_stack_size = sizeof(struct rpsminicarb_stack);
+const size_t rpsminicarb_stack_align = alignof(struct rpsminicarb_stack);
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** mode: c++ ;;
+ ** compile-command: "make _minicarb_rps.o && make" ;;
+ ** End: ;;
+ ****************/
