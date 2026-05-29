@@ -200,7 +200,8 @@ extern "C" const size_t rpsminicarb_stack_align;
 ////////////////////////////////////////////////////////////////
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
 
-%token LEX_INT
+%token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN
+  
 %type LEX_INT: std::intptr_t
 
 %token LEX_OID
@@ -215,6 +216,18 @@ extern "C" const size_t rpsminicarb_stack_align;
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
 } // end spaces lexing
+
+LEX_LEFTPAREN: [\(] { /// left parenthesis
+  _Pragma("message \"lexical leftparen in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+}
+
+LEX_RIGHTPAREN: [\)] { /// left parenthesis
+  _Pragma("message \"lexical rightparen in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+}
 
 LEX_INT: [\+\-]?[0-9]+ { // decimal integer
    _Pragma("message \"lexical decimal integer° minicarb_rps.cbrt\"");
@@ -267,6 +280,8 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
      RPS_WARNOUT("invalid objectid " << $text
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1, "minicarb_rps.LEX_OID"));
+     /// we could or should throw some C++ exception here...
+     /// Carburetta is exception friendly
      $$ = nullptr;
    }
    else
