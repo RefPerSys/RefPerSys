@@ -201,7 +201,6 @@ extern "C" const size_t rpsminicarb_stack_align;
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
 
 %token LEX_INT
-%type LEX_INT: std::intptr_t
 %scanner%
  //DONT: %prefix rps_minicarb_lex_
  //DONT: _Pragma("message \"lexical scanner of minicarb_rps.cbrt\"");
@@ -230,6 +229,7 @@ extern "C" const size_t rpsminicarb_stack_align;
 %grammar%
   //DONT: %prefix rps_minicarb_syn_
   //DONT:  _Pragma("message \"syntax parsing of minicarb_rps.cbrt\"");
+%type LEX_INT: std::intptr_t
 %%
  /// trailer
 const size_t rpsminicarb_stack_size = sizeof(struct rpsminicarb_stack);
