@@ -94,6 +94,11 @@ struct rps_minicarb_data_st {
   inline void touch_carbdata(int li=__builtin_LINE());
   inline void reset_carbdata(int li=__builtin_LINE());
   inline void check_carbdata_callframe(Rps_CallFrame*cf, int li=__builtin_LINE());
+  inline int carbdata_line(void) const { return minicarb_line; };
+  inline const std::string carbdata_path() const { return minicarb_path; };
+  void incr_carbdata_line(void);
+  void set_carbdata_line(int);
+  void set_carbdata_path(const std::string&);
 };
 
 
@@ -108,6 +113,33 @@ rps_minicarb_data_st::touch_carbdata(int lin)
   		      << (void*)this << " line#" << lin);
 } // end rps_minicarb_data_st::touch_carbdata
 
+
+void
+rps_minicarb_data_st::incr_carbdata_line(void)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(minicarb_line>=0);
+  RPS_POSSIBLE_BREAKPOINT();
+  minicarb_line++;
+} // end rps_minicarb_data_st::incr_carbdata_line
+
+void
+rps_minicarb_data_st::set_carbdata_line(int l)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(l>=0);
+  RPS_POSSIBLE_BREAKPOINT();
+  minicarb_line= l;
+} // end rps_minicarb_data_st::set_carbdata_line
+
+void
+rps_minicarb_data_st::set_carbdata_path(const std::string&p)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(!p.empty());
+  RPS_POSSIBLE_BREAKPOINT();
+  minicarb_path= p;
+} // end rps_minicarb_data_st::set_carbdata_path
 
 void
 rps_minicarb_data_st::reset_carbdata(int lin)
@@ -148,15 +180,15 @@ extern "C" const size_t rpsminicarb_stack_align;
 
 ////////////////////////////////////////////////////////////////
 %scanner%
- //DONT USE %prefix rps_minicarb_lex_
+ //DONT: %prefix rps_minicarb_lex_
 %params Rps_CallFrame*lexfram, rps_minicarb_data_st*lexdata
-  //  _Pragma("message \"lexical scanner part of minicarb_rps.cbrt\"");
+  //DONT: _Pragma("message \"lexical scanner of minicarb_rps.cbrt\"");
 
 ////////////////////////////////////////////////////////////////
 %grammar%
   //DONT USE %prefix rps_minicarb_syn_
 %params rps_minicarb_data_st*syndata, Rps_CallFrame*synfram, void*synxtra
-  //  _Pragma("message \"syntax parsing part of minicarb_rps.cbrt\"");
+  //DONT:  _Pragma("message \"syntax parsing of minicarb_rps.cbrt\"");
 %%
  /// trailer
 const size_t rpsminicarb_stack_size = sizeof(struct rpsminicarb_stack);
