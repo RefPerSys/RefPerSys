@@ -91,7 +91,7 @@ struct rps_minicarb_data_st {
   Rps_InstanceValue minicarb_vinst;
   inline void touch_carbdata(int li=__builtin_LINE());
   inline void reset_carbdata(int li=__builtin_LINE());
-  inline void check_carbdata_callframe(Rps_CallFrame*cf, int li==__builtin_LINE());
+  inline void check_carbdata_callframe(Rps_CallFrame*cf, int li=__builtin_LINE());
 };
 
 
