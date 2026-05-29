@@ -17,10 +17,13 @@
  *      team@refpersys.org & http://refpersys.org/
  *
  * License: GPLv3+ (file COPYING-GPLv3)
- *    This software is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version. NO WARRANTY
+ *
+ *    This software is free software: you can redistribute it and/or
+ *    modify it under the terms of the GNU General Public License as
+ *    published by the Free Software Foundation, either version 3 of
+ *    the License, or (at your option) any later version.
+ *
+ * NO WARRANTY
  ****************************************************************/
 
 #include "refpersys.hh"
@@ -91,9 +94,11 @@ struct rps_minicarb_data_st {
   Rps_Value minicarb_vleft;
   Rps_Value minicarb_vright;
   Rps_InstanceValue minicarb_vinst;
+  void check_carbdata_magic(int li=__builtin_LINE());
   inline void touch_carbdata(int li=__builtin_LINE());
   inline void reset_carbdata(int li=__builtin_LINE());
-  inline void check_carbdata_callframe(Rps_CallFrame*cf, int li=__builtin_LINE());
+  void check_carbdata_callframe(Rps_CallFrame*cf,
+				int li=__builtin_LINE());
   inline int carbdata_line(void) const { return minicarb_line; };
   inline const std::string carbdata_path() const { return minicarb_path; };
   void incr_carbdata_line(void);
@@ -101,6 +106,17 @@ struct rps_minicarb_data_st {
   void set_carbdata_path(const std::string&);
 };
 
+void
+rps_minicarb_data_st::check_carbdata_magic(int lin)
+{
+  RPS_ASSERT(lin>0);
+  if (RPS_UNLIKELY(minicarb_magic != rps_magic_minicarb_data))
+    RPS_FATALOUT("check_carbdata_magic corruption lin#"
+		 << lin << "with this@"
+		 << (void*)this);
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  // the above assert is redundant but could help an optimizer
+}
 
 void
 rps_minicarb_data_st::touch_carbdata(int lin)
@@ -146,6 +162,8 @@ rps_minicarb_data_st::reset_carbdata(int lin)
 {
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   RPS_ASSERT(lin>0);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(minicarb_path.empty());
   minicarb_i = 0;
   minicarb_d = 0.0;
   minicarb_str.erase();
@@ -160,7 +178,8 @@ rps_minicarb_data_st::reset_carbdata(int lin)
 
 
 void
-rps_minicarb_data_st::check_carbdata_callframe(Rps_CallFrame*cf, int lin)
+rps_minicarb_data_st::check_carbdata_callframe(Rps_CallFrame*cf,
+					       int lin)
 {
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   RPS_ASSERT(lin>0);
@@ -179,15 +198,37 @@ extern "C" const size_t rpsminicarb_stack_align;
 
 
 ////////////////////////////////////////////////////////////////
+%params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
+
+%token LEX_INT
+%type LEX_INT: std::intptr_t
 %scanner%
  //DONT: %prefix rps_minicarb_lex_
-%params Rps_CallFrame*lexfram, rps_minicarb_data_st*lexdata
-  //DONT: _Pragma("message \"lexical scanner of minicarb_rps.cbrt\"");
+ //DONT: _Pragma("message \"lexical scanner of minicarb_rps.cbrt\"");
+
+: [\ \t\f\v\r]+ { // ignore spaces
+  _Pragma("message \"lexical ignore spaces in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+} // end spaces lexing
+
+//- LEX_INT: [+-][0-9]+ { // decimal integer
+//-   _Pragma("message \"lexical decimal integer in minicarb_rps.cbrt\"");
+//-   data_mc->check_carbdata_callframe(fram_mc);
+//-   RPS_POSSIBLE_BREAKPOINT();
+//-   $$ = (std::intptr_t) atol($text);
+//- }
+
+: [\n] { // count newlines
+  _Pragma("message \"lexical count newlines in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->incr_carbdata_line();
+  RPS_POSSIBLE_BREAKPOINT();
+ }
 
 ////////////////////////////////////////////////////////////////
 %grammar%
-  //DONT USE %prefix rps_minicarb_syn_
-%params rps_minicarb_data_st*syndata, Rps_CallFrame*synfram, void*synxtra
+  //DONT: %prefix rps_minicarb_syn_
   //DONT:  _Pragma("message \"syntax parsing of minicarb_rps.cbrt\"");
 %%
  /// trailer
