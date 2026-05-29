@@ -8,6 +8,7 @@
  *      see https://carburetta.com/
  *      It should be processed by at least carburetta 0.8.29
  *      from carburetta.com
+ *      It does not use other lexing or parsing routines
  *
  * Author(s):
  *      Basile Starynkevitch, France   <basile@starynkevitch.net>
@@ -85,7 +86,8 @@ rps_minicarb_data_st::touch_carbdata(int lin)
   RPS_ASSERT(lin>0);
   minicarb_touchline=lin;
   minicarb_mtime=rps_elapsed_real_time();
-  RPS_DEBUG_LOG(REPL, "touching minicarb_data@" << (void*)this << " line#" << lin);
+  RPS_DEBUG_LOG(REPL, "touching minicarb_data@"
+  		      << (void*)this << " line#" << lin);
 } // end rps_minicarb_data_st::touch_carbdata
 
 

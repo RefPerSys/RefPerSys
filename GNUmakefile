@@ -121,7 +121,7 @@ REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
 REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
 ### Generated C++ sources
-REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc
+REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc _minicarb_rps.cc
 
 ### corresponding C++ objects
 REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
@@ -304,7 +304,7 @@ utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 
 ### snapshot expect a GNU tar...
 snapshot: refpersys snapshot-exclude-patterns.txt
-	$(MAKE) __buildinfo.c _carbrepl_rps.cc
+	$(MAKE) __buildinfo.c _carbrepl_rps.cc _minicarb_rps.cc
 	/bin/tar -c -j --exclude-from=snapshot-exclude-patterns.txt \
 	   -f $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
 
@@ -382,6 +382,7 @@ clean: clean-plugins
 	$(RM) -vf core*
 #	$(RM) -v _gramrepl_rps.*
 	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
+	$(RM) -vf _minicarb_rps.* _nl?minirepl_rps.cc
 #	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
 	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys
 	$(RM) do-build-refpersys-plugin 
@@ -408,6 +409,16 @@ _carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 	$(RPS_CARBURETTA) --c $@ --sym-names $^
 
 _nl_carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --nolinedir --sym-names $^
+
+_minicarb_rps.cc: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --sym-names $^
+
+_nl_minicarb_rps.cc: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 # the --sym-names feature of carburetta is in
 # https://github.com/kingletbv/carburetta/issues/9
 	$(RPS_CARBURETTA) --c $@ --nolinedir --sym-names $^
@@ -784,6 +795,27 @@ raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 
 ## only useful to debug the carburetta input file
 _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+## only useful to debug the carburetta input file
+_nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
