@@ -200,12 +200,13 @@ extern "C" const size_t rpsminicarb_stack_align;
 ////////////////////////////////////////////////////////////////
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
 
-%token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN
+%token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN LEX_DOUBLE
   
 %type LEX_INT: std::intptr_t
 
 %token LEX_OID
 %type LEX_OID: Rps_Id
+%type LEX_DOUBLE: double
 
 %scanner%
  //DONT: %prefix rps_minicarb_lex_
@@ -263,6 +264,22 @@ LEX_INT: [\+\-]?0[Bb][01]+ { // binary integer
    RPS_POSSIBLE_BREAKPOINT();
    $$ = (std::intptr_t) strtol($text, nullptr, 2);
    RPS_DEBUG_LOG(LOW_REPL, "lexed binary integer° " << $$
+		 << " from " << $text);
+}
+
+LEX_DOUBLE: [\+\-]?([0-9]+\.)|([0-9]*\.[0-9]+)([eE][\+\-]?[0-9]+)? {
+   data_mc->check_carbdata_callframe(fram_mc);
+   RPS_POSSIBLE_BREAKPOINT();
+   $$ =  strtod($text, nullptr);
+   RPS_DEBUG_LOG(LOW_REPL, "lexed decimal double° " << $$
+		 << " from " << $text);
+}
+
+LEX_DOUBLE: [\+\-]?0[xX]([0-9a-fA-F]+\.)|([0-9a-fA-F]+)([pP][\+\-]?[0-9]+)? {
+   data_mc->check_carbdata_callframe(fram_mc);
+   RPS_POSSIBLE_BREAKPOINT();
+   $$ =  strtod($text, nullptr);
+   RPS_DEBUG_LOG(LOW_REPL, "lexed hex double° " << $$
 		 << " from " << $text);
 }
 
