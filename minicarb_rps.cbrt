@@ -68,6 +68,7 @@ extern "C" const char rps_minicarb_timestamp[];
 extern "C" const char rps_minicarb_basename[];
 extern "C" const char rps_minicarb_baseid[];
 extern "C" struct rps_minicarb_data_st;
+
 %%
 
 %prefix rpsminicarb_
@@ -201,13 +202,15 @@ extern "C" const size_t rpsminicarb_stack_align;
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
 
 %token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN LEX_DOUBLE
+%token LEX_SYMBOL LEX_NEW_SYMBOL
   
 %type LEX_INT: std::intptr_t
 
 %token LEX_OID
 %type LEX_OID: Rps_Id
 %type LEX_DOUBLE: double
-
+%type LEX_SYMBOL: Rps_PayloadSymbol*
+%type LEX_NEW_SYMBOL: Rps_PayloadSymbol*
 %scanner%
  //DONT: %prefix rps_minicarb_lex_
  //DONT: _Pragma("message \"lexical scanner of minicarb_rps.cbrt\"");
@@ -294,12 +297,15 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
    RPS_DEBUG_LOG(LOW_REPL, "lexed objectid° " << data_mc->minicarb_oid
 		 << " from " << $text);
    if (!okid) {
-     RPS_WARNOUT("invalid objectid " << $text
+     RPS_WARNOUT("invalid objectid " << $text << " in "
+		 << data_mc->minicarb_path << " line "
+		 << data_mc->minicarb_line
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1, "minicarb_rps.LEX_OID"));
      /// we could or should throw some C++ exception here...
      /// Carburetta is exception friendly
      $$ = nullptr;
+     return _RPSMINICARB_SYNTAX_ERROR;
    }
    else
      $$ = data_mc->minicarb_oid;
@@ -311,6 +317,14 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
   data_mc->incr_carbdata_line();
   RPS_POSSIBLE_BREAKPOINT();
  }
+
+/// LEX_SYMBOL must exist
+LEX_SYMBOL: [A-Za-z][A-Za-z0-9_]* {
+  _Pragma("message \"lexical symbol unimplemented in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  // TODO:use Rps_PayloadSymbol::valid_name
+  // and Rps_PayloadSymbol::find_named_object
+}
 
 ////////////////////////////////////////////////////////////////
 %grammar%
