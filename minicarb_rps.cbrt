@@ -363,16 +363,17 @@ LEX_SYMBOL: [A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 } ////end LEX_SYMBOL
 
 
-/// LEX_NEW_SYMBOL must not exist
-LEX_NEW_SYMBOL: [@][A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
+/// LEX_NEW_SYMBOL must not exist, the @ sign prefix is for their
+/// first occurrence of fresh new symbols
+LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
   _Pragma("message \"lexical LEX_NEW_SYMBOL incomplete in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   if (Rps_PayloadSymbol::valid_name($text)) { // in object_rps.cc
     /// the name is lexically valid, but might not exist...
     data_mc->minicarb_ob1
-      = Rps_PayloadSymbol::find_named_object($text);
+      = Rps_PayloadSymbol::find_named_object($text+1);
     if (data_mc->minicarb_ob1) {
-     RPS_WARNOUT("existing name " << $text << " in "
+     RPS_WARNOUT("existing name " << $text+1 << " in "
 		 << data_mc->minicarb_path << " line "
 		 << data_mc->minicarb_line
 		 << std::endl
@@ -382,8 +383,25 @@ LEX_NEW_SYMBOL: [@][A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
      /// Carburetta is exception friendly
      $$ = 0;
      return _RPSMINICARB_SYNTAX_ERROR;
-    }
-  }
+    };
+    _Pragma("message \"use PayloadSymbol::register_strong_name\"");
+  };
+  // make the new symbol as a strong symbol
+  data_mc->minicarb_ob1
+  = Rps_ObjectRef::make_object
+  (fram_mc,
+   RPS_ROOT_OB(_36I1BY2NetN03WjrOv),///symbol∊class
+   Rps_ObjectRef::root_space());
+  bool ok =
+  Rps_PayloadSymbol::register_strong_name($text+1,
+					  data_mc->minicarb_ob1);
+  if (!ok)
+     RPS_WARNOUT("failed to register name " << $text+1 << " in "
+		 << data_mc->minicarb_path << " line "
+		 << data_mc->minicarb_line
+		 << std::endl
+		 << RPS_FULL_BACKTRACE(1,
+				       "minicarb_rps.LEX_NEW_SYMBOL known"));
 } // end LEX_NEW_SYMBOL
 ////////////////////////////////////////////////////////////////
 %grammar%
