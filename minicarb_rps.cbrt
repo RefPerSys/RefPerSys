@@ -320,7 +320,7 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
  }
 
 /// LEX_SYMBOL must exist
-LEX_SYMBOL: [A-Za-z][A-Za-z0-9_]* {
+LEX_SYMBOL: [A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
   _Pragma("message \"lexical symbol incomplete in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   if (Rps_PayloadSymbol::valid_name($text)) { // in object_rps.cc
@@ -342,7 +342,7 @@ LEX_SYMBOL: [A-Za-z][A-Za-z0-9_]* {
     else {
       RPS_DEBUG_LOG(LOW_REPL, "found named object° "
 		    << data_mc->minicarb_ob1
-		    << " from " << $text);
+		    << " named " << $text);
       return 0;
     }
   }
@@ -360,7 +360,7 @@ LEX_SYMBOL: [A-Za-z][A-Za-z0-9_]* {
   }
   // TODO:use Rps_PayloadSymbol::valid_name
   // and Rps_PayloadSymbol::find_named_object
-}
+} ////end LEX_SYMBOL
 
 ////////////////////////////////////////////////////////////////
 %grammar%
