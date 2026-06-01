@@ -321,7 +321,7 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
 
 /// LEX_SYMBOL must exist
 LEX_SYMBOL: [A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
-  _Pragma("message \"lexical symbol incomplete in minicarb_rps.cbrt\"");
+  _Pragma("message \"lexical LEX_SYMBOL incomplete in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   if (Rps_PayloadSymbol::valid_name($text)) { // in object_rps.cc
     /// the name is lexically valid, but might not exist...
@@ -362,6 +362,29 @@ LEX_SYMBOL: [A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
   // and Rps_PayloadSymbol::find_named_object
 } ////end LEX_SYMBOL
 
+
+/// LEX_NEW_SYMBOL must not exist
+LEX_NEW_SYMBOL: [@][A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
+  _Pragma("message \"lexical LEX_NEW_SYMBOL incomplete in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  if (Rps_PayloadSymbol::valid_name($text)) { // in object_rps.cc
+    /// the name is lexically valid, but might not exist...
+    data_mc->minicarb_ob1
+      = Rps_PayloadSymbol::find_named_object($text);
+    if (data_mc->minicarb_ob1) {
+     RPS_WARNOUT("existing name " << $text << " in "
+		 << data_mc->minicarb_path << " line "
+		 << data_mc->minicarb_line
+		 << std::endl
+		 << RPS_FULL_BACKTRACE(1,
+				       "minicarb_rps.LEX_NEW_SYMBOL known"));
+     /// we could or should throw some C++ exception here...
+     /// Carburetta is exception friendly
+     $$ = 0;
+     return _RPSMINICARB_SYNTAX_ERROR;
+    }
+  }
+} // end LEX_NEW_SYMBOL
 ////////////////////////////////////////////////////////////////
 %grammar%
   //DONT: %prefix rps_minicarb_syn_
