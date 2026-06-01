@@ -2213,7 +2213,7 @@ Rps_PayloadSymbol::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
-  /// see function rpsldpy_symbol in store_rps.cc
+  /// see function rpsldpy_symbol in load_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_ASSERT(owner());
