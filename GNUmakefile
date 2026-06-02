@@ -64,7 +64,7 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
 
 .PHONY: all everything config objects showtests clean distclean \
         gitpush gitpush2 \
-        show-vtable \
+        show-vtable analysis \
         print-plugin-settings indent \
         redump altredump altdump clean-plugins plugins \
         print-gmake-features utility-clang \
@@ -120,6 +120,9 @@ REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
 ### corresponding object files
 REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
+### corresponding analyzed object files
+REFPERSYS_HUMAN_CPPANAL_OBJECTS=$(patsubst %.cc, %.an.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
+
 ### Generated C++ sources
 REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc _minicarb_rps.cc
 
@@ -137,8 +140,16 @@ REFPERSYS_RAW_SOURCES := $(REFPERSYS_HUMAN_CPP_SOURCES) \
 
 REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, %.raw.o, $(REFPERSYS_RAW_SOURCES))
 
+REFPERSYS_ANA_OBJECTS := $(patsubst %.cc, %.ana.o, $(REFPERSYS_RAW_SOURCES))
+
+
 ### corresponding object files
 REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+
+### corresponding analyzed object files
+REFPERSYS_DUMPED_ANA_OBJECTS=$(patsubst %.cc, %.ana.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+
+
 
 ## altredump is dumping into....
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
