@@ -299,6 +299,30 @@ LEX_INT: [#][\']\P{Control}[\'] {
    }
 }
 
+/// unicode backslashed character constants like #'\n' or #'\\' or #'\e'
+LEX_INT: [#][\']\\.[\'] {
+   _Pragma("message \"lexical backslashed character in minicarb_rps.cbrt\"");
+   ucs4_t uc= 0;
+   data_mc->check_carbdata_callframe(fram_mc);
+   RPS_POSSIBLE_BREAKPOINT();
+   switch($text[3]) {
+   case '0': $$=0; break;
+   case 'a': $$='\a'; break;
+   case 'b': $$='\b'; break;
+   case 'e': $$=033 /*ESC*/; break;
+   case 'f': $$='\f'; break;
+   case 'n': $$='\n'; break;
+   case 'r': $$='\r'; break;
+   case 't': $$='\t'; break;
+   case 'v': $$='\v'; break;
+   case '\'': $$='\''; break;
+   case 'q': $$='\''; break;
+   default: $$=$text[3]; break;
+   }
+   RPS_DEBUG_LOG(LOW_REPL, "lexed backslashed char "
+		 << $$ << " from " << $text);
+}
+
 LEX_DOUBLE: [\+\-]?([0-9]+\.)|([0-9]*\.[0-9]+)([eE][\+\-]?[0-9]+)? {
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
