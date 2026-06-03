@@ -69,8 +69,8 @@ RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
         redump altredump altdump clean-plugins plugins \
         print-gmake-features utility-clang \
         one-plugin \
-        lto-refpersys \
-        raw-refpersys raw-objects \
+        lto-refpersys ana-objects ana-refpersys \
+        raw-refpersys raw-objects lto-objects \
         snapshot \
 	q6refpersys \
 	plain-q6rps-plugin \
@@ -121,7 +121,7 @@ REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
 REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
 ### corresponding analyzed object files
-REFPERSYS_HUMAN_CPPANAL_OBJECTS=$(patsubst %.cc, %.an.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
+REFPERSYS_HUMAN_CPPANAL_OBJECTS=$(patsubst %.cc, %.ana.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
 ### Generated C++ sources
 REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc _minicarb_rps.cc
@@ -240,6 +240,13 @@ _config-refpersys.mk: GNUmakefile tools/do-configure-refpersys.c
 ### raw-objects are the set of *rps.raw.o files without FLTK interface
 raw-objects: $(REFPERSYS_RAW_OBJECTS)
 
+### lto-objects are the set of *rps.lto.o files without FLTK interface
+lto-objects: $(REFPERSYS_LTO_OBJECTS)
+
+### ana-objects are the set of *rps.ana.o files without FLTK interface
+### for static analysis by GCC
+ana-objects: $(REFPERSYS_ANA_OBJECTS)
+
 ## Notice that near commit a4522ac97372ba (mid-March 2026) the
 ## graphical interface is a separate Qt6 executable q6refpersys; that
 ## executable communicates with the refpersys process using something
@@ -310,6 +317,25 @@ utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	       -c -o $@ $<
 	$(SYNC)
 
+#### TODO:fix it, so that make ana-objects work
+%rps.ana.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_ANALYZED=1  \
+              -U_Rps_Is_Ana \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
 .SECONDARY:  __buildinfo.c 
 	$(SYNC)
 
@@ -321,17 +347,15 @@ snapshot: refpersys snapshot-exclude-patterns.txt
 
 lto-refpersys:
 	$(MAKE) clean
-	$(MAKE) -j3 REFPERSYS_LTO=-flto objects
+	$(MAKE) -j3 REFPERSYS_LTO=-flto lto-objects
 	$(REFPERSYS_CXX) -flto -rdynamic \
              $(REFPERSYS_COMPILER_FLAGS) \
              $(REFPERSYS_LINKER_FLAGS) \
              -o $@ \
-             $(REFPERSYS_HUMAN_CPP_OBJECTS) \
-             $(REFPERSYS_GENERATED_CPP_OBJECTS) \
-             $(REFPERSYS_DUMPED_CPP_OBJECTS) __buildinfo.o \
+             -U_Rps_Lto1 $(REFPERSYS_LTO_OBJECTS) __buildinfo.lto.o \
 	      $(RPS_LIBBACKTRACE) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
-              -rpath /usr/local/lib:$LD_LIBRARY_PATH \
+              -Wl,-rpath /usr/local/lib:$$LD_LIBRARY_PATH \
                $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
@@ -792,6 +816,50 @@ raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
                $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
                -U_Rps_CompilRaw \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+%_rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
+               -U_Rps_CompilRawB \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+%_rps.lto.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
+               -U_Rps_CompilLtoB -flto \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
