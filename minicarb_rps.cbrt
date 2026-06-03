@@ -238,7 +238,31 @@ extern "C" const size_t rpsminicarb_stack_align;
   RPS_POSSIBLE_BREAKPOINT();
   $set_mode(DEFAULT);
 }
- 
+
+<IN_CODE_CHUNK>: [\$][a-z][a-zA-Z0-9_]* { // in code chunk a variable
+  _Pragma("message \"lexical end code chunk in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  //TODO: incomplete
+}
+
+
+<IN_CODE_CHUNK>: [\$\$] { // in code chunk a literal dollar
+  _Pragma("message \"lexical literal dollar chunk in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  //TODO: incomplete
+}
+
+<IN_CODE_CHUNK>: [\$\.] { // in code chunk a literal dollar
+  _Pragma("message \"empty inside code chunk in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  //TODO: incomplete
+}
+
+///TODO: more for IN_CODE_CHUNK
+
 LEX_LEFTPAREN: [\(] { /// left parenthesis
   _Pragma("message \"lexical leftparen in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
