@@ -206,6 +206,8 @@ extern "C" const size_t rpsminicarb_stack_align;
 %type LEX_SYMBOL: Rps_PayloadSymbol*
 %type LEX_STRING: std::string
 
+%mode IN_CODE_CHUNK
+
   
 %type LEX_INT: std::intptr_t
 
@@ -223,6 +225,20 @@ extern "C" const size_t rpsminicarb_stack_align;
   RPS_POSSIBLE_BREAKPOINT();
 } // end spaces lexing
 
+: [#\{] { // start code chunk
+  _Pragma("message \"lexical code chunk start in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  $set_mode(IN_CODE_CHUNK);
+}
+
+<IN_CODE_CHUNK>: [\}#] { // end code chunk
+  _Pragma("message \"lexical end code chunk in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  $set_mode(DEFAULT);
+}
+ 
 LEX_LEFTPAREN: [\(] { /// left parenthesis
   _Pragma("message \"lexical leftparen in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
@@ -455,6 +471,8 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 		 << RPS_FULL_BACKTRACE(1,
 				       "minicarb_rps.LEX_NEW_SYMBOL known"));
 } // end LEX_NEW_SYMBOL
+
+
 ////////////////////////////////////////////////////////////////
 %grammar%
   //DONT: %prefix rps_minicarb_syn_
