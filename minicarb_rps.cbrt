@@ -7,7 +7,6 @@
  *      It is its Carburetta grammar and parser
  *      see https://carburetta.com/
  *      It should be processed by at least carburetta 0.8.29
- *      from carburetta.com
  *      It does not use other lexing or parsing routines
  *
  * Author(s):
@@ -207,6 +206,8 @@ extern "C" const size_t rpsminicarb_stack_align;
 %type LEX_STRING: std::string
 
 %mode IN_CODE_CHUNK
+%mode IN_STRING /// in a string à la C, e.g. "ab\n" has 3 bytes
+%mode IN_RAW_STRING /// in a raw string à la C++ like R"ab(...)"
 
   
 %type LEX_INT: std::intptr_t
@@ -232,6 +233,76 @@ extern "C" const size_t rpsminicarb_stack_align;
   $set_mode(IN_CODE_CHUNK);
 }
 
+: \" { /// start literal string à la C
+  _Pragma("message \"lexical start of literal string in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  $set_mode(IN_STRING);
+  data_mc->minicarb_str.erase();
+}
+
+<IN_STRING>: \" {
+  _Pragma("message \"lexical end of literal string in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  $set_mode(DEFAULT);
+  ///TODO: return the literal string...
+}
+
+<IN_STRING>: \\n {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\n");
+}
+
+<IN_STRING>: \\n {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\n");
+}
+
+<IN_STRING>: \\r {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\r");
+}
+
+<IN_STRING>: \\t {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\t");
+}
+
+<IN_STRING>: \\v {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\v");
+}
+
+<IN_STRING>: \\f {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\f");
+}
+
+<IN_STRING>: \\q {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\'");
+}
+
+<IN_STRING>: \\Q {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\Q");
+}
+
+<IN_STRING>: \\\\ {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\\");
+}
+
 <IN_CODE_CHUNK>: [\}#] { // end code chunk
   _Pragma("message \"lexical end code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
@@ -254,7 +325,7 @@ extern "C" const size_t rpsminicarb_stack_align;
   //TODO: incomplete
 }
 
-<IN_CODE_CHUNK>: [\$\.] { // in code chunk a literal dollar
+<IN_CODE_CHUNK>: [\$\.] { // in code chunk a literal empty
   _Pragma("message \"empty inside code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
