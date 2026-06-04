@@ -303,6 +303,18 @@ extern "C" const size_t rpsminicarb_stack_align;
   data_mc->minicarb_str.append("\\");
 }
 
+/// ignore backslash with spaces at end of line in strings
+<IN_STRING>: \\\p{Space_Separator}*\n {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+}
+
+<IN_STRING>: \P{Control} {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append($text);
+}
+
 <IN_CODE_CHUNK>: [\}#] { // end code chunk
   _Pragma("message \"lexical end code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
