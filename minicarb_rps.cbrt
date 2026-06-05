@@ -352,8 +352,8 @@ extern "C" const size_t rpsminicarb_stack_align;
   $set_mode(DEFAULT);
 }
 
-<IN_CODE_CHUNK>: [\$][a-z][a-zA-Z0-9_]* { // in code chunk a variable
-  _Pragma("message \"lexical end code chunk in minicarb_rps.cbrt\"");
+<IN_CODE_CHUNK>: [\$][a-z][a-zA-Z0-9_]* { // in code chunk a metavariablevariable
+  _Pragma("message \"lexical metavariable code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
   //TODO: incomplete
