@@ -94,11 +94,13 @@ struct rps_minicarb_data_st {
   Rps_Value minicarb_vleft;
   Rps_Value minicarb_vright;
   Rps_InstanceValue minicarb_vinst;
+  std::vector<Rps_Value> minicarb_vectval; // needed for code chunks
   void check_carbdata_magic(int li=__builtin_LINE());
   inline void touch_carbdata(int li=__builtin_LINE());
   inline void reset_carbdata(int li=__builtin_LINE());
   void check_carbdata_callframe(Rps_CallFrame*cf,
 				int li=__builtin_LINE());
+  void gc_carbdata_mark(Rps_GarbageCollector&gc, int li=__builtin_LINE());
   inline int carbdata_line(void) const { return minicarb_line; };
   inline const std::string carbdata_path() const { return minicarb_path; };
   void incr_carbdata_line(void);
@@ -129,6 +131,23 @@ rps_minicarb_data_st::touch_carbdata(int lin)
   		      << (void*)this << " line#" << lin);
 } // end rps_minicarb_data_st::touch_carbdata
 
+void
+rps_minicarb_data_st::gc_carbdata_mark(Rps_GarbageCollector&gc, int li)
+{
+  RPS_ASSERT(li>0);
+  gc.mark_obj(minicarb_ob1);
+  gc.mark_obj(minicarb_ob2);
+  gc.mark_obj(minicarb_obdelim);
+  gc.mark_obj(minicarb_obop);
+  gc.mark_obj(minicarb_obenv);
+  gc.mark_value(minicarb_v1);
+  gc.mark_value(minicarb_v2);
+  gc.mark_value(minicarb_vleft);
+  gc.mark_value(minicarb_vright);
+  gc.mark_value(minicarb_vinst);
+  for (Rps_Value&v : minicarb_vectval)
+    gc.mark_value(v);
+} // end rps_minicarb_data_st::gc_carbdata_mark
 
 void
 rps_minicarb_data_st::incr_carbdata_line(void)
@@ -167,8 +186,19 @@ rps_minicarb_data_st::reset_carbdata(int lin)
   minicarb_i = 0;
   minicarb_d = 0.0;
   minicarb_str.erase();
-  memset((void*)&minicarb_ptr, 0,
-         sizeof(*this)-offsetof(rps_minicarb_data_st, minicarb_ptr));
+  minicarb_ptr = nullptr;
+  minicarb_oid = nullptr;
+  minicarb_ob1 = nullptr;
+  minicarb_ob2 = nullptr;
+  minicarb_obdelim = nullptr;
+  minicarb_obop = nullptr;
+  minicarb_obenv = nullptr;
+  minicarb_v1 = nullptr;
+  minicarb_v2 = nullptr;
+  minicarb_vleft = nullptr;
+  minicarb_vright = nullptr;
+  minicarb_vinst = nullptr;
+  minicarb_vectval.clear();
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   minicarb_touchline=lin;
   minicarb_mtime=rps_elapsed_real_time();
