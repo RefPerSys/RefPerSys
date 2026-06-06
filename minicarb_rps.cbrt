@@ -378,7 +378,7 @@ extern "C" const size_t rpsminicarb_stack_align;
 		  << " as " << data_mc->minicarb_vinst
 		  << " from " << Rps_QuotedC_String($text));
   };
-    
+  _Pragma("message \"incomplete metavariable code chunk in minicarb_rps.cbrt\"");
   RPS_POSSIBLE_BREAKPOINT();
   //TODO: incomplete
 }
