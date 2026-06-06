@@ -324,7 +324,7 @@ extern "C" const size_t rpsminicarb_stack_align;
 <IN_STRING>: \\Q {
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
-  data_mc->minicarb_str.append("\Q");
+  data_mc->minicarb_str.append("\"");
 }
 
 <IN_STRING>: \\\\ {
@@ -335,11 +335,13 @@ extern "C" const size_t rpsminicarb_stack_align;
 
 /// ignore backslash with spaces at end of line in strings
 <IN_STRING>: \\\p{Space_Separator}*\n {
+  _Pragma("message \"string: ignore final backslash in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
 }
 
 <IN_STRING>: \P{Control} {
+  _Pragma("message \"string: keep non-control in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
   data_mc->minicarb_str.append($text);
@@ -352,9 +354,31 @@ extern "C" const size_t rpsminicarb_stack_align;
   $set_mode(DEFAULT);
 }
 
-<IN_CODE_CHUNK>: [\$][a-z][a-zA-Z0-9_]* { // in code chunk a metavariablevariable
+<IN_CODE_CHUNK>: [\$][a-zA-Z][a-zA-Z0-9_]* { // in code chunk a metavariablevariable
   _Pragma("message \"lexical metavariable code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->minicarb_ob1
+    = Rps_ObjectRef::find_object_or_null_by_string(fram_mc, $text+1);
+  if (!data_mc->minicarb_ob1) {
+    RPS_WARNOUT("unknown metavariable name " << $text+1
+		<< " in "
+		 << data_mc->minicarb_path << " line "
+		 << data_mc->minicarb_line
+		 << std::endl
+		 << RPS_FULL_BACKTRACE(1, "minicarb_rps.CHUNKMETAVAR"));
+  }
+  else {
+    data_mc->minicarb_vinst
+      = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9), //meta_variable∈symbol
+			  std::initializer_list<Rps_Value> {
+			    data_mc->minicarb_ob1
+			  });
+    data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
+    RPS_DEBUG_LOG(LOW_REPL, "lexed metavariable " << data_mc->minicarb_ob1
+		  << " as " << data_mc->minicarb_vinst
+		  << " from " << Rps_QuotedC_String($text));
+  };
+    
   RPS_POSSIBLE_BREAKPOINT();
   //TODO: incomplete
 }
