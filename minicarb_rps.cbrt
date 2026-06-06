@@ -395,12 +395,31 @@ extern "C" const size_t rpsminicarb_stack_align;
   //TODO: incomplete
 }
 
+<IN_CODE_CHUNK>: [A-Za-z]+ { // in code chunk a literal "word"like
+  _Pragma("message \"word in code chunk in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  //TODO: incomplete
+}
+
 <IN_CODE_CHUNK>: [\$\.] { // in code chunk a literal empty
   _Pragma("message \"empty inside code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
   //TODO: incomplete
 }
+
+<IN_CODE_CHUNK>: [\-]?[0-9]+ { // in code chunk a literal integer
+  _Pragma("message \"literal integer in chunk minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->minicarb_vinst =  Rps_Value((intptr_t)atoll($text),
+				       Rps_Value::Rps_IntTag{});
+  data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
+  RPS_DEBUG_LOG(LOW_REPL, "lexed literal integer as "
+		  << data_mc->minicarb_vinst);
+  RPS_POSSIBLE_BREAKPOINT();
+}
+
 
 ///TODO: more for IN_CODE_CHUNK
 
