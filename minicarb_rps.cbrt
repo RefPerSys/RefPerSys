@@ -387,6 +387,10 @@ extern "C" const size_t rpsminicarb_stack_align;
 <IN_CODE_CHUNK>: [\$\$] { // in code chunk a literal dollar
   _Pragma("message \"lexical literal dollar chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->minicarb_vinst =  Rps_StringValue("$");
+    data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
+    RPS_DEBUG_LOG(LOW_REPL, "lexed literal dollar as "
+		  << data_mc->minicarb_vinst);
   RPS_POSSIBLE_BREAKPOINT();
   //TODO: incomplete
 }
