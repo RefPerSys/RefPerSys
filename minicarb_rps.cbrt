@@ -395,11 +395,32 @@ extern "C" const size_t rpsminicarb_stack_align;
   //TODO: incomplete
 }
 
-<IN_CODE_CHUNK>: [A-Za-z]+ { // in code chunk a literal "word"like
-  _Pragma("message \"word in code chunk in minicarb_rps.cbrt\"");
+<IN_CODE_CHUNK>: [A-Za-z0-9_]+ { // in code chunk a literal "identifier"like
+  _Pragma("message \"identifier in code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
-  //TODO: incomplete
+  data_mc->minicarb_ob1
+  = Rps_ObjectRef::find_object_or_null_by_string(fram_mc, $text);
+  if (data_mc->minicarb_ob1) {
+    data_mc->minicarb_vinst
+      = Rps_InstanceValue(RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
+			  std::initializer_list<Rps_Value> {
+			    data_mc->minicarb_ob1
+			  });
+    RPS_DEBUG_LOG(LOW_REPL, "symbol in code chunk as "
+		  << data_mc->minicarb_vinst);
+  } else {
+    data_mc->minicarb_v1 = Rps_StringValue($text);
+    data_mc->minicarb_vinst
+      = Rps_InstanceValue(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+			  std::initializer_list<Rps_Value> {
+			    data_mc->minicarb_v1
+			  });
+    data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
+    RPS_DEBUG_LOG(LOW_REPL, "name in code chunk as "
+		  << data_mc->minicarb_vinst);
+  };
+  data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
 }
 
 <IN_CODE_CHUNK>: [\$\.] { // in code chunk a literal empty
