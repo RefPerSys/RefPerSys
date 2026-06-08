@@ -512,7 +512,7 @@ LEX_INT: [#][\']\P{Control}[\'] {
 		 << data_mc->minicarb_line
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1,
-				       "minicarb_rps.LEX_INT unnicode"));
+				       "minicarb_rps.LEX_INT unicode"));
      /// we could or should throw some C++ exception here...
      /// Carburetta is exception friendly
      $$ = 0;
@@ -538,7 +538,19 @@ LEX_INT: [#][\']\\.[\'] {
    case 'v': $$='\v'; break;
    case '\'': $$='\''; break;
    case 'q': $$='\''; break;
-   default: $$=$text[3]; break;
+   default:
+     ucs4_t uc= 0;
+     int l = u8_mbtoucr(&uc, (const uint8_t*)$text+2, strlen($text)-2);
+     if (l>0 && $text[l+2]=='\'')
+       $$= uc;
+     else {
+       RPS_WARNOUT("invalid unicode char " << $text
+		   << " in "
+		   << data_mc->minicarb_path << " line "
+		   << data_mc->minicarb_line);
+       return _RPSMINICARB_SYNTAX_ERROR;
+     };
+     break;
    }
    RPS_DEBUG_LOG(LOW_REPL, "lexed backslashed char "
 		 << $$ << " from " << $text);
