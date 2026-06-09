@@ -35,6 +35,9 @@
 // comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
+//@@PKGCONFIG readline
+
+#include "readline/readline.h"
 
 extern "C" const char rps_scripting_gitid[];
 const char rps_scripting_gitid[]= RPS_GITID;
@@ -504,6 +507,12 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
                  Rps_ObjectRef obenv;);
   _f.obenv = rps_get_first_repl_environment();
+  // rl_initialize always return 0 (in GNU libreadline)
+  // see github.com/tpn/readline/blob/master/readline.c
+  if (RPS_UNLIKELY(rl_initialize()))
+    RPS_FATALOUT("rps_run_script_minicarb_mode ix=" << ix
+		 << " tsrc=" << tsrc
+		 << " failed to rl_initialize");
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
   RPS_DEBUG_LOG(LOW_REPL, "rps_run_script_minicarb_mode clp="
