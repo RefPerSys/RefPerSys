@@ -223,9 +223,19 @@ rps_minicarb_data_st::check_carbdata_callframe(Rps_CallFrame*cf,
   }
 } // end rps_minicarb_data_st::check_carbdata_callframe
 
+/// The following is related to the the visitor facility in carburetta.
+/// See https://github.com/kingletbv/carburetta/issues/4
+extern "C"
+void rpsminicarb_garbage_collect_visit_stack(struct rpsminicarb_stack*,Rps_GarbageCollector*);
+%visit_params Rps_GarbageCollector*visitgc, rps_minicarb_data_st*carbdata
+
+
 extern "C" const size_t rpsminicarb_stack_size;
 extern "C" const size_t rpsminicarb_stack_align;
-
+/// see file scripting_rps.cc
+extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
+    Rps_MemoryFileTokenSource&,
+    int ix, int loopcnt);
 
 ////////////////////////////////////////////////////////////////
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
