@@ -3,11 +3,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
- *      This file is part of the Reflective Persistent System.
- *      It is its Carburetta grammar and parser
+ *      This minicarb_rps.cbrt file is part of the
+ *      Reflective Persistent System.
+ *
+ *      It is its alternate Carburetta grammar and parser
  *      see https://carburetta.com/
  *      It should be processed by at least carburetta 0.8.29
  *      It does not use other lexing or parsing routines
+ *      (another carburetta based parser is in file carbrepl_rps.cbrt)
  *
  * Author(s):
  *      Basile Starynkevitch, France   <basile@starynkevitch.net>

@@ -9,6 +9,8 @@
  *      It should be processed by at least carburetta 0.8.27
  *      from carburetta.com
  *
+ *   Another carburetta based parser is in file minicarb_rps.cbrt
+ *
  * Author(s):
  *      Basile Starynkevitch, France   <basile@starynkevitch.net>
  *
