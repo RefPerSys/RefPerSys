@@ -26,6 +26,14 @@
  ****************************************************************/
 
 #include "refpersys.hh"
+
+
+/// handled by our build facility
+//@@PKGCONFIG readline
+
+#include <readline/readline.h>
+
+
 #pragma message "prologue part of minicarb_rps.cbrt"
 
 #ifndef RPS_GITID
@@ -71,6 +79,7 @@ extern "C" struct rps_minicarb_data_st;
 %%
 
 %prefix rpsminicarb_
+%end_token LEX_END
 
 constexpr unsigned rps_magic_minicarb_data = 196145743; // 0xbb0f24f
 struct rps_minicarb_data_st {
@@ -690,13 +699,21 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
   bool ok =
   Rps_PayloadSymbol::register_strong_name($text+1,
 					  data_mc->minicarb_ob1);
-  if (!ok)
+  if (!ok) {
      RPS_WARNOUT("failed to register name " << $text+1 << " in "
 		 << data_mc->minicarb_path << " line "
 		 << data_mc->minicarb_line
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1,
-				       "minicarb_rps.LEX_NEW_SYMBOL known"));
+				       "minicarb_rps.LEX_NEW_SYMBOL known")) ;
+  }
+  else { // ok
+    RPS_INFORMOUT("registering new symbol " << $text
+		  << " as object " << data_mc->minicarb_ob1
+		  << " from "
+		  << data_mc->minicarb_path << " line "
+		  << data_mc->minicarb_line);
+  }
 } // end LEX_NEW_SYMBOL
 
 
