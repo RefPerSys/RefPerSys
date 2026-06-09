@@ -67,6 +67,9 @@ extern "C" void rps_run_script_parse_mode(Rps_CallFrame*,
 extern "C" void rps_run_script_echo_mode(Rps_CallFrame*,
     Rps_MemoryFileTokenSource&,
     int ix, int loopcnt);
+extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
+    Rps_MemoryFileTokenSource&,
+    int ix, int loopcnt);
 
 
 
@@ -344,6 +347,23 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                   rps_run_script_echo_mode(&_, tsrc, ix, loopcnt);
                   RPS_POSSIBLE_BREAKPOINT();
                 } // end echo mode
+              else if (!strcmp(modline, "minicarb")) { // see minicarb_rps.cbrt
+                  RPS_POSSIBLE_BREAKPOINT();
+                  RPS_DEBUG_LOG(REPL, "rps_run_one_script_file/MINICARB ix=" << ix
+                                << " shellpath=" << shellpath
+                                << " *MINICARB* "
+                                << " tsrc=" << tsrc
+                                << " @"  << tsrc.position_str()
+                                << " loop#" << loopcnt);
+                  RPS_DEBUG_LOG(LOW_REPL, "rps_run_one_script_file/MINICARB ix=" << ix
+                                << " shellpath=" << shellpath
+                                << " *MINICARB* "
+                                << " tsrc=" << tsrc
+                                << " @"  << tsrc.position_str()
+                                << " loop#" << loopcnt);
+                  rps_run_script_minicarb_mode(&_, tsrc, ix, loopcnt);
+                  RPS_POSSIBLE_BREAKPOINT();
+                } // end minicarb mode
               else {
                   RPS_POSSIBLE_BREAKPOINT();
                   RPS_WARNOUT("rps_run_one_script_file ix#" << ix
@@ -474,5 +494,31 @@ rps_run_script_echo_mode(Rps_CallFrame*callfr,
                 << RPS_FULL_BACKTRACE_HERE(1, "-rps_run_script_echo_mode")
                 << " ix=" << ix << " loop#" << loopcnt);
 } // end rps_run_script_echo_mode
+
+void
+rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
+                           Rps_MemoryFileTokenSource&tsrc,
+                           int ix, int loopcnt)
+{
+  const char*clp = tsrc.curcptr();
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
+                 Rps_ObjectRef obenv;);
+  _f.obenv = rps_get_first_repl_environment();
+  RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode clp="
+                << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
+  RPS_DEBUG_LOG(LOW_REPL, "rps_run_script_minicarb_mode clp="
+                << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
+  RPS_WARNOUT("unimplemented rps_run_script_minicarb_mode ix=" << ix
+              << " tsrc=" << tsrc
+              << " @" << tsrc.position_str()
+              << " loop#" << loopcnt
+              << std::endl << " *obenv=" << std::endl
+              << RPS_OBJECT_DISPLAY(_f.obenv)
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_script_minicarb_mode"));
+  RPS_POSSIBLE_BREAKPOINT();
+#warning unimplemented rps_run_script_minicarb_mode
+} // end rps_run_script_minicarb_mode
+
 
 //// end of file scripting_rps.cc
