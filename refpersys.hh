@@ -1347,6 +1347,21 @@ rps_timer_cpu_elapsed(const rps_timer *hnd)
   RPS_POSSIBLE_BREAKPOINT_AT(Fil,Lin)
 
 #define RPS_POSSIBLE_BREAKPOINT() RPS_POSSIBLE_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
+
+/// sometimes we need a unique breakpoint
+#define RPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {		\
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");	\
+    asm volatile ("__" RPS_BASENAME "_brk_" #Lin "_c" #Cnt	\
+		  ": nop; nop\n");				\
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");	\
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");	\
+ } while(0)
+
+#define RPS_UNIQUE_BREAKPOINT_AT_BIS(Fil,Lin,Cnt)	\
+  RPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt)
+
+#define RPS_UNIQUE_BREAKPOINT() \
+  RPS_UNIQUE_BREAKPOINT_AT_BIS(__FILE__,__LINE__,__COUNTER__)
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C" const char* rps_hostname(void);
