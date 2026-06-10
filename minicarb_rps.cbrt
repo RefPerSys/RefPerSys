@@ -256,6 +256,7 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
 %token LEX_SYMBOL LEX_NEW_SYMBOL
 %type LEX_SYMBOL: Rps_PayloadSymbol*
 %type LEX_STRING: std::string
+%end_token LEX__EOF
 
 %mode IN_CODE_CHUNK
 %mode IN_STRING /// in a string à la C, e.g. "ab\n" has 3 bytes
@@ -722,6 +723,20 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 
 ////////////////////////////////////////////////////////////////
 %grammar%
+%nt minicarbnt_input ///start symbol
+%type minicarbnt_input: int
+
+minicarbnt_input: LEX_END {
+  _Pragma("message \"input as eof\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "input as eof° "
+		<< RPS_FULL_BACKTRACE(1, "input as eof"));
+  RPS_DEBUG_LOG(REPL, "input as eof° "
+		<< RPS_FULL_BACKTRACE(1, "input as eof"));
+  $$ = 0;
+} // end minicarbnt_input as eof
+
   //DONT: %prefix rps_minicarb_syn_
   //DONT:  _Pragma("message \"syntax parsing of minicarb_rps.cbrt\"");
 %%
