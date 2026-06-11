@@ -106,6 +106,7 @@ struct rps_minicarb_data_st {
   Rps_Value minicarb_vleft;
   Rps_Value minicarb_vright;
   Rps_InstanceValue minicarb_vinst;
+  char minicarb_chunk_prefix[8];
   std::vector<Rps_Value> minicarb_vectval; // needed for code chunks
   void check_carbdata_magic(int li=__builtin_LINE());
   inline void touch_carbdata(int li=__builtin_LINE());
@@ -210,6 +211,7 @@ rps_minicarb_data_st::reset_carbdata(int lin)
   minicarb_vleft = nullptr;
   minicarb_vright = nullptr;
   minicarb_vinst = nullptr;
+  memset (minicarb_chunk_prefix, 0, sizeof(minicarb_chunk_prefix));
   minicarb_vectval.clear();
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   minicarb_touchline=lin;
@@ -282,8 +284,33 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
 : [#\{] { // start code chunk
   _Pragma("message \"lexical code chunk start in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  memset(data_mc->minicarb_chunk_prefix, 0,
+	 sizeof(data_mc->minicarb_chunk_prefix));
   RPS_POSSIBLE_BREAKPOINT();
   $set_mode(IN_CODE_CHUNK);
+}
+
+: [#][a-zA-Z]*[\{] { // start alternate code chunk
+  _Pragma("message \"lexical alternate code chunk start in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  memset(data_mc->minicarb_chunk_prefix, 0,
+	 sizeof(data_mc->minicarb_chunk_prefix));
+  if (strlen($text)<sizeof(data_mc->minicarb_chunk_prefix)) {
+    strncpy(data_mc->minicarb_chunk_prefix,
+	    $text+1, strlen($text)-2);
+    RPS_POSSIBLE_BREAKPOINT();
+    $set_mode(IN_CODE_CHUNK);
+  }
+  else {
+    RPS_WARNOUT("too long code chunk prefix " << $text
+		<< " in "
+		<< data_mc->minicarb_path
+		<< ":" << data_mc->minicarb_line);
+    strncpy(data_mc->minicarb_chunk_prefix,
+	    $text+1, sizeof(data_mc->minicarb_chunk_prefix)-1);
+    RPS_POSSIBLE_BREAKPOINT();
+    $set_mode(IN_CODE_CHUNK);
+  };
 }
 
 : \" { /// start literal string à la C
@@ -374,8 +401,35 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
   _Pragma("message \"lexical end code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
-  $set_mode(DEFAULT);
+  if (!data_mc->minicarb_chunk_prefix[0]) {
+    $set_mode(DEFAULT);
+  }
+  else {
+    data_mc->minicarb_vinst =  Rps_StringValue($text);
+    data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
+    RPS_DEBUG_LOG(LOW_REPL, "lexed literal }# in "
+		  << "}" << data_mc->minicarb_chunk_prefix << "#"
+		  << " terminated code chunk as "
+		  << data_mc->minicarb_vinst);
+    RPS_POSSIBLE_BREAKPOINT();
+  }
 }
+<IN_CODE_CHUNK>: [\}][A-Za-z]*[#] { // alternate end code chunk
+    RPS_POSSIBLE_BREAKPOINT();
+    if (data_mc->minicarb_chunk_prefix[0]
+	&& !strncmp($text+1, data_mc->minicarb_chunk_prefix,
+		    strlen(data_mc->minicarb_chunk_prefix))
+	&& $text[1+strlen(data_mc->minicarb_chunk_prefix)]=='#') {
+    $set_mode(DEFAULT);
+    }
+    else {
+      data_mc->minicarb_vinst =  Rps_StringValue($text);
+      data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
+      RPS_DEBUG_LOG(LOW_REPL, "lexed literal " << $text
+		    << " in " << data_mc->minicarb_chunk_prefix
+		    << " terminated code chunk");
+    }
+ }
 
 <IN_CODE_CHUNK>: [\$][a-zA-Z][a-zA-Z0-9_]* { // in code chunk a metavariablevariable
   _Pragma("message \"lexical metavariable code chunk in minicarb_rps.cbrt\"");
@@ -411,9 +465,9 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
   _Pragma("message \"lexical literal dollar chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   data_mc->minicarb_vinst =  Rps_StringValue("$");
-    data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-    RPS_DEBUG_LOG(LOW_REPL, "lexed literal dollar as "
-		  << data_mc->minicarb_vinst);
+  data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
+  RPS_DEBUG_LOG(LOW_REPL, "lexed literal dollar as "
+		<< data_mc->minicarb_vinst);
   RPS_POSSIBLE_BREAKPOINT();
   //TODO: incomplete
 }
