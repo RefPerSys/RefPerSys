@@ -256,9 +256,13 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
 
 %token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN LEX_DOUBLE LEX_STRING
 %token LEX_SYMBOL LEX_NEW_SYMBOL
+  /// Abhishek Chakravarti informally approved (whatsapp)
+  /// keywords like !let. We hope for his email to forum@refpersys.org
+%token LEX_KW_LET LEX_KW_ECHO
+
 %type LEX_SYMBOL: Rps_PayloadSymbol*
 %type LEX_STRING: std::string
-%end_token LEX__EOF
+
 
 %mode IN_CODE_CHUNK
 %mode IN_STRING /// in a string à la C, e.g. "ab\n" has 3 bytes
@@ -513,13 +517,26 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
   data_mc->minicarb_vinst =  Rps_Value((intptr_t)atoll($text),
 				       Rps_Value::Rps_IntTag{});
   data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-  RPS_DEBUG_LOG(LOW_REPL, "lexed literal integer as "
+  RPS_DEBUG_LOG(LOW_REPL, "lexed literal integer in code chunk as "
 		  << data_mc->minicarb_vinst);
   RPS_POSSIBLE_BREAKPOINT();
 }
 
 
 ///TODO: more for IN_CODE_CHUNK
+
+LEX_KW_ECHO: [!]echo {
+  _Pragma("message \"lexical !echo in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "lexed !echo");
+}
+
+LEX_KW_LET: [!]let {
+  _Pragma("message \"lexical !let in minicarb_rps.cbrt\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+}
 
 LEX_LEFTPAREN: [\(] { /// left parenthesis
   _Pragma("message \"lexical leftparen in minicarb_rps.cbrt\"");
@@ -778,7 +795,19 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 ////////////////////////////////////////////////////////////////
 %grammar%
 %nt minicarbnt_input ///start symbol
+%nt minicarbnt_command
+
 %type minicarbnt_input: int
+
+minicarbnt_command: LEX_KW_ECHO LEX_INT {
+  _Pragma("message \"incomplete echo command for int\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "echo integer° " << $1
+		<< RPS_FULL_BACKTRACE(1, "echo integer"));
+  RPS_DEBUG_LOG(REPL, "echo integer° "<< $1
+		<< RPS_FULL_BACKTRACE(1, "echo integer"));
+}
 
 minicarbnt_input: LEX_END {
   _Pragma("message \"input as eof\"");
@@ -790,6 +819,16 @@ minicarbnt_input: LEX_END {
 		<< RPS_FULL_BACKTRACE(1, "input as eof"));
   $$ = 0;
 } // end minicarbnt_input as eof
+
+minicarbnt_input: minicarbnt_command minicarbnt_input  LEX_END {
+  _Pragma("message \"input as command\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "input as command° "
+		<< RPS_FULL_BACKTRACE(1, "input as command"));
+  RPS_DEBUG_LOG(REPL, "input as command° "
+		<< RPS_FULL_BACKTRACE(1, "input as command"));
+} // end minicarbnt_input as command
 
   //DONT: %prefix rps_minicarb_syn_
   //DONT:  _Pragma("message \"syntax parsing of minicarb_rps.cbrt\"");
