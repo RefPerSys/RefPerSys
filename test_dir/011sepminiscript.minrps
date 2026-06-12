@@ -1,0 +1,15 @@
+### file RefPerSys/test_dir/011sepminscript.minrps
+# SPDX-License-Identifier: GPL-3.0-or-later
+#  © Copyright (C) 2026 The Reflective Persistent System Team
+#      team@refpersys.org & http://refpersys.org/
+
+REFPERSYS_SCRIPT mincarb
+## etc
+
+!echo 1
+!echo "string\ntest"
+!echo -0x10
+!echo RefPerSys_system
+!echo #{some $int chunk}#
+
+# end of file RefPerSys/test_dir/011sepminscript.minrps
