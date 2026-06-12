@@ -1188,7 +1188,7 @@ testcarb3: refpersys
 	./refpersys  -AREPL,CMD -c "@display 1 + 2* 3" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
 
 test11: refpersys |GNUmakefile \
-  test_dir/011sepminiscript.minrps  test_dir/011sepminscript.bash
+  test_dir/011sepminscript.minrps  test_dir/011sepminscript.bash
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/011sepminscript.bash
 
