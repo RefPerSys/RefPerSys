@@ -3,7 +3,7 @@
 #  © Copyright (C) 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 
-REFPERSYS_SCRIPT mincarb
+REFPERSYS_SCRIPT minicarb
 ## etc
 
 !echo 1
