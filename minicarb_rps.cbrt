@@ -614,7 +614,9 @@ LEX_INT: [#][\']\P{Control}[\'] {
    }
 }
 
-/// unicode backslashed character constants like #'\n' or #'\\' or #'\e'
+/// unicode backslashed character constants like #'\n' or #'\\'
+/// or #'\e' for the ESCAPE character
+/// it also accepts UTF8 like #'é'
 LEX_INT: [#][\']\\.[\'] {
    _Pragma("message \"lexical backslashed character in minicarb_rps.cbrt\"");
    ucs4_t uc= 0;
@@ -800,13 +802,36 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 %type minicarbnt_input: int
 
 minicarbnt_command: LEX_KW_ECHO LEX_INT {
-  _Pragma("message \"incomplete echo command for int\"");
+  _Pragma("message \"°echo command for int\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "echo integer° " << $1
 		<< RPS_FULL_BACKTRACE(1, "echo integer"));
   RPS_DEBUG_LOG(REPL, "echo integer° "<< $1
 		<< RPS_FULL_BACKTRACE(1, "echo integer"));
+  RPS_INFORMOUT("!echo °integer " << $1);
+}
+
+minicarbnt_command: LEX_KW_ECHO LEX_DOUBLE {
+  _Pragma("message \"°echo command for double\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "echo double° " << $1
+		<< RPS_FULL_BACKTRACE(1, "echo double"));
+  RPS_DEBUG_LOG(REPL, "echo integer° "<< $1
+		<< RPS_FULL_BACKTRACE(1, "echo double"));
+  RPS_INFORMOUT("!echo °double " << $1);
+}
+
+minicarbnt_command: LEX_KW_ECHO LEX_STRING {
+  _Pragma("message \"°echo command for string\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "echo string° " << $1
+		<< RPS_FULL_BACKTRACE(1, "echo string"));
+  RPS_DEBUG_LOG(REPL, "echo string° "<< $1
+		<< RPS_FULL_BACKTRACE(1, "echo string"));
+  RPS_INFORMOUT("!echo °string " << $1);
 }
 
 minicarbnt_input: LEX_END {
