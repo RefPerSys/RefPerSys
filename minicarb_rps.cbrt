@@ -254,9 +254,15 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
 ////////////////////////////////////////////////////////////////
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
   //https://carburetta.com/manual.html#on_feed_me
-%on_feed_me {				          \
-  RPS_ASSERT(data_mc != nullptr);                 \
-  _Pragma("message \"on_feed_me minicarb_rps\""); \
+%on_feed_me {						\
+  RPS_ASSERT(data_mc != nullptr);			\
+  _Pragma("message \"on_feed_me minicarb_rps\"");	\
+  data_mc->check_carbdata_callframe(fram_mc);		\
+  RPS_POSSIBLE_BREAKPOINT();				\
+  RPS_DEBUG_LOG(REPL, "minicarb on_feed_me @ "		\
+		<< data_mc->carbdata_path()		\
+		<< ":"					\
+		<< data_mc->carbdata_line_number());	\
 }
 
 %token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN LEX_DOUBLE LEX_STRING
