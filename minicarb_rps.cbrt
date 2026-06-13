@@ -93,7 +93,7 @@ struct rps_minicarb_data_st {
   double minicarb_d;
   std::string minicarb_str;
   void* minicarb_ptr;
-  int minicarb_line;		// the current line in input
+  int minicarb_lineno;		// the current line number in input
   std::string minicarb_path;	// a file or pipe path
   Rps_Id minicarb_oid;
   Rps_ObjectRef minicarb_ob1;
@@ -114,10 +114,10 @@ struct rps_minicarb_data_st {
   void check_carbdata_callframe(Rps_CallFrame*cf,
 				int li=__builtin_LINE());
   void gc_carbdata_mark(Rps_GarbageCollector&gc, int li=__builtin_LINE());
-  inline int carbdata_line(void) const { return minicarb_line; };
+  inline int carbdata_line_number(void) const { return minicarb_lineno; };
   inline const std::string carbdata_path() const { return minicarb_path; };
-  void incr_carbdata_line(void);
-  void set_carbdata_line(int);
+  void incr_carbdata_line_number(void);
+  void set_carbdata_line_number(int);
   void set_carbdata_path(const std::string&);
 };
 
@@ -163,22 +163,22 @@ rps_minicarb_data_st::gc_carbdata_mark(Rps_GarbageCollector&gc, int li)
 } // end rps_minicarb_data_st::gc_carbdata_mark
 
 void
-rps_minicarb_data_st::incr_carbdata_line(void)
+rps_minicarb_data_st::incr_carbdata_line_number(void)
 {
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
-  RPS_ASSERT(minicarb_line>=0);
+  RPS_ASSERT(minicarb_lineno>=0);
   RPS_POSSIBLE_BREAKPOINT();
-  minicarb_line++;
-} // end rps_minicarb_data_st::incr_carbdata_line
+  minicarb_lineno++;
+} // end rps_minicarb_data_st::incr_carbdata_line_number
 
 void
-rps_minicarb_data_st::set_carbdata_line(int l)
+rps_minicarb_data_st::set_carbdata_line_number(int l)
 {
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   RPS_ASSERT(l>=0);
   RPS_POSSIBLE_BREAKPOINT();
-  minicarb_line= l;
-} // end rps_minicarb_data_st::set_carbdata_line
+  minicarb_lineno= l;
+} // end rps_minicarb_data_st::set_carbdata_line_number
 
 void
 rps_minicarb_data_st::set_carbdata_path(const std::string&p)
@@ -253,6 +253,11 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
 
 ////////////////////////////////////////////////////////////////
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
+  //https://carburetta.com/manual.html#on_feed_me
+%on_feed_me {				          \
+  RPS_ASSERT(data_mc != nullptr);                 \
+  _Pragma("message \"on_feed_me minicarb_rps\""); \
+}
 
 %token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN LEX_DOUBLE LEX_STRING
 %token LEX_SYMBOL LEX_NEW_SYMBOL
@@ -309,7 +314,7 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
     RPS_WARNOUT("too long code chunk prefix " << $text
 		<< " in "
 		<< data_mc->minicarb_path
-		<< ":" << data_mc->minicarb_line);
+		<< ":" << data_mc->minicarb_lineno);
     strncpy(data_mc->minicarb_chunk_prefix,
 	    $text+1, sizeof(data_mc->minicarb_chunk_prefix)-1);
     RPS_POSSIBLE_BREAKPOINT();
@@ -444,7 +449,7 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
     RPS_WARNOUT("unknown metavariable name " << $text+1
 		<< " in "
 		 << data_mc->minicarb_path << " line "
-		 << data_mc->minicarb_line
+		 << data_mc->minicarb_lineno
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1, "minicarb_rps.CHUNKMETAVAR"));
   }
@@ -603,7 +608,7 @@ LEX_INT: [#][\']\P{Control}[\'] {
      RPS_WARNOUT("invalid unicode constant from "
 		 << Rps_QuotedC_String($text) << " in "
 		 << data_mc->minicarb_path << " line "
-		 << data_mc->minicarb_line
+		 << data_mc->minicarb_lineno
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1,
 				       "minicarb_rps.LEX_INT unicode"));
@@ -643,7 +648,7 @@ LEX_INT: [#][\']\\.[\'] {
        RPS_WARNOUT("invalid unicode char " << $text
 		   << " in "
 		   << data_mc->minicarb_path << " line "
-		   << data_mc->minicarb_line);
+		   << data_mc->minicarb_lineno);
        return _RPSMINICARB_SYNTAX_ERROR;
      };
      break;
@@ -681,7 +686,7 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
    if (!okid) {
      RPS_WARNOUT("invalid objectid " << $text << " in "
 		 << data_mc->minicarb_path << " line "
-		 << data_mc->minicarb_line
+		 << data_mc->minicarb_lineno
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1, "minicarb_rps.LEX_OID"));
      /// we could or should throw some C++ exception here...
@@ -696,7 +701,7 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
 : [\n] { // count newlines
   _Pragma("message \"lexical count newlines in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
-  data_mc->incr_carbdata_line();
+  data_mc->incr_carbdata_line_number();
   RPS_POSSIBLE_BREAKPOINT();
  }
 
@@ -711,7 +716,7 @@ LEX_SYMBOL: [A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
     if (!data_mc->minicarb_ob1) {
      RPS_WARNOUT("unknown name " << $text << " in "
 		 << data_mc->minicarb_path << " line "
-		 << data_mc->minicarb_line
+		 << data_mc->minicarb_lineno
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1,
 				       "minicarb_rps.LEX_SYMBOL unknown"));
@@ -730,7 +735,7 @@ LEX_SYMBOL: [A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
   else {
      RPS_WARNOUT("invalid name " << $text << " in "
 		 << data_mc->minicarb_path << " line "
-		 << data_mc->minicarb_line
+		 << data_mc->minicarb_lineno
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1,
 				       "minicarb_rps.LEX_SYMBOL invalid"));
@@ -756,7 +761,7 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
     if (data_mc->minicarb_ob1) {
      RPS_WARNOUT("existing name " << $text+1 << " in "
 		 << data_mc->minicarb_path << " line "
-		 << data_mc->minicarb_line
+		 << data_mc->minicarb_lineno
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1,
 				       "minicarb_rps.LEX_NEW_SYMBOL known"));
@@ -779,7 +784,7 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
   if (!ok) {
      RPS_WARNOUT("failed to register name " << $text+1 << " in "
 		 << data_mc->minicarb_path << " line "
-		 << data_mc->minicarb_line
+		 << data_mc->minicarb_lineno
 		 << std::endl
 		 << RPS_FULL_BACKTRACE(1,
 				       "minicarb_rps.LEX_NEW_SYMBOL known")) ;
@@ -789,7 +794,7 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 		  << " as object " << data_mc->minicarb_ob1
 		  << " from "
 		  << data_mc->minicarb_path << " line "
-		  << data_mc->minicarb_line);
+		  << data_mc->minicarb_lineno);
   }
 } // end LEX_NEW_SYMBOL
 
