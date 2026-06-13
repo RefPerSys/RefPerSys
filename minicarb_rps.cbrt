@@ -870,6 +870,28 @@ minicarbnt_input: minicarbnt_command minicarbnt_input  LEX_END {
   //DONT:  _Pragma("message \"syntax parsing of minicarb_rps.cbrt\"");
 %%
  /// trailer
+void
+rps_do_minicarb_command(Rps_CallFrame*callerframe,
+			Rps_ObjectRef obenvarg,
+			Rps_TokenSource*ptksrc)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_CALL_FRAME_UNDESCRIBED,
+                 callerframe,
+                 Rps_ObjectRef obenv;
+                );
+  _Pragma("message \"rps_do_minicarb_command\"");
+  _f.obenv = obenvarg;
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT(ptksrc != nullptr);
+  RPS_DEBUG_LOG(REPL, "unimplemented rps_do_minicarb_command obenv="
+		<< RPS_OBJECT_DISPLAY(_f.obenv));
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented rps_do_minicarb_command obenv="
+	       << _f.obenv
+	       << " tksrc=" << (*ptksrc));
+#warning unimplemented rps_do_minicarb_command
+} // end rps_do_minicarb_command
+
 const size_t rpsminicarb_stack_size = sizeof(struct rpsminicarb_stack);
 const size_t rpsminicarb_stack_align = alignof(struct rpsminicarb_stack);
 /****************

@@ -2967,6 +2967,9 @@ extern "C" void rps_initialize_carburetta_after_load(Rps_Loader*);
 extern "C" void rps_do_carburetta_command(Rps_CallFrame*callerframe,
     Rps_ObjectRef obenvarg,
     Rps_TokenSource*tksrc);
+extern "C" void rps_do_minicarb_command(Rps_CallFrame*callerframe,
+    Rps_ObjectRef obenvarg,
+    Rps_TokenSource*tksrc);
 extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
     Rps_ObjectRef obenvarg,
     Rps_TokenSource*tksrc);

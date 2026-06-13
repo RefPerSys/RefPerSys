@@ -528,6 +528,7 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_script_minicarb_mode"));
   RPS_POSSIBLE_BREAKPOINT();
+  rps_do_minicarb_command(&_, _f.obenv, &tsrc);
 #warning unimplemented rps_run_script_minicarb_mode
 } // end rps_run_script_minicarb_mode
 
