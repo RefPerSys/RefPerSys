@@ -131,7 +131,7 @@ rps_scripting_add_script(const char*path)
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
       /* Only the main thread can call rps_scripting_add_script, so no more
-                                                   synchronization or mutex is needed to : */
+                                                         synchronization or mutex is needed to : */
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -500,8 +500,8 @@ rps_run_script_echo_mode(Rps_CallFrame*callfr,
 
 void
 rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
-                           Rps_MemoryFileTokenSource&tsrc,
-                           int ix, int loopcnt)
+                             Rps_MemoryFileTokenSource&tsrc,
+                             int ix, int loopcnt)
 {
   const char*clp = tsrc.curcptr();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
@@ -511,14 +511,14 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
   // see github.com/tpn/readline/blob/master/readline.c
   if (RPS_UNLIKELY(rl_initialize()))
     RPS_FATALOUT("rps_run_script_minicarb_mode ix=" << ix
-		 << " tsrc=" << tsrc
-		 << " failed to rl_initialize");
+                 << " tsrc=" << tsrc
+                 << " failed to rl_initialize");
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
   RPS_DEBUG_LOG(LOW_REPL, "rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv
-		<< " ix=" << ix << " loopcnt=" << loopcnt
-		<< " tsrc=" << tsrc);
+                << " ix=" << ix << " loopcnt=" << loopcnt
+                << " tsrc=" << tsrc);
   RPS_WARNOUT("unimplemented rps_run_script_minicarb_mode ix=" << ix
               << " tsrc=" << tsrc
               << " @" << tsrc.position_str()
@@ -529,6 +529,9 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_script_minicarb_mode"));
   RPS_POSSIBLE_BREAKPOINT();
   rps_do_minicarb_command(&_, _f.obenv, &tsrc);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "end°°rps_run_script_minicarb_mode clp="
+                << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
 #warning unimplemented rps_run_script_minicarb_mode
 } // end rps_run_script_minicarb_mode
 
