@@ -879,12 +879,19 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                  callerframe,
                  Rps_ObjectRef obenv;
                 );
+  struct  rpsminicarb_stack stack;
+  memset(&stack, 0, sizeof(stack));
+  rpsminicarb_stack_init(&stack);
   _Pragma("message \"rps_do_minicarb_command\"");
   _f.obenv = obenvarg;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(ptksrc != nullptr);
   RPS_DEBUG_LOG(REPL, "unimplemented rps_do_minicarb_command obenv="
-		<< RPS_OBJECT_DISPLAY(_f.obenv));
+		<< RPS_OBJECT_DISPLAY(_f.obenv)
+		<< std::endl
+		<< " tksrc=" << (*ptksrc)
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_minicarb_command"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_FATALOUT("unimplemented rps_do_minicarb_command obenv="
 	       << _f.obenv
