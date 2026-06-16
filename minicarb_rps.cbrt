@@ -929,13 +929,22 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                             &_,
                             (void*)ptksrc
                             );
-  RPS_FATALOUT("unimplemented rps_do_minicarb_command obenv="
+  RPS_WARNOUT("unimplemented rps_do_minicarb_command obenv="
                << _f.obenv << " r=" << r
                << " see github.com/kingletbv/carburetta/issues/11 & 12"
                << std::endl
-               << " tksrc=" << (*ptksrc));
+               << " tksrc=" << (*ptksrc)
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1,
+					 "end rps_do_minicarb_command"));
   rpsminicarb_stack_cleanup(&stack);
   RPS_POSSIBLE_BREAKPOINT();
+  pdata->~rps_minicarb_data_st();
+  memset(pdata, 0, sizeof(rps_minicarb_data_st));
+  RPS_DEBUG_LOG(REPL, "ending rps_do_minicarb_command obenv="
+		<< _f.obenv
+		<< " ptksrc=" << (*ptksrc)
+		<< " pdata@" << (void*)pdata);
 #warning unimplemented rps_do_minicarb_command
 } // end rps_do_minicarb_command
 
