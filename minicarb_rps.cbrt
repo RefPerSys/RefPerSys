@@ -883,12 +883,15 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                 );
   struct  rpsminicarb_stack stack;
   memset(&stack, 0, sizeof(stack));
-  struct rps_minicarb_data_st data;
-  memset(&data, 0, sizeof(data));
-  data.minicarb_magic = rps_magic_minicarb_data;
-  data.reset_carbdata();
-  data.set_carbdata_line_number(ptksrc->line());
-  data.set_carbdata_path(ptksrc->name());
+  void*datazone = alloca(sizeof(struct rps_minicarb_data_st));
+  RPS_ASSERT(datazone != nullptr);
+  memset(datazone, 0, sizeof(struct rps_minicarb_data_st));
+  struct rps_minicarb_data_st* pdata
+    = new(datazone) rps_minicarb_data_st;
+  (*pdata).minicarb_magic = rps_magic_minicarb_data;
+  (*pdata).reset_carbdata();
+  (*pdata).set_carbdata_line_number(ptksrc->line());
+  (*pdata).set_carbdata_path(ptksrc->name());
   rpsminicarb_stack_init(&stack);
   _Pragma("message \"rps_do_minicarb_command\"");
   _f.obenv = obenvarg;
@@ -916,16 +919,16 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
    *
    * int rpsminicarb_parse(struct rpsminicarb_stack *stack,
    *                       int sym, rps_minicarb_data_st*data_mc,
-   *			   Rps_CallFrame*fram_mc, void*xtra_mc)
+   *                       Rps_CallFrame*fram_mc, void*xtra_mc)
    *
    **/
   RPS_DEBUG_LOG(REPL,
-		"before call to rpsminicarb_parse obenv=" << _f.obenv);
+                "before call to rpsminicarb_parse obenv=" << _f.obenv);
   int r = rpsminicarb_parse(&stack, RPSMINICARB_MINICARBNT_INPUT,
-			    &data,
-			    &_,
-			    (void*)ptksrc
-			    );
+                            pdata,
+                            &_,
+                            (void*)ptksrc
+                            );
   RPS_FATALOUT("unimplemented rps_do_minicarb_command obenv="
                << _f.obenv << " r=" << r
                << " see github.com/kingletbv/carburetta/issues/11 & 12"
