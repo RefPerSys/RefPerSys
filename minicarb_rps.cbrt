@@ -883,6 +883,12 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                 );
   struct  rpsminicarb_stack stack;
   memset(&stack, 0, sizeof(stack));
+  struct rps_minicarb_data_st data;
+  memset(&data, 0, sizeof(data));
+  data.minicarb_magic = rps_magic_minicarb_data;
+  data.reset_carbdata();
+  data.set_carbdata_line_number(ptksrc->line());
+  data.set_carbdata_path(ptksrc->name());
   rpsminicarb_stack_init(&stack);
   _Pragma("message \"rps_do_minicarb_command\"");
   _f.obenv = obenvarg;
@@ -901,15 +907,30 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                 << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl
                 << " tksrc=" << (*ptksrc)
-                << " see github.com/kingletbv/carburetta/issues/11"
+                << " see github.com/kingletbv/carburetta/issues/11 & 12"
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_minicarb_command"));
   RPS_POSSIBLE_BREAKPOINT();
+  /// generated signature in our commit 19907294c63d was in mid-june 2026:
+  /**
+   *
+   * int rpsminicarb_parse(struct rpsminicarb_stack *stack,
+   *                       int sym, rps_minicarb_data_st*data_mc,
+   *			   Rps_CallFrame*fram_mc, void*xtra_mc)
+   *
+   **/
+  int r = rpsminicarb_parse(&stack, RPSMINICARB_MINICARBNT_INPUT,
+			    &data,
+			    &_,
+			    (void*)ptksrc
+			    );
   RPS_FATALOUT("unimplemented rps_do_minicarb_command obenv="
-               << _f.obenv
-               << " see github.com/kingletbv/carburetta/issues/11"
+               << _f.obenv << " r=" << r
+               << " see github.com/kingletbv/carburetta/issues/11 & 12"
                << std::endl
                << " tksrc=" << (*ptksrc));
+  rpsminicarb_stack_cleanup(&stack);
+  RPS_POSSIBLE_BREAKPOINT();
 #warning unimplemented rps_do_minicarb_command
 } // end rps_do_minicarb_command
 
