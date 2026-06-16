@@ -519,6 +519,15 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv
                 << " ix=" << ix << " loopcnt=" << loopcnt
                 << " tsrc=" << tsrc);
+  RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode tsrc="
+		<< tsrc << " ix=" << ix
+		<< " before call to rps_do_minicarb_command obenv="
+		<< _f.obenv);
+  rps_do_minicarb_command(&_, _f.obenv, &tsrc);
+  RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode tsrc="
+		<< tsrc << " ix=" << ix
+		<< " after call to rps_do_minicarb_command obenv="
+		<< _f.obenv);
   RPS_WARNOUT("unimplemented rps_run_script_minicarb_mode ix=" << ix
               << " tsrc=" << tsrc
               << " @" << tsrc.position_str()

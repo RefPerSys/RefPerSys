@@ -919,6 +919,8 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
    *			   Rps_CallFrame*fram_mc, void*xtra_mc)
    *
    **/
+  RPS_DEBUG_LOG(REPL,
+		"before call to rpsminicarb_parse obenv=" << _f.obenv);
   int r = rpsminicarb_parse(&stack, RPSMINICARB_MINICARBNT_INPUT,
 			    &data,
 			    &_,
