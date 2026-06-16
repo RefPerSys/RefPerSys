@@ -26,6 +26,8 @@
  *    the License, or (at your option) any later version.
  *
  * NO WARRANTY
+ *
+ * Notice: the make test11 is testing this (in mid-june 2026)
  ****************************************************************/
 
 #include "refpersys.hh"
@@ -886,15 +888,26 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
   _f.obenv = obenvarg;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(ptksrc != nullptr);
+  RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command calls "
+		<< "rpsminicarb_set_input ptksrc=" << (*ptksrc));
+  RPS_POSSIBLE_BREAKPOINT();
+  rpsminicarb_set_input(&stack, ptksrc->cur_cptr(),
+			strlen(ptksrc->curcptr()),
+		       -1);
+			_Pragma("message \
+\"what is the role of the last argument to rps_minicarb_set_input\"");
   RPS_DEBUG_LOG(REPL, "unimplemented rps_do_minicarb_command obenv="
 		<< RPS_OBJECT_DISPLAY(_f.obenv)
 		<< std::endl
 		<< " tksrc=" << (*ptksrc)
+		<< " see github.com/kingletbv/carburetta/issues/11"
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_minicarb_command"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_FATALOUT("unimplemented rps_do_minicarb_command obenv="
 	       << _f.obenv
+	       << " see github.com/kingletbv/carburetta/issues/11"
+	       << std::endl
 	       << " tksrc=" << (*ptksrc));
 #warning unimplemented rps_do_minicarb_command
 } // end rps_do_minicarb_command
