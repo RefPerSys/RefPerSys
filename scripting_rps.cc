@@ -498,6 +498,9 @@ rps_run_script_echo_mode(Rps_CallFrame*callfr,
                 << " ix=" << ix << " loop#" << loopcnt);
 } // end rps_run_script_echo_mode
 
+
+
+
 void
 rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
                              Rps_MemoryFileTokenSource&tsrc,
@@ -541,7 +544,6 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "end°°rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
-#warning unimplemented rps_run_script_minicarb_mode
 } // end rps_run_script_minicarb_mode
 
 
