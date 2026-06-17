@@ -3282,6 +3282,14 @@ private:
                                       const char*curp);
 };                              // end Rps_TokenSource
 
+#define _RPS_DISPTOKSRCCURLIN_COUNTED(Tksrc, Cnt)  \
+  Rps_Do_Output([&](std::ostream&out##Cnt) {		 \
+    (Tksrc)->display_current_line_with_cursor(out##Cnt); \
+}
+
+#define RPS_DISPTOKSRCCURLIN(Tksrc) \
+  _RPS_DISPTOKSRCCURLIN_COUNTED(Tksrc,__COUNTER__)
+
 inline std::ostream& operator << (std::ostream&out,
                                   Rps_TokenSource& toksrc)
 {
