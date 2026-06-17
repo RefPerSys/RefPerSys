@@ -1372,6 +1372,11 @@ extern "C" std::string rps_json_to_string(const Json::Value&jv);
 extern "C" void rps_output_program_arguments(std::ostream& out,
     int argc, const char*const*argv);
 
+/// useful at least for GDB
+extern "C" int rps_main_argc;
+extern "C" const char** rps_main_argv;
+
+
 #define RPS_OUT_PROGARGS(Argc,Argv)                     \
   Rps_Do_Output([&](std::ostream&out)                   \
 {                                                       \
