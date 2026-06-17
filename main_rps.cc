@@ -1583,9 +1583,6 @@ rps_kill_wait_gui_process(void)
 } // end rps_kill_wait_gui_process
 
 
-/// useful at least for GDB
-extern "C" int rps_main_argc;
-extern "C" const char** rps_main_argv;
 
 int rps_main_argc;
 const char** rps_main_argv;
