@@ -1744,9 +1744,11 @@ rps_exiting(void) //// called thru atexit
          rps_exit_atomic_code.load(),
          rps_elapsed_real_time(), rps_process_cpu_time(),
          (rps_program_invocation?"invocation: ":""),
-         (rps_program_invocation?:""),
+         (rps_program_invocation?:"°"),
          (rps_run_name.empty()?"":" run "),
          rps_run_name.c_str());
+  fflush(nullptr);
+  RPS_UNIQUE_BREAKPOINT();
   if (!rps_syslog_enabled)
     {
       printf("RefPerSys process %d on host %s in %s\n"
