@@ -3285,7 +3285,7 @@ private:
 #define _RPS_DISPTOKSRCCURLIN_COUNTED(Tksrc, Cnt)  \
   Rps_Do_Output([&](std::ostream&out##Cnt) {		 \
     (Tksrc)->display_current_line_with_cursor(out##Cnt); \
-}
+  })
 
 #define RPS_DISPTOKSRCCURLIN(Tksrc) \
   _RPS_DISPTOKSRCCURLIN_COUNTED(Tksrc,__COUNTER__)

@@ -1007,10 +1007,13 @@ Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
                 << " token_deq:" << toksrc_token_deq
                 << " number :-◑> " << _f.res << " @! " << position_str()
                 << std::endl
+	    /***
                 << Rps_Do_Output([&](std::ostream& out)
   {
     this->display_current_line_with_cursor(out);
   })
+	    ****/
+		<< RPS_DISPTOKSRCCURLIN(this)
                );
   return _f.res;
 } // end Rps_TokenSource::get__number__token
