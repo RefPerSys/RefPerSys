@@ -212,6 +212,7 @@ all:
 	$(MAKE) do-build-refpersys-plugin
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
+	./refpersys --version
 
 
 everything: all
