@@ -54,6 +54,14 @@ const char rps_curl_date[]= __DATE__;
 extern "C" const char rps_curl_shortgitid[];
 const char rps_curl_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const char rps_curl_basename[];
+const char rps_curl_basename[] = RPS_BASENAME;
+
+/// as long as this source file has no dash it is the same as above...
+extern "C" const char rps_curl_baseid[];
+const char rps_curl_baseid[] = RPS_BASEID;
+
+
 
 std::string
 rps_curl_version(void)

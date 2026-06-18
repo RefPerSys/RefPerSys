@@ -294,7 +294,7 @@ extern "C" std::string rps_run_name;
 extern "C" std::string rps_stringprintf(const char*fmt, ...)
 __attribute__((format (printf, 1, 2))); // in utilities_rps.cc
 
-#define RPS_USE_CURL 0 // temporary,
+#define RPS_USE_CURL 1 // temporary,
 // see https://bugs.gentoo.org/939581 Invalid conversion from int to
 // CURLoption
 
