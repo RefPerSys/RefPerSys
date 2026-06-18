@@ -170,9 +170,13 @@ endif
 ## unistring is https://www.gnu.org/software/libunistring/
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
 ## libgccjit is from https://gcc.gnu.org/onlinedocs/jit/
-## try using GNU lightning is from https://www.gnu.org/software/lightning/ (for machine code generation)
-REFPERSYS_NEEDED_LIBRARIES= -llightning -lunistring -lgmp
-## TODO after june 2024, add the libgccjit...
+
+## Use GNU lightning is from www.gnu.org/software/lightning/ (for
+## machine code generation) -it needs opcodes and bfd libraries
+
+## Use libcurl, it is a web client library
+REFPERSYS_NEEDED_LIBRARIES= -llightning -lopcodes -lbfd -lgccjit \
+  -lunistring -lgmp -lcurl
 
 ### desired plugins (their basename under plugins_dir/)
 ### Basile removed _rpsplug_gramrepl in sept. 2024
