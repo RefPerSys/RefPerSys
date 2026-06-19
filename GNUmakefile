@@ -44,10 +44,10 @@ RPS_BISON := bison
 # bisonc++ is another parser generator by Frank B. Brokken on
 # fbb-git.gitlab.io/bisoncpp/
 #RPS_BISONCPP := bisonc++
-RPS_HOST := $(shell /bin/hostname -f) #eg abhishek.secret.host.in or lamartine
-RPS_ARCH := $(shell /bin/uname -m) #eg x86_64 or aarch64
-RPS_RAW_OPERSYS := $(shell /bin/uname -o) #eg GNU/Linux
-RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g ) #eg GNU_Linux
+RPS_HOST := $(shell /bin/hostname -f)#eg abhishek.secret.host.in or lamartine
+RPS_ARCH := $(shell /bin/uname -m)#eg x86_64 or aarch64
+RPS_RAW_OPERSYS := $(shell /bin/uname -o)#eg GNU/Linux
+RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )#eg GNU_Linux
 RPS_ATSHARP := $(shell printf '@#')
 RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 # Carburetta is a parser generator on github.com/kingletbv/carburetta
