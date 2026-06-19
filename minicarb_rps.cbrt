@@ -639,7 +639,7 @@ LEX_INT: [#][\']\\.[\'] {
    case '0': $$=0; break;
    case 'a': $$='\a'; break;
    case 'b': $$='\b'; break;
-   case 'e': $$=033 /*ESC*/; break;
+   case 'e': $$=033 /*ESCape*/; break;
    case 'f': $$='\f'; break;
    case 'n': $$='\n'; break;
    case 'r': $$='\r'; break;

@@ -803,7 +803,8 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
                 << std::endl
                 << "… tempsuffix=" << Rps_QuotedC_String(tempsuffix)
                 << " timbuf=" << Rps_QuotedC_String(timbuf)
-                << " memjitreslit=" << Rps_QuotedC_String(memjitreslit));
+                << " memjitreslit=" << Rps_QuotedC_String(memjitreslit)
+		<< " rps_libopcodes_dir=" << Rps_QuotedC_String(rps_libopcodes_dir));
   RPS_POSSIBLE_BREAKPOINT();
   free(memjitfuname), memjitfuname = NULL;
   pluginctxt = gcc_jit_context_acquire();

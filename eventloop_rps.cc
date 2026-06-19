@@ -723,6 +723,7 @@ rps_jsonrpc_initialize(void)
   jvob["gnumakefile"] = rps_gnumakefile;
   jvob["gnu_make"] = rps_gnu_make;
   jvob["gnu_make_version"] = rps_gnu_make_version;
+  jvob["libopcodes_dir"] = rps_libopcodes_dir;
   /// the GNU make features, since rps_gnu_make_features is a C string
   /// containing space separated GNU make features
   /// e.g. "target-specific order-only second-expansion "

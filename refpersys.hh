@@ -406,6 +406,10 @@ extern "C" const char rps_building_opersysname[]; /// with only letters, digits,
 extern "C" const char rps_building_machine[];
 extern "C" const char rps_building_machname[]; /// with only letters, digits, underscores
 
+/// the directory containing libopcodes.so which is required by GNU lightning
+extern "C" const char rps_libopcodes_dir[];
+
+
 /// current utsname
 extern "C" struct utsname rps_utsname;
 
