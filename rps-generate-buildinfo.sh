@@ -137,6 +137,7 @@ printf "const char rps_building_opersysname[]=\"%s\";\n" $(/bin/uname -o | /bin/
 
 printf "const char rps_building_machine[]=\"%s\";\n" $(/bin/uname -m)
 
+printf "const char rps_libopcodes_dir[]=\"%s\";\n" $RPS_LIBOPCODES_DIR
 printf "const char rps_building_machname[]=\"%s\";\n" $(/bin/uname -m | /bin/sed 's/[^A-Za-z0-9]/_/')
 
 printf "const char rps_plugin_builder[]=\"%s\";\n" $(realpath do-build-refpersys-plugin)
