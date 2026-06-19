@@ -44,17 +44,20 @@ RPS_BISON := bison
 # bisonc++ is another parser generator by Frank B. Brokken on
 # fbb-git.gitlab.io/bisoncpp/
 #RPS_BISONCPP := bisonc++
-RPS_HOST := $(shell /bin/hostname -f)
-RPS_ARCH := $(shell /bin/uname -m)
-RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
+RPS_HOST := $(shell /bin/hostname -f) #eg abhishek.secret.host.in or lamartine
+RPS_ARCH := $(shell /bin/uname -m) #eg x86_64 or aarch64
+RPS_RAW_OPERSYS := $(shell /bin/uname -o) #eg GNU/Linux
+RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g ) #eg GNU_Linux
 RPS_ATSHARP := $(shell printf '@#')
 RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 # Carburetta is a parser generator on github.com/kingletbv/carburetta
-RPS_CARBURETTA := $(shell /usr/bin/which carburetta)
+RPS_CARBURETTA := $(shell /usr/bin/which carburetta) #eg /usr/local/bin/carburetta
+# libpcodes.so is needed by GNU lightning libraries
+RPS_LIBOPCODES_DIR := $(shell /bin/dirname $$(/usr/bin/locate libopcodes.so | /bin/head -1))
 Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
 FOXREFPERSYS_PACKAGES ?= 
 ## see https://lists.debian.org/debian-user-french/2025/12/msg00005.html
-RPS_DEBARCH ?= $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)
+RPS_DEBARCH?=$(strip $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)) #eg x86_64-linux-gnu
 ## REFPERSYS_LTO is by convention for link-time optimization flags
 
 #                                                                
@@ -273,7 +276,7 @@ raw-refpersys: raw-objects __raw_buildinfo.o |  GNUmakefile _config-refpersys.mk
 	-@echo Linking $@
 	$(REFPERSYS_CXX) -rdynamic -o $@ $(REFPERSYS_RAW_OBJECTS) \
               $(RPS_LIBBACKTRACE) \
-              -L/usr/local/lib -rpath /usr/local/lib:$LD_LIBRARY_PATH \
+              -L/usr/local/lib -rpath /usr/local/lib:$$LD_LIBRARY_PATH \
                $(REFPERSYS_NEEDED_LIBRARIES) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	-@echo Linked $@
@@ -523,17 +526,18 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) __buildinfo.o
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
-	-@echo Linking $@
+	-@echo Linking $@ using \"RPS_LIBOPCODES_DIR=$(RPS_LIBOPCODES_DIR)\"
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              -U_Rps_Linking \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_DUMPED_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
              __buildinfo.o \
-              $(RPS_LIBBACKTRACE) \
-              -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
-              $(REFPERSYS_LINKER_FLAGS) \
-              $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
+             $(RPS_LIBBACKTRACE) \
+             -U_Rps_LinkOptA -Wl,--export-dynamic -Wl,--rpath='$$ORIGIN:/lib/$(strip $(RPS_DEBARCH)):$(RPS_LIBOPCODES_DIR)' \
+             -L/usr/local/lib -URps_LinkOptB -L $(RPS_LIBOPCODES_DIR) $(REFPERSYS_NEEDED_LIBRARIES) \
+             $(REFPERSYS_LINKER_FLAGS) \
+             $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	-@echo Linked $@
 
 
