@@ -531,7 +531,7 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
 		<< tsrc << " ix=" << ix
 		<< " after call to rps_do_minicarb_command obenv="
 		<< _f.obenv);
-  RPS_WARNOUT("unimplemented rps_run_script_minicarb_mode ix=" << ix
+  RPS_WARNOUT("incomplete rps_run_script_minicarb_mode ix=" << ix
               << " tsrc=" << tsrc
               << " @" << tsrc.position_str()
               << " loop#" << loopcnt

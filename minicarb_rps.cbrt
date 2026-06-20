@@ -933,7 +933,7 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                             &_,
                             (void*)ptksrc
                             );
-  RPS_WARNOUT("unimplemented rps_do_minicarb_command obenv="
+  RPS_WARNOUT("incomplete rps_do_minicarb_command obenv="
                << _f.obenv << " r=" << r
                << " see github.com/kingletbv/carburetta/issues/11 & 12"
                << std::endl
