@@ -882,7 +882,7 @@ raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	       -c -o $@ $<
 	$(SYNC)
 
-## only useful to debug the carburetta input file
+## only useful to debug the carburetta carbrepl_rps.cbrt input file
 _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
@@ -903,7 +903,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 	       -c -o $@ $<
 	$(SYNC)
 
-## only useful to debug the carburetta input file
+## only useful to debug the carburetta minicarb_rps.cbrt input file
 _nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
