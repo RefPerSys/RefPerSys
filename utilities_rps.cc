@@ -705,6 +705,7 @@ rps_show_version_handwritten_source_files(void)
         continue;
       if (!isalpha(curbase[0]))
         continue;
+      RPS_UNIQUE_BREAKPOINT();
       rps_show_version_one_source_file(curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
       if (!nl)
         std::cout << " ";
@@ -770,6 +771,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
     snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
     RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
     symgit = (const char*)dlsym(rps_proghdl, cursymgit);
+    RPS_UNIQUE_BREAKPOINT();
     if (!symgit)
       {
         RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
