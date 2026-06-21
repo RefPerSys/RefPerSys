@@ -1,6 +1,5 @@
 # RefPerSys inference engine
 
-
 This [free software](https://en.wikipedia.org/wiki/Free_software)
 project has its source code on https://github.com/RefPerSys/RefPerSys
 with an obsolete variant on https://gitlab.com/bstarynk/refpersys/
@@ -12,7 +11,7 @@ intelligence system or [inference
 engine](https://en.wikipedia.org/wiki/Inference_engine), e.g. a better
 improved alternative to
 [CLIPSrules](https://clipsrules.net/). Compatibility with its syntax
-is not a goal (unless funded and contributed) in mid 2026.
+is not a goal (unless funded and contributed) in 2026.
 
 Contributions to *RefPerSys* are welcome. Contact by email
 [Basile STARYNKEVITCH](http://starynkevitch.net/Basile/) (near Paris, France)
