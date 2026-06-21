@@ -219,7 +219,7 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
       {
         char beforebuf[32];
         memset (beforebuf, 0, sizeof(beforebuf));
-        snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
+        snprintf (beforebuf, sizeof(beforebuf), "°[%03d]", backtr_depth);
         outs << ITALICS_esc <<  BOLD_esc
              << beforebuf << NORMAL_esc;
       }
@@ -357,7 +357,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
       {
         char beforebuf[32];
         memset (beforebuf, 0, sizeof(beforebuf));
-        snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
+        snprintf (beforebuf, sizeof(beforebuf), "§[%03d]", backtr_depth);
         outs << ITALICS_esc << beforebuf << ' ';
       }
       char *dempcfun = nullptr;
