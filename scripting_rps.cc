@@ -366,6 +366,10 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                                 << " loop#" << loopcnt);
                   rps_run_script_minicarb_mode(&_, tsrc, ix, loopcnt);
                   RPS_POSSIBLE_BREAKPOINT();
+		  RPS_DEBUG_LOG(REPL, "after rps_run_script_minicarb_mode tsrc="
+				<< tsrc);
+		  RPS_UNIQUE_BREAKPOINT();
+		  return;
                 } // end minicarb mode
               else {
                   RPS_POSSIBLE_BREAKPOINT();
@@ -377,7 +381,6 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                               << " @"  << tsrc.position_str()
                               << " loop#" << loopcnt);
                   RPS_POSSIBLE_BREAKPOINT();
-                  return;
                 }
             };
         };
