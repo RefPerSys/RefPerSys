@@ -544,6 +544,9 @@ LEX_KW_ECHO: [!]echo {
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "lexed !echo");
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "lexed !echo tsrc°" << data_mc
+		<< RPS_FULL_BACKTRACE(1, "!echo minicarb"));
 }
 
 LEX_KW_LET: [!]let {
