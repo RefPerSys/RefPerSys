@@ -3131,6 +3131,7 @@ public: //////
                                      Rps_CallFrame*,
                                      void*)> fun,
                                  void*data= nullptr);
+  // display_current_line_with_cursor is used by RPS_DISPTOKSRCCURLIN
   void display_current_line_with_cursor(std::ostream&out) const;
   virtual void output (std::ostream&out, unsigned depth,
                        unsigned maxdepth) const = 0;
