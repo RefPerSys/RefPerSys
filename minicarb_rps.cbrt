@@ -543,9 +543,12 @@ LEX_KW_ECHO: [!]echo {
   _Pragma("message \"lexical !echo in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(data_mc != nullptr);
   RPS_DEBUG_LOG(LOW_REPL, "lexed !echo");
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(REPL, "lexed !echo tsrc°" << data_mc
+  RPS_DEBUG_LOG(REPL, "lexed !echo from l#"
+		<< data_mc->carbdata_line_number()
+		<< " in " << data_mc->carbdata_path()
 		<< RPS_FULL_BACKTRACE(1, "!echo minicarb"));
 }
 
