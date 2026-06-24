@@ -907,14 +907,18 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
   bool isfinal = ptksrc->reached_end();
   RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command calls "
                 << "rpsminicarb_set_input ptksrc=" << (*ptksrc)
-                << std::endl
+                << std::endl << "… "
                 << (isfinal?"final":"nonfinal")
 		<< " prog.args="
-		<< RPS_OUT_PROGARGS(rps_main_argc, rps_main_argv));
+		<< RPS_OUT_PROGARGS(rps_main_argc, rps_main_argv)
+		<< std::endl
+		<< "… minicarbinput="
+		<< Rps_QuotedC_String(ptksrc->curcptr()));
   RPS_POSSIBLE_BREAKPOINT();
   rpsminicarb_set_input(&stack, ptksrc->cur_cptr(),
                         strlen(ptksrc->curcptr()),
                         (int)isfinal);
+  RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "incomplete rps_do_minicarb_command obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl
