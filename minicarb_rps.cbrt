@@ -929,10 +929,19 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                   << "… minicarbinput="
                   << Rps_QuotedC_String(ptksrc->curcptr()));
   };
-  rpsminicarb_set_input(&stack, ptksrc->cur_cptr(),
-                        strlen(ptksrc->curcptr()),
-                        (int)isfinal);
-  RPS_UNIQUE_BREAKPOINT();
+  {
+    const char*pc = ptksrc->cur_cptr();
+    int ln= pc?strlen(pc):0;
+    RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command before "
+		  " rpsminicarb_set_input pc@" << (void*)pc
+		  << ":"
+		  << Rps_QuotedC_String(pc) << " ln=" << ln);
+    RPS_UNIQUE_BREAKPOINT();
+    rpsminicarb_set_input(&stack, pc, ln, (int)isfinal);
+    RPS_UNIQUE_BREAKPOINT();
+    RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command after "
+		  "rpsminicarb_set_input pc@" << (void*)pc);
+  };
   RPS_DEBUG_LOG(REPL, "incomplete rps_do_minicarb_command obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl
