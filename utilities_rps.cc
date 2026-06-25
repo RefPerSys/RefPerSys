@@ -756,19 +756,15 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
   RPS_DEBUG_LOG(PROGARG, "before µdlsyming curfile=" << Rps_Cjson_String(curfile)
                 << " curbase=" << Rps_Cjson_String(curbase));
   const char* symgit = nullptr;
-  const char* symdat = nullptr;
   const char* symshortgit = nullptr;
   {
     char cursymgit[80];
-    char cursymdat[80];
     char cursymshortgit[80];
     memset (cursymgit, 0, sizeof(cursymgit));
-    memset (cursymdat, 0, sizeof(cursymdat));
     memset (cursymshortgit, 0, sizeof(cursymshortgit));
     snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
     snprintf (cursymshortgit, sizeof(cursymshortgit),
               "rps_%s_shortgitid", curbase);
-    snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
     RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
     symgit = (const char*)dlsym(rps_proghdl, cursymgit);
     RPS_UNIQUE_BREAKPOINT();
@@ -789,9 +785,6 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
     symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
     if (!symshortgit || !isalnum(symshortgit[0]))
       return;
-    symdat = (const char*)dlsym(rps_proghdl, cursymdat);
-    if (!symdat || !isalnum(symdat[0]))
-      return;
     if (symgit && symshortgit
         && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2))
       {
@@ -802,7 +795,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
         RPS_POSSIBLE_BREAKPOINT();
       }
   };
-  if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0]))
+  if (symgit && isalnum(symgit[0]))
     {
       char msgbuf[96];
       memset (msgbuf, 0, sizeof(msgbuf));
@@ -812,9 +805,10 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
           nl= true;
         };
       nbshownfiles++;
+      RPS_UNIQUE_BREAKPOINT();
       if (snprintf(msgbuf, sizeof(msgbuf)-1,
-                   " #¤ %-20s git %.10s built %s",
-                   curfile, symgit, symdat)>0)
+                   " #¤ %-20s git %.11s",
+                   curfile, symgit)>0)
         std::cout << msgbuf << std::flush;
     };
 } // end  rps_show_version_one_source_file
@@ -860,7 +854,7 @@ rps_show_version(void)
             << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
             << " with " << nbsubdirs << " subdirectories." << std::endl
             << " GNU glibc: " << gnu_get_libc_version() << std::endl
-	    << " libopcodes for GNU lightning in: " << rps_libopcodes_dir << std::endl
+            << " libopcodes for GNU lightning in: " << rps_libopcodes_dir << std::endl
             << " executable: " << exepath;
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;
