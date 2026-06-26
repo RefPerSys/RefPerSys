@@ -82,7 +82,7 @@ RPS_DEBARCH?=$(strip $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)) 
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a test07x \
         test08 test09 test-load testq6-01 \
-        test11 \
+        test11 test11q \
         testcarb1 testcarb2 testcarb3 \
         testlex0 testlex1 testlex2 \
         testlex3 testlex4 testlex5 \
@@ -1200,6 +1200,9 @@ test11: refpersys |GNUmakefile \
   test_dir/011sepminscript.minrps  test_dir/011sepminscript.bash
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/011sepminscript.bash
+test11q: refpersys |GNUmakefile \
+  test_dir/011sepminscript.minrps ./test_dir/011sepquietminscript.bash
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 
 ########### show the testing commands
 showtests:
