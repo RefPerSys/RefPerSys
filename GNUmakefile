@@ -1200,9 +1200,11 @@ test11: refpersys |GNUmakefile \
   test_dir/011sepminscript.minrps  test_dir/011sepminscript.bash
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/011sepminscript.bash
+
 test11q: refpersys |GNUmakefile \
   test_dir/011sepminscript.minrps ./test_dir/011sepquietminscript.bash
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/011sepquietminscript.bash
 
 ########### show the testing commands
 showtests:
