@@ -3028,6 +3028,7 @@ protected:
   Rps_Value lex_chunk_element(Rps_CallFrame*callframe,
                               Rps_ObjectRef obchkarg,
                               Rps_ChunkData_st*chkdata);
+public:
   void starting_new_input_line(void)
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
