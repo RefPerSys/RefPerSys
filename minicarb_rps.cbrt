@@ -929,6 +929,19 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                   << "… minicarbinput="
                   << Rps_QuotedC_String(ptksrc->curcptr()));
   };
+  bool again= false;
+  do {
+    again = false;
+    if (ptksrc && !ptksrc->curcptr()) {
+      ptksrc->starting_new_input_line();
+      again = !ptksrc->reached_end();
+      RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command obenv=" << _f.obenv
+		    << " ptksrc=" << (*ptksrc)
+		    << std::endl
+		    << "… minicarbinput="
+		    << Rps_QuotedC_String(ptksrc->curcptr()));
+    };
+  } while (again);
   {
     const char*pc = ptksrc->cur_cptr();
     int ln= pc?strlen(pc):0;
