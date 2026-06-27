@@ -807,7 +807,7 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
       nbshownfiles++;
       RPS_UNIQUE_BREAKPOINT();
       if (snprintf(msgbuf, sizeof(msgbuf)-1,
-                   " #¤ %-20s git %.11s",
+                   "  #¤ %-20s git %.11s",
                    curfile, symgit)>0)
         std::cout << msgbuf << std::flush;
     };
