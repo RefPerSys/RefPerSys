@@ -130,8 +130,10 @@ rps_scripting_add_script(const char*path)
     RPS_FATALOUT ("too many " << rps_scripts_vector.size()
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
-      /* Only the main thread can call rps_scripting_add_script, so no more
-                                                         synchronization or mutex is needed to : */
+    /**
+     * Only the main thread can call rps_scripting_add_script, so no more
+     * synchronization or mutex is needed to :
+     ***/
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -184,9 +186,16 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
       RPS_ASSERT(rps_scripts_vector.size() <= rps_script_maxnum);
       RPS_POSSIBLE_BREAKPOINT();
       try {
+          RPS_UNIQUE_BREAKPOINT();
+          RPS_DEBUG_LOG(REPL, "rps_run_scripts_after_load will run script#"
+                        << ix
+                        << " " << rps_scripts_vector[ix]);
           RPS_POSSIBLE_BREAKPOINT();
           rps_run_one_script_file(&_, ix);
           RPS_POSSIBLE_BREAKPOINT();
+          RPS_DEBUG_LOG(REPL, "rps_run_scripts_after_load did run script#"
+                        << ix
+                        << " " << rps_scripts_vector[ix]);
         } catch (std::exception& ex) {
           RPS_FATALOUT("failed to run script#" << ix
                        << " " << rps_scripts_vector[ix]
@@ -366,10 +375,10 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                                 << " loop#" << loopcnt);
                   rps_run_script_minicarb_mode(&_, tsrc, ix, loopcnt);
                   RPS_POSSIBLE_BREAKPOINT();
-		  RPS_DEBUG_LOG(REPL, "after rps_run_script_minicarb_mode tsrc="
-				<< tsrc);
-		  RPS_UNIQUE_BREAKPOINT();
-		  return;
+                  RPS_DEBUG_LOG(REPL, "after rps_run_script_minicarb_mode tsrc="
+                                << tsrc);
+                  RPS_UNIQUE_BREAKPOINT();
+                  return;
                 } // end minicarb mode
               else {
                   RPS_POSSIBLE_BREAKPOINT();
@@ -526,14 +535,14 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
                 << " ix=" << ix << " loopcnt=" << loopcnt
                 << " tsrc=" << tsrc);
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode tsrc="
-		<< tsrc << " ix=" << ix
-		<< " before call to rps_do_minicarb_command obenv="
-		<< _f.obenv);
+                << tsrc << " ix=" << ix
+                << " before call to rps_do_minicarb_command obenv="
+                << _f.obenv);
   rps_do_minicarb_command(&_, _f.obenv, &tsrc);
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode tsrc="
-		<< tsrc << " ix=" << ix
-		<< " after call to rps_do_minicarb_command obenv="
-		<< _f.obenv);
+                << tsrc << " ix=" << ix
+                << " after call to rps_do_minicarb_command obenv="
+                << _f.obenv);
   RPS_WARNOUT("incomplete rps_run_script_minicarb_mode ix=" << ix
               << " tsrc=" << tsrc
               << " @" << tsrc.position_str()
