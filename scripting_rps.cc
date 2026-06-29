@@ -130,10 +130,10 @@ rps_scripting_add_script(const char*path)
     RPS_FATALOUT ("too many " << rps_scripts_vector.size()
                   << " script files (for " << rp << ")");
   if (rps_scripts_vector.empty()) {
-    /**
-     * Only the main thread can call rps_scripting_add_script, so no more
-     * synchronization or mutex is needed to :
-     ***/
+      /**
+           * Only the main thread can call rps_scripting_add_script, so no more
+           * synchronization or mutex is needed to :
+           ***/
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
@@ -311,6 +311,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
           RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file incomplete when clp is null
         };
+      RPS_UNIQUE_BREAKPOINT();
       const char* magp = strstr(clp, rps_scripting_magic_string);
       if (magp) {
           static_assert(sizeof(modline)>60);
