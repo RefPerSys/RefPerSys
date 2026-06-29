@@ -186,16 +186,23 @@ Rps_TokenSource::position_str(int col) const
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::string colstr;
+  RPS_UNIQUE_BREAKPOINT();
   if (toksrc_linebuf.empty())
     colstr = "°";
   else if (col<0)
-    colstr = "<";
+    {
+      if (col== -1)
+        colstr = "⁻¹"; //U+207B SUPERSCRIPT MINUS, U+00B9 SUPERSCRIPT ONE
+      else
+        colstr = "<";
+    }
   else if (col > (int)toksrc_linebuf.size())
     colstr = ">";
   else
     colstr = std::to_string(col);
   std::ostringstream outs;
-  outs << "S" << unique_number() << ":L" << toksrc_line << ",C"  << colstr
+  outs << "S" << unique_number()
+       << ":L" << toksrc_line << ",C"  << colstr
        << std::flush;
   return outs.str();
 } // end Rps_TokenSource::position_str
@@ -1007,13 +1014,13 @@ Rps_TokenSource::get__number__token(Rps_CallFrame*callframe, const char*curp)
                 << " token_deq:" << toksrc_token_deq
                 << " number :-◑> " << _f.res << " @! " << position_str()
                 << std::endl
-	    /***
-                << Rps_Do_Output([&](std::ostream& out)
-  {
-    this->display_current_line_with_cursor(out);
-  })
-	    ****/
-		<< RPS_DISPTOKSRCCURLIN(this)
+                /***
+                          << Rps_Do_Output([&](std::ostream& out)
+                {
+                this->display_current_line_with_cursor(out);
+                })
+                ****/
+                << RPS_DISPTOKSRCCURLIN(this)
                );
   return _f.res;
 } // end Rps_TokenSource::get__number__token
