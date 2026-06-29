@@ -981,6 +981,7 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                             &_,
                             (void*)ptksrc
                             );
+  RPS_UNIQUE_BREAKPOINT();
   RPS_WARNOUT("incomplete rps_do_minicarb_command obenv="
                << _f.obenv << " r=" << r
                << " see github.com/kingletbv/carburetta/issues/11 & 12"
@@ -989,6 +990,7 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1,
                                          "end rps_do_minicarb_command"));
+  RPS_UNIQUE_BREAKPOINT();
   rpsminicarb_stack_cleanup(&stack);
   RPS_POSSIBLE_BREAKPOINT();
   pdata->~rps_minicarb_data_st();
