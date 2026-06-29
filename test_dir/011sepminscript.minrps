@@ -12,4 +12,7 @@ REFPERSYS_SCRIPT minicarb
 !echo RefPerSys_system
 !echo #{some $int chunk}#
 
+# to test this script, run in RefPerSys directory
+# refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps \
+#     --user-pref=. --batch --run-name=011sepminscript.bash
 # end of file RefPerSys/test_dir/011sepminscript.minrps
