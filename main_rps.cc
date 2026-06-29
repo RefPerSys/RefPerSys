@@ -870,11 +870,16 @@ rps_run_loaded_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application JSONRPC"));
       rps_jsonrpc_initialize();
     };
+  RPS_DEBUG_LOG(REPL, "rps_run_loaded_application/A "
+                << "before_rps_run_scripts_after_load"
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/A"));
+  RPS_POSSIBLE_BREAKPOINT();
   rps_run_scripts_after_load(&_);
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread "
                 << rps_current_pthread_name()
                 << std::endl
-                << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application ending"));
+                << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application--"));
 } // end rps_run_loaded_application
 
 
