@@ -460,7 +460,12 @@ _nl_carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 _minicarb_rps.cc: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 # the --sym-names feature of carburetta is in
 # https://github.com/kingletbv/carburetta/issues/9
-	$(RPS_CARBURETTA) --c $@ --sym-names $^
+	$(RPS_CARBURETTA) --c _minicarb_rps.cc --sym-names $^
+
+#-_minicarb_rps.hh: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+#-# the --sym-names feature of carburetta is in
+#-# https://github.com/kingletbv/carburetta/issues/9
+#-	$(RPS_CARBURETTA) --h _minicarb_rps.hh --sym-names $^
 
 _nl_minicarb_rps.cc: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 # the --sym-names feature of carburetta is in
