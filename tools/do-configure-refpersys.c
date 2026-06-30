@@ -1738,15 +1738,20 @@ rpsconf_ask_carburetta (void)
     }
   while (!feof (p));
   int fail = pclose (p);
-  if (!foundw_parser || !!foundw_scanner
+  if (!foundw_parser || !foundw_scanner
       || !foundw_carburetta || !foundw_generator || !foundw_cbrt)
     {
-      fprintf (stderr, "%s [git %s] ran %s with disappointing output.\n",
+      fprintf (stderr, "%s [git %s] ran %s with disappointing output.\n"
 	       "See the comment near %s:%d\n",
 	       rpsconf_prog_name, RPSCONF_GIT_ID, pcmdbuf,
 	       __FILE__, commline);
       exit (EXIT_FAILURE);
     };
+  if (rpsconf_verbose)
+    printf("%s ran successfully %s [%s:%d git %s]\n",
+	   rpsconf_prog_name, pcmdbuf, __FILE__, __LINE__-1,
+	   RPSCONF_GIT_ID);
+  fflush(NULL);
   free (pcmdbuf), pcmdbuf == NULL;
   rpsconf_carburetta = realcarb;
 }				/* end rpsconf_ask_carburetta */
