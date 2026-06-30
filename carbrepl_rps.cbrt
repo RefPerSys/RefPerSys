@@ -166,9 +166,7 @@ extern "C" void rps_carbrepl_garbage_collect_visit_stack(struct rpscarbrepl_stac
 %header%
 #pragma message "header part of carbrepl_rps.cbrt"
 extern "C" const char rps_carbrepl_gitid[];
-extern "C" const char rps_carbrepl_date[];
 extern "C" const char rps_carbrepl_shortgitid[];
-extern "C" const char rps_carbrepl_timestamp[];
 extern "C" const char rps_carbrepl_basename[];
 extern "C" const char rps_carbrepl_baseid[];
 %%
