@@ -276,10 +276,11 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
   /// Abhishek Chakravarti informally approved (whatsapp)
   /// keywords like !let. We hope for his email to forum@refpersys.org
 %token LEX_KW_LET LEX_KW_ECHO
+%token LEX_CHUNK
 
 %type LEX_SYMBOL: Rps_PayloadSymbol*
 %type LEX_STRING: std::string
-
+%type LEX_CHUNK: Rps_LexTokenValue
 
 %mode IN_CODE_CHUNK
 %mode IN_STRING /// in a string à la C, e.g. "ab\n" has 3 bytes
@@ -836,20 +837,31 @@ minicarbnt_command: LEX_KW_ECHO LEX_INT {
   _Pragma("message \"°echo command for int\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "echo integer° " << $1
+  RPS_DEBUG_LOG(LOW_REPL, "!§echo integer° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo integer"));
-  RPS_DEBUG_LOG(REPL, "echo integer° "<< $1
+  RPS_DEBUG_LOG(REPL, "§!echo integer° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo integer"));
   RPS_INFORMOUT("!echo °integer " << $1);
+}
+
+minicarbnt_command: LEX_KW_ECHO LEX_SYMBOL {
+  _Pragma("message \"°echo command for symbol\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "!§echo symbol° " << $1
+                << RPS_FULL_BACKTRACE(1, "echo symbol"));
+  RPS_DEBUG_LOG(REPL, "§!echo integer° "<< $1
+                << RPS_FULL_BACKTRACE(1, "echo symbol"));
+  RPS_INFORMOUT("!echo °symbol " << $1);
 }
 
 minicarbnt_command: LEX_KW_ECHO LEX_DOUBLE {
   _Pragma("message \"°echo command for double\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "echo double° " << $1
+  RPS_DEBUG_LOG(LOW_REPL, "!§echo double° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo double"));
-  RPS_DEBUG_LOG(REPL, "echo double° "<< $1
+  RPS_DEBUG_LOG(REPL, "§!echo double° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo double"));
   RPS_INFORMOUT("!echo °double " << $1);
 }
@@ -858,11 +870,23 @@ minicarbnt_command: LEX_KW_ECHO LEX_STRING {
   _Pragma("message \"°echo command for string\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "echo string° " << $1
+  RPS_DEBUG_LOG(LOW_REPL, "!§echo string° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo string"));
-  RPS_DEBUG_LOG(REPL, "echo string° "<< $1
+  RPS_DEBUG_LOG(REPL, "§!echo string° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo string"));
   RPS_INFORMOUT("!echo °string " << $1);
+}
+
+
+minicarbnt_command: LEX_KW_ECHO LEX_CHUNK {
+  _Pragma("message \"°echo command for chunk\"");
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "!§echo chunk° " << $1
+                << RPS_FULL_BACKTRACE(1, "echo chunk"));
+  RPS_DEBUG_LOG(REPL, "§!echo chunk° "<< $1
+                << RPS_FULL_BACKTRACE(1, "echo chunk"));
+  RPS_INFORMOUT("!echo °chunk " << $1);
 }
 
 minicarbnt_input: LEX_END {
