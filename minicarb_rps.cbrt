@@ -196,6 +196,8 @@ rps_minicarb_data_st::reset_carbdata(int lin)
 {
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   RPS_ASSERT(lin>0);
+  RPS_DEBUG_LOG(LOW_REPL, "resetting minicarb_data@"
+                      << (void*)this << " line#" << lin);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(minicarb_path.empty());
   minicarb_i = 0;
@@ -242,7 +244,8 @@ rps_minicarb_data_st::check_carbdata_callframe(Rps_CallFrame*cf,
 /// The following is related to the the visitor facility in carburetta.
 /// See https://github.com/kingletbv/carburetta/issues/4
 extern "C"
-void rpsminicarb_garbage_collect_visit_stack(struct rpsminicarb_stack*,Rps_GarbageCollector*);
+void rpsminicarb_garbage_collect_visit_stack(struct rpsminicarb_stack*,
+					     Rps_GarbageCollector*);
 %visit_params Rps_GarbageCollector*visitgc, rps_minicarb_data_st*carbdata
 
 
@@ -352,13 +355,6 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
   RPS_POSSIBLE_BREAKPOINT();
   data_mc->minicarb_str.append("\n");
 }
-
-<IN_STRING>: \\n {
-  data_mc->check_carbdata_callframe(fram_mc);
-  RPS_POSSIBLE_BREAKPOINT();
-  data_mc->minicarb_str.append("\n");
-}
-
 <IN_STRING>: \\r {
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
@@ -389,7 +385,20 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
   data_mc->minicarb_str.append("\'");
 }
 
+<IN_STRING>: \\\' {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\'");
+}
+
+
 <IN_STRING>: \\Q {
+  data_mc->check_carbdata_callframe(fram_mc);
+  RPS_POSSIBLE_BREAKPOINT();
+  data_mc->minicarb_str.append("\"");
+}
+
+<IN_STRING>: \\\" {
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
   data_mc->minicarb_str.append("\"");
@@ -550,11 +559,13 @@ LEX_KW_ECHO: [!]echo {
                 << data_mc->carbdata_line_number()
                 << " in " << data_mc->carbdata_path()
                 << RPS_FULL_BACKTRACE(1, "!echo minicarb"));
+  RPS_UNIQUE_BREAKPOINT();
 }
 
 LEX_KW_LET: [!]let {
   _Pragma("message \"lexical !let in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  RPS_DEBUG_LOG(LOW_REPL, "lexed !let");
   RPS_POSSIBLE_BREAKPOINT();
 }
 
@@ -858,10 +869,11 @@ minicarbnt_input: LEX_END {
   _Pragma("message \"input as eof\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "input as eof° "
+  RPS_DEBUG_LOG(LOW_REPL, "minicarb*input as eof° "
                 << RPS_FULL_BACKTRACE(1, "input as eof"));
-  RPS_DEBUG_LOG(REPL, "input as eof° "
+  RPS_DEBUG_LOG(REPL, "minicarb*input as eof° "
                 << RPS_FULL_BACKTRACE(1, "input as eof"));
+  RPS_UNIQUE_BREAKPOINT();
   $$ = 0;
 } // end minicarbnt_input as eof
 
@@ -954,7 +966,12 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
     RPS_UNIQUE_BREAKPOINT();
     RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command after "
 		  "rpsminicarb_set_input pc@" << (void*)pc);
-    rpsminicarb_scan(&stack, pdata, &_, _f.obenv);
+    int r = rpsminicarb_scan(&stack, pdata, &_, _f.obenv);
+    if (r == _RPSMINICARB_SYNTAX_ERROR)
+      RPS_WARNOUT("got minicarb syntax error tksrc=" << (*ptksrc));
+    RPS_DEBUG_LOG(REPL, "after rpsminicarb_scan r=" << r
+		  << " obenv=" << _f.obenv
+		  << " ptksrc=" << (*ptksrc));
   };
   RPS_DEBUG_LOG(REPL, "incomplete rps_do_minicarb_command obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
