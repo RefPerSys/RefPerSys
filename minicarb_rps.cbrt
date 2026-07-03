@@ -849,7 +849,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_DOUBLE {
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "echo double° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo double"));
-  RPS_DEBUG_LOG(REPL, "echo integer° "<< $1
+  RPS_DEBUG_LOG(REPL, "echo double° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo double"));
   RPS_INFORMOUT("!echo °double " << $1);
 }
