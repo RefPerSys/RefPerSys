@@ -1016,7 +1016,13 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
   RPS_DEBUG_LOG(REPL,
                 "before call to rpsminicarb_parse obenv=" << _f.obenv
                 << std::endl
-                << "…  pdata@" << pdata << " ptksrc=" << (*ptksrc));
+                << "…  pdata@" << pdata << " ptksrc=" << (*ptksrc)
+                << std::endl
+                << "… reachedend=" << ptksrc->reached_end()
+		<< " line=" << ptksrc->line()
+		<< " col=" << ptksrc->col() << " "
+		<< Rps_QuotedC_String(ptksrc->cur_cptr()) << std::endl
+		<< RPS_DISPTOKSRCCURLIN(ptksrc));
   RPS_UNIQUE_BREAKPOINT();
   int r = rpsminicarb_parse(&stack, RPSMINICARB_MINICARBNT_INPUT,
                             pdata,
