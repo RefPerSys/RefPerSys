@@ -27,7 +27,7 @@
  *
  * NO WARRANTY
  *
- * Notice: the make test11 is testing this (in mid-june 2026)
+ * Notice: the make test11 is testing this (in summer 2026)
  ****************************************************************/
 
 #include "refpersys.hh"
