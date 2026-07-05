@@ -1033,6 +1033,7 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
 		  << std::endl
 		  <<  "… minicarbinput="
 		  << Rps_QuotedC_String(ptksrc->curcptr())
+		  << std::endl
 		  << RPS_FULL_BACKTRACE_HERE(1, "minicarb syntaxerr/AA"));
     RPS_DEBUG_LOG(REPL, "after rpsminicarb_scan r=" << r
 		  << " obenv=" << _f.obenv
