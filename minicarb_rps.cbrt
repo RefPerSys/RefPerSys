@@ -573,6 +573,7 @@ LEX_KW_ECHO: [!]echo {
                 << data_mc->carbdata_line_number()
                 << " in " << data_mc->carbdata_path()
                 << RPS_FULL_BACKTRACE(1, "!echo minicarb"));
+  // see also rps_minicarb_keyword_names_initialize below
   RPS_UNIQUE_BREAKPOINT();
 }
 
@@ -580,6 +581,11 @@ LEX_KW_LET: [!]let {
   _Pragma("message \"lexical !let in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_DEBUG_LOG(LOW_REPL, "lexed !let");
+  RPS_DEBUG_LOG(REPL, "lexed !let from l#"
+                << data_mc->carbdata_line_number()
+                << " in " << data_mc->carbdata_path()
+                << RPS_FULL_BACKTRACE(1, "!let minicarb"));
+  // see also rps_minicarb_keyword_names_initialize below
   RPS_POSSIBLE_BREAKPOINT();
 }
 
@@ -947,8 +953,8 @@ rps_minicarb_keyword_names_initialize(Rps_CallFrame*callerframe,
   std::lock_guard<std::recursive_mutex> envlockguard(*_f.obenv->objmtxptr());
   if (rps_minicarb_keyword_names[rpsminicarb_kw_let])
     return;
-  rps_minicarb_keyword_names[rpsminicarb_kw_let]="!let";
-  rps_minicarb_keyword_names[rpsminicarb_kw_echo]="!echo";
+  rps_minicarb_keyword_names[rpsminicarb_kw_let]="!let"; // [!]let
+  rps_minicarb_keyword_names[rpsminicarb_kw_echo]="!echo"; // [!]echo
 } // end rps_minicarb_keyword_names_initialize
 
 void
