@@ -474,10 +474,12 @@ Rps_PipeTokenSource::~Rps_PipeTokenSource()
     {
       RPS_WARNOUT("pipe token source for '"
                   << Rps_Cjson_String(name())
-                  << "' failed pclose with exit #" << e);
+                  << "' failed pclose with exit #" << e
+		  << std::endl
+		  << RPS_FULL_BACKTRACE(1,"destr °PipeTokenSource"));
       throw
-      std::runtime_error(std::string{"bad pipe token source:"
-                                     + name()});
+	std::runtime_error(std::string{"bad pipe token source:"
+				       + name()});
     };
   RPS_DEBUG_LOG(REPL, "destr °PipeTokenSource@ " <<(void*)this
                 << " " << *this);
