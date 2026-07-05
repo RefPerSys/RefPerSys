@@ -108,12 +108,12 @@ rps_carbrepl_data_st::reset_carbdata(int lin)
 } // end rps_carbrepl_data_st::reset_carbdata
 
 extern "C" int rps_carbrepl_keyword_lexer(Rps_CallFrame*,
-					  const std::string&keystr,
-					  Rps_ObjectRef obkw,
-					  Rps_TokenSource*src);
+                                          const std::string&keystr,
+                                          Rps_ObjectRef obkw,
+                                          Rps_TokenSource*src);
 extern "C" void rps_carbrepl_do_display_command(Rps_CallFrame*callframe,
-						Rps_ObjectRef obenv,
-						Rps_Value expr);
+                                                Rps_ObjectRef obenv,
+                                                Rps_Value expr);
 static void rps_carbrepl_constructor_replnt_object(Rps_ObjectRef&obr, int lin);
 static void rps_carbrepl_destructor_replnt_object(Rps_ObjectRef&obr, int lin);
 static const char* rps_carbrepl_symname_at(int symnum, int lin);
@@ -267,14 +267,14 @@ extern "C" const char rps_carbrepl_baseid[];
                << RPS_FULL_BACKTRACE(1, "token_action KEYW_DISPLAY")); }
 
 %token KEYW_BEGIN
-%token_action { _Pragma("message \"token_action for KEYW_BEGIN\"");    \
-  RPS_DEBUG_LOG(REPL, "token_action for KEYW_BEGIN tksrc=" << *tksrc   \
-                << " sym=" << sym << "::"                              \
-                << RPS_CARBREPL_SYMBOL_NAME(sym));                     \
-  /* should assign $$ for KEYW_BEGIN */                                \
-  RPS_FATALOUT("KEYW_BEGIN token_action is incomplete tksrc="          \
-               << tksrc << " sym=" << sym                              \
-               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                 \
+%token_action { _Pragma("message \"token_action for KEYW_BEGIN\"");     \
+  RPS_DEBUG_LOG(REPL, "token_action for KEYW_BEGIN tksrc="              \
+                 << *tksrc << " sym=" << sym << "::"                    \
+                << RPS_CARBREPL_SYMBOL_NAME(sym));                      \
+  /* should assign $$ for KEYW_BEGIN */                                 \
+  RPS_FATALOUT("KEYW_BEGIN token_action is incomplete tksrc="           \
+               << tksrc << " sym=" << sym                               \
+               << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action KEYW_BEGIN")); }
 
 %token KEYW_END
@@ -450,11 +450,11 @@ extern "C" const char rps_carbrepl_baseid[];
 %token ASTERISK 
 %token_action {_Pragma("message \"token_action for ASTERISK\"");        \
   $$ = RPSCARBREPL_ASTERISK;                                            \
-  RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc    \
+  RPS_DEBUG_LOG(REPL, "token_action for ASTERISK tksrc=" << *tksrc      \
                 << " $$=" << $$                                         \
                 << ":" << rpscarbrepl_symbol_names_[$$]                 \
-                << "/ASTERISK token_action is incomplete tksrc=" << tksrc \
-               << " sym=" << sym                                        \
+                << "/ASTERISK token_action is incomplete tksrc="        \
+                << tksrc << " sym=" << sym                              \
                << ":" << RPS_CARBREPL_SYMBOL_NAME(sym)                  \
                << RPS_FULL_BACKTRACE(1, "token_action ASTERISK")); }
 //
@@ -1141,9 +1141,11 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
                 );
   RPS_ASSERT(tksrc);
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_ASSERT(carbdata.cardata_magic == rps_magic_carbrepl_data);
   RPS_DEBUG_LOG(REPL, "+rps_carbrepl_next_token#" << callnum << " from "
                 << __FILE__ << ":" << lin
-                << " tksrc=" << *tksrc << "@" << (void*)tksrc << std::endl
+                << " tksrc=" << *tksrc << "@" << (void*)tksrc
+                << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
                 {
                   tksrc->display_current_line_with_cursor(out);
@@ -1268,8 +1270,8 @@ rps_carbrepl_next_token(Rps_CallFrame*callframe, Rps_TokenSource*tksrc,
 
 void
 rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
-			   Rps_ObjectRef obenvarg,
-			   Rps_TokenSource*tksrc)
+                           Rps_ObjectRef obenvarg,
+                           Rps_TokenSource*tksrc)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //replnt_command∈symbol
                  callerframe,
@@ -1326,8 +1328,8 @@ rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
                 << RPS_FULL_BACKTRACE(1, "rps_do_carburetta_tokensrc°+pars"));
   RPS_POSSIBLE_BREAKPOINT();
   RPS_WARNOUT("rps_do_carburetta_tokensrc perhaps unimplemented"
-	      << std::endl
-	      << " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv)
+              << std::endl
+              << " obenv=" << RPS_OBJECT_DISPLAY(_f.obenv)
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_do_carburetta_tokensrc°+pars"));
 #warning unimplemented rps_do_carburetta_tokensrc
@@ -1387,8 +1389,8 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
                   callerframe,
                   Rps_ObjectRef obenv;
                   Rps_Value exprv;
-		  Rps_Value mainv;
-		  Rps_Value xtrav;
+                  Rps_Value mainv;
+                  Rps_Value xtrav;
                  );
    _f.obenv = obenvarg;
    _f.exprv = exprarg;
@@ -1414,18 +1416,18 @@ rps_do_carburetta_command(Rps_CallFrame*callerframe, Rps_ObjectRef obenvarg, Rps
     RPS_POSSIBLE_BREAKPOINT();
     RPS_DEBUG_LOG(REPL, "rps_carbrepl_do_display_command after eval"
                 << " expr=" << _f.exprv
-		<< " obenv=" << _f.obenv
-		<< " mainv=" << _f.mainv
-		<< " xtrav=" << _f.xtrav);
+                << " obenv=" << _f.obenv
+                << " mainv=" << _f.mainv
+                << " xtrav=" << _f.xtrav);
 #warning rps_do_display_carburetta_command after eval
   };
   // TODO: did evaluate exprv in obenv and display it
   RPS_WARNOUT("in rps_carbrepl_do_display_command EVAL obenv="
-	      << _f.obenv
+              << _f.obenv
               << " exprv=" << _f.exprv
-	      << " gave mainv=" << _f.mainv
-	      << " xtrav=" << _f.xtrav
-	      << " see also cmdrepl_rps.cc");
+              << " gave mainv=" << _f.mainv
+              << " xtrav=" << _f.xtrav
+              << " see also cmdrepl_rps.cc");
  } // end rps_carbrepl_do_display_command
 
 
@@ -1575,7 +1577,7 @@ int
 rps_carbrepl_keyword_lexer (Rps_CallFrame*callerframe,
                             const std::string&keystr,
                             Rps_ObjectRef obkwarg,
-			    Rps_TokenSource*tksrc)
+                            Rps_TokenSource*tksrc)
 {
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
