@@ -1029,7 +1029,11 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
 		  "rpsminicarb_set_input pc@" << (void*)pc);
     int r = rpsminicarb_scan(&stack, pdata, &_, _f.obenv);
     if (r == _RPSMINICARB_SYNTAX_ERROR)
-      RPS_WARNOUT("got minicarb syntax error tksrc=" << (*ptksrc));
+      RPS_WARNOUT("got minicarb syntax error tksrc=" << (*ptksrc)
+		  << std::endl
+		  <<  "… minicarbinput="
+		  << Rps_QuotedC_String(ptksrc->curcptr())
+		  << RPS_FULL_BACKTRACE_HERE(1, "minicarb syntaxerr/AA"));
     RPS_DEBUG_LOG(REPL, "after rpsminicarb_scan r=" << r
 		  << " obenv=" << _f.obenv
 		  << " ptksrc=" << (*ptksrc));
