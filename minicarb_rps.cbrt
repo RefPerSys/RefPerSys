@@ -71,16 +71,21 @@ const char rps_minicarb_baseid[] = RPS_BASEID;
 
 extern "C" struct rpsminicarb_stack;
 
+enum rps_minicarb_keyw_enum {
+  rpsminicarb_kw__None,
+  rpsminicarb_kw_let /*LEX_KW_LET !let*/,
+  rpsminicarb_kw_echo /*LEX_KW_ECHO !echo*/,
+  rpsminicarb_kw__Last
+};
 %header%
 #pragma message "header part of minicarb_rps.cbrt"
 extern "C" const char rps_minicarb_gitid[];
-extern "C" const char rps_minicarb_date[];
 extern "C" const char rps_minicarb_shortgitid[];
-extern "C" const char rps_minicarb_timestamp[];
 extern "C" const char rps_minicarb_basename[];
 extern "C" const char rps_minicarb_baseid[];
 extern "C" struct rps_minicarb_data_st;
-
+extern "C" enum rps_minicarb_keyw_enum;
+extern "C" const char* rps_minicarb_keyword_names[];
 %%
 
 %prefix rpsminicarb_
@@ -275,7 +280,15 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
 %token LEX_SYMBOL LEX_NEW_SYMBOL
   /// Abhishek Chakravarti informally approved (whatsapp)
   /// keywords like !let. We hope for his email to forum@refpersys.org
-%token LEX_KW_LET LEX_KW_ECHO
+%token LEX_KW_LET
+
+%token LEX_KW_ECHO
+%type LEX_KW_ECHO: void*
+%token_action { _Pragma("message \"token_action for LEX_KW_ECHO\")");	\
+  RPS_DEBUG_LOG(REPL, "token_action for LEX_KW_ECHO @"			\
+		<< data_mc->carbdata_path() << ":"			\
+		<< data_mc->carbdata_line_number());			\
+}
 %token LEX_CHUNK
 
 %type LEX_SYMBOL: Rps_PayloadSymbol*
@@ -915,6 +928,29 @@ minicarbnt_input: minicarbnt_command minicarbnt_input  LEX_END {
   //DONT:  _Pragma("message \"syntax parsing of minicarb_rps.cbrt\"");
 %%
  /// trailer
+
+const char*rps_minicarb_keyword_names[rpsminicarb_kw__Last];
+
+extern "C" void rps_minicarb_keyword_names_initialize(Rps_CallFrame*callerframe,
+						      Rps_ObjectRef obenvarg);
+
+void
+rps_minicarb_keyword_names_initialize(Rps_CallFrame*callerframe,
+				      Rps_ObjectRef obenvarg)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_CALL_FRAME_UNDESCRIBED,
+                 callerframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  RPS_ASSERT(_f.obenv);
+  std::lock_guard<std::recursive_mutex> envlockguard(*_f.obenv->objmtxptr());
+  if (rps_minicarb_keyword_names[rpsminicarb_kw_let])
+    return;
+  rps_minicarb_keyword_names[rpsminicarb_kw_let]="!let";
+  rps_minicarb_keyword_names[rpsminicarb_kw_echo]="!echo";
+} // end rps_minicarb_keyword_names_initialize
+
 void
 rps_do_minicarb_command(Rps_CallFrame*callerframe,
                         Rps_ObjectRef obenvarg,
@@ -940,6 +976,7 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
   _f.obenv = obenvarg;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(ptksrc != nullptr);
+  rps_minicarb_keyword_names_initialize(&_, _f.obenv);
   bool isfinal = ptksrc->reached_end();
   RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command calls "
                 << "rpsminicarb_set_input ptksrc=" << (*ptksrc)
