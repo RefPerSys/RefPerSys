@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+set -eu
+
+image="${REFPERSYS_DOCKER_IMAGE:-refpersys-build:latest}"
+engine="${CONTAINER_ENGINE:-}"
+platform="${REFPERSYS_DOCKER_PLATFORM:-linux/amd64}"
+
+if [ -z "$engine" ]; then
+  if command -v docker >/dev/null 2>&1; then
+    engine=docker
+  elif command -v podman >/dev/null 2>&1; then
+    engine=podman
+  else
+    echo "RUN_TESTS: docker or podman is required" >&2
+    exit 127
+  fi
+fi
+
+repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+build_args="${REFPERSYS_DOCKER_BUILD_ARGS:-}"
+host_uid=$(id -u)
+host_gid=$(id -g)
+
+# Intentionally split REFPERSYS_DOCKER_BUILD_ARGS so callers can pass
+# ordinary docker build flags, for example:
+#   REFPERSYS_DOCKER_BUILD_ARGS='--build-arg INSTALL_GUI_DEPS=1'
+"$engine" build --platform "$platform" $build_args -t "$image" "$repo_dir"
+
+tty_flags="-i"
+if [ -t 0 ]; then
+  tty_flags="-it"
+fi
+
+exec "$engine" run --rm $tty_flags \
+  --platform "$platform" \
+  --env HOME=/tmp/refpersys-home \
+  --env REFPERSYS_TOPDIR=/workspace/RefPerSys \
+  --env REFPERSYS_HOST_UID="$host_uid" \
+  --env REFPERSYS_HOST_GID="$host_gid" \
+  --volume "$repo_dir:/workspace/RefPerSys" \
+  --workdir /workspace/RefPerSys \
+  "$image" "$@"
