@@ -904,9 +904,16 @@ rps_show_version(void)
     if (getcwd(cwdbuf, rps_path_byte_size))
       std::cout << std::endl << " in: " << cwdbuf;
   };
-  std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
-            << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
-            << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
+  std::cout << std::endl << " C++ compiler: "
+	    << rps_cxx_compiler_version << std::endl
+            << " free software license: GPLv3+," << std::endl
+	    << " see www.gnu.org/licenses/gpl.html" << std::endl
+	    << " alternative license: LGPLv3+," << std::endl
+	    << " see www.gnu.org/licenses/lgpl-3.0.en.html," << std::endl
+	    << " other licence: CeCILL," << std::endl
+	    << " see cecill.info/." << std::endl
+            << "+++++ there is no WARRANTY,"
+	    << "to the extent permitted by law ++++" << std::endl
             << "***** see also refpersys.org *****" << std::endl
             << "and github.com/RefPerSys/RefPerSys commit "
             << rps_shortgitid
