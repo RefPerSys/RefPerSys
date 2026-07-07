@@ -228,16 +228,33 @@ void
 Rps_PayloadLightningCodeGen::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du);
+  RPSJITLIGHTPAYLOAD_LOCKGUARD();
   RPS_POSSIBLE_BREAKPOINT();
+  if (!lightg_jist)
+    return;
+  for (auto it: lightg_nod2num_map) {
+    jit_node* nod = it.first;
+    lightnodenum_t num = it.second;
+#warning missing code in loop of Rps_PayloadLightningCodeGen::dump_scan
+  };
 } // end Rps_PayloadLightningCodeGen::dump_scan
 
 void
 Rps_PayloadLightningCodeGen::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT(du);
+  RPSJITLIGHTPAYLOAD_LOCKGUARD();
   RPS_POSSIBLE_BREAKPOINT();
+  if (!lightg_jist)
+    return;
+  for (auto it: lightg_nod2num_map) {
+    jit_node* nod = it.first;
+    lightnodenum_t num = it.second;
+#warning missing code in loop of Rps_PayloadLightningCodeGen::dump_json_content
+  };
 #warning incomplete Rps_PayloadLightningCodeGen::dump_json_content
-  RPS_WARNOUT("incomplete Rps_PayloadLightningCodeGen::dump_json_content owner=" << RPS_OBJECT_DISPLAY(owner()));
+  RPS_WARNOUT("incomplete Rps_PayloadLightningCodeGen::dump_json_content"
+	      " owner=" << RPS_OBJECT_DISPLAY(owner()));
 } // end Rps_PayloadLightningCodeGen::dump_json_content
 
 void
