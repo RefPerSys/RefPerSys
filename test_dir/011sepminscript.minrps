@@ -10,9 +10,15 @@ REFPERSYS_SCRIPT minicarb
 !echo "string\ntest"
 !echo -0x10
 !echo RefPerSys_system
+!echo +1e5
+!echo -3.14e-6
 !echo #{some $int chunk with a $$ inside}#
 
 # to test this script, run in RefPerSys directory
 # refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps \
 #     --user-pref=. --batch --run-name=011sepminscript.bash
+## for Emacs:
+## Local Variables: ;;
+## compile-command: "cd $REFPERSYS_TOPDIR && test_dir/011sepminscript.bash" ;;
+## End: ;;
 # end of file RefPerSys/test_dir/011sepminscript.minrps
