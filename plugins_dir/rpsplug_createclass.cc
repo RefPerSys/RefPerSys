@@ -2,8 +2,16 @@
 // passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
 // with improvement after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
-// © Copyright 2023 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 - 2026 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys class
+
+/** it might be compiled with
+    make one-plugin \
+       REFPERSYS_PLUGIN_SOURCE=plugins_dir/rpsplug_createclass.cc \
+       REFPERSYS_PLUGIN_SHARED_OBJECT=/tmp/rpsplug_createclass.so
+       **/
+
+
 /*****
   Once compiled, use it for example as:
   ./refpersys --plugin-after-load=/tmp/rpsplug_createclass.so \
