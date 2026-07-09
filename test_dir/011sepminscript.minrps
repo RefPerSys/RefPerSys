@@ -10,7 +10,7 @@ REFPERSYS_SCRIPT minicarb
 !echo "string\ntest"
 !echo -0x10
 !echo RefPerSys_system
-!echo #{some $int chunk}#
+!echo #{some $int chunk with a $$ inside}#
 
 # to test this script, run in RefPerSys directory
 # refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps \
