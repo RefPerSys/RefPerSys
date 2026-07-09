@@ -144,3 +144,7 @@ We need to update our `rps_set_native_data_in_loader` function in
 ##### enumerated type representations
 The class *`cplusplus_enum_type`* (so `_8J6vNYtP5E800eCr5q`) represents
 enumeration types.
+
+##### structure type representations
+The class *`cplusplus_struct_type`* (so `_9gIDAF8THkB03DhD9w`) represents
+structure types
