@@ -889,9 +889,11 @@ rps_show_version(void)
             << "This executable was built by "
             << rps_building_user_name
             << " of email " << rps_building_user_email << std::endl
-            << "See refpersys.org and code on github.com/RefPerSys/RefPerSys"
+            << "See refpersys.org and code on"
+	    << " github.com/RefPerSys/RefPerSys"
             << std::endl;
-  std::cout << "Compiled by " << rps_cxx_compiler_version << " as " << rps_cxx_compiler_realpath
+  std::cout << "Compiled by " << rps_cxx_compiler_version
+	    << " as " << rps_cxx_compiler_realpath
             << std::endl
             << "with " << rps_cxx_compiler_flags
             << std::endl;
@@ -906,13 +908,13 @@ rps_show_version(void)
   };
   std::cout << std::endl << " C++ compiler: "
 	    << rps_cxx_compiler_version << std::endl
-            << " free software license: GPLv3+," << std::endl
+            << " free software license: GPLv3+,"
 	    << " see www.gnu.org/licenses/gpl.html" << std::endl
-	    << " alternative license: LGPLv3+," << std::endl
+	    << " alternative license: LGPLv3+," 
 	    << " see www.gnu.org/licenses/lgpl-3.0.en.html," << std::endl
-	    << " other licence: CeCILL," << std::endl
-	    << " see cecill.info/." << std::endl
-            << "+++++ there is no WARRANTY,"
+	    << " other licence: CeCILL," 
+	    << " see cecill.info …" << std::endl
+            << "+++++ there is NO WARRANTY,"
 	    << "to the extent permitted by law ++++" << std::endl
             << "***** see also refpersys.org *****" << std::endl
             << "and github.com/RefPerSys/RefPerSys commit "
@@ -927,7 +929,8 @@ rps_show_version(void)
 /// from rps_debug_printf_at used by RPS_DEBUG_LOG and RPS_DEBUG_PRINTF
 /// macros.
 char *
-rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
+rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
+			  double tm)
 {
   if (!bfr || !fmt || len<4)
     return nullptr;
@@ -978,13 +981,15 @@ rps_extend_env(void)
   snprintf(pidenv, sizeof(pidenv), "REFPERSYS_PID=%d", (int)getpid());
   putenv(pidenv);     // e.g. REFPERSYS_PID=2345
   static char shortgitenv[64];
-  snprintf(shortgitenv, sizeof(shortgitenv), "REFPERSYS_SHORTGITID=%s", rps_shortgitid);
+  snprintf(shortgitenv, sizeof(shortgitenv), "REFPERSYS_SHORTGITID=%s",
+	   rps_shortgitid);
   putenv(shortgitenv);  // e.g. REFPERSYS_SHORTGITID=49466057bf7d+
   static char gitenv[128];
   snprintf(gitenv, sizeof(gitenv), "REFPERSYS_GITID=%s", rps_gitid);
   putenv(gitenv);  // e.g. REFPERSYS_GITID=494...90+ with 40 hexdigit
   static char topdirenv[384];
-  snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s", rps_topdirectory);
+  snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s",
+	   rps_topdirectory);
   putenv(topdirenv); // e.g. REFPERSYS_TOPDIR=$HOME/work/RefPerSys/
   if (!rps_fifo_prefix.empty())
     {
@@ -1026,11 +1031,14 @@ rps_check_mtime_files(void)
       auto wrp = curpathstr.find("webroot/");
       if (wrp < curpathstr.size())
         continue;
-      std::string curfullpathstr= std::string{rps_topdirectory} + "/" + curpathstr;
+      std::string curfullpathstr=
+	std::string{rps_topdirectory} + "/" + curpathstr;
       struct stat curstat = {};
       if (stat(curfullpathstr.c_str(), &curstat))
         {
-          RPS_WARNOUT("rps_check_mtime_files: stat " << curfullpathstr << " failed: " << strerror(errno));
+          RPS_WARNOUT("rps_check_mtime_files: stat "
+		      << curfullpathstr << " failed: "
+		      << strerror(errno));
           continue;
         };
       if (curstat.st_mtime > (time_t) nowtim
@@ -1053,7 +1061,8 @@ rps_check_mtime_files(void)
     {
       FILE* ftemp = fopen(tempmakefileout, "w");
       if (!ftemp)
-        RPS_FATALOUT("failed to open temporary make output " << tempmakefileout);
+        RPS_FATALOUT("failed to open temporary make output "
+		     << tempmakefileout);
       fprintf(ftemp, "# postponed temporary make output %s for...\n"
               "#... refpersys run %s from %s:%d\n",
               tempmakefileout, rps_run_name.c_str(), __FILE__, __LINE__);
@@ -1101,11 +1110,13 @@ static double rps_start_wallclock_real_time;
 
 
 
-/// rps_early_initialization is called by rps_parse_program_arguments which is called early from main.
+/// rps_early_initialization is called by rps_parse_program_arguments
+/// which is called early from main.
 static void
 rps_early_initialization(int argc, char** argv)
 {
-  char*inside_emacs = getenv("INSIDE_EMACS"); /// GNU emacs is setting this
+  char*inside_emacs =
+    getenv("INSIDE_EMACS"); /// GNU emacs is setting this
   rps_argc = argc;
   rps_argv = argv;
   rps_progname = argv[0];
