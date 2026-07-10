@@ -101,6 +101,7 @@ struct rps_minicarb_data_st {
   std::string minicarb_str;
   void* minicarb_ptr;
   int minicarb_lineno;          // the current line number in input
+  unsigned minicarb_cmdcount;
   std::string minicarb_path;    // a file or pipe path
   Rps_Id minicarb_oid;
   Rps_ObjectRef minicarb_ob1;
@@ -121,9 +122,14 @@ struct rps_minicarb_data_st {
   void check_carbdata_callframe(Rps_CallFrame*cf,
                                 int li=__builtin_LINE());
   void gc_carbdata_mark(Rps_GarbageCollector&gc, int li=__builtin_LINE());
-  inline int carbdata_line_number(void) const { return minicarb_lineno; };
-  inline const std::string carbdata_path() const { return minicarb_path; };
+  inline int carbdata_line_number(void) const
+    { return minicarb_lineno; };
+  inline const std::string carbdata_path() const
+    { return minicarb_path; };
+  inline unsigned carbdata_command_count(void) const
+    { return minicarb_cmdcount; };
   void incr_carbdata_line_number(void);
+  void incr_carbdata_command_count(int li= __builtin_LINE());
   void set_carbdata_line_number(int);
   void set_carbdata_path(const std::string&);
 };
@@ -176,6 +182,17 @@ rps_minicarb_data_st::incr_carbdata_line_number(void)
   RPS_ASSERT(minicarb_lineno>=0);
   RPS_POSSIBLE_BREAKPOINT();
   minicarb_lineno++;
+} // end rps_minicarb_data_st::incr_carbdata_line_number
+
+void
+rps_minicarb_data_st::incr_carbdata_command_count(int clin)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(minicarb_cmdcount>=0);
+  RPS_POSSIBLE_BREAKPOINT();
+  unsigned u= minicarb_cmdcount++;
+  RPS_DEBUG_LOG(REPL, "incremented minicarb_cmdcount#" << u
+		<< " from " << __FILE__ << ":" << clin);
 } // end rps_minicarb_data_st::incr_carbdata_line_number
 
 void
@@ -855,6 +872,7 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 minicarbnt_command: LEX_KW_ECHO LEX_INT {
   _Pragma("message \"°echo command for int\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "!§echo integer° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo integer"));
@@ -866,7 +884,8 @@ minicarbnt_command: LEX_KW_ECHO LEX_INT {
 minicarbnt_command: LEX_KW_ECHO LEX_SYMBOL {
   _Pragma("message \"°echo command for symbol\"");
   data_mc->check_carbdata_callframe(fram_mc);
-  RPS_UNIQUE_BREAKPOINT();
+  data_mc->incr_carbdata_command_count();
+  RPS_UNIQUE_BREAKPOINT(); 
   RPS_DEBUG_LOG(LOW_REPL, "!§echo symbol° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo symbol"));
   RPS_DEBUG_LOG(REPL, "§!echo integer° "<< $1
@@ -877,6 +896,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_SYMBOL {
 minicarbnt_command: LEX_KW_ECHO LEX_DOUBLE {
   _Pragma("message \"°echo command for double\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "!§echo double° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo double"));
@@ -888,6 +908,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_DOUBLE {
 minicarbnt_command: LEX_KW_ECHO LEX_STRING {
   _Pragma("message \"°echo command for string\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "!§echo string° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo string"));
@@ -900,6 +921,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_STRING {
 minicarbnt_command: LEX_KW_ECHO LEX_CHUNK {
   _Pragma("message \"°echo command for chunk\"");
   data_mc->check_carbdata_callframe(fram_mc);
+  data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "!§echo chunk° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo chunk"));
