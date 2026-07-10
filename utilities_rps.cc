@@ -967,9 +967,9 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
 
 
 
-/// This rps_extend_env is called early from main.  It is extending
-/// the Unix environment.
-/// Try running ./refpersys "--run-after-load=env|grep REFPERSYS" --batch
+/// This rps_extend_env is called early from main and before loading
+/// the heap.  It is extending the Unix environment.  Try running
+///  ./refpersys "--run-after-load=env|grep REFPERSYS" --batch
 void
 rps_extend_env(void)
 {
