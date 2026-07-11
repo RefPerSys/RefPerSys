@@ -96,6 +96,7 @@ struct rps_minicarb_data_st {
   unsigned minicarb_magic;       // always  rps_magic_minicarb_data
   unsigned minicarb_touchline;
   double minicarb_mtime;         // elapsed realtime
+  Rps_TokenSource*minicarb_toksrc;
   intptr_t minicarb_i;
   double minicarb_d;
   std::string minicarb_str;
@@ -131,6 +132,9 @@ struct rps_minicarb_data_st {
   void incr_carbdata_line_number(void);
   void incr_carbdata_command_count(int li= __builtin_LINE());
   void set_carbdata_line_number(int);
+  void set_carbdata_toksrc(Rps_TokenSource*ptoksrc,
+                           int li= __builtin_LINE());
+  Rps_TokenSource* carbdata_token_source(void) { return minicarb_toksrc; };
   void set_carbdata_path(const std::string&);
 };
 
@@ -192,7 +196,7 @@ rps_minicarb_data_st::incr_carbdata_command_count(int clin)
   RPS_POSSIBLE_BREAKPOINT();
   unsigned u= minicarb_cmdcount++;
   RPS_DEBUG_LOG(REPL, "incremented minicarb_cmdcount#" << u
-		<< " from " << __FILE__ << ":" << clin);
+                << " from " << __FILE__ << ":" << clin);
 } // end rps_minicarb_data_st::incr_carbdata_line_number
 
 void
@@ -203,6 +207,15 @@ rps_minicarb_data_st::set_carbdata_line_number(int l)
   RPS_POSSIBLE_BREAKPOINT();
   minicarb_lineno= l;
 } // end rps_minicarb_data_st::set_carbdata_line_number
+void
+rps_minicarb_data_st::set_carbdata_toksrc(Rps_TokenSource*tksrc, int l)
+{
+  RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
+  RPS_ASSERT(l>=0);
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(minicarb_toksrc==nullptr);
+  minicarb_toksrc= tksrc;
+} // end rps_minicarb_data_st::set_carbdata_toksrc
 
 void
 rps_minicarb_data_st::set_carbdata_path(const std::string&p)
@@ -267,7 +280,7 @@ rps_minicarb_data_st::check_carbdata_callframe(Rps_CallFrame*cf,
 /// See https://github.com/kingletbv/carburetta/issues/4
 extern "C"
 void rpsminicarb_garbage_collect_visit_stack(struct rpsminicarb_stack*,
-					     Rps_GarbageCollector*);
+                                             Rps_GarbageCollector*);
 %visit_params Rps_GarbageCollector*visitgc, rps_minicarb_data_st*carbdata
 
 
@@ -278,9 +291,13 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
     Rps_MemoryFileTokenSource&,
     int ix, int loopcnt);
 
+extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
+                                        Rps_CallFrame*fram_mc,
+                                        void*xtra_mc,
+                                        int lin= __builtin_LINE());
 ////////////////////////////////////////////////////////////////
 %params rps_minicarb_data_st*data_mc, Rps_CallFrame*fram_mc, void*xtra_mc
-  //https://carburetta.com/manual.html#on_feed_me
+  // See https://carburetta.com/manual.html#on_feed_me
 %on_feed_me {                                                   \
   RPS_ASSERT(data_mc != nullptr);                               \
   _Pragma("message \"on_feed_me minicarb_rps\"");               \
@@ -289,8 +306,10 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
   RPS_DEBUG_LOG(REPL, "minicarb on_feed_me @ "                  \
                 << data_mc->carbdata_path()                     \
                 << ":"                                          \
-                << data_mc->carbdata_line_number()              \
+                << data_mc->carbdata_line_number() << std::endl \
                 << RPS_FULL_BACKTRACE(1, "minicarb onfeedme")); \
+  rps_minicarb_on_feed_me(data_mc, fram_mc, xtra_mc);           \
+  RPS_UNIQUE_BREAKPOINT();                                      \
 }
 
 %token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN LEX_DOUBLE LEX_STRING
@@ -301,10 +320,10 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
 
 %token LEX_KW_ECHO
 %type LEX_KW_ECHO: void*
-%token_action { _Pragma("message \"token_action for LEX_KW_ECHO\")");	\
-  RPS_DEBUG_LOG(REPL, "token_action for LEX_KW_ECHO @"			\
-		<< data_mc->carbdata_path() << ":"			\
-		<< data_mc->carbdata_line_number());			\
+%token_action { _Pragma("message \"token_action for LEX_KW_ECHO\")");   \
+  RPS_DEBUG_LOG(REPL, "token_action for LEX_KW_ECHO @"                  \
+                << data_mc->carbdata_path() << ":"                      \
+                << data_mc->carbdata_line_number());                    \
 }
 %token LEX_CHUNK
 
@@ -960,11 +979,11 @@ minicarbnt_input: minicarbnt_command minicarbnt_input  LEX_END {
 const char*rps_minicarb_keyword_names[rpsminicarb_kw__Last];
 
 extern "C" void rps_minicarb_keyword_names_initialize(Rps_CallFrame*callerframe,
-						      Rps_ObjectRef obenvarg);
+                                                      Rps_ObjectRef obenvarg);
 
 void
 rps_minicarb_keyword_names_initialize(Rps_CallFrame*callerframe,
-				      Rps_ObjectRef obenvarg)
+                                      Rps_ObjectRef obenvarg)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_CALL_FRAME_UNDESCRIBED,
                  callerframe,
@@ -997,6 +1016,7 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
     = new(datazone) rps_minicarb_data_st;
   (*pdata).minicarb_magic = rps_magic_minicarb_data;
   (*pdata).reset_carbdata();
+  (*pdata).set_carbdata_toksrc(ptksrc);
   (*pdata).set_carbdata_line_number(ptksrc->line());
   (*pdata).set_carbdata_path(ptksrc->name());
   rpsminicarb_stack_init(&stack);
@@ -1036,36 +1056,37 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
     if (ptksrc && !ptksrc->curcptr()) {
       ptksrc->starting_new_input_line();
       again = !ptksrc->reached_end();
-      RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command obenv=" << _f.obenv
-		    << " ptksrc=" << (*ptksrc)
-		    << std::endl
-		    << "… minicarbinput="
-		    << Rps_QuotedC_String(ptksrc->curcptr()));
+      RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command obenv="
+                    << _f.obenv
+                    << " ptksrc=" << (*ptksrc)
+                    << std::endl
+                    << "… minicarbinput="
+                    << Rps_QuotedC_String(ptksrc->curcptr()));
     };
   } while (again);
   {
     const char*pc = ptksrc->cur_cptr();
     int ln= pc?strlen(pc):0;
     RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command before "
-		  " rpsminicarb_set_input pc@" << (void*)pc
-		  << ":"
-		  << Rps_QuotedC_String(pc) << " ln=" << ln);
+                  " rpsminicarb_set_input pc@" << (void*)pc
+                  << ":"
+                  << Rps_QuotedC_String(pc) << " ln=" << ln);
     RPS_UNIQUE_BREAKPOINT();
     rpsminicarb_set_input(&stack, pc, ln, (int)isfinal);
     RPS_UNIQUE_BREAKPOINT();
     RPS_DEBUG_LOG(REPL, "rps_do_minicarb_command after "
-		  "rpsminicarb_set_input pc@" << (void*)pc);
+                  "rpsminicarb_set_input pc@" << (void*)pc);
     int r = rpsminicarb_scan(&stack, pdata, &_, _f.obenv);
     if (r == _RPSMINICARB_SYNTAX_ERROR)
       RPS_WARNOUT("got minicarb syntax error tksrc=" << (*ptksrc)
-		  << std::endl
-		  <<  "… minicarbinput="
-		  << Rps_QuotedC_String(ptksrc->curcptr())
-		  << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "minicarb syntaxerr/AA"));
+                  << std::endl
+                  <<  "… minicarbinput="
+                  << Rps_QuotedC_String(ptksrc->curcptr())
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "minicarb syntaxerr/AA"));
     RPS_DEBUG_LOG(REPL, "after rpsminicarb_scan r=" << r
-		  << " obenv=" << _f.obenv
-		  << " ptksrc=" << (*ptksrc));
+                  << " obenv=" << _f.obenv
+                  << " ptksrc=" << (*ptksrc));
   };
   RPS_DEBUG_LOG(REPL, "incomplete rps_do_minicarb_command obenv="
                 << RPS_OBJECT_DISPLAY(_f.obenv)
@@ -1089,10 +1110,10 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                 << "…  pdata@" << pdata << " ptksrc=" << (*ptksrc)
                 << std::endl
                 << "… reachedend=" << ptksrc->reached_end()
-		<< " line=" << ptksrc->line()
-		<< " col=" << ptksrc->col() << " "
-		<< Rps_QuotedC_String(ptksrc->cur_cptr()) << std::endl
-		<< RPS_DISPTOKSRCCURLIN(ptksrc));
+                << " line=" << ptksrc->line()
+                << " col=" << ptksrc->col() << " "
+                << Rps_QuotedC_String(ptksrc->cur_cptr()) << std::endl
+                << RPS_DISPTOKSRCCURLIN(ptksrc));
   RPS_UNIQUE_BREAKPOINT();
   int r = rpsminicarb_parse(&stack, RPSMINICARB_MINICARBNT_INPUT,
                             pdata,
@@ -1119,6 +1140,23 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                 << " pdata@" << (void*)pdata);
 #warning unimplemented rps_do_minicarb_command
 } // end rps_do_minicarb_command
+
+
+void
+rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
+                        Rps_CallFrame*fram_mc,
+                        void*xtra_mc,
+                        int lin)
+{
+  RPS_ASSERT(data_mc != nullptr);
+  RPS_ASSERT(fram_mc != nullptr);
+  RPS_ASSERT(xtra_mc != nullptr);
+  RPS_ASSERT(lin>0);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(REPL, "on feed me from " << __FILE__ << ":" << lin
+                << " toksrc=" << data_mc->carbdata_token_source());
+  RPS_UNIQUE_BREAKPOINT();
+} // end rps_minicarb_on_feed_me
 
 const size_t rpsminicarb_stack_size = sizeof(struct rpsminicarb_stack);
 const size_t rpsminicarb_stack_align = alignof(struct rpsminicarb_stack);
