@@ -232,6 +232,17 @@ Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
   out << "↑" << std::endl;
 } // end Rps_TokenSource::display_current_line_with_cursor
 
+void
+Rps_TokenSource::starting_new_input_line(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  //    RPS_POSSIBLE_BREAKPOINT(); /// for issue#30
+  toksrc_col=0;
+  toksrc_line++;
+  fill_current_line_buffer();
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_DEBUG_LOG(LOW_REPL, "starting_new_input_line " << *this);
+} // end Rps_TokenSource::starting_new_input_line
 
 //// callable from GDB
 const char*Rps_TokenSource::cur_cptr(void) const

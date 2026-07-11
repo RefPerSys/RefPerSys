@@ -3029,15 +3029,7 @@ protected:
                               Rps_ObjectRef obchkarg,
                               Rps_ChunkData_st*chkdata);
 public:
-  void starting_new_input_line(void)
-  {
-    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-    //    RPS_POSSIBLE_BREAKPOINT(); /// for issue#30
-    toksrc_col=0;
-    toksrc_line++;
-    fill_current_line_buffer();
-    RPS_UNIQUE_BREAKPOINT();
-  };
+  void starting_new_input_line(void); // in lexer_rps.cc
   void advance_cursor_bytes(unsigned nb)
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
