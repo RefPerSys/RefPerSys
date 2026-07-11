@@ -241,7 +241,9 @@ Rps_TokenSource::starting_new_input_line(void)
   toksrc_line++;
   fill_current_line_buffer();
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "starting_new_input_line " << *this);
+  RPS_DEBUG_LOG(LOW_REPL, "starting_new_input_line " << *this
+		<< " line@" << toksrc_linebuf.c_str()
+		<< " " << Rps_QuotedC_String(toksrc_linebuf));
 } // end Rps_TokenSource::starting_new_input_line
 
 //// callable from GDB
