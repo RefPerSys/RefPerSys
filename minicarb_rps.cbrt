@@ -1154,7 +1154,8 @@ rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
   RPS_ASSERT(lin>0);
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(data_mc->carbdata_token_source());
-  RPS_DEBUG_LOG(REPL, "minicarb-on_feed_me from " << __FILE__ << ":" << lin
+  RPS_DEBUG_LOG(REPL, "minicarb-on_feed_me from "
+		<< __FILE__ << ":" << lin
                 << " toksrc=" << *(data_mc->carbdata_token_source())
 		<< RPS_DISPTOKSRCCURLIN(data_mc->carbdata_token_source())
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_minicarb_on_feed_me"));
