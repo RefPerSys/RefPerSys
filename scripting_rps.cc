@@ -539,6 +539,7 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
                 << tsrc << " ix=" << ix
                 << " before call to rps_do_minicarb_command obenv="
                 << _f.obenv);
+  RPS_UNIQUE_BREAKPOINT();
   rps_do_minicarb_command(&_, _f.obenv, &tsrc);
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode tsrc="
                 << tsrc << " ix=" << ix
