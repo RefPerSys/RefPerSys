@@ -120,6 +120,7 @@ struct rps_minicarb_data_st {
   void check_carbdata_magic(int li=__builtin_LINE());
   inline void touch_carbdata(int li=__builtin_LINE());
   inline void reset_carbdata(int li=__builtin_LINE());
+  void output_carbdata(std::ostream&out) const;
   void check_carbdata_callframe(Rps_CallFrame*cf,
                                 int li=__builtin_LINE());
   void gc_carbdata_mark(Rps_GarbageCollector&gc, int li=__builtin_LINE());
@@ -136,7 +137,53 @@ struct rps_minicarb_data_st {
                            int li= __builtin_LINE());
   Rps_TokenSource* carbdata_token_source(void) { return minicarb_toksrc; };
   void set_carbdata_path(const std::string&);
-};
+};				// end struct rps_minicarb_data_st
+
+
+inline std::ostream& operator << (std::ostream&out,
+				  const struct rps_minicarb_data_st&dat)
+{
+  dat.output_carbdata(out);
+  return out;
+}
+
+void
+rps_minicarb_data_st::output_carbdata(std::ostream&out) const {
+  if (RPS_UNLIKELY(minicarb_magic != rps_magic_minicarb_data)) {
+    out << "corrupted°rps_minicarb_data_st@" << (void*)this
+	<< std::flush;
+    RPS_UNIQUE_BREAKPOINT();
+    return;
+  };
+  out << "°rps_minicarb_data_st@" << (void*)this << std::flush;
+  RPS_UNIQUE_BREAKPOINT();
+  if (minicarb_touchline)
+    out << " touchline=" << minicarb_touchline;
+  if (minicarb_mtime>0)
+    out << " mtime=" << minicarb_mtime;
+//? Rps_TokenSource*minicarb_toksrc;
+//? intptr_t minicarb_i;
+//? double minicarb_d;
+//? std::string minicarb_str;
+//? void* minicarb_ptr;
+//? int minicarb_lineno;          // the current line number in input
+//? unsigned minicarb_cmdcount;
+//? std::string minicarb_path;    // a file or pipe path
+//? Rps_Id minicarb_oid;
+//? Rps_ObjectRef minicarb_ob1;
+//? Rps_ObjectRef minicarb_ob2;
+//? Rps_ObjectRef minicarb_obdelim;
+//? Rps_ObjectRef minicarb_obop;
+//? Rps_ObjectRef minicarb_obenv;
+//? Rps_Value minicarb_v1;
+//? Rps_Value minicarb_v2;
+//? Rps_Value minicarb_vleft;
+//? Rps_Value minicarb_vright;
+//? Rps_InstanceValue minicarb_vinst;
+//? char minicarb_chunk_prefix[8];
+//? std::vector<Rps_Value> minicarb_vectval; // needed for code chunks
+#warning very incomplete rps_minicarb_data_st::output_carbdata
+} // end rps_minicarb_data_st::output_carbdata
 
 void
 rps_minicarb_data_st::check_carbdata_magic(int lin)
