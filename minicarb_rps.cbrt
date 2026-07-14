@@ -155,25 +155,34 @@ rps_minicarb_data_st::output_carbdata(std::ostream&out) const {
     RPS_UNIQUE_BREAKPOINT();
     return;
   };
+  long bl = out.tellp();
+  constexpr long linethresh = 72;
   out << "°rps_minicarb_data_st@" << (void*)this << std::flush;
   RPS_UNIQUE_BREAKPOINT();
   if (minicarb_touchline)
     out << " touchline=" << minicarb_touchline;
   if (minicarb_mtime>0)
     out << " mtime=" << minicarb_mtime;
-//? Rps_TokenSource*minicarb_toksrc;
-//? intptr_t minicarb_i;
-//? double minicarb_d;
-//? std::string minicarb_str;
-//? void* minicarb_ptr;
-//? int minicarb_lineno;          // the current line number in input
-//? unsigned minicarb_cmdcount;
-//? std::string minicarb_path;    // a file or pipe path
-//? Rps_Id minicarb_oid;
-//? Rps_ObjectRef minicarb_ob1;
-//? Rps_ObjectRef minicarb_ob2;
-//? Rps_ObjectRef minicarb_obdelim;
-//? Rps_ObjectRef minicarb_obop;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_toksrc)
+    out << " toksrc=" << (*minicarb_toksrc) << std::flush;
+  out << " i=" << minicarb_i << " d=" << minicarb_d << std::flush;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  out << " str=" << Rps_QuotedC_String(minicarb_str)
+      << " ptr=" << minicarb_ptr << " lineno=" << minicarb_lineno;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  out << " cmdcount=" << minicarb_cmdcount
+      << " path=" << Rps_QuotedC_String(minicarb_path);
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  out << " oid=" << minicarb_oid;
+  if (minicarb_ob1) out << " ob1=" << minicarb_ob1;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_ob2) out << " ob2=" << minicarb_ob2;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_obdelim) out << " obdelim=" << minicarb_obdelim;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_obop) out << " obop=" << minicarb_obop;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
 //? Rps_ObjectRef minicarb_obenv;
 //? Rps_Value minicarb_v1;
 //? Rps_Value minicarb_v2;
@@ -349,11 +358,9 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
   RPS_ASSERT(data_mc != nullptr);                               \
   _Pragma("message \"on_feed_me minicarb_rps\"");               \
   data_mc->check_carbdata_callframe(fram_mc);                   \
-  RPS_POSSIBLE_BREAKPOINT();                                    \
-  RPS_DEBUG_LOG(REPL, "minicarb on_feed_me @ "                  \
-                << data_mc->carbdata_path()                     \
-                << ":"                                          \
-                << data_mc->carbdata_line_number() << std::endl \
+  RPS_UNIQUE_BREAKPOINT();					\
+  RPS_DEBUG_LOG(REPL, "minicarb on_feed_me data_mc="		\
+                << data_mc << std::endl				\
                 << RPS_FULL_BACKTRACE(1, "minicarb onfeedme")); \
   rps_minicarb_on_feed_me(data_mc, fram_mc, xtra_mc);           \
   RPS_UNIQUE_BREAKPOINT();                                      \
