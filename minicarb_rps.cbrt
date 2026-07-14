@@ -157,7 +157,8 @@ rps_minicarb_data_st::output_carbdata(std::ostream&out) const {
   };
   long bl = out.tellp();
   constexpr long linethresh = 72;
-  out << "°rps_minicarb_data_st@" << (void*)this << std::flush;
+  // ⟨ is U+27E8 MATHEMATICAL LEFT ANGLE BRACKET
+  out << "°⟨rps_minicarb_data_st@" << (void*)this << std::flush;
   RPS_UNIQUE_BREAKPOINT();
   if (minicarb_touchline)
     out << " touchline=" << minicarb_touchline;
@@ -199,6 +200,9 @@ rps_minicarb_data_st::output_carbdata(std::ostream&out) const {
   if (minicarb_vectval.size() >0) {
     out << std::endl << "vectval=" << minicarb_vectval << std::endl;
   }
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  // ⟩ is U+27E9 MATHEMATICAL RIGHT ANGLE BRACKET
+  out << std::endl << "⟩rps_minicarb_data_st" << std::endl;
 } // end rps_minicarb_data_st::output_carbdata
 
 void
