@@ -183,15 +183,22 @@ rps_minicarb_data_st::output_carbdata(std::ostream&out) const {
   if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
   if (minicarb_obop) out << " obop=" << minicarb_obop;
   if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
-//? Rps_ObjectRef minicarb_obenv;
-//? Rps_Value minicarb_v1;
-//? Rps_Value minicarb_v2;
-//? Rps_Value minicarb_vleft;
-//? Rps_Value minicarb_vright;
-//? Rps_InstanceValue minicarb_vinst;
-//? char minicarb_chunk_prefix[8];
-//? std::vector<Rps_Value> minicarb_vectval; // needed for code chunks
-#warning very incomplete rps_minicarb_data_st::output_carbdata
+  if (minicarb_obenv) out << " obenv=" << minicarb_obenv;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_v1) out << " v1=" << minicarb_v1;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_v2) out << " v2=" << minicarb_v2;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_vleft) out << " vleft=" << minicarb_vleft;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_vright) out << " vright=" << minicarb_vright;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_vinst) out << " vinst=" << minicarb_vinst;
+  if (minicarb_chunk_prefix[0]) out << " chunk_prefix=" << minicarb_chunk_prefix;
+  if (out.tellp() - bl > linethresh) { out << std::endl; bl=out.tellp(); };
+  if (minicarb_vectval.size() >0) {
+    out << std::endl << "vectval=" << minicarb_vectval << std::endl;
+  }
 } // end rps_minicarb_data_st::output_carbdata
 
 void
