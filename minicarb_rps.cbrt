@@ -1094,6 +1094,8 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
                 << " prog.args="
                 << RPS_OUT_PROGARGS(rps_main_argc, rps_main_argv)
                 << std::endl
+                << "… data:" << (*pdata)
+                << std::endl
                 << "… minicarbinput="
                 << Rps_QuotedC_String(ptksrc->curcptr()));
   RPS_POSSIBLE_BREAKPOINT();
@@ -1165,10 +1167,12 @@ rps_do_minicarb_command(Rps_CallFrame*callerframe,
    *                       Rps_CallFrame*fram_mc, void*xtra_mc)
    *
    **/
+  RPS_ASSERT(pdata != nullptr);
   RPS_DEBUG_LOG(REPL,
                 "before call to rpsminicarb_parse obenv=" << _f.obenv
                 << std::endl
-                << "…  pdata@" << pdata << " ptksrc=" << (*ptksrc)
+                << "… pdata:" << (*pdata)
+                << std::endl << "…  ptksrc=" << (*ptksrc)
                 << std::endl
                 << "… reachedend=" << ptksrc->reached_end()
                 << " line=" << ptksrc->line()
