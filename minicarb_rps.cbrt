@@ -317,6 +317,7 @@ rps_minicarb_data_st::reset_carbdata(int lin)
   minicarb_vleft = nullptr;
   minicarb_vright = nullptr;
   minicarb_vinst = nullptr;
+  minicarb_oid = nullptr;
   memset (minicarb_chunk_prefix, 0, sizeof(minicarb_chunk_prefix));
   minicarb_vectval.clear();
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
@@ -385,10 +386,10 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
 
 %token LEX_KW_ECHO
 %type LEX_KW_ECHO: void*
-%token_action { _Pragma("message \"token_action for LEX_KW_ECHO\")");   \
-  RPS_DEBUG_LOG(REPL, "token_action for LEX_KW_ECHO @"                  \
-                << data_mc->carbdata_path() << ":"                      \
-                << data_mc->carbdata_line_number());                    \
+%token_action { _Pragma("message \"token_action for LEX_KW_ECHO\"");   \
+  RPS_DEBUG_LOG(REPL, "token_action for LEX_KW_ECHO @"                 \
+                << data_mc->carbdata_path() << ":"                     \
+                << data_mc->carbdata_line_number());                   \
 }
 %token LEX_CHUNK
 
