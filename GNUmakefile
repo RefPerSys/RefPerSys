@@ -540,9 +540,10 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
              __buildinfo.o \
              $(RPS_LIBBACKTRACE) \
              -U_Rps_LinkOptA -Wl,--export-dynamic -Wl,--rpath='$$ORIGIN:/lib/$(strip $(RPS_DEBARCH)):$(RPS_LIBOPCODES_DIR)' \
-             -L/usr/local/lib -URps_LinkOptB -L $(RPS_LIBOPCODES_DIR) $(REFPERSYS_NEEDED_LIBRARIES) \
+             -L/usr/local/lib -URps_LinkOptB -L$(RPS_LIBOPCODES_DIR) $(REFPERSYS_NEEDED_LIBRARIES) \
              $(REFPERSYS_LINKER_FLAGS) \
-             $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
+             $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) \
+             -ljsoncpp -lcurlpp -lINIReader -lreadline -ldl
 	-@echo Linked $@
 
 
