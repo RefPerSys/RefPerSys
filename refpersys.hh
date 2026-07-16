@@ -3012,7 +3012,7 @@ protected:
   void restart_token_source(void);
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
-  std::string toksrc_linebuf;
+  char* toksrc_lincbuf; // malloc-ed
   Rps_DequVal toksrc_token_deq;
   Rps_StringValue* toksrc_ptrnameval;
   Rps_TokenSource(std::string name);
@@ -3034,8 +3034,9 @@ public:
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
     toksrc_col += nb;
-    if (toksrc_col > (int) toksrc_linebuf.size())
-      toksrc_col = toksrc_linebuf.size();
+    size_t l = toksrc_lincbuf?strlen(toksrc_lincbuf):0;
+    if (toksrc_col >= (int)l)
+      toksrc_col = (int)l-1;
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public: //////
@@ -3077,11 +3078,11 @@ public: //////
   const char*curcptr(void) const
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-    if (toksrc_linebuf.empty())
+    if (!toksrc_lincbuf)
       return nullptr;
-    auto linesiz = toksrc_linebuf.size();
+    size_t linesiz = strlen(toksrc_lincbuf);
     if (toksrc_col>=0 && (int)toksrc_col<(int)linesiz)
-      return toksrc_linebuf.c_str()+toksrc_col;
+      return toksrc_lincbuf+toksrc_col;
     return nullptr;
   };                            // end Rps_TokenSource::curcptr
   const char*cur_cptr(void) const; // same as above curcptr
@@ -3091,10 +3092,10 @@ public: //////
   char previous_ascii(void) const
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-    if (toksrc_linebuf.empty())
+    if (!toksrc_lincbuf)
       return (char)0;
-    const char* buf = toksrc_linebuf.c_str();
-    auto linesiz = toksrc_linebuf.size();
+    const char* buf = const_cast<const char*>(toksrc_lincbuf);
+    size_t linesiz = strlen(buf);
     if (toksrc_col>0 && (int)toksrc_col<(int)linesiz)
       {
         const signed char* signedbuf =
@@ -3108,7 +3109,7 @@ public: //////
   const std::string current_line(void) const
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-    return toksrc_linebuf;
+    return std::string(toksrc_lincbuf);
   };
   unsigned unique_number(void) const
   {

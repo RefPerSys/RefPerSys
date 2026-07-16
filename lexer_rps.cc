@@ -63,7 +63,7 @@ std::atomic<unsigned> Rps_TokenSource::toksrc_instance_count_;
 Rps_TokenSource::Rps_TokenSource(std::string name)
   : toksrc_name(name), toksrc_line(1), toksrc_col(0), toksrc_counter(0),
     toksrc_number(1+toksrc_instance_count_.fetch_add(1)),
-    toksrc_linebuf{},
+    toksrc_lincbuf(nullptr),
     toksrc_token_deq(),
     toksrc_ptrnameval(nullptr),
     toksrc_keywfun(nullptr)
@@ -80,7 +80,11 @@ Rps_TokenSource::restart_token_source(void)
   toksrc_line = 0;
   toksrc_col = 0;
   toksrc_counter = 0;
-  toksrc_linebuf.clear();
+  if (toksrc_lincbuf)
+    {
+      free (toksrc_lincbuf);
+      toksrc_lincbuf = nullptr;
+    };
   toksrc_token_deq.clear();
 } // end Rps_TokenSource::restart_token_source
 
@@ -186,9 +190,13 @@ Rps_TokenSource::position_str(int col) const
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::string colstr;
+  int linsiz=0;
   RPS_UNIQUE_BREAKPOINT();
-  if (toksrc_linebuf.empty())
-    colstr = "°";
+  if (!toksrc_lincbuf)
+    {
+      colstr = "°";
+      linsiz=0;
+    }
   else if (col<0)
     {
       if (col== -1)
@@ -196,7 +204,7 @@ Rps_TokenSource::position_str(int col) const
       else
         colstr = "<";
     }
-  else if (col > (int)toksrc_linebuf.size())
+  else if (col > linsiz)
     colstr = ">";
   else
     colstr = std::to_string(col);
@@ -212,11 +220,12 @@ void
 Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  out << toksrc_linebuf << std::endl;
+  if (toksrc_lincbuf)
+    out << toksrc_lincbuf << std::endl;
   int curcol = col();
   const char*nextp = nullptr;
   int i = 0;
-  for (const char* curp = toksrc_linebuf.c_str();
+  for (const char* curp = toksrc_lincbuf;
        curp && *curp && i < curcol;
        curp = nextp, i++)
     {
@@ -242,8 +251,8 @@ Rps_TokenSource::starting_new_input_line(void)
   fill_current_line_buffer();
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(LOW_REPL, "starting_new_input_line " << *this
-		<< " line@" << toksrc_linebuf.c_str()
-		<< " " << Rps_QuotedC_String(toksrc_linebuf));
+                << " line@" << (void*)(toksrc_lincbuf)
+                << " " << Rps_QuotedC_String(toksrc_lincbuf));
 } // end Rps_TokenSource::starting_new_input_line
 
 //// callable from GDB
@@ -264,7 +273,11 @@ Rps_TokenSource::~Rps_TokenSource()
   toksrc_col= -1;
   toksrc_object= nullptr;
   toksrc_data= nullptr;
-  toksrc_linebuf.clear();
+  if (toksrc_lincbuf)
+    {
+      free(toksrc_lincbuf);
+      toksrc_lincbuf = nullptr;
+    };
   toksrc_token_deq.clear();
 } // end Rps_TokenSource::~Rps_TokenSource
 
@@ -330,7 +343,7 @@ bool
 Rps_StreamTokenSource::get_line(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  if (!toksrc_input_stream && toksrc_linebuf.empty())
+  if (!toksrc_input_stream && !toksrc_lincbuf)
     return false;
   starting_new_input_line();
   return true;
@@ -351,7 +364,13 @@ void
 Rps_StreamTokenSource::fill_current_line_buffer(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  std::getline(toksrc_input_stream, toksrc_linebuf);
+  std::string l;
+  std::getline(toksrc_input_stream, l);
+  if (toksrc_lincbuf)
+    {
+      free (toksrc_lincbuf);
+      toksrc_lincbuf = strdup(l.c_str());
+    };
 } // end Rps_StreamTokenSource::fill_current_line_buffer
 
 ////////////////////////////////////////////////////////////////
@@ -427,18 +446,20 @@ Rps_FileTokenSource::fill_current_line_buffer(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   char linbuf[512];
-  toksrc_linebuf.clear();
+  std::string lstr;
+  free(toksrc_lincbuf), toksrc_lincbuf=nullptr;
   do
     {
       memset(linbuf, 0, sizeof(linbuf));
       // NB: we assume no null byte in the file....
       if (!fgets(linbuf, sizeof(linbuf)-1, toksrc_input_file))
         break;
-      toksrc_linebuf.append(linbuf);
+      lstr.append(linbuf);
       if (strchr(linbuf, '\n'))
         break;
     }
   while(!feof(toksrc_input_file));
+  toksrc_lincbuf = strdup(lstr.c_str());
 } // end Rps_FileTokenSource::fill_current_line_buffer
 ////////////////////////////////////////////////////////////////
 
@@ -488,11 +509,11 @@ Rps_PipeTokenSource::~Rps_PipeTokenSource()
       RPS_WARNOUT("pipe token source for '"
                   << Rps_Cjson_String(name())
                   << "' failed pclose with exit #" << e
-		  << std::endl
-		  << RPS_FULL_BACKTRACE(1,"destr °PipeTokenSource"));
+                  << std::endl
+                  << RPS_FULL_BACKTRACE(1,"destr °PipeTokenSource"));
       throw
-	std::runtime_error(std::string{"bad pipe token source:"
-				       + name()});
+      std::runtime_error(std::string{"bad pipe token source:"
+                                     + name()});
     };
   RPS_DEBUG_LOG(REPL, "destr °PipeTokenSource@ " <<(void*)this
                 << " " << *this);
@@ -527,19 +548,25 @@ void
 Rps_PipeTokenSource::fill_current_line_buffer(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  std::string lstr;
   char linbuf[512];
-  toksrc_linebuf.clear();
+  if (toksrc_lincbuf)
+    {
+      free (toksrc_lincbuf);
+      toksrc_lincbuf = nullptr;
+    };
   do
     {
       memset(linbuf, 0, sizeof(linbuf));
       // NB: we assume no null byte in the file....
       if (!fgets(linbuf, sizeof(linbuf)-1, toksrc_input_pipe))
         break;
-      toksrc_linebuf.append(linbuf);
+      lstr.append(linbuf);
       if (strchr(linbuf, '\n'))
         break;
     }
   while(!feof(toksrc_input_pipe));
+  toksrc_lincbuf = strdup(lstr.c_str());
 } // end Rps_PipeTokenSource::fill_current_line_buffer
 
 
@@ -548,7 +575,11 @@ void
 Rps_CinTokenSource::fill_current_line_buffer(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  std::getline(std::cin, toksrc_linebuf);
+  std::string lstr;
+  std::getline(std::cin, lstr);
+  if (toksrc_lincbuf)
+    free (toksrc_lincbuf), toksrc_lincbuf=nullptr;
+  toksrc_lincbuf = strdup(lstr.c_str());
 } // end Rps_CinTokenSource::fill_current_line_buffer
 
 Rps_CinTokenSource::Rps_CinTokenSource()
@@ -576,7 +607,7 @@ bool
 Rps_CinTokenSource::get_line(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  if (!std::cin && toksrc_linebuf.empty())
+  if (!std::cin && toksrc_lincbuf==nullptr)
     return false;
   starting_new_input_line();
   return true;
@@ -656,10 +687,11 @@ Rps_StringTokenSource::get_line()
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   RPS_POSSIBLE_BREAKPOINT();
-  if (!toksrcstr_inp && toksrc_linebuf.empty())
+  if (!toksrcstr_inp && toksrc_lincbuf==nullptr)
     return false;
   starting_new_input_line();
-  RPS_DEBUG_LOG(REPL, "Rps_StringTokenSource::get_line at " << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_StringTokenSource::get_line at "
+                << position_str());
   return true;
 } // end Rps_StringTokenSource::get_line()
 
@@ -667,7 +699,11 @@ void
 Rps_StringTokenSource::fill_current_line_buffer(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  std::getline(toksrcstr_inp, toksrc_linebuf);
+  std::string lstr;
+  std::getline(toksrcstr_inp, lstr);
+  if (toksrc_lincbuf)
+    free (toksrc_lincbuf), toksrc_lincbuf=nullptr;
+  toksrc_lincbuf = strdup(lstr.c_str());
 } // end Rps_StringTokenSource::fill_current_line_buffer
 
 bool
@@ -816,7 +852,12 @@ void
 Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  toksrc_linebuf.clear();
+  if (toksrc_lincbuf)
+    {
+      free(toksrc_lincbuf);
+      toksrc_lincbuf= nullptr;
+    };
+  std::string lstr;
   RPS_POSSIBLE_BREAKPOINT();
   const char* pc = toksrcmfil_line;
   const char* beg = pc;
@@ -836,7 +877,7 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
     eol = end;
   if (beg && eol)
     {
-      toksrc_linebuf = std::string(beg, eol-beg);
+      lstr.append(std::string(beg, eol-beg));
       RPS_POSSIBLE_BREAKPOINT();
       if (eol < toksrcmfil_end)
         toksrcmfil_line = eol+1;
@@ -844,7 +885,7 @@ Rps_MemoryFileTokenSource::fill_current_line_buffer(void)
         toksrcmfil_line = eol;
     };
   RPS_POSSIBLE_BREAKPOINT();
-#warning the curcptr should be in toksrc_linebuf
+  toksrc_lincbuf = strdup(lstr.c_str());
 } // end Rps_MemoryTokenSource::fill_current_line_buffer
 
 Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
@@ -1106,7 +1147,7 @@ Rps_TokenSource::get__namoid__token(Rps_CallFrame*callframe, const char*curp)
   int curlin = toksrc_line;
   int curcol = toksrc_col;
   int startcol = curcol;
-  size_t linelen = toksrc_linebuf.size();
+  size_t linelen = toksrc_lincbuf?strlen(toksrc_lincbuf):0;
   const bool startswithalpha = isalpha(*curp);
   const bool afterat = ('@' == previous_ascii());
   while ((isalpha(*curp) || *curp == '_') && toksrc_col<(int)linelen)
@@ -1506,7 +1547,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       << std::endl << RPS_FULL_BACKTRACE(1, "Rps_TokenSource::get_token/start"));
   ucs4_t curuc=0;
   int ulen= -1;
-  size_t linelen = toksrc_linebuf.size();
+  size_t linelen = toksrc_lincbuf?strlen(toksrc_lincbuf):0;
   // check that we have a proper UTF-8 character
   ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
   if (ulen<0)
@@ -1854,7 +1895,7 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   std::string rstr;
   const char* curp = curcptr();
-  size_t linelen = toksrc_linebuf.size();
+  size_t linelen = toksrc_lincbuf ? strlen(toksrc_lincbuf):0;
   const char*eol = curp + (linelen-toksrc_col);
   rstr.reserve(4+2*(eol-curp)/3);
   RPS_ASSERT(*curp == '"');
@@ -2167,21 +2208,22 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
                            Rps_ObjectRef namedob;
                 );
   _f.obchunk = obchkarg;
-  RPS_DEBUG_LOG(LOW_REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno=" << chkdata->chunkdata_colno
+  RPS_DEBUG_LOG(LOW_REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno="
+                << chkdata->chunkdata_colno
                 << " curpos:" << position_str()
-                << " linebuf:'" << toksrc_linebuf << "'"
-                << " of size:" << toksrc_linebuf.size());
+                << " lincbuf:" << Rps_QuotedC_String(toksrc_lincbuf));
+  std::size_t linsiz = toksrc_lincbuf?strlen(toksrc_lincbuf):0;
   RPS_ASSERT(chkdata->chunkdata_colno>=0
-             && chkdata->chunkdata_colno <= (int)toksrc_linebuf.size());
-  const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
-  const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
+             && chkdata->chunkdata_colno <= (int)linsiz);
+  const char*pc = toksrc_lincbuf + chkdata->chunkdata_colno;
+  const char*eol =  toksrc_lincbuf + linsiz;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='"
                 << Rps_Cjson_String(pc) << "'"
                 << " @" << position_str(chkdata->chunkdata_colno));
   if (!pc || pc[0] == (char)0 || pc == eol)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-line");
-      toksrc_col = toksrc_linebuf.size();
+      toksrc_col = linsiz;
       return nullptr;
     }
   // name-like chunk element
@@ -2191,7 +2233,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       int startnamecol =  chkdata->chunkdata_colno;
       const char*startname = pc;
       const char*endname = pc;
-      const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
+      const char*eol =  toksrc_lincbuf+strlen(toksrc_lincbuf);
       while ((isalnum(*endname) || *endname=='_') && endname<eol)
         endname++;
       std::string curname(startname, endname - startname);
