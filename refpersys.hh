@@ -3040,6 +3040,8 @@ public:
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public: //////
+  const char* token_source_line_buffer(void) const
+  { return toksrc_lincbuf; };
   void set_token_source_object(Rps_ObjectRef obj)
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
