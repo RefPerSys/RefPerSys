@@ -224,6 +224,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
     rps_real_shell_file_path(rps_scripts_vector[ix]);
   const char*shellpath = curpstr.c_str();
   RPS_ASSERT(shellpath != nullptr);
+  RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "rps_run_one_script_file ix#" << ix
                 << " scriptpath=" << scriptpath
                 << " shellpath=" << shellpath
