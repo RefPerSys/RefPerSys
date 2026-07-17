@@ -31,6 +31,7 @@
 
 
 #include "refpersys.hh"
+#include <sys/resource.h>
 
 // comment for our do-scan-refpersys-pkgconfig.c utility
 //@@PKGCONFIG gmp
@@ -524,6 +525,44 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
                  Rps_ObjectRef obenv;);
   _f.obenv = rps_get_first_repl_environment();
+  {
+    struct rlimit rlcore;
+    rlcore.rlim_cur= (16<<30); //16Gbytes
+    rlcore.rlim_max= (32<<30); //32Gbytes
+    RPS_DEBUG_LOG(REPL, "setrlimit rlimit_core pid " << getpid());
+    if (setrlimit(RLIMIT_CORE, &rlcore))
+      RPS_FATALOUT("failed to set core limit (16Gb soft, 32Gb hard):"
+                   << strerror(errno));
+    else
+      RPS_INFORMOUT("did set core limit to 16Gb soft, 32Gb hard for pid "
+                    << getpid());
+  };
+  if (RPS_DEBUG_ENABLED(REPL) || RPS_DEBUG_ENABLED(LOW_REPL))
+  {
+    char lbuf[256];
+    FILE*flim = fopen("/proc/self/limits", "r");
+    if (!flim)
+      RPS_FATALOUT("failed to open /proc/self/limits " << strerror(errno));
+    RPS_INFORMOUT("our /proc/self/limits is (pid " << getpid() << "):");
+    do {
+      memset(lbuf, 0, sizeof(lbuf));
+      if (!fgets(lbuf, (int)sizeof(lbuf), flim))
+        break;
+      fputs(lbuf, stdout);
+    } while (!feof(flim));
+    fclose(flim);
+    fprintf(stdout, "###eof-limits (pid:%d) [%s:%d]\n", (int)getpid(),
+            __FILE__, __LINE__-1);
+    fflush(stdout);
+    snprintf(lbuf, sizeof(lbuf), "/bin/cat /proc/%d/limits",
+             (int)getpid());
+    fprintf(stdout, "*~* %s (%s:%d)\n", lbuf, __FILE__, __LINE__);
+    fflush(stdout);
+    int bad=system(lbuf);
+    if (bad)
+      RPS_WARNOUT("failed to run " << lbuf
+                  << " (got " << bad << ")");
+  }
   // rl_initialize always return 0 (in GNU libreadline)
   // see github.com/tpn/readline/blob/master/readline.c
   if (RPS_UNLIKELY(rl_initialize()))
