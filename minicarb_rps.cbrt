@@ -306,7 +306,7 @@ rps_minicarb_data_st::reset_carbdata(int lin)
   minicarb_d = 0.0;
   minicarb_str.erase();
   minicarb_ptr = nullptr;
-  minicarb_oid = nullptr;
+  minicarb_oid.clear_oid();
   minicarb_ob1 = nullptr;
   minicarb_ob2 = nullptr;
   minicarb_obdelim = nullptr;
