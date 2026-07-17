@@ -39,9 +39,11 @@ ulimit -S -m $[2 * 1024]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
 
+/bin/head -v -33 /proc/$$/limits
+
 echo running refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps --user-pref=. --batch --run-name=011sepminscript.bash
 
-./refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps --user-pref=. --batch --run-name=011sepminscript.bash
+exec ./refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps --user-pref=. --batch --run-name=011sepminscript.bash
 
 exit $?
 
