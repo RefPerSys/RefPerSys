@@ -6071,16 +6071,19 @@ protected:
 public:
   Rps_QuotedC_String(const char*str, int len= -1) :
     std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")),
-    qtc_empty(str==nullptr) {};
+    qtc_empty(str==nullptr||len==0) {};
   Rps_QuotedC_String(const std::string&str)
-    : std::string(str), qtc_empty(false) {};
+    : std::string(str), qtc_empty(str.empty()) {};
   Rps_QuotedC_String(const Rps_QuotedC_String&) = default;
   Rps_QuotedC_String(Rps_QuotedC_String&&) = default;
   ~Rps_QuotedC_String() = default;
   void output(std::ostream&out) const
   {
     if (qtc_empty)
-      out << "*null*";
+      out << "*Null*";
+    else if (empty() || size()==0) {
+      out << "*empty*";
+    }
     else
       {
         out << "\"";
