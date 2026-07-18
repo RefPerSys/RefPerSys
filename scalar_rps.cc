@@ -313,9 +313,10 @@ output_ubuf:
 void
 rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
 {
-  /// This is used thru rps_output_utf8_cjson
+  /// This is called by Rps_QuotedC_String::output...
   if (!str)
     return;
+  RPS_ASSERT(str != nullptr);
   if (bytlen<0)
     bytlen = strlen(str);
   RPS_POSSIBLE_BREAKPOINT();
