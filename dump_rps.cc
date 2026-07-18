@@ -1981,6 +1981,18 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
                 );
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
+  RPS_UNIQUE_BREAKPOINT();
+  std::string cwdpath;
+  {
+    // not very good, but in practice good enough before bootstrapping
+    // see https://softwareengineering.stackexchange.com/q/289427/40065
+    char cwdbuf[rps_path_byte_size];
+    memset(cwdbuf, 0, sizeof(cwdbuf));
+    if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+      RPS_FATAL("getcwd failed: %m");
+    cwdpath = std::string(cwdbuf);
+  }
+  RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_dump_into"));
@@ -2010,6 +2022,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
           RPS_INFORM("made directory %s to dump into", dirpath.c_str());
       }
   }
+  RPS_UNIQUE_BREAKPOINT();
   std::string realdirpath;
   {
     char* rp = realpath(dirpath.c_str(), nullptr);
@@ -2021,18 +2034,10 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
     realdirpath=rp;
     free (rp);
   }
-  std::string cwdpath;
-  {
-    // not very good, but in practice good enough before bootstrapping
-    // see https://softwareengineering.stackexchange.com/q/289427/40065
-    char cwdbuf[rps_path_byte_size];
-    memset(cwdbuf, 0, sizeof(cwdbuf));
-    if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
-      RPS_FATAL("getcwd failed: %m");
-    cwdpath = std::string(cwdbuf);
-  }
+  RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath
                 << " cwdpath=" << cwdpath);
+  RPS_UNIQUE_BREAKPOINT();
   /// ensure that realdirpath exists
   {
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
@@ -2049,7 +2054,9 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
                     ?"the loaded directory":"other directory")
                 << std::endl
                 << "… with temporary suffix "
-                << dumper.get_temporary_suffix());
+                << dumper.get_temporary_suffix()
+                << std::endl
+                << "… cwd=" << cwdpath);
   try
     {
       RPS_POSSIBLE_BREAKPOINT();
