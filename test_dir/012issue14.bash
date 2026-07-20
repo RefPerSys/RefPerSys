@@ -42,6 +42,6 @@ ulimit -S -f 32768
 [ -d $HOME/tmp/mytestdump ] && rm -rvf $HOME/tmp/mytestdump
 
 
-./refpersys --batch --chdir-after-load $HOME/tmp/ --dump mytestdump
+./refpersys --batch --chdir-after-load $HOME/tmp/ --dump mytestdump --run-name=012issue14
 
  ### end of file RefPerSys/test_dir/012issue14.bash
