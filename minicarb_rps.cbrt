@@ -317,7 +317,7 @@ rps_minicarb_data_st::reset_carbdata(int lin)
   minicarb_vleft = nullptr;
   minicarb_vright = nullptr;
   minicarb_vinst = nullptr;
-  minicarb_oid = nullptr;
+  minicarb_oid.clear_oid();
   memset (minicarb_chunk_prefix, 0, sizeof(minicarb_chunk_prefix));
   minicarb_vectval.clear();
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
