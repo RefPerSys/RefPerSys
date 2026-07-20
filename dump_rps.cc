@@ -1480,6 +1480,7 @@ Rps_Dumper::write_generated_data_file(void)
 #warning TODO: use symlinkat in Rps_Dumper::write_generated_data_file
   const char *bdataslash = strrchr(datapathstr.c_str(), '/');
   const char *bdata = bdataslash?(bdataslash+1):datapathstr.c_str();
+  RPS_UNIQUE_BREAKPOINT();
   if (symlink(bdata, gendatapathstr.c_str()))
     RPS_FATALOUT("failed to symlink " << gendatapathstr << " to "
                  << bdata
@@ -2077,28 +2078,45 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
           if (!std::filesystem::create_directories(realdirpath
               + "/generated"))
             {
+	      RPS_UNIQUE_BREAKPOINT();
               RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/generated:" << strerror(errno));
-              throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath + "/persistore");
+	      std::string errmsg
+		= std::string{"failed to make dump directory:"}
+	      + realdirpath + "/persistore";
+	      RPS_UNIQUE_BREAKPOINT();
+	      RPS_DEBUG_LOG(DUMP, "runtime error in rps_dump_into:"
+			    << errmsg);
+	      RPS_UNIQUE_BREAKPOINT();
+              throw std::runtime_error(errmsg);
             }
           else
             RPS_INFORMOUT("made real dump sub-directory: " << realdirpath
                           << "/generated");
         }
       dumper.scan_roots();
+      RPS_UNIQUE_BREAKPOINT();
       dumper.add_constants_known_from_RefPerSys_system();
+      RPS_UNIQUE_BREAKPOINT();
       dumper.scan_every_source_file_for_constants();
+      RPS_UNIQUE_BREAKPOINT();
       dumper.scan_loop_pass();
-      RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " start writing "
-                    << (rps_elapsed_real_time() - startelapsed) << " elapsed, "
+      RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath
+		    << " start writing "
+                    << (rps_elapsed_real_time() - startelapsed)
+		    << " elapsed, "
                     << (rps_process_cpu_time() - startcputime)
                     << " cpu seconds." << std::endl
                     << Rps_ShowCallFrame(&_));
       dumper.write_all_space_files();
+      RPS_UNIQUE_BREAKPOINT();
       dumper.write_all_generated_files();
+      RPS_UNIQUE_BREAKPOINT();
       dumper.write_manifest_file();
+      RPS_UNIQUE_BREAKPOINT();
       dumper.rename_opened_files();
       sync();
+      RPS_UNIQUE_BREAKPOINT();
       double endelapsed = rps_elapsed_real_time();
       double endcputime = rps_process_cpu_time();
       RPS_INFORMOUT("dump into " << dumper.get_top_dir()
@@ -2109,6 +2127,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
     }
   catch (const std::exception& exc)
     {
+      RPS_UNIQUE_BREAKPOINT();
       RPS_WARNOUT("failure in dump to " << dumper.get_top_dir()
                   << std::endl
                   << "… got exception of type "
