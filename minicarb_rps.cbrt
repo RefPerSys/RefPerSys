@@ -379,6 +379,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
 }
 
 %token LEX_INT LEX_LEFTPAREN LEX_RIGHTPAREN LEX_DOUBLE LEX_STRING
+%token LEX_PLUS LEX_MINUS LEX_ASTERISK LEX_SLASH
 %token LEX_SYMBOL LEX_NEW_SYMBOL
   /// Abhishek Chakravarti informally approved (whatsapp)
   /// keywords like !let. We hope for his email to forum@refpersys.org
@@ -952,6 +953,11 @@ LEX_NEW_SYMBOL: "@"[A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
 %grammar%
 %nt minicarbnt_input ///start symbol
 %nt minicarbnt_command
+%nt minicarbnt_expr
+%nt minicarbnt_term
+%nt minicarbnt_factor
+
+%type minicarbnt_expr: Rps_Value
 
 %type minicarbnt_input: int
 
@@ -1016,6 +1022,46 @@ minicarbnt_command: LEX_KW_ECHO LEX_CHUNK {
   RPS_INFORMOUT("!echo °chunk " << $1);
 }
 
+minicarbnt_expr: minicarbnt_expr LEX_PLUS minicarbnt_term  {
+  _Pragma("message \"incomplete expr : expr + term\"");
+  RPS_FATALOUT("incomplete expr + term");
+}
+
+minicarbnt_expr: minicarbnt_expr LEX_MINUS minicarbnt_term  {
+  _Pragma("message \"incomplete expr : expr - term\"");
+  RPS_FATALOUT("incomplete expr: expr - term");
+}
+  
+  
+minicarbnt_term: minicarbnt_factor    {
+  _Pragma("message \"incomplete term : factor\"");
+  RPS_FATALOUT("incomplete expr: expr - term");
+}
+minicarbnt_term: minicarbnt_term LEX_ASTERISK minicarbnt_factor      {
+  _Pragma("message \"incomplete term : term * factor\"");
+  RPS_FATALOUT("incomplete term : term * factor");
+}
+
+minicarbnt_term: minicarbnt_term LEX_SLASH minicarbnt_factor         {
+  _Pragma("message \"incomplete term : term / factor\"");
+  RPS_FATALOUT("incomplete term : term / factor");
+}
+  
+minicarbnt_factor: /*minicarbnt_value?*/  {
+  _Pragma("message \"incomplete factor : value?\"");
+  RPS_FATALOUT("incomplete factor : value");
+}
+
+minicarbnt_factor: LEX_MINUS minicarbnt_factor            {
+  _Pragma("message \"incomplete factor : - factor\"");
+  RPS_FATALOUT("incomplete factor : - factor");
+}
+
+minicarbnt_factor: LEX_LEFTPAREN minicarbnt_expr LEX_RIGHTPAREN {
+  _Pragma("message \"incomplete factor : ( expr )\"");
+  RPS_FATALOUT("incomplete factor : ( expr )");
+}
+
 minicarbnt_input: LEX_END {
   _Pragma("message \"input as eof\"");
   data_mc->check_carbdata_callframe(fram_mc);
@@ -1029,13 +1075,14 @@ minicarbnt_input: LEX_END {
 } // end minicarbnt_input as eof
 
 minicarbnt_input: minicarbnt_command minicarbnt_input  {
-  _Pragma("message \"input as command\"");
+  _Pragma("message \"input starting with command\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "input as command° "
+  RPS_DEBUG_LOG(LOW_REPL, "input starting with command° "
+                << RPS_FULL_BACKTRACE(1, "input starts w. command"));
+  RPS_DEBUG_LOG(REPL, "input starting with command° "
                 << RPS_FULL_BACKTRACE(1, "input as command"));
-  RPS_DEBUG_LOG(REPL, "input as command° "
-                << RPS_FULL_BACKTRACE(1, "input as command"));
+  $$ = $1 + 1;
 } // end minicarbnt_input as command
 
   //DONT: %prefix rps_minicarb_syn_
