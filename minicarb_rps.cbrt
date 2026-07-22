@@ -644,6 +644,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
 }
 
 <IN_CODE_CHUNK>: [\$\.] { // in code chunk a literal empty
+  // it might be used to end a metavariable name...
   _Pragma("message \"empty inside code chunk in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
@@ -1027,7 +1028,7 @@ minicarbnt_input: LEX_END {
   $$ = 0;
 } // end minicarbnt_input as eof
 
-minicarbnt_input: minicarbnt_command minicarbnt_input  LEX_END {
+minicarbnt_input: minicarbnt_command minicarbnt_input  {
   _Pragma("message \"input as command\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
