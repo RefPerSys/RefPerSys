@@ -2060,9 +2060,21 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
                 << "… cwd=" << cwdpath);
   try
     {
-      RPS_POSSIBLE_BREAKPOINT();
+      RPS_UNIQUE_BREAKPOINT();
       if (realdirpath != cwdpath)
         {
+	  RPS_UNIQUE_BREAKPOINT();
+	  if (access(realdirpath.c_str(), F_OK)) {
+	    RPS_UNIQUE_BREAKPOINT();
+	    int m = mkdir(realdirpath.c_str(), 0600);
+	    RPS_UNIQUE_BREAKPOINT();
+	    if (m)
+	      RPS_WARNOUT("failed to mkdir realdirpath="
+			  << realdirpath
+			  << " with cwd " << cwdpath
+			  << " " << strerror(errno));
+	  }
+	  RPS_UNIQUE_BREAKPOINT();
           if (!std::filesystem::create_directories(realdirpath
               + "/persistore"))
             {
