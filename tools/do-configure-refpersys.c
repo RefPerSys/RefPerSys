@@ -1266,9 +1266,12 @@ rpsconf_emit_configure_refpersys_mk (void)
     }
   else
     {
-      fprintf (f, "\n\n" "# the default preprocessor flags for RefPerSys:\n");
+      fprintf (f, "\n\n"
+	       "# the preprocessor flags for RefPerSys [%s:%d]:\n",
+	       __FILE__, __LINE__ - 1);
       fprintf (f, "REFPERSYS_PREPRO_FLAGS= -I/usr/local/include\n");
-    }
+    };
+
   //// emit the given or default compiler flags
   if (rpsconf_compiler_argcount > 0)
     {
