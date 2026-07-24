@@ -1764,7 +1764,8 @@ rpsconf_ask_carburetta (void)
 	    rpsconf_prog_name, pcmdbuf, __FILE__, __LINE__ - 1,
 	    RPSCONF_GIT_ID);
   fflush (NULL);
-  free (pcmdbuf), pcmdbuf == NULL;
+  free (pcmdbuf);
+  pcmdbuf = NULL;
   rpsconf_carburetta = realcarb;
 }				/* end rpsconf_ask_carburetta */
 
