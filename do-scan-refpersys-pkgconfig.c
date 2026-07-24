@@ -232,7 +232,7 @@ process_source_file (const char *origpath)
         {
           printf ("# source file %s with %d //@@PKGCONFIG comment lines\n",
                   pathbuf, nbpkg);
-          printf ("PKGLIST_%s=", my_naked_basename);
+          printf ("PKGLIST_%s += ", my_naked_basename);
           for (int i = 0; i < nbpkg; i++)
             {
               if (i > 0)
