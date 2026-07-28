@@ -4,7 +4,7 @@
 /// Description:
 ///     This file is part of the Reflective Persistent System.
 
-///      © Copyright 2024 The Reflective Persistent System Team
+///      © Copyright (C) 2024 - 2026 The Reflective Persistent System Team
 ///      team@refpersys.org & http://refpersys.org/
 ///
 
@@ -314,12 +314,12 @@ main (int argc, char **argv)
         memset (timbuf, 0, sizeof (timbuf));
         strftime (timbuf, sizeof (timbuf), "%Y-%b-%d %H:%M:%S %Z",
                   localtime (&nowt));
-        printf ("# generated at %s\n", timbuf);
-        printf ("PACKAGES_LIST=\n");
+        printf ("# generated at %s from [%s:%d]\n", timbuf, __FILE__, __LINE__);
       }
     };
   for (int i = (my_raw_mode?2:1); i < argc; i++)
     process_source_file (argv[i]);
+  printf("# end of generated packages dependencies\n");
   fflush (NULL);
   return 0;
 }       /* end function main */
