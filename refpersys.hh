@@ -147,6 +147,10 @@
 /// libssh2-1-dev package on Debian
 #include <libssh2.h>
 
+/// glibmm see gnome.pages.gitlab.gnome.org/glibmm/
+//@@PKGCONFIG glibmm-2.68
+#include <glibmm.h>
+
 /// libgmp-dev package on Debian (GNU multiprecision library, and its
 /// C++ wrapper)
 #include <gmpxx.h>
