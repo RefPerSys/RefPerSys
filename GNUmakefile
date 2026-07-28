@@ -4,6 +4,7 @@
 ##      This file is part of the Reflective Persistent System. refpersys.org
 ##
 ##      It is its GNUmakefile, for the GNU make automation builder.
+##      Linux systems are the prefered target (64 bits)
 ##
 ## Author(s):
 ##      Basile STARYNKEVITCH, 92340 Bourg-la-Reine, France,
@@ -52,6 +53,7 @@ RPS_ATSHARP := $(shell printf '@#')
 RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 # Carburetta is a parser generator on github.com/kingletbv/carburetta
 RPS_CARBURETTA := $(shell /usr/bin/which carburetta) #eg /usr/local/bin/carburetta
+
 # libpcodes.so is needed by GNU lightning libraries
 RPS_LIBOPCODES_DIR := $(shell /bin/dirname $$(/usr/bin/locate libopcodes.so | /bin/head -1))
 Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
@@ -110,8 +112,12 @@ REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
 
 -include $(REFPERSYS_CONFIG_MAKE)
 
+RPS_PKGCONFIG ?= $(shell /usr/bin/which pkg-config)
 REFPERSYS_CXX_STANDARD?= -std=gnu++2c
 REFPERSYS_CLANGXX?= clang++
+
+## packages in the pkg-config sense
+PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68
 
 ## Qt6 - see www.qt.io - provides a meta object compiler
 ## See also doc.qt.io/qt-6/moc.html
@@ -179,7 +185,7 @@ endif
 ## machine code generation) -it needs opcodes and bfd libraries
 
 ## Use libcurl, it is a web client library
-REFPERSYS_NEEDED_LIBRARIES= -llightning -lopcodes -lbfd -lgccjit \
+REFPERSYS_NEEDED_LIBRARIES=  -llightning -lopcodes -lbfd -lgccjit \
   -lunistring -lgmp -lcurl
 
 ### desired plugins (their basename under plugins_dir/)
@@ -508,6 +514,7 @@ __buildinfo.o: __buildinfo.c |GNUmakefile
 	$(CC) -std=gnu2x -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
 
 
+
 #was
 #refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
 #               $(REFPERSYS_DUMPED_CPP_OBJECTS) \
@@ -524,6 +531,7 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
 #	@echo RefPerSys dumped C++ object files $(REFPERSYS_DUMPED_CPP_OBJECTS)
 	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
+	@echo PACKAGES_REFPERSYS is $(PACKAGES_REFPERSYS)
 	@echo RPS_LTO is $(RPS_LTO)
 	@echo REFPERSYS_NEEDED_LIBRARIES is $(REFPERSYS_NEEDED_LIBRARIES)
 	@echo REFPERSYS_HUMAN_CPP_OBJECTS is $(REFPERSYS_HUMAN_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
@@ -531,8 +539,11 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
 	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) __buildinfo.o
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_GENERATED_CPP_OBJECTS)
+	@echo $@ PACKAGES_LIST is $(PACKAGES_LIST)
+	@echo $@ PACKAGES_REFPERSYS is $(PACKAGES_REFPERSYS)
+	@echo $@ packages --libs are  `pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)`
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
-	-@echo Linking $@ using \"RPS_LIBOPCODES_DIR=$(RPS_LIBOPCODES_DIR)\"
+	-@echo Linking $@ using \"RPS_LIBOPCODES_DIR=$(RPS_LIBOPCODES_DIR)\" with PACKAGES_LIST=$(PACKAGES_LIST)
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              -U_Rps_Linking \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
@@ -543,7 +554,7 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
              -U_Rps_LinkOptA -Wl,--export-dynamic -Wl,--rpath='$$ORIGIN:/lib/$(strip $(RPS_DEBARCH)):$(RPS_LIBOPCODES_DIR)' \
              -L/usr/local/lib -URps_LinkOptB -L$(RPS_LIBOPCODES_DIR) $(REFPERSYS_NEEDED_LIBRARIES) \
              $(REFPERSYS_LINKER_FLAGS) \
-             $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) \
+             -U_Rps_LinkPkgXX $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
              -ljsoncpp -lcurlpp -lINIReader -lreadline -ldl
 	-@echo Linked $@
 
@@ -583,6 +594,7 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\" -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX1 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 	    $(REFPERSYS_PLUGIN_SOURCE) -o $(REFPERSYS_PLUGIN_SHARED_OBJECT)
 
 plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
@@ -595,6 +607,7 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
 	    -DRPS_BASENAME=\"$(notdir $(basename $<))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+             -U_Rps_LinkPkgX2 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
 	    $^ -o $@
 
@@ -609,6 +622,7 @@ plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  r
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX3 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 	    $^ -o $@
 
 plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
@@ -622,6 +636,7 @@ plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedsele
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+             -U_Rps_LinkPkgX4 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 	    $^ -o $@
 
 plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
@@ -635,6 +650,7 @@ plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedatt
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+             -U_Rps_LinkPkgX5 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 	    $^ -o $@
 
 plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
@@ -648,6 +664,7 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX6 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 	    $^ -o $@
 
 
@@ -665,6 +682,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX7 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 	    $^ -o $@
 
 #- plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc refpersys.hh  |GNUmakefile refpersys
@@ -679,6 +697,7 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
 #-	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
 #-             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
 #-             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+#-             -U_Rps_LinkPkgX6 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 #- 	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc -o $@
 
 
@@ -697,6 +716,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
             -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX7 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
 	$< -o $@
 
 
@@ -780,7 +800,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
 		-U_Rps_LoadA \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
-	        $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+	        $(shell pkg-config --cflags $(PKGLIST_refpersys) $(PACKAGES_REFPERSYS)) \
                 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
@@ -811,7 +831,7 @@ load_rps.o: load_rps.cc refpersys.hh \
                -U_Rps_CompilFla $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 		-U_Rps_CompilP1 \
-	       -U_RpsCompilPkg $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+	       -U_RpsCompilPkg $(shell pkg-config --cflags $(PKGLIST_refpersys) $(PACKAGES_REFPERSYS)) \
                -U_Rps_CompilP2 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
