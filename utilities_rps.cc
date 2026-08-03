@@ -1152,6 +1152,19 @@ rps_early_initialization(int argc, char** argv)
     }
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
+  /// https://man.archlinux.org/man/elf_version.3.en
+  {
+    unsigned ev = elf_version(EV_CURRENT);
+    int l= __LINE__ -1;
+    if (ev == EV_NONE) {
+      int er= errno;
+      std::cerr << "RefPerSys git " << RPS_SHORTGITID
+		<< " failed to call elf_version in "
+		<< __FILE__ << ":" << l
+		<< " " << strerror(er) << std::endl;
+    }
+  }
+  errno = 0;
   if (!inside_emacs)
     {
       rps_stderr_istty = isatty(STDERR_FILENO);
