@@ -117,7 +117,7 @@ REFPERSYS_CXX_STANDARD?= -std=gnu++2c
 REFPERSYS_CLANGXX?= clang++
 
 ## packages in the pkg-config sense
-PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68
+PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68 libelf
 
 ## Qt6 - see www.qt.io - provides a meta object compiler
 ## See also doc.qt.io/qt-6/moc.html
@@ -185,8 +185,9 @@ endif
 ## machine code generation) -it needs opcodes and bfd libraries
 
 ## Use libcurl, it is a web client library
+## use also libelf (to analyze ELF binaries) https://directory.fsf.org/wiki/Libelf
 REFPERSYS_NEEDED_LIBRARIES=  -llightning -lopcodes -lbfd -lgccjit \
-  -lunistring -lgmp -lcurl
+  -lunistring -lgmp -lcurl -lelf
 
 ### desired plugins (their basename under plugins_dir/)
 ### Basile removed _rpsplug_gramrepl in sept. 2024

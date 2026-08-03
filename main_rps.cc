@@ -35,7 +35,8 @@
 #include "refpersys.hh"
 //@@PKGCONFIG glibmm-2.68
 #include "glibmm.h"
-
+//@@PKGCONFIG libelf
+#include "libelf.h"
 extern "C" const char rps_main_gitid[];
 const char rps_main_gitid[]= RPS_GITID;
 
