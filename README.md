@@ -63,6 +63,10 @@ with the RefPerSys engine. That `q6refpersys` has now (march 2026) its
 source code under `tools/`. It is a Qt6 based software communicating
 with the `refpersys` program.
 
+
+Perhaps some indian investors prefer cnsidering [github.com/bstarynk/yarefpersys](https://github.com/bstarynk/yarefpersys).
+
+
 ## A research project
 
 The Reflective Persistent System language is a **research project**,
