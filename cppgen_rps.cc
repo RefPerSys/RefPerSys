@@ -434,6 +434,8 @@ Rps_PayloadCplusplusGen::compute_include_priority(Rps_CallFrame*callerframe,
   std::lock_guard<std::recursive_mutex> gucurinclude(*_f.obcurinclude->objmtxptr());
   _f.obgenerator = owner();
   std::lock_guard<std::recursive_mutex> gugen(*_f.obgenerator->objmtxptr());
+  RPS_DEBUG_LOG(CODEGEN, "compute_include_priority generator=" << _f.obgenerator
+                << " obincl=" << _f.obcurinclude);
   {
     auto it = cppgen_includepriomap.find(_f.obcurinclude);
     if (it != cppgen_includepriomap.end())
@@ -532,6 +534,8 @@ Rps_PayloadCplusplusGen::add_cplusplus_include(Rps_CallFrame*callerframe,
                                           RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC)).as_object(); //"code_module"∈named_attribute;
   RPS_ASSERT(_f.obcurinclude);
   std::lock_guard<std::recursive_mutex> gucurinclude(*_f.obcurinclude->objmtxptr());
+  RPS_DEBUG_LOG(CODEGEN, "add_cplusplus_include generator=" << _f.obgenerator
+                << " obincl=" << _f.obcurinclude << " module=" << _f.obmodule);
   if (!_f.obcurinclude->is_instance_of(RPS_ROOT_OB(_0CQWWIMNvTH01h1bE0))) //cpp_include_file∈class
     {
       RPS_WARNOUT("in C++ generated module " << _f.obmodule
@@ -601,8 +605,11 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obmodule;
                 );
   _f.obgenerator = owner();
+  std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
   _f.obmodule = _f.obgenerator->get_attr1(&_,
                                           RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC)).as_object(); //"code_module"∈named_attribute;
+  RPS_ASSERT(_f.obmodule);
+  std::lock_guard<std::recursive_mutex> gumodule(*_f.obmodule->objmtxptr());
   RPS_DEBUG_LOG(CODEGEN,
                 "Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
                 " generator=" << _f.obgenerator
@@ -738,7 +745,10 @@ Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*calle
                  Rps_Value xtraresv;
                 );
   _f.obmodule = argobmodule;
+  RPS_ASSERT(_f.obmodule);
   _f.obgenerator = owner();
+  std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
+  std::lock_guard<std::recursive_mutex> gumodule(*_f.obmodule->objmtxptr());
   _f.initcppcomv = _f.obmodule->get_attr1(&_,
                                           RPS_ROOT_OB(_6QhoB1m97HC03kkKTa)  //"initial_cpp_comment"∈named_attribute
                                          );
