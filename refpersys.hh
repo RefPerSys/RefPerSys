@@ -170,8 +170,10 @@ extern "C" void rps_do_on_exit(std::function<void(void)>clos);
 
 extern "C" const char* rps_locale(void);
 
-
-/// keep the debug options in alphabetical order
+/// Each debug symbolic name can be used by RPS_DEBUG_LOG macro
+///
+/// Keep the debug options in alphabetical order in the list below
+///
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
   dbgmacro(CMD)                     \
   dbgmacro(CODEGEN)                 \
@@ -268,7 +270,6 @@ extern "C" int rps_get_major_version(void);
 extern "C" int rps_get_minor_version(void);
 #define RPS_MAJOR_VERSION_NUM 0
 #define RPS_MINOR_VERSION_NUM 7
-
 
 extern "C" std::map<std::string,std::string> rps_pluginargs_map;
 extern "C" std::string rps_cpluspluseditor_str;
@@ -395,7 +396,7 @@ extern "C" const char rps_plugin_builder[];
 /// In commit 92c6e6b70d2 of Feb, 8, 2024 we used to mention GNU bison and GPP
 /// GNU bison is a parser generator, see www.gnu.org/software/bison/
 /// GPP is a general purpose preprocessor, see logological.org/gpp
-/// we did had some constants in __timestamp.c related to them.
+/// we did had some constants in __buildinfo.c related to them.
 
 
 ///// a process running the GUI communicating using JSONRPC
@@ -429,6 +430,11 @@ extern "C" bool rps_syslog_enabled; /// --syslog option
 /// Provides miscellaneous runtime information for RefPerSys.
 ///
 
+
+extern "C" void rps_show_object_for_repl(Rps_CallFrame*,
+					 const Rps_ObjectRef,
+					 std::ostream*,
+					 unsigned); // in cmdrepl_rps.cc
 
 extern "C" const std::string rps_demangled_name(const char*name);
 

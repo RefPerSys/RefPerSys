@@ -10,8 +10,10 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ *
+ * Past indian authors (not more after summer 2026)
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2021 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -1086,11 +1088,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
 
 
 
-/***
- * The signature of this function was approved on whatsapp by Abhishek
- *  CHAKRAVARTI (India) on Fri July 7, 2023.
- *
- ** TODO: declare it in refpersys.hh
+/* TODO: declare it in refpersys.hh
  **/
 extern "C"
 void rps_show_object_for_repl(Rps_CallFrame*callerframe,
