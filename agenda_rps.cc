@@ -9,9 +9,10 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden        <niklasr@protonmail.com>
  *
  * past Indian authors:
- *      Abhishek Chakravarti, Nimesh Neema
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -86,8 +87,9 @@ Rps_Agenda::initialize(void)
   else
     agenda_timeout = 0.0;
   RPS_POSSIBLE_BREAKPOINT();
-  /// we cannot use RPS_FULL_BACKTRACE here
-  RPS_DEBUG_LOG(REPL, "Rps_Agenda::initialize agenda_timeout=" << agenda_timeout
+  /// we cannot use RPS_FULL_BACKTRACE here since called very early
+  RPS_DEBUG_LOG(REPL, "Rps_Agenda::initialize agenda_timeout="
+		<< agenda_timeout
                 << " curthr:" << rps_current_pthread_name());
 } // end Rps_Agenda::initialize
 
@@ -164,8 +166,10 @@ Rps_Agenda::add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet)
     return;
   std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
   agenda_fifo_[prio].push_back(obtasklet);
-  agenda_add_counter_.fetch_add(1);
+  unsigned long l = agenda_add_counter_.fetch_add(1);
   Rps_Agenda::agenda_changed_condvar_.notify_all();
+  RPS_DEBUG_LOG(AGENDA, "added in agenda tasklet#" << l << " "
+		<< obtasklet);
 } // end Rps_Agenda::add_tasklet
 
 
@@ -182,6 +186,8 @@ Rps_Agenda::fetch_tasklet_to_run(void)
         continue;
       res = curfifo.front();
       curfifo.pop_front();
+      RPS_DEBUG_LOG(AGENDA, "fetched taslket "
+		    << res << " from agenda prio#" << prio);
       return res;
     }
   return nullptr;
@@ -397,6 +403,7 @@ Rps_Agenda::do_garbage_collect(int ix, Rps_CallFrame*callframe)
 void
 rps_run_agenda_mechanism(int nbjobs)
 {
+  RPS_DEBUG_LOG(AGENDA, "run agenda nbjobs=" << nbjobs);
   using namespace std::chrono_literals;
   if (nbjobs < RPS_NBJOBS_MIN)
     RPS_FATALOUT("rps_run_agenda_mechanism: too little number of jobs "
@@ -449,11 +456,15 @@ rps_run_agenda_mechanism(int nbjobs)
           Rps_Agenda::agenda_thread_array_[ix].store(nullptr);
         }
     }
+  RPS_DEBUG_LOG(AGENDA, "end run_agenda_mechanism nbjobs=" << nbjobs
+		<< RPS_FULL_BACKTRACE(1, "run-agenda"));
 } // end of rps_run_agenda_mechanism
 
 void
 rps_stop_agenda_mechanism(void)
 {
+  RPS_DEBUG_LOG(AGENDA, "stop_agenda_mechanism "
+		<< RPS_FULL_BACKTRACE(1, "stop-agenda"));
   Rps_Agenda::agenda_is_running_.store(false);
   Rps_Agenda::agenda_changed_condvar_.notify_all();
 } // end of rps_stop_agenda_mechanism

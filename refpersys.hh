@@ -175,6 +175,7 @@ extern "C" const char* rps_locale(void);
 /// Keep the debug options in alphabetical order in the list below
 ///
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
+  dbgmacro(AGENDA)                  \
   dbgmacro(CMD)                     \
   dbgmacro(CODEGEN)                 \
   dbgmacro(COMPL_REPL)              \
