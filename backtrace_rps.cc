@@ -13,7 +13,7 @@
  *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
  *
  * Past indian authors:       (no more interested after summer 2026)
- *      Abhishek Chakravarti,    Nimesh Neema
+ *      (Abhishek Chakravarti,    Nimesh Neema)
  *
  *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -60,7 +60,8 @@ const char rps_backtrace_baseid[] = RPS_BASEID;
     abort();                                                    \
   } while(0)
 
-/// actually, in file main_rps.cc we have something like  asm volatile ("rps_end_of_main: nop");
+/// Actually, we have something like  asm volatile ("rps_end_of_main: nop");
+/// in file main_rps.cc
 extern "C" void rps_end_of_main(void);
 extern "C" int main(int, char**);
 
@@ -74,7 +75,7 @@ Rps_Backtracer::bt_error_method(const char*msg, int errnum)
   assert (msg != nullptr);
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   fprintf(stderr, "BackTrace Error [%s:%d] %s (#%d)",
-          __FILE__, __LINE__,
+          __FILE__, __LINE__-1,
           msg?msg:"???",
           errnum);
   fflush(nullptr);
@@ -105,9 +106,11 @@ Rps_Backtracer::output(std::ostream&outs)
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   if (&outs == &std::cerr || &outs == &std::clog)
-    backtr_ontty = rps_without_terminal_escape ? false : isatty(STDERR_FILENO);
+    backtr_ontty = rps_without_terminal_escape
+                   ? false : isatty(STDERR_FILENO);
   else if (&outs == &std::cout)
-    backtr_ontty = rps_without_terminal_escape ? false : isatty(STDOUT_FILENO);
+    backtr_ontty = rps_without_terminal_escape
+                   ? false : isatty(STDOUT_FILENO);
   backtr_todo = Todo::Do_Output;
   backtr_depth = 0;
   auto bk = bkind();
@@ -137,9 +140,11 @@ Rps_Backtracer::output(std::ostream&outs)
       backtr_todo = Todo::Do_Nothing;
       return;
     default:
-      RPS_FASTABORT("unexpected kind Rps_Backtracer::output kind=" << bkindname());
+      RPS_FASTABORT("unexpected kind Rps_Backtracer::output kind="
+                    << bkindname());
     }; // end switch bkind()
-  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::output end kind " << bkindname() << std::endl);
+  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::output end kind "
+                << bkindname() << std::endl);
 } // end Rps_Backtracer::output
 
 
@@ -169,7 +174,8 @@ Rps_Backtracer::print(FILE*outf)
       backtrace_full(rps_backtrace_common_state, backtr_skip,
                      backtrace_full_cb, backtrace_error_cb,
                      (void*)this);
-      std::ostringstream& fullout = std::get<FullOut_t>(this->backtr_variant);
+      std::ostringstream& fullout
+        = std::get<FullOut_t>(this->backtr_variant);
       RPS_ASSERT(fullout);
       fullout << std::flush;
       fputs(fullout.str().c_str(), outf);
@@ -184,9 +190,10 @@ Rps_Backtracer::print(FILE*outf)
       backtr_todo = Todo::Do_Nothing;
       return;
     default:
-      RPS_FASTABORT("unexpected Rps_Backtracer::print kind=" << bkindname());
+      RPS_FASTABORT("unexpected Rps_Backtracer::print kind="
+                    << bkindname());
     }; // end switch bkind();
-  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::print end kind " << bkindname() << std::endl);
+  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::print end kind " << bkindname());
 } // end Rps_Backtracer::print
 
 
@@ -234,14 +241,16 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
           int delta = pc - (uintptr_t) dif.dli_saddr;
           if (dif.dli_fname && strstr(dif.dli_fname, ".so"))
             filnamestr = std::string(basename(dif.dli_fname));
-          else if (dif.dli_fname && strstr(dif.dli_fname, rps_progname))
+          else if (dif.dli_fname
+                   && strstr(dif.dli_fname, rps_progname))
             filnamestr = std::string(basename(rps_progname));
           if (dif.dli_sname != nullptr)
             {
               if (dif.dli_sname[0] == '_')
                 {
                   int status = -1;
-                  demangled  = abi::__cxa_demangle(dif.dli_sname, nullptr, 0, &status);
+                  demangled  = abi::__cxa_demangle(dif.dli_sname,
+                                                   nullptr, 0, &status);
                   if (demangled && demangled[0])
                     funamestr = std::string (demangled);
                 };
@@ -321,6 +330,8 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
       else // dladdr failed
         {
           outs << " §:" << (void*)pc << '?' << std::flush;
+          /// We should not use dlerror here, since it is invalid when
+          /// the pc is not in a shared object.
         }
       return outs.str();
     } // endif perhaps legitimate pc
@@ -331,8 +342,8 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
 
 
 std::string
-Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclineno,
-                                      const char*pcfun)
+Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile,
+                                      int pclineno, const char*pcfun)
 {
   if (pc == 0)
     return "○"; //U+25CB WHITE CIRCLE
@@ -365,7 +376,8 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
       if (pcfun[0] == '_')
         {
           int status = -1;
-          const char*demangled =  abi::__cxa_demangle(pcfun, nullptr, 0, &status);
+          const char*demangled =
+            abi::__cxa_demangle(pcfun, nullptr, 0, &status);
           if (demangled && status==0)
             dempcfun = (char*) demangled;
         }
@@ -446,7 +458,7 @@ Rps_Backtracer::bkindname(void) const
     case Kind::FullClos_Kind:
       return "FullClos";
     }
-  char buf[32];
+  thread_local static char buf[32];
   memset(buf, 0, sizeof(buf));
   snprintf(buf, sizeof(buf), "?kind#%d?", (int)k);
   return buf;
@@ -467,7 +479,8 @@ Rps_Backtracer::boutput(void) const
     case Kind::FullOut_Kind:
       return backtr_outs;
     case Kind::FullClos_Kind:
-      RPS_WARNOUT("unimplemented Rps_Backtracer::boutput for kind #" << (int)bkind()
+      RPS_WARNOUT("unimplemented Rps_Backtracer::boutput for kind #"
+                  << (int)bkind()
                   << ":" << bkindname());
       return nullptr;
     }
@@ -697,4 +710,4 @@ Rps_Backtracer::~Rps_Backtracer()
 
 
 
-//////////////////////////////////////////////////////////////// eof backtrace_rps.cc
+/////////////////////////////////////////////// eof backtrace_rps.cc
