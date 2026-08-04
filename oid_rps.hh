@@ -177,7 +177,7 @@ public:
   Rps_Id (const std::string&str) : Rps_Id(str.c_str()) {};
   void to_cbuf24(char cbuf[/*24*/]) const;
   inline std::string to_string(void) const;
-  char* to_strduped(void) const;
+  const char* to_strduped(void) const;
 /// hashing, comparing, and equality testing operations on Rps_Id-s
   struct Hasher
   {

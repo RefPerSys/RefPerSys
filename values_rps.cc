@@ -83,13 +83,13 @@ Rps_Id::to_cbuf24(char cbuf[]) const
   while (pc>start);
 };        // end Rps_Id::to_cbuf24
 
-char*
+const char*
 Rps_Id::to_strduped(void) const {
   char cb[32];
   memset(cb, 0, sizeof(cb));
   to_cbuf24(cb);
   char* d = strdup(cb);
-  if (!d)
+  if (RPS_UNLIKELY(!d))
     RPS_FATALOUT("Rps_Id::to_strduped fail to strdup " << cb);
   return d;
 } // end Rps_Id::to_strduped
