@@ -10,8 +10,8 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      (no more Abhishek Chakravarti, Kolkota, India, in summer 2026)
+ *      (no more Nimesh Neema, India, in summer 2026)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -111,6 +111,7 @@ std::atomic<long> rps_debug_atomic_counter;
 const char*
 rps_get_proc_version(void)
 {
+  /// Our main function has read /proc/version into that buffer
   RPS_ASSERT(rps_buffer_proc_version[0] != (char)0);
   RPS_ASSERT(rps_buffer_proc_version[sizeof(rps_buffer_proc_version)-1]
              == (char)0);
