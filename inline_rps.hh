@@ -7,11 +7,13 @@
  *      It is its internal C++ header file for inlined functions.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France      <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden        <niklasr@protonmail.com>
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ * past indian authors (no more after summer 2026)
+ *      (Abhishek Chakravarti &  Nimesh Neema)
+ *
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
