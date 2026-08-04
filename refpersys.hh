@@ -8,8 +8,10 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France   <basile@starynkevitch.net>
- *      Abhishek Chakravarti, India    <abhishek@taranjali.org>
- *      Nimesh Neema, India            <nimeshneema@gmail.com>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ *
+ * Past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
