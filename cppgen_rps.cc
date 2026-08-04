@@ -9,9 +9,11 @@
  *      (using some ideas from arxiv.org/abs/1109.0779)
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net> (France)
- *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
- *      Nimesh Neema <nimeshneema@gmail.com> (India)
+ *      Basile Starynkevitch, France    <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden      <niklasr@protonmail.com>
+ *
+ * past Indian authors:
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -619,9 +621,10 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
   if (ssz > maximal_comment_size)
     {
       RPS_WARNOUT("too long C++ (" << ssz << "bytes) comment"
-                  " to emit generator=" << _f.obgenerator << ", module=" << _f.obmodule
-                  << std::endl <<
-                  RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/toolong"));
+                  " to emit generator=" << _f.obgenerator
+                  << ", module=" << _f.obmodule
+                  << std::endl
+                  << RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/toolong"));
       throw RPS_RUNTIME_ERROR_OUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment"
                                   << " generator=" << _f.obgenerator
                                   << " module=" << _f.obgenerator
@@ -723,11 +726,7 @@ Rps_PayloadCplusplusGen::emit_as_cplusplus_comment(Rps_CallFrame*callerframe,
           cppgen_outcod << eol_indent() << "****/" << eol_indent();
         }
     }
-#warning incomplete Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
-  RPS_WARNOUT("Rps_PayloadCplusplusGen::emit_as_cplusplus_comment generator=" << _f.obgenerator
-              << " module=" << _f.obgenerator
-              << " incomplete for str=" << Rps_QuotedC_String(str)
-              << std::endl << RPS_FULL_BACKTRACE(1,"emit_as_cplusplus_comment/incomplete"));
+#pragma message "emit_as_cplusplus_comment needs a code review"
 } // end Rps_PayloadCplusplusGen::emit_as_cplusplus_comment
 
 
@@ -980,6 +979,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                 );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
+#pragma message emit_cplusplus_declarations needs a review and a new selector
   // TODO: we need a selector to send some message related to C++ declaration emission
   //
   // it could happen that the components number of the module is
