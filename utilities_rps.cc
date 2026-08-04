@@ -9,8 +9,10 @@
  *
  * Author(s):
  *      Basile Starynkevitch (France) <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Niklas Rozencrantz (Sweden)   <niklasr@protonmail.com>
+ *
+ * past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -648,6 +650,9 @@ rps_print_types_info(void)
 ////////////////////////////////////////////////////////////////
 extern "C" void rps_show_version_handwritten_source_files(void);
 
+
+// Our rps_show_version_handwritten_source_file uses dlsym to query
+// some conventional constant strings in source files.
 static void rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int& nbshownfiles, bool&nl);
 
 void
@@ -659,14 +664,19 @@ rps_show_version_handwritten_source_files(void)
   bool nl= false;
   for (const char*const*curfileptr = rps_files;
        curfileptr && *curfileptr; curfileptr++)
-    nbsourcefiles++;
+    {
+      if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
+        nbsourcefiles++;
+    };
   RPS_INFORMOUT("showing versions of " << nbsourcefiles
-                << " handwritten source files (git " << rps_utilities_shortgitid
-                << " from " __FILE__ ")");
+                << " handwritten C++ source files (git "
+                << rps_utilities_shortgitid
+                << " from " __FILE__ << ":" << __LINE__ << ")");
   RPS_DEBUG_LOG(PROGARG, "starting " << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files/start"));
-  //// show gitid and date of individual handwritten *cc files, using dlsym
-  //// since every file like utilities_rps.cc has rps_utilities_gitid and rps_utilities_date
+  //// show gitid of individual handwritten *cc files, using dlsym
+  //// since every file like utilities_rps.cc has by our conventions a
+  //// constant named rps_utilities_gitid
   int curfilno=0;
   for (const char*const*curfileptr = rps_files;
        curfileptr && *curfileptr; curfileptr++)
@@ -893,10 +903,10 @@ rps_show_version(void)
             << rps_building_user_name
             << " of email " << rps_building_user_email << std::endl
             << "See refpersys.org and code on"
-	    << " github.com/RefPerSys/RefPerSys"
+            << " github.com/RefPerSys/RefPerSys"
             << std::endl;
   std::cout << "Compiled by " << rps_cxx_compiler_version
-	    << " as " << rps_cxx_compiler_realpath
+            << " as " << rps_cxx_compiler_realpath
             << std::endl
             << "with " << rps_cxx_compiler_flags
             << std::endl;
@@ -910,15 +920,15 @@ rps_show_version(void)
       std::cout << std::endl << " in: " << cwdbuf;
   };
   std::cout << std::endl << " C++ compiler: "
-	    << rps_cxx_compiler_version << std::endl
+            << rps_cxx_compiler_version << std::endl
             << " free software license: GPLv3+,"
-	    << " see www.gnu.org/licenses/gpl.html" << std::endl
-	    << " alternative license: LGPLv3+," 
-	    << " see www.gnu.org/licenses/lgpl-3.0.en.html," << std::endl
-	    << " other licence: CeCILL," 
-	    << " see cecill.info …" << std::endl
+            << " see www.gnu.org/licenses/gpl.html" << std::endl
+            << " alternative license: LGPLv3+,"
+            << " see www.gnu.org/licenses/lgpl-3.0.en.html," << std::endl
+            << " other licence: CeCILL,"
+            << " see cecill.info …" << std::endl
             << "+++++ there is NO WARRANTY,"
-	    << "to the extent permitted by law ++++" << std::endl
+            << "to the extent permitted by law ++++" << std::endl
             << "***** see also refpersys.org *****" << std::endl
             << "and github.com/RefPerSys/RefPerSys commit "
             << rps_shortgitid
@@ -933,7 +943,7 @@ rps_show_version(void)
 /// macros.
 char *
 rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
-			  double tm)
+                          double tm)
 {
   if (!bfr || !fmt || len<4)
     return nullptr;
@@ -985,14 +995,14 @@ rps_extend_env(void)
   putenv(pidenv);     // e.g. REFPERSYS_PID=2345
   static char shortgitenv[64];
   snprintf(shortgitenv, sizeof(shortgitenv), "REFPERSYS_SHORTGITID=%s",
-	   rps_shortgitid);
+           rps_shortgitid);
   putenv(shortgitenv);  // e.g. REFPERSYS_SHORTGITID=49466057bf7d+
   static char gitenv[128];
   snprintf(gitenv, sizeof(gitenv), "REFPERSYS_GITID=%s", rps_gitid);
   putenv(gitenv);  // e.g. REFPERSYS_GITID=494...90+ with 40 hexdigit
   static char topdirenv[384];
   snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s",
-	   rps_topdirectory);
+           rps_topdirectory);
   putenv(topdirenv); // e.g. REFPERSYS_TOPDIR=$HOME/work/RefPerSys/
   if (!rps_fifo_prefix.empty())
     {
@@ -1035,13 +1045,13 @@ rps_check_mtime_files(void)
       if (wrp < curpathstr.size())
         continue;
       std::string curfullpathstr=
-	std::string{rps_topdirectory} + "/" + curpathstr;
+        std::string{rps_topdirectory} + "/" + curpathstr;
       struct stat curstat = {};
       if (stat(curfullpathstr.c_str(), &curstat))
         {
           RPS_WARNOUT("rps_check_mtime_files: stat "
-		      << curfullpathstr << " failed: "
-		      << strerror(errno));
+                      << curfullpathstr << " failed: "
+                      << strerror(errno));
           continue;
         };
       if (curstat.st_mtime > (time_t) nowtim
@@ -1065,7 +1075,7 @@ rps_check_mtime_files(void)
       FILE* ftemp = fopen(tempmakefileout, "w");
       if (!ftemp)
         RPS_FATALOUT("failed to open temporary make output "
-		     << tempmakefileout);
+                     << tempmakefileout);
       fprintf(ftemp, "# postponed temporary make output %s for...\n"
               "#... refpersys run %s from %s:%d\n",
               tempmakefileout, rps_run_name.c_str(), __FILE__, __LINE__);
@@ -1156,13 +1166,14 @@ rps_early_initialization(int argc, char** argv)
   {
     unsigned ev = elf_version(EV_CURRENT);
     int l= __LINE__ -1;
-    if (ev == EV_NONE) {
-      int er= errno;
-      std::cerr << "RefPerSys git " << RPS_SHORTGITID
-		<< " failed to call elf_version in "
-		<< __FILE__ << ":" << l
-		<< " " << strerror(er) << std::endl;
-    }
+    if (ev == EV_NONE)
+      {
+        int er= errno;
+        std::cerr << "RefPerSys git " << RPS_SHORTGITID
+                  << " failed to call elf_version in "
+                  << __FILE__ << ":" << l
+                  << " " << strerror(er) << std::endl;
+      }
   }
   errno = 0;
   if (!inside_emacs)
