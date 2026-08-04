@@ -8,9 +8,11 @@
  *      See also morevalues_rps.cc file
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France      <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden        <niklasr@protonmail.com>
+
+ * past indian authors
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -81,6 +83,16 @@ Rps_Id::to_cbuf24(char cbuf[]) const
   while (pc>start);
 };        // end Rps_Id::to_cbuf24
 
+char*
+Rps_Id::to_strduped(void) const {
+  char cb[32];
+  memset(cb, 0, sizeof(cb));
+  to_cbuf24(cb);
+  char* d = strdup(cb);
+  if (!d)
+    RPS_FATALOUT("Rps_Id::to_strduped fail to strdup " << cb);
+  return d;
+} // end Rps_Id::to_strduped
 
 /// opposite conversion from cbuf to oid
 Rps_Id::Rps_Id (const char*cbuf, const char**pend, bool *pok) : Rps_Id ()

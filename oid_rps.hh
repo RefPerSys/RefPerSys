@@ -8,11 +8,13 @@
  *
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France       <basile@starynkevitch.net>
+ *      Niklas Rozencrants, Sweden         <niklasr@protonmail.com>
  *
- *      © Copyright (C) 2019 - 2025 The Reflective Persistent System Team
+ * past indian authors:
+ *      (Abhishek Chakravarti & Nimesh Neema)
+ *
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -174,7 +176,8 @@ public:
   Rps_Id (const char*buf, const char**pend=nullptr, bool *pok=nullptr);
   Rps_Id (const std::string&str) : Rps_Id(str.c_str()) {};
   void to_cbuf24(char cbuf[/*24*/]) const;
-  inline std::string to_string() const;
+  inline std::string to_string(void) const;
+  char* to_strduped(void) const;
 /// hashing, comparing, and equality testing operations on Rps_Id-s
   struct Hasher
   {
