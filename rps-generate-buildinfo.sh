@@ -150,6 +150,8 @@ printf "const char rps_cxx_compiler_version[]=\"%s\";\n" "$($CXX --version | /bi
 
 printf "const char rps_cxx_compiler_flags[]=\"%s\";\n" "$CXXFLAGS"
 
+printf "// the GPP preprocessor from https://logological.org/gpp\n"
+printf "// probably could be less needed at end of 2026\n"
 printf "const char rps_gpp_preprocessor_command[]=\"%s\";\n" $GPP
 
 printf "const char rps_gpp_preprocessor_realpath[]=\"%s\";\n" $(realpath $GPP)
