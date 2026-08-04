@@ -16,7 +16,6 @@ is not a goal (unless funded and contributed) in 2026.
 Contributions to *RefPerSys* are welcome. Contact by email
 [Basile STARYNKEVITCH](http://starynkevitch.net/Basile/) (near Paris, France)
 at `basile@starynkevitch.net` and `b.starynkevitch@gmail.com`
-or Abhishek Chakravarti (Kolkata, India) at `chakravarti.avishek@gmail.com`.
 Basile can also be contacted
 by snail mail (8 rue de la Faïencerie, 92340 Bourg-la-Reine, France)
 or (on French office hours) by Whatapp to +33 6 8501 followed by
@@ -265,18 +264,15 @@ This free software project is
         homepage http://starynkevitch.net/Basile/
                 near Paris, France. So usual timezone `TZ=MEST`
 
- *      Abhishek Chakravarti <ack@fifthestate.co.in>
-        Kolkata, India
-
- *      Nimesh Neema <nimeshneema@gmail.com>
- 
  *      Niklas Rozencrantz in Stockholm, Sweden.
 
 Some files might be "borrowed" from other similar GPLv3+ licensed
 projects (notably from [Bismon](http://github.com/bstarynk/bismon)...)
 and could retain their original copyright owner.
 
-## Contributing
+Nimesh Neema and Abhishek Chakravarti expressed in the past some
+interest (and both live in India) but are no more contributing after
+august 2026. 
 
 Please ask, by email, the above RefPerSys team for C++ coding
 conventions before starting non-trivial contributions to the C++
@@ -835,8 +831,10 @@ We should list other libraries interesting for us here, just in case (to avoid f
 
 ## some contributors
 
-Thanks to Niklas Rosencrantz (Sweden) (he is `montao` on github) for several contributions.
-Thanks to Abhishek Chkravarti (India) (he is `achakravarti` on github) for several contributions.
+Thanks to Niklas Rosencrantz (Sweden) (he is `montao` on github) for
+several contributions.  Thanks to Abhishek Chkravarti (India) (he is
+`achakravarti` on github) for several past contributions. (he is no
+more interested in august 2026).
 
 Other contributors, please email `basile@starynkevitch.net` about you.
 
