@@ -9,10 +9,12 @@
  *      anymore in Feb. 2024 (after commit 5b20c981b9e)
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
- *     with help from Niklas Rozencrantz (Sweden)
+ *      Basile Starynkevitch, France    <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ *
+ * Past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
+ *
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/

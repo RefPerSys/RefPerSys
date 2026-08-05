@@ -5,12 +5,18 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the parser support for the Read Eval Print Loop
+ *      It has some parser support for [some] Read Eval Print Loop
+ *      Our repl_rps.cc has alternative code, see also carburetta.com
+ *      based lexers+parsers in carbrepl_rps.cbrt and
+ *      minicarb_rps.cbrt.
+ *      (yes, messy code in summer 2026)
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France    <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ *
+ * Past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
