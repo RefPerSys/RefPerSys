@@ -1731,7 +1731,8 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  _FirstPayloadType= -24,
+  _FirstPayloadType= -25,
+  PaylCurlReq = -25,
   PaylLightCodeGen = -24,
   PaylMachlearn = -23,
   PaylCplusplusGen = -22,    // for C++ code generation
