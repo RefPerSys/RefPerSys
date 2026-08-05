@@ -13,10 +13,10 @@
  *      toolkit) the tools/qt6refpersys.cc file
  *
  * Author(s):
- *      Basile Starynkevitch, France <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
- *      Niklaus Rozencrantz <niklasr@protonmail.com>
+ *      Basile Starynkevitch, France     <basile@starynkevitch.net>
+ *      Niklaus Rozencrantz, Sweden      <niklasr@protonmail.com>
+ * former indian authors:
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2022 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
