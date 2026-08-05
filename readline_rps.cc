@@ -52,8 +52,8 @@ const char rps_readline_baseid[]= RPS_BASEID;
 void
 rps_readline_initialize(void)
 {
-  RPS_WARNOUT("unimplemented rps_readline_initialize "
-              << RPS_FULL_BACKTRACE(1, "readline/init"));
+  RPS_WARNOUT("unimplemented rps_readline_initialize");
+  // We cannot use our RPS_FULL_BACKTRACE here!
 #warning need to implement rps_readline_initialize
 } // end rps_readline_initialize
 
