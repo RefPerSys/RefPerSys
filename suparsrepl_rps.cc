@@ -10,12 +10,16 @@
  *      (moved some code from parsrepl_rps.cc to here in july 2023)
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France       <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ * Past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
+ *
+ * Related (messy) code in carbrepl_rps.cbrt, cmdrepl_rps.cc,
+ * repl_rps.cc, minicarb_rps.cc.  Needs cleanup.
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify
@@ -52,7 +56,7 @@ void
 rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr)
 {
   /// added to facilitate gdb debugging and breakpoints....
-  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
+  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
   ///
   RPS_DEBUG_PRINTF_AT(fil,lin,REPL,"§ParsReplFailing#%d: %s", cnt, failstr.c_str());
   /// added to facilitate gdb debugging....
