@@ -10,7 +10,7 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France       <basile@starynkevitch.net>
- *      Niklas Rosencrantz, Sweden         <niklasro@gmail.com>>
+ *      Niklas Rozencrantz, Sweden         <niklasro@gmail.com>>
  *
  * former indian contributors:
  *      (Abhishek Chakravarti,  Nimesh Neema)
