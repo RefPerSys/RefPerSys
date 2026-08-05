@@ -10,9 +10,10 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
- *      Niklas Rozencrantz
+ *      Niklas Rozencrantz, Sweden         <niklasr@protonmail.com>
+ *
+ * past indian contributors:
+ *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2020 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -30,6 +31,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Details:
+ *
+ * The routine to compute (at get time) a magic attribute has as
+ * prefix 'rpsget' (named RPS_GETTERFUN_PREFIX) followed by the oid of
+ * that attribute; the signature of that getting routine is
+ * rps_magicgetterfun_t (in refpersys.hh)
  ******************************************************************************/
 
 #include "refpersys.hh"

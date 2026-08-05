@@ -3646,11 +3646,12 @@ extern "C" bool rps_repl_stopped;
 //////////////////////////////////////////////////////////// object zones
 
 
-/// magic getter C++ functions
+/// magic getter C++ functions (to get obattr from value val)
 typedef Rps_Value rps_magicgetterfun_t(Rps_CallFrame*callerframe, const Rps_Value val, const Rps_ObjectRef obattr);
 #define RPS_GETTERFUN_PREFIX "rpsget"
-// by convention, the extern "C" getter function inside fictuous attribute
-// _3kVHiDzT42h045vHaB would be named rpsget_3kVHiDzT42h045vHaB
+// by our convention, the extern "C" getter function inside fictuous
+// attribute _3kVHiDzT42h045vHaB would be named
+// rpsget_3kVHiDzT42h045vHaB
 
 // application C++ functions
 // the applied closure is in field cfram_clos of the caller frame.
