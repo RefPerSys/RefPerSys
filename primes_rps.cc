@@ -6,12 +6,12 @@
  *      This file is part of the Reflective Persistent System.
  *
  *      It has some array of primes and functions to get a prime
- *      above, or less, than some given number.  Some parts have been
- *      computer generated.
+ *      above, or less, than some given integral number.  Some parts
+ *      have been computer generated.  Prime numbers are useful
+ *      e.g. in hash functions...
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      <https://refpersys.gitlab.io> and refpersys.org
