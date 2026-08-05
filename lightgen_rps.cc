@@ -7,11 +7,20 @@
  *
  *      It has the code for machine code generation using GNU
  *      lightning.  See also https://www.gnu.org/software/lightning/
+ *      GNU lighning generates quickly "slow" machine code.  In
+ *      contrast libgccjit wraps the GCC compiler and can generate
+ *      slowly optimized (and dlopen-able) shared libraries. And our
+ *      cppgen_rps.cc is generating C++ code -which could be even git
+ *      managed under generated/ directory, to be compiled by GCC or
+ *      maybe Clang/LLVM C++ compilers.  See also our libgccjit_rps.cc
+ *      companion file.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France   <basile@starynkevitch.net>
+ *      Niklas Rosencrantz, Sweden     <niklasro@gmail.com>
+ *
+ * past indian contributors:
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
