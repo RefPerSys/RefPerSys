@@ -9,9 +9,9 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France       <basile@starynkevitch.net>
- *      Niklas Rozencrants, Sweden         <niklasr@protonmail.com>
+ *      Niklas Rozencrantz, Sweden         <niklasr@protonmail.com>
  *
- * past indian authors:
+ * past indian contributors:
  *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
