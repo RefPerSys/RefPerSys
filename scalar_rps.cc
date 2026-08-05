@@ -7,9 +7,11 @@
  *      Implementation related to scalar values (and strings)
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France       <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ *
+ * Past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -556,4 +558,4 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
   return std::string();
 } // end rps_glob_plain_file_path
 
-//////////////////////////////////////////////// end of file scalar_rps.cc
+///////////////////////////////////////// end of file scalar_rps.cc
