@@ -433,9 +433,9 @@ extern "C" bool rps_syslog_enabled; /// --syslog option
 
 
 extern "C" void rps_show_object_for_repl(Rps_CallFrame*,
-					 const Rps_ObjectRef,
-					 std::ostream*,
-					 unsigned); // in cmdrepl_rps.cc
+    const Rps_ObjectRef,
+    std::ostream*,
+    unsigned); // in cmdrepl_rps.cc
 
 extern "C" const std::string rps_demangled_name(const char*name);
 
@@ -1366,15 +1366,15 @@ rps_timer_cpu_elapsed(const rps_timer *hnd)
 #define RPS_POSSIBLE_BREAKPOINT() RPS_POSSIBLE_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
 
 /// sometimes we need a unique breakpoint
-#define RPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {		\
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");	\
-    asm volatile ("__" RPS_BASENAME "_brk_" #Lin "_c" #Cnt	\
-		  ": nop; nop\n");				\
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");	\
-    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");	\
+#define RPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt) do {    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+    asm volatile ("__" RPS_BASENAME "_brk_" #Lin "_c" #Cnt  \
+      ": nop; nop\n");        \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop;\n");  \
  } while(0)
 
-#define RPS_UNIQUE_BREAKPOINT_AT_BIS(Fil,Lin,Cnt)	\
+#define RPS_UNIQUE_BREAKPOINT_AT_BIS(Fil,Lin,Cnt) \
   RPS_UNIQUE_BREAKPOINT_AT(Fil,Lin,Cnt)
 
 #define RPS_UNIQUE_BREAKPOINT() \
@@ -2500,6 +2500,9 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb)
 
 extern "C" void rps_forbid_garbage_collection(void);
 extern "C" void rps_allow_garbage_collection(void);
+extern "C" void rps_garbage_collection_set_verbose(void);
+extern "C" void rps_garbage_collection_set_silent(void);
+extern "C" bool rps_garbage_collection_is_verbose(void);
 
 /* Our top level function to call the garbage collector; the optional
    argument C++ std::function is marking more local data, e.g. calling
@@ -2510,9 +2513,13 @@ extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* 
 class Rps_GarbageCollector
 {
   friend void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun);
+  friend void rps_garbage_collection_set_silent(void);
+  friend void rps_garbage_collection_set_verbose(void);
+  friend bool rps_garbage_collection_is_verbose(void);
   static unsigned constexpr _gc_magicnum_ = 0xdae21691;  // 3672250001
   static std::atomic<Rps_GarbageCollector*> gc_this_;
   static std::atomic<uint64_t> gc_count_;
+  static std::atomic<bool> gc_verbose_;
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   std::atomic<bool> gc_running;
@@ -2991,8 +2998,8 @@ extern "C" void rps_do_carburetta_command(Rps_CallFrame*callerframe,
     Rps_ObjectRef obenvarg,
     Rps_TokenSource*tksrc);
 extern "C" void rps_do_minicarb_command(Rps_CallFrame*callerframe,
-    Rps_ObjectRef obenvarg,
-    Rps_TokenSource*tksrc);
+                                        Rps_ObjectRef obenvarg,
+                                        Rps_TokenSource*tksrc);
 extern "C" void rps_do_carburetta_tokensrc(Rps_CallFrame*callerframe,
     Rps_ObjectRef obenvarg,
     Rps_TokenSource*tksrc);
@@ -3055,7 +3062,9 @@ public:
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public: //////
   const char* token_source_line_buffer(void) const
-  { return toksrc_lincbuf; };
+  {
+    return toksrc_lincbuf;
+  };
   void set_token_source_object(Rps_ObjectRef obj)
   {
     std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
@@ -3299,7 +3308,7 @@ private:
 };                              // end Rps_TokenSource
 
 #define _RPS_DISPTOKSRCCURLIN_COUNTED(Tksrc, Cnt)  \
-  Rps_Do_Output([&](std::ostream&out##Cnt) {		 \
+  Rps_Do_Output([&](std::ostream&out##Cnt) {     \
     (Tksrc)->display_current_line_with_cursor(out##Cnt); \
   })
 
@@ -6095,9 +6104,10 @@ public:
   {
     if (qtc_empty)
       out << "*Null*";
-    else if (empty() || size()==0) {
-      out << "*empty*";
-    }
+    else if (empty() || size()==0)
+      {
+        out << "*empty*";
+      }
     else
       {
         out << "\"";

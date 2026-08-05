@@ -5,12 +5,14 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the garbage collector and some code related to call frames.
+ *      It has the code for the garbage collector and some code related
+ *      to call frames (inspected by our precise GC)
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *
+ * past indian authors:
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -50,6 +52,7 @@ const char rps_garbcoll_baseid[]= RPS_BASEID;
 
 std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this_;
 std::atomic<uint64_t> Rps_GarbageCollector::gc_count_;
+std::atomic<bool> Rps_GarbageCollector::gc_verbose_;
 
 Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
   gc_mtx(), gc_running(false), gc_magic(_gc_magicnum_),
@@ -140,6 +143,24 @@ rps_allow_garbage_collection(void)
   rps_gc_forbidden.store(false);
 } // end rps_allow_garbage_collection
 
+void
+rps_garbage_collection_set_verbose(void)
+{
+  Rps_GarbageCollector::gc_verbose_ = true;
+} // end rps_garbage_collection_verbose
+
+bool
+rps_garbage_collection_is_verbose(void)
+{
+  return Rps_GarbageCollector::gc_verbose_;
+} // end rps_garbage_collection_is_verbose
+
+void
+rps_garbage_collection_set_silent(void)
+{
+  Rps_GarbageCollector::gc_verbose_ = false;
+} // end rps_garbage_collection_silent
+
 /* The top level function to call the garbage collector; the optional
    argument C++ std::function is marking more local data, e.g. calling
    Rps_ObjectRef::gc_mark or Rps_Value::gc_mark or some
@@ -161,22 +182,25 @@ rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
   // moving garbage collector might want to allocate some RefPerSys
   // data but would be forbidden to run its garbage collector for a
   // short time.
+  bool verbgc = rps_garbage_collection_is_verbose();
+  auto gcnt = Rps_GarbageCollector::gc_count_.load();
   RPS_ASSERT(Rps_GarbageCollector::gc_this_.load() == nullptr);
+  if (verbgc)
+    RPS_INFORM("rps_garbage_collect before run; count#%ld",
+               gcnt);
   Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
   {
     if (pfun)
       (*pfun)(gc);
   });
-  auto gcnt = Rps_GarbageCollector::gc_count_.load();
-  RPS_INFORM("rps_garbage_collect before run; count#%ld",
-             gcnt);
   the_gc.run_gc();
   auto nbroots = the_gc.nb_roots();
-  RPS_INFORM("rps_garbage_collect completed; count#%ld, %ld roots, %ld scans,"
-             " %ld marks, %ld deletions, real %.3f, cpu %.3f sec",
-             gcnt, (long) nbroots, (long)(the_gc.nb_scans()),
-             (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
-             the_gc.elapsed_time(), the_gc.process_time());
+  if (verbgc)
+    RPS_INFORM("rps_garbage_collect completed; count#%ld, %ld roots, %ld scans,"
+               " %ld marks, %ld deletions, real %.3f, cpu %.3f sec",
+               gcnt, (long) nbroots, (long)(the_gc.nb_scans()),
+               (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
+               the_gc.elapsed_time(), the_gc.process_time());
 } // end of rps_garbage_collect
 
 void
