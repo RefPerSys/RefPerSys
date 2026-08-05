@@ -9,10 +9,11 @@
  *      lightning.  See also https://www.gnu.org/software/lightning/
  *      GNU lighning generates quickly "slow" machine code.  In
  *      contrast libgccjit wraps the GCC compiler and can generate
- *      slowly optimized (and dlopen-able) shared libraries. And our
- *      cppgen_rps.cc is generating C++ code -which could be even git
- *      managed under generated/ directory, to be compiled by GCC or
- *      maybe Clang/LLVM C++ compilers.  See also our libgccjit_rps.cc
+ *      slowly optimized (and dlopen-able and with DWARF debugging
+ *      information) shared libraries. And our cppgen_rps.cc is
+ *      generating C++ code -which could be even git managed under
+ *      generated/ directory, to be compiled by GCC or maybe
+ *      Clang/LLVM C++ compilers.  See also our libgccjit_rps.cc
  *      companion file.
  *
  * Author(s):
