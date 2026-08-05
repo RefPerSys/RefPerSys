@@ -10,9 +10,10 @@
  *      https://github.com/open-source-parsers/jsoncpp/
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France         <basile@starynkevitch.net>
+ *
+ * old indian contributors
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -551,7 +552,8 @@ Rps_Dumper::scan_code_addr(const void*ad)
 {
   /**
    * If we wanted to be more efficient, we should parse the
-   * pseudo-file /proc/self/maps at start of dump. See
+   * pseudo-file /proc/self/maps at start of dump, perhaps making some
+   * std::map or other container from it.... See
    * http://man7.org/linux/man-pages/man5/proc.5.html for more....
    **/
   if (!ad)
