@@ -170,6 +170,8 @@ extern "C" void rps_do_on_exit(std::function<void(void)>clos);
 
 extern "C" const char* rps_locale(void);
 
+extern "C" void rps_readline_initialize(void); // for GNU readline
+
 /// Each debug symbolic name can be used by RPS_DEBUG_LOG macro
 ///
 /// Keep the debug options in alphabetical order in the list below
@@ -565,6 +567,7 @@ extern "C" int rps_nbjobs;
 #define RPS_NBJOBS_MAX 24
 
 
+extern "C" bool rps_stdin_istty;
 extern "C" bool rps_stdout_istty;
 extern "C" bool rps_stderr_istty;
 

@@ -10,8 +10,7 @@
  *
  * Author(s):
  *      Basile Starynkevitch, France <basile@starynkevitch.net>
- *      (no more Abhishek Chakravarti, Kolkota, India, in summer 2026)
- *      (no more Nimesh Neema, India, in summer 2026)
+ *      no more indians: (Abhishek Chakravarti & Nimesh Neema) summer 2026
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -540,6 +539,7 @@ bool rps_daemonized = false;
 bool rps_without_quick_tests = false;
 bool rps_test_repl_lexer = false;
 bool rps_syslog_enabled = false;
+bool rps_stdin_istty = false;
 bool rps_stdout_istty = false;
 bool rps_stderr_istty = false;
 
@@ -1862,7 +1862,8 @@ main (int argc, char** argv)
                 << (rps_batch?"batch":"interactive")
                 << " git " << rps_shortgitid
                 << " pid#" << getpid());
-  if (!rps_batch)
+  if (!rps_batch) {
+  }
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
   RPS_POSSIBLE_BREAKPOINT();

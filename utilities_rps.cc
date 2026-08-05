@@ -1178,15 +1178,20 @@ rps_early_initialization(int argc, char** argv)
   errno = 0;
   if (!inside_emacs)
     {
+      rps_stdin_istty = isatty(STDIN_FILENO);
       rps_stderr_istty = isatty(STDERR_FILENO);
       rps_stdout_istty = isatty(STDOUT_FILENO);
       std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
+                << " "<< (rps_stdin_istty?"tty stdin":"plain stdin")
                 << " "<< (rps_stderr_istty?"tty stderr":"plain stderr")
                 << " "<< (rps_stdout_istty?"tty stdout":"plain stdout")
                 << " " << __FILE__ << ":" << __LINE__ << std::endl;
+      if (rps_stdin_istty && rps_stdout_istty)
+	rps_readline_initialize();
     }
   else   ////// called inside emacs
     {
+      rps_stdin_istty = false;  // INSIDE_EMACS
       rps_stderr_istty = false; // INSIDE_EMACS
       rps_stdout_istty = false; // INSIDE_EMACS
       std::cout << "since INSIDE_EMACS is " << inside_emacs
