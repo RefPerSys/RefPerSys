@@ -8,9 +8,11 @@
  *      Low-level implementation of transient objects and payloads
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France       <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ *
+ * Past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
  *
  *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
