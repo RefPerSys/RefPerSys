@@ -9,11 +9,12 @@
  *      https:///curl.haxx.se/libcurl/
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France    <basile@starynkevitch.net>
  *
- *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ * past indian contributors
+ *      (Abhishek Chakravarti, Nimesh Neema)
+ *
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -63,6 +64,47 @@ const char rps_curl_baseid[] = RPS_BASEID;
 
 
 
+class Rps_PayloadCurlRequest : public Rps_Payload
+{
+  curlpp::Easy _curlreq;
+  friend Rps_PayloadCurlRequest*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadCurlRequest,Rps_ObjectZone*>(Rps_ObjectZone*);
+public:
+  Rps_PayloadCurlRequest (Rps_ObjectZone*owner);
+  Rps_PayloadCurlRequest(Rps_ObjectRef obr) :
+    Rps_PayloadCurlRequest(obr?obr.optr():nullptr) {};
+  curlpp::Easy* curl_easy_req(void)
+  {
+    return &_curlreq;
+  };
+  virtual const std::string payload_type_name(void) const
+  {
+    return "curl_easy_request";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+  virtual ~Rps_PayloadCurlRequest();
+}; // end Rps_PayloadCurlRequest
+
+
+Rps_PayloadCurlRequest::Rps_PayloadCurlRequest(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylCurlReq,owner),
+    _curlreq()
+{
+#warning incomplete Rps_PayloadCurlRequest::Rps_PayloadCurlRequest
+} // end of Rps_PayloadCurlRequest::Rps_PayloadCurlRequest
+
+
+Rps_PayloadCurlRequest::~Rps_PayloadCurlRequest()
+{
+} // end Rps_PayloadCurlRequest::~Rps_PayloadCurlRequest
+
 std::string
 rps_curl_version(void)
 {
@@ -103,10 +145,12 @@ rps_curl_publish_me(const char*url)
   /// parse our $HOME/.gitconfig for name and email
   {
     std::string path_gitconf= std::string(homedir) + "/.gitconfig";
-    RPS_DEBUG_LOG(REPL, "rps_curl_publish_me path_gitconf=" << path_gitconf);
+    RPS_DEBUG_LOG(REPL, "rps_curl_publish_me path_gitconf="
+                  << path_gitconf);
     FILE* fgitconf = fopen(path_gitconf.c_str(),  "r");
     if (!fgitconf)
-      RPS_FATALOUT("failed to fopen git configure file " << path_gitconf.c_str() << ':' << strerror(errno));
+      RPS_FATALOUT("failed to fopen git configure file "
+                   << path_gitconf.c_str() << ':' << strerror(errno));
     char linbuf[128];
     do
       {
@@ -118,7 +162,8 @@ rps_curl_publish_me(const char*url)
         if (eol)
           *eol = (char)0;
         int col = 0;
-        if ((col=-1), sscanf(curline, " name = %n", &col) >= 0 && col > 1 && gitname.empty())
+        if ((col=-1), sscanf(curline, " name = %n", &col) >= 0
+            && col > 1 && gitname.empty())
           gitname = std::string(curline + col);
         else if ((col= -1), sscanf(curline, " email = %n", &col) >= 0
                  && col>1 && gitemail.empty())
