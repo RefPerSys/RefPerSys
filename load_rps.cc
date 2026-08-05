@@ -10,9 +10,11 @@
  *      https://github.com/open-source-parsers/jsoncpp/
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France      <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden        <niklasr@protonmail.com>
+ *
+ * past indian contributors:
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
