@@ -133,6 +133,7 @@
 #include <wordexp.h>
 #include <glob.h>
 
+
 /// GNU libunistring handles UTF-8 and Unicode (and UTF-8 is the only
 /// encoding accepted)
 #include <unistr.h>
@@ -3348,6 +3349,18 @@ public:
   virtual void display(std::ostream&out) const;
 };             // end Rps_CinTokenSource
 
+class Rps_ReadlineTokenSource : public Rps_TokenSource
+{ // implemented in readline_rps.cc
+public:
+  virtual void fill_current_line_buffer(void);
+  virtual void output(std::ostream&out, unsigned depth,
+                      unsigned maxdepth) const;
+  Rps_ReadlineTokenSource();
+  virtual ~Rps_ReadlineTokenSource();
+  virtual bool get_line(void);
+  virtual bool reached_end(void) const;
+  virtual void display(std::ostream&out) const;
+};             // end Rps_ReadlineTokenSource
 
 class Rps_StreamTokenSource : public Rps_TokenSource
 {

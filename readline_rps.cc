@@ -88,4 +88,62 @@ rps_readline_esc(int cnt, int key)
   return 0;
 } // end rps_readline_esc
 
+class Rps_ReadlineTokenSource  : public Rps_TokenSource
+{ // implemented in readline_rps.cc
+public:
+  virtual void fill_current_line_buffer(void);
+  virtual void output(std::ostream&out, unsigned depth,
+                      unsigned maxdepth) const;
+  Rps_ReadlineTokenSource();
+  virtual ~Rps_ReadlineTokenSource();
+  virtual bool get_line(void);
+  virtual bool reached_end(void) const;
+  virtual void display(std::ostream&out) const;
+};             // end Rps_ReadlineTokenSource
+
+void
+Rps_ReadlineTokenSource::fill_current_line_buffer(void)
+{
+#warning unimplemented Rps_ReadlineTokenSource::fill_current_line_buffer
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented Readline fill_current_line_buffer @"
+	       << (void*)this);
+} // end Rps_ReadlineTokenSource::fill_current_line_buffer
+
+
+void
+Rps_ReadlineTokenSource::output(std::ostream&out, unsigned depth,
+                      unsigned maxdepth) const
+{
+    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+    if (depth > maxdepth && &out != &std::cout &&
+        &out != &std::cerr && &out != &std::clog)
+      RPS_WARNOUT("Rps_ReadlineTokenSource " << name()
+                  << " depth=" << depth
+                  << " greater than maxdepth=" << maxdepth);
+    out << "ReadlineTokenSource:" << name() << ".S#" << unique_number()
+        << '@' << position_str() << " tok.cnt:" << token_count();
+}; // end Rps_ReadlineTokenSource::output
+
+#warning lots of missing code for Rps_ReadlineTokenSource
+void
+Rps_ReadlineTokenSource::Rps_ReadlineTokenSource
+  : Rps_TokenSource(std::string{"*readline*"})
+{
+} // end Rps_ReadlineTokenSource::Rps_ReadlineTokenSource
+
+
+
+Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource()
+{
+} // end Rps_ReadlineTokenSource destructor
+
+
+
+
+bool
+Rps_ReadlineTokenSource::get_line(void) const
+{
+  return false;
+}
 /// end of readline_rps.cc
