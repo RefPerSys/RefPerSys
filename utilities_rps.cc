@@ -668,7 +668,8 @@ rps_show_version_handwritten_source_files(void)
       if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
         nbsourcefiles++;
     };
-  RPS_INFORMOUT("showing versions of " << nbsourcefiles
+  RPS_INFORMOUT("showing versions " << std::endl
+                << " of " << nbsourcefiles
                 << " handwritten C++ source files (git "
                 << rps_utilities_shortgitid
                 << " from " __FILE__ << ":" << __LINE__ << ")");
@@ -732,14 +733,16 @@ void
 rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int &nbshownfiles, bool&nl)
 {
   //// notice that RPS_FULL_BACKTRACE cannot be used here....
-  RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
+  RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno
+                << " =" << Rps_Cjson_String(curfile)
                 << " curbase=" <<  Rps_Cjson_String(curbase));
   int lencurbase=strlen(curbase);
   /// Human written source files (not scripts) are *_rps.* and dont start with underscores.
   if (curbase[0]=='_' || lencurbase<6)
     {
       /// by convention basenames starting with an underscore are generated
-      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno<< " =" << Rps_Cjson_String(curfile)
+      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno
+                    << " =" << Rps_Cjson_String(curfile)
                     << " skipping curbase=" << Rps_Cjson_String(curbase));
       return;
     }
@@ -798,10 +801,12 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
     if (!symshortgit || !isalnum(symshortgit[0]))
       return;
     if (symgit && symshortgit
-        && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2))
+        && strncmp(symgit, symshortgit,
+                   sizeof(rps_utilities_shortgitid)-2))
       {
         /// this should not happen and is likely a bug in C++ files or build procedure
-        RPS_WARNOUT("perhaps corrupted " << curfile << " in topdir " << rps_topdirectory
+        RPS_WARNOUT("perhaps corrupted " << curfile
+                    << " in topdir " << rps_topdirectory
                     << " with " << cursymgit << "=" << symgit
                     << " and " << cursymshortgit << "=" << symshortgit);
         RPS_POSSIBLE_BREAKPOINT();
@@ -1182,12 +1187,12 @@ rps_early_initialization(int argc, char** argv)
       rps_stderr_istty = isatty(STDERR_FILENO);
       rps_stdout_istty = isatty(STDOUT_FILENO);
       std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
-                << " "<< (rps_stdin_istty?"tty stdin":"plain stdin")
-                << " "<< (rps_stderr_istty?"tty stderr":"plain stderr")
-                << " "<< (rps_stdout_istty?"tty stdout":"plain stdout")
-                << " " << __FILE__ << ":" << __LINE__ << std::endl;
+                << ", "<< (rps_stdin_istty?"tty stdin":"plain stdin")
+                << ", "<< (rps_stderr_istty?"tty stderr":"plain stderr")
+                << ", "<< (rps_stdout_istty?"tty stdout":"plain stdout")
+                << ", " << __FILE__ << ":" << __LINE__ << std::endl;
       if (rps_stdin_istty && rps_stdout_istty)
-	rps_readline_initialize();
+        rps_readline_initialize();
     }
   else   ////// called inside emacs
     {
@@ -1201,11 +1206,15 @@ rps_early_initialization(int argc, char** argv)
     };
   if (uname (&rps_utsname))
     {
-      fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
-              (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
+      fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s):"
+                      " %s\n", rps_progname,
+              (int) getpid(), rps_hostname(), __FILE__, __LINE__,
+              RPS_SHORTGITID,
               strerror(errno));
-      syslog(LOG_ERR,  "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
-             (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
+      syslog(LOG_ERR,  "%s: pid %d on %s failed to uname (%s:%d git %s):"
+                       " %s\n", rps_progname,
+             (int) getpid(), rps_hostname(), __FILE__, __LINE__,
+             RPS_SHORTGITID,
              strerror(errno));
       exit(EXIT_FAILURE);
     };
@@ -1220,7 +1229,9 @@ rps_early_initialization(int argc, char** argv)
     if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
       strcpy(cwdbuf, "./");
     rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
-    std::cout << std::endl << "** STARTING RefPerSys git " << rps_shortgitid << " on " << rps_hostname() << " pid#" << getpid()
+    std::cout << std::endl << "** STARTING RefPerSys git "
+              << rps_shortgitid << " on " << rps_hostname()
+              << " pid#" << getpid() << std::endl
               << " in " << cwdbuf << " at " << tmbfr << std::endl;
   }
   /// handle early a debug flag request
