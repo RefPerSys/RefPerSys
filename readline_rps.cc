@@ -54,7 +54,26 @@ extern "C" int rps_readline_esc(int, int);
 
 
 /// probably the readline prompt should be in a static buffer?
-static char rps_readline_prompt[32];
+static char rps_readline_buf_prompt[64];
+static std::mutex rps_readline_mtx_prompt;
+
+void
+rps_readline_set_prompt(const char*p)
+{
+  std::lock_guard<std::mutex> gu(rps_readline_mtx_prompt);
+  memset(rps_readline_buf_prompt, 0, sizeof(rps_readline_buf_prompt));
+  if (!p)
+    return;
+  RPS_ASSERT(strlen(p) < sizeof(rps_readline_buf_prompt));
+  strncpy(rps_readline_buf_prompt, p, sizeof(rps_readline_buf_prompt));
+} // end rps_readline_set_prompt
+
+const std::string
+rps_readline_fetch_string_prompt(void)
+{
+  std::lock_guard<std::mutex> gu(rps_readline_mtx_prompt);
+  return std::string(rps_readline_buf_prompt);
+} // end rps_readline_fetch_prompt
 
 /// initialization function called early
 void
