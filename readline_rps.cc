@@ -52,6 +52,10 @@ const char rps_readline_baseid[]= RPS_BASEID;
 extern "C" int rps_readline_tab(int, int);
 extern "C" int rps_readline_esc(int, int);
 
+
+/// probably the readline prompt should be in a static buffer?
+static char rps_readline_prompt[32];
+
 /// initialization function called early
 void
 rps_readline_initialize(void)
@@ -70,7 +74,7 @@ rps_readline_tab(int cnt, int key)
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(rl_line_buffer);
   RPS_ASSERT(key=='\t');
-  if (rl_point <= 0)		// first column
+  if (rl_point <= 0)    // first column
     return 1;
 #warning incomplete rps_readline_tab
   return 0;
@@ -82,24 +86,11 @@ rps_readline_esc(int cnt, int key)
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(rl_line_buffer);
   RPS_ASSERT(key=='\e');
-  if (rl_point <= 0)		// first column
+  if (rl_point <= 0)    // first column
     return 1;
 #warning incomplete rps_readline_esc
   return 0;
 } // end rps_readline_esc
-
-class Rps_ReadlineTokenSource  : public Rps_TokenSource
-{ // implemented in readline_rps.cc
-public:
-  virtual void fill_current_line_buffer(void);
-  virtual void output(std::ostream&out, unsigned depth,
-                      unsigned maxdepth) const;
-  Rps_ReadlineTokenSource();
-  virtual ~Rps_ReadlineTokenSource();
-  virtual bool get_line(void);
-  virtual bool reached_end(void) const;
-  virtual void display(std::ostream&out) const;
-};             // end Rps_ReadlineTokenSource
 
 void
 Rps_ReadlineTokenSource::fill_current_line_buffer(void)
@@ -107,43 +98,70 @@ Rps_ReadlineTokenSource::fill_current_line_buffer(void)
 #warning unimplemented Rps_ReadlineTokenSource::fill_current_line_buffer
   RPS_UNIQUE_BREAKPOINT();
   RPS_FATALOUT("unimplemented Readline fill_current_line_buffer @"
-	       << (void*)this);
+               << (void*)this);
 } // end Rps_ReadlineTokenSource::fill_current_line_buffer
 
 
 void
 Rps_ReadlineTokenSource::output(std::ostream&out, unsigned depth,
-                      unsigned maxdepth) const
+                                unsigned maxdepth) const
 {
-    std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-    if (depth > maxdepth && &out != &std::cout &&
-        &out != &std::cerr && &out != &std::clog)
-      RPS_WARNOUT("Rps_ReadlineTokenSource " << name()
-                  << " depth=" << depth
-                  << " greater than maxdepth=" << maxdepth);
-    out << "ReadlineTokenSource:" << name() << ".S#" << unique_number()
-        << '@' << position_str() << " tok.cnt:" << token_count();
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  if (depth > maxdepth && &out != &std::cout &&
+      &out != &std::cerr && &out != &std::clog)
+    RPS_WARNOUT("Rps_ReadlineTokenSource " << name()
+                << " depth=" << depth
+                << " greater than maxdepth=" << maxdepth);
+  out << "ReadlineTokenSource:" << name() << ".S#" << unique_number()
+      << '@' << position_str() << " tok.cnt:" << token_count();
 }; // end Rps_ReadlineTokenSource::output
 
-#warning lots of missing code for Rps_ReadlineTokenSource
-void
-Rps_ReadlineTokenSource::Rps_ReadlineTokenSource
+
+Rps_ReadlineTokenSource::Rps_ReadlineTokenSource()
   : Rps_TokenSource(std::string{"*readline*"})
 {
+  static std::atomic_int cnt;
+  RPS_ASSERT(cnt==0);
+  RPS_UNIQUE_BREAKPOINT();
+  cnt++;
 } // end Rps_ReadlineTokenSource::Rps_ReadlineTokenSource
 
 
 
 Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource()
 {
+  RPS_UNIQUE_BREAKPOINT();
 } // end Rps_ReadlineTokenSource destructor
 
 
 
 
 bool
-Rps_ReadlineTokenSource::get_line(void) const
+Rps_ReadlineTokenSource::get_line(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  RPS_UNIQUE_BREAKPOINT();
+#warning Rps_ReadlineTokenSource::get_line unimplemented
+  // TODO: use readline()
+  starting_new_input_line();
+  return true;
+} // end Rps_ReadlineTokenSource::get_line
+
+bool
+Rps_ReadlineTokenSource::reached_end(void) const
+{
+#warning Rps_ReadlineTokenSource::reached_end unimplemented
   return false;
-}
+} // end Rps_ReadlineTokenSource::reached_end
+
+void
+Rps_ReadlineTokenSource::display(std::ostream&out) const
+{
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  output(out, 0, Rps_Value::debug_maxdepth);
+  out << std::endl;
+  if (reached_end())
+    out <<  "°";
+} // end Rps_ReadlineTokenSource::display
+
 /// end of readline_rps.cc
