@@ -65,6 +65,12 @@ rps_readline_set_prompt(const char*p)
   if (!p)
     return;
   RPS_ASSERT(strlen(p) < sizeof(rps_readline_buf_prompt));
+  if (u8_check((const uint8_t*)p, strlen(p)))
+    {
+      RPS_UNIQUE_BREAKPOINT();
+      RPS_WARNOUT("invalid UTF8 string " << (char*)p);
+      return;
+    };
   strncpy(rps_readline_buf_prompt, p, sizeof(rps_readline_buf_prompt));
 } // end rps_readline_set_prompt
 
