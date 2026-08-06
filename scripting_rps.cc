@@ -563,12 +563,6 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
       RPS_WARNOUT("failed to run " << lbuf
                   << " (got " << bad << ")");
   }
-  // rl_initialize always return 0 (in GNU libreadline)
-  // see github.com/tpn/readline/blob/master/readline.c
-  if (RPS_UNLIKELY(rl_initialize()))
-    RPS_FATALOUT("rps_run_script_minicarb_mode ix=" << ix
-                 << " tsrc=" << tsrc
-                 << " failed to rl_initialize");
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
   RPS_DEBUG_LOG(LOW_REPL, "rps_run_script_minicarb_mode clp="
@@ -593,8 +587,6 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
               << RPS_OBJECT_DISPLAY(_f.obenv)
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_script_minicarb_mode"));
-  RPS_POSSIBLE_BREAKPOINT();
-  rps_do_minicarb_command(&_, _f.obenv, &tsrc);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "end°°rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
