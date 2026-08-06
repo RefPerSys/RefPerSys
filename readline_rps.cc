@@ -12,7 +12,7 @@
  *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
  *
  *
- *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
+ *      © Copyright (C) 2026 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -49,12 +49,43 @@ const char rps_readline_basename[]= RPS_BASENAME;
 extern "C" const char rps_readline_baseid[];
 const char rps_readline_baseid[]= RPS_BASEID;
 
+extern "C" int rps_readline_tab(int, int);
+extern "C" int rps_readline_esc(int, int);
+
+/// initialization function called early
 void
 rps_readline_initialize(void)
 {
-  RPS_WARNOUT("unimplemented rps_readline_initialize");
-  // We cannot use our RPS_FULL_BACKTRACE here!
-#warning need to implement rps_readline_initialize
+  rl_readline_name = "refpersys";
+  rl_initialize();
+  rl_bind_key('\t', rps_readline_tab);
+  rl_bind_key('\e', rps_readline_esc);
+  RPS_INFORMOUT("readline initialized " << rl_library_version);
+#warning incomplete rps_readline_initialize
 } // end rps_readline_initialize
+
+int
+rps_readline_tab(int cnt, int key)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(rl_line_buffer);
+  RPS_ASSERT(key=='\t');
+  if (rl_point <= 0)		// first column
+    return 1;
+#warning incomplete rps_readline_tab
+  return 0;
+} // end rps_readline_tab
+
+int
+rps_readline_esc(int cnt, int key)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(rl_line_buffer);
+  RPS_ASSERT(key=='\e');
+  if (rl_point <= 0)		// first column
+    return 1;
+#warning incomplete rps_readline_esc
+  return 0;
+} // end rps_readline_esc
 
 /// end of readline_rps.cc
