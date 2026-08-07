@@ -84,7 +84,8 @@ Rps_Id::to_cbuf24(char cbuf[]) const
 };        // end Rps_Id::to_cbuf24
 
 const char*
-Rps_Id::to_strduped(void) const {
+Rps_Id::to_strduped(void) const
+{
   char cb[32];
   memset(cb, 0, sizeof(cb));
   to_cbuf24(cb);

@@ -89,7 +89,7 @@ Rps_Agenda::initialize(void)
   RPS_POSSIBLE_BREAKPOINT();
   /// we cannot use RPS_FULL_BACKTRACE here since called very early
   RPS_DEBUG_LOG(REPL, "Rps_Agenda::initialize agenda_timeout="
-		<< agenda_timeout
+                << agenda_timeout
                 << " curthr:" << rps_current_pthread_name());
 } // end Rps_Agenda::initialize
 
@@ -169,7 +169,7 @@ Rps_Agenda::add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet)
   unsigned long l = agenda_add_counter_.fetch_add(1);
   Rps_Agenda::agenda_changed_condvar_.notify_all();
   RPS_DEBUG_LOG(AGENDA, "added in agenda tasklet#" << l << " "
-		<< obtasklet);
+                << obtasklet);
 } // end Rps_Agenda::add_tasklet
 
 
@@ -187,7 +187,7 @@ Rps_Agenda::fetch_tasklet_to_run(void)
       res = curfifo.front();
       curfifo.pop_front();
       RPS_DEBUG_LOG(AGENDA, "fetched taslket "
-		    << res << " from agenda prio#" << prio);
+                    << res << " from agenda prio#" << prio);
       return res;
     }
   return nullptr;
@@ -457,14 +457,14 @@ rps_run_agenda_mechanism(int nbjobs)
         }
     }
   RPS_DEBUG_LOG(AGENDA, "end run_agenda_mechanism nbjobs=" << nbjobs
-		<< RPS_FULL_BACKTRACE(1, "run-agenda"));
+                << RPS_FULL_BACKTRACE(1, "run-agenda"));
 } // end of rps_run_agenda_mechanism
 
 void
 rps_stop_agenda_mechanism(void)
 {
   RPS_DEBUG_LOG(AGENDA, "stop_agenda_mechanism "
-		<< RPS_FULL_BACKTRACE(1, "stop-agenda"));
+                << RPS_FULL_BACKTRACE(1, "stop-agenda"));
   Rps_Agenda::agenda_is_running_.store(false);
   Rps_Agenda::agenda_changed_condvar_.notify_all();
 } // end of rps_stop_agenda_mechanism

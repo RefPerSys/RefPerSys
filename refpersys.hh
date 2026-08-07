@@ -3353,7 +3353,8 @@ extern "C" void rps_readline_set_prompt(const char*p);
 extern "C" const std::string rps_readline_fetch_string_prompt(void);
 
 class Rps_ReadlineTokenSource : public Rps_TokenSource
-{ // implemented in readline_rps.cc
+{
+  // implemented in readline_rps.cc
 public:
   virtual void fill_current_line_buffer(void);
   virtual void output(std::ostream&out, unsigned depth,

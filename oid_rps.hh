@@ -171,7 +171,11 @@ public:
     std::swap(_id_lo, oth._id_lo);
     return *this;
   };
-  void clear_oid(void) { _id_hi=0; _id_lo=0; };
+  void clear_oid(void)
+  {
+    _id_hi=0;
+    _id_lo=0;
+  };
   Rps_Id () : Rps_Id((uint64_t)0, (uint32_t)0) {};
   Rps_Id (const char*buf, const char**pend=nullptr, bool *pok=nullptr);
   Rps_Id (const std::string&str) : Rps_Id(str.c_str()) {};

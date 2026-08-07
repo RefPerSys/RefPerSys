@@ -88,7 +88,7 @@ const char rps_lightgen_baseid[]= RPS_BASEID;
 ////////////////////////////////////////////////////////////////
 
 
-extern "C" void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz, 
+extern "C" void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz,
     Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
 
 /// temporary payload for GNU lightning code generation:
@@ -160,7 +160,7 @@ public:
         num = numit->second;
         RPS_ASSERT(num>0);
         RPS_ASSERT(lightg_num2nod_map.find(num)
-		   != lightg_num2nod_map.end());
+                   != lightg_num2nod_map.end());
         return num;
       };
     num = (lightnodenum_t)(nbnod+1);
@@ -179,7 +179,7 @@ public:
       {
         nd = numit->second;
         RPS_ASSERT(lightg_nod2num_map.find(nd)
-		   != lightg_nod2num_map.end());
+                   != lightg_nod2num_map.end());
       }
     return nd;
   };            // end rpsjit_node_of_num
@@ -194,7 +194,7 @@ public:
       {
         num = nodit->second;
         RPS_ASSERT(lightg_num2nod_map.find(num)
-		   != lightg_num2nod_map.end());
+                   != lightg_num2nod_map.end());
       }
     return num;
   };
@@ -225,9 +225,9 @@ Rps_PayloadLightningCodeGen::~Rps_PayloadLightningCodeGen()
       RPS_ASSERT(curjnod != nullptr);
       RPS_ASSERT(curnum > 0);
       {
-	auto altit = lightg_num2nod_map.find(curnum);
-	RPS_ASSERT(altit != lightg_num2nod_map.end());
-	RPS_ASSERT(altit->second == curjnod);
+        auto altit = lightg_num2nod_map.find(curnum);
+        RPS_ASSERT(altit != lightg_num2nod_map.end());
+        RPS_ASSERT(altit->second == curjnod);
       }
     };
   lightg_nod2num_map.clear();
@@ -249,18 +249,19 @@ Rps_PayloadLightningCodeGen::dump_scan(Rps_Dumper*du) const
   RPS_POSSIBLE_BREAKPOINT();
   if (!lightg_jist)
     return;
-  for (auto it: lightg_nod2num_map) {
-    jit_node* jnod = it.first;
-    lightnodenum_t num = it.second;
-    RPS_ASSERT(jnod != nullptr);
-    RPS_ASSERT(num>0);
+  for (auto it: lightg_nod2num_map)
     {
-      auto altit = lightg_num2nod_map.find(num);
-      RPS_ASSERT(altit != lightg_num2nod_map.end());
-      RPS_ASSERT(altit->second == jnod);
-    }
+      jit_node* jnod = it.first;
+      lightnodenum_t num = it.second;
+      RPS_ASSERT(jnod != nullptr);
+      RPS_ASSERT(num>0);
+      {
+        auto altit = lightg_num2nod_map.find(num);
+        RPS_ASSERT(altit != lightg_num2nod_map.end());
+        RPS_ASSERT(altit->second == jnod);
+      }
 #warning missing code in loop of Rps_PayloadLightningCodeGen::dump_scan
-  };
+    };
 } // end Rps_PayloadLightningCodeGen::dump_scan
 
 void
@@ -271,21 +272,22 @@ Rps_PayloadLightningCodeGen::dump_json_content(Rps_Dumper*du, Json::Value&jv) co
   RPS_POSSIBLE_BREAKPOINT();
   if (!lightg_jist)
     return;
-  for (auto it: lightg_nod2num_map) {
-    jit_node* jnod = it.first;
-    lightnodenum_t num = it.second;
-    RPS_ASSERT(jnod != nullptr);
-    RPS_ASSERT(num>0);
+  for (auto it: lightg_nod2num_map)
     {
-      auto altit = lightg_num2nod_map.find(num);
-      RPS_ASSERT(altit != lightg_num2nod_map.end());
-      RPS_ASSERT(altit->second == jnod);
-    }
+      jit_node* jnod = it.first;
+      lightnodenum_t num = it.second;
+      RPS_ASSERT(jnod != nullptr);
+      RPS_ASSERT(num>0);
+      {
+        auto altit = lightg_num2nod_map.find(num);
+        RPS_ASSERT(altit != lightg_num2nod_map.end());
+        RPS_ASSERT(altit->second == jnod);
+      }
 #warning missing code in loop of Rps_PayloadLightningCodeGen::dump_json_content
-  };
+    };
 #warning incomplete Rps_PayloadLightningCodeGen::dump_json_content
   RPS_WARNOUT("incomplete Rps_PayloadLightningCodeGen::dump_json_content"
-	      " owner=" << RPS_OBJECT_DISPLAY(owner()));
+              " owner=" << RPS_OBJECT_DISPLAY(owner()));
 } // end Rps_PayloadLightningCodeGen::dump_json_content
 
 void

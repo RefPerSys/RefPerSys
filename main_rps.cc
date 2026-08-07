@@ -1862,9 +1862,10 @@ main (int argc, char** argv)
                 << (rps_batch?"batch":"interactive")
                 << " git " << rps_shortgitid
                 << " pid#" << getpid());
-  if (!rps_batch) {
-  }
-    rps_initialize_event_loop();
+  if (!rps_batch)
+    {
+    }
+  rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
   RPS_POSSIBLE_BREAKPOINT();
   if (!rps_batch)

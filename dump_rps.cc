@@ -2065,18 +2065,19 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
       RPS_UNIQUE_BREAKPOINT();
       if (realdirpath != cwdpath)
         {
-	  RPS_UNIQUE_BREAKPOINT();
-	  if (access(realdirpath.c_str(), F_OK)) {
-	    RPS_UNIQUE_BREAKPOINT();
-	    int m = mkdir(realdirpath.c_str(), 0600);
-	    RPS_UNIQUE_BREAKPOINT();
-	    if (m)
-	      RPS_WARNOUT("failed to mkdir realdirpath="
-			  << realdirpath
-			  << " with cwd " << cwdpath
-			  << " " << strerror(errno));
-	  }
-	  RPS_UNIQUE_BREAKPOINT();
+          RPS_UNIQUE_BREAKPOINT();
+          if (access(realdirpath.c_str(), F_OK))
+            {
+              RPS_UNIQUE_BREAKPOINT();
+              int m = mkdir(realdirpath.c_str(), 0600);
+              RPS_UNIQUE_BREAKPOINT();
+              if (m)
+                RPS_WARNOUT("failed to mkdir realdirpath="
+                            << realdirpath
+                            << " with cwd " << cwdpath
+                            << " " << strerror(errno));
+            }
+          RPS_UNIQUE_BREAKPOINT();
           if (!std::filesystem::create_directories(realdirpath
               + "/persistore"))
             {
@@ -2092,16 +2093,16 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
           if (!std::filesystem::create_directories(realdirpath
               + "/generated"))
             {
-	      RPS_UNIQUE_BREAKPOINT();
+              RPS_UNIQUE_BREAKPOINT();
               RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/generated:" << strerror(errno));
-	      std::string errmsg
-		= std::string{"failed to make dump directory:"}
-	      + realdirpath + "/persistore";
-	      RPS_UNIQUE_BREAKPOINT();
-	      RPS_DEBUG_LOG(DUMP, "runtime error in rps_dump_into:"
-			    << errmsg);
-	      RPS_UNIQUE_BREAKPOINT();
+              std::string errmsg
+                = std::string{"failed to make dump directory:"}
+                  + realdirpath + "/persistore";
+              RPS_UNIQUE_BREAKPOINT();
+              RPS_DEBUG_LOG(DUMP, "runtime error in rps_dump_into:"
+                            << errmsg);
+              RPS_UNIQUE_BREAKPOINT();
               throw std::runtime_error(errmsg);
             }
           else
@@ -2116,9 +2117,9 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
       RPS_UNIQUE_BREAKPOINT();
       dumper.scan_loop_pass();
       RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath
-		    << " start writing "
+                    << " start writing "
                     << (rps_elapsed_real_time() - startelapsed)
-		    << " elapsed, "
+                    << " elapsed, "
                     << (rps_process_cpu_time() - startcputime)
                     << " cpu seconds." << std::endl
                     << Rps_ShowCallFrame(&_));
