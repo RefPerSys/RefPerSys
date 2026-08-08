@@ -40,4 +40,5 @@ ulimit -S -m $[3 * 1024]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
 
-exec ./refpersys --run-name=013readlineA -AREPL $*
+## the --script=_ is required to use Rps_ReadLineTokenSource!
+exec ./refpersys --run-name=013readlineA --script=_ -AREPL --run-delay=25s $*
