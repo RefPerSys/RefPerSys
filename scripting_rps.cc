@@ -137,6 +137,7 @@ rps_scripting_add_script(const char*path)
   if ((int) rps_scripts_vector.size() >  rps_script_maxnum)
     RPS_FATALOUT ("too many " << rps_scripts_vector.size()
                   << " script (for " << path << ")");
+  RPS_UNIQUE_BREAKPOINT();
   if (!strcmp(path, "-")) {
       RPS_UNIQUE_BREAKPOINT();
       maker = rps_make_cin_token_source;		// use cin
@@ -152,11 +153,13 @@ rps_scripting_add_script(const char*path)
       maker = rps_make_pipe_token_source;		// use pipe
       dupath = strdup(path);
     }
-  else if (access(path, R_OK))
+  else if (path[1] && access(path, R_OK))
     RPS_FATALOUT("script file " << Rps_QuotedC_String(path)
                  << " is not accessible: "
                  << strerror(errno));
-  dupath = realpath(path, nullptr);
+  RPS_UNIQUE_BREAKPOINT();
+  if (!dupath)
+    dupath = realpath(path, nullptr);
   if (dupath == path) /* Same pointer, we want it to be malloc-ed in all
 		     cases! */
     dupath = strdup(path);
@@ -188,9 +191,9 @@ rps_scripting_add_script(const char*path)
   RPS_POSSIBLE_BREAKPOINT();
   if (rps_scripts_vector.empty()) {
       /**
-                 * Only the main thread can call rps_scripting_add_script, so no more
-                 * synchronization or mutex is needed to :
-                 ***/
+                       * Only the main thread can call rps_scripting_add_script, so no more
+                       * synchronization or mutex is needed to :
+                       ***/
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
