@@ -665,8 +665,12 @@ rps_show_version_handwritten_source_files(void)
   for (const char*const*curfileptr = rps_files;
        curfileptr && *curfileptr; curfileptr++)
     {
+      RPS_POSSIBLE_BREAKPOINT();
       if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
-        nbsourcefiles++;
+        {
+          nbsourcefiles++;
+          RPS_POSSIBLE_BREAKPOINT();
+        }
     };
   RPS_INFORMOUT("showing versions " << std::endl
                 << " of " << nbsourcefiles
