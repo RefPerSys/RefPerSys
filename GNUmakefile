@@ -1241,6 +1241,11 @@ test12:
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/012issue14.bash
 
+## test13 is for the readline interface
+test13:
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/013readlineA.bash
+
 ########### show the testing commands
 showtests:
 	@printf '\nRefPerSys has %d testing commands\n' $(shell /bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/wc -l)
