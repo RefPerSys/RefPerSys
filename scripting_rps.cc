@@ -138,14 +138,17 @@ rps_scripting_add_script(const char*path)
     RPS_FATALOUT ("too many " << rps_scripts_vector.size()
                   << " script (for " << path << ")");
   if (!strcmp(path, "-")) {
+      RPS_UNIQUE_BREAKPOINT();
       maker = rps_make_cin_token_source;		// use cin
       dupath = strdup("-");
     }
   else if (!strcmp(path, "_")) {
+      RPS_UNIQUE_BREAKPOINT();
       maker = rps_make_readline_token_source;		// use readline
       dupath = strdup(path);
     }
   else if (path[0]=='|' || path[0]=='!') {
+      RPS_UNIQUE_BREAKPOINT();
       maker = rps_make_pipe_token_source;		// use pipe
       dupath = strdup(path);
     }
@@ -185,9 +188,9 @@ rps_scripting_add_script(const char*path)
   RPS_POSSIBLE_BREAKPOINT();
   if (rps_scripts_vector.empty()) {
       /**
-           * Only the main thread can call rps_scripting_add_script, so no more
-           * synchronization or mutex is needed to :
-           ***/
+                 * Only the main thread can call rps_scripting_add_script, so no more
+                 * synchronization or mutex is needed to :
+                 ***/
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
