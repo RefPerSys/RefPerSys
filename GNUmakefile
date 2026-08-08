@@ -9,11 +9,10 @@
 ## Author(s):
 ##      Basile STARYNKEVITCH, 92340 Bourg-la-Reine, France,
 ##                    <basile@starynkevitch.net>
-##      Niklas ROZENCRANTZ, Sweden and France
+##      Niklas ROZENCRANTZ, Sweden and France,  <niklasro@gmail.com>
 ##      Abdullah Siddiqui <siddiquiabdullah92@gmail.com>
-## Past contributors:
-##      Abhishek Chakravarti, Kolkota, India <abhishek@taranjali.org>
-##      Nimesh Neema <nimeshneema@gmail.com>
+## Past indian contributors:
+##      (Abhishek Chakravarti,    Nimesh Neema)
 ##
 ##      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
 ##      team@refpersys.org

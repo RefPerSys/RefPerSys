@@ -264,7 +264,8 @@ This free software project is
         homepage http://starynkevitch.net/Basile/
                 near Paris, France. So usual timezone `TZ=MEST`
 
- *      Niklas Rozencrantz in Stockholm, Sweden.
+ *      Niklas Rozencrantz in Stockholm, Sweden.    <niklasro@gmail.com>
+       (is often in France)
 
 Some files might be "borrowed" from other similar GPLv3+ licensed
 projects (notably from [Bismon](http://github.com/bstarynk/bismon)...)
