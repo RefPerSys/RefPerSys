@@ -193,10 +193,12 @@ rps_scripting_add_script(const char*path)
     maker = rps_make_memory_file_token_source;
   RPS_POSSIBLE_BREAKPOINT();
   if (rps_scripts_vector.empty()) {
-      /**
-                                   * Only the main thread can call rps_scripting_add_script, so no more
-                                   * synchronization or mutex is needed to :
-                                   ***/
+      /////
+      /****
+                         ** Only the main thread can call rps_scripting_add_script, so
+                         ** no more synchronization or mutex is needed to :
+                         *****/
+      /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
