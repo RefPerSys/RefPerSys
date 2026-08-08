@@ -142,16 +142,19 @@ rps_scripting_add_script(const char*path)
       RPS_UNIQUE_BREAKPOINT();
       maker = rps_make_cin_token_source;		// use cin
       dupath = strdup("-");
+      RPS_ASSERT(dupath);
     }
   else if (!strcmp(path, "_")) {
       RPS_UNIQUE_BREAKPOINT();
       maker = rps_make_readline_token_source;		// use readline
-      dupath = strdup(path);
+      dupath = strdup("_");
+      RPS_ASSERT(dupath);
     }
   else if (path[0]=='|' || path[0]=='!') {
       RPS_UNIQUE_BREAKPOINT();
       maker = rps_make_pipe_token_source;		// use pipe
       dupath = strdup(path);
+      RPS_ASSERT(dupath);
     }
   else if (path[1] && access(path, R_OK))
     RPS_FATALOUT("script file " << Rps_QuotedC_String(path)
@@ -168,19 +171,19 @@ rps_scripting_add_script(const char*path)
                  <<  Rps_QuotedC_String(path) << " failed: "
                  << strerror(errno));
   long fsiz= -1;
-  {
-    FILE* f = fopen(dupath, "r");
-    if (f) {
-        if (fseek(f, 0, SEEK_END)) {
-            fsiz = ftell(f);
-            rewind(f);
-            fclose(f);
-          }
-      }
-    else
-      RPS_FATALOUT("failed to fopen script file " << dupath
-                   << " : " << strerror(errno));
-  };
+  if (!maker) {
+      FILE* f = fopen(dupath, "r");
+      if (f) {
+          if (fseek(f, 0, SEEK_END)) {
+              fsiz = ftell(f);
+              rewind(f);
+              fclose(f);
+            }
+        }
+      else
+        RPS_FATALOUT("failed to fopen script file " << dupath
+                     << " : " << strerror(errno));
+    };
   if (fsiz==0)
     RPS_FATALOUT("script file " << dupath << " is empty");
   if (fsiz<0 && !maker) { /// non-seekable file, maybe FIFO or Unix socket?
@@ -191,9 +194,9 @@ rps_scripting_add_script(const char*path)
   RPS_POSSIBLE_BREAKPOINT();
   if (rps_scripts_vector.empty()) {
       /**
-                       * Only the main thread can call rps_scripting_add_script, so no more
-                       * synchronization or mutex is needed to :
-                       ***/
+                                   * Only the main thread can call rps_scripting_add_script, so no more
+                                   * synchronization or mutex is needed to :
+                                   ***/
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
       });
