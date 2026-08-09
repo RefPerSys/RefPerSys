@@ -122,8 +122,13 @@ Rps_ReadlineTokenSource::fill_current_line_buffer(void)
 {
 #warning unimplemented Rps_ReadlineTokenSource::fill_current_line_buffer
   RPS_UNIQUE_BREAKPOINT();
-  RPS_FATALOUT("unimplemented Readline fill_current_line_buffer @"
-               << (void*)this);
+  std::string prompt = rps_readline_fetch_string_prompt();
+  RPS_DEBUG_LOG(REPL, "readline prompt=" << Rps_QuotedC_String(prompt));
+  char* rl = readline(prompt.c_str());
+  RPS_DEBUG_LOG(REPL, "did readline " << Rps_QuotedC_String(rl));
+  RPS_FATALOUT("incomplete Readline fill_current_line_buffer @"
+               << (void*)this << " rl=" << rl);
+#warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
 } // end Rps_ReadlineTokenSource::fill_current_line_buffer
 
 
