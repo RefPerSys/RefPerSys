@@ -137,6 +137,7 @@ rps_scripting_add_script(const char*path)
   if ((int) rps_scripts_vector.size() >  rps_script_maxnum)
     RPS_FATALOUT ("too many " << rps_scripts_vector.size()
                   << " script (for " << path << ")");
+  RPS_DEBUG_LOG(REPL, "scripting@add@script " << Rps_QuotedC_String(path));
   RPS_UNIQUE_BREAKPOINT();
   if (!strcmp(path, "-")) {
       RPS_UNIQUE_BREAKPOINT();
@@ -149,6 +150,7 @@ rps_scripting_add_script(const char*path)
       maker = rps_make_readline_token_source;		// use readline
       dupath = strdup("_");
       RPS_ASSERT(dupath);
+      RPS_UNIQUE_BREAKPOINT();
     }
   else if (path[0]=='|' || path[0]=='!') {
       RPS_UNIQUE_BREAKPOINT();
@@ -187,17 +189,18 @@ rps_scripting_add_script(const char*path)
   if (fsiz==0)
     RPS_FATALOUT("script file " << dupath << " is empty");
   if (fsiz<0 && !maker) { /// non-seekable file, maybe FIFO or Unix socket?
-      maker = rps_make_file_token_source;
-    }
-  else
-    maker = rps_make_memory_file_token_source;
+    RPS_UNIQUE_BREAKPOINT();
+    maker = rps_make_file_token_source;
+    RPS_DEBUG_LOG(REPL, "maker default to file token source for dupath=" << dupath);
+  };
   RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(maker);
   if (rps_scripts_vector.empty()) {
       /////
       /****
-                         ** Only the main thread can call rps_scripting_add_script, so
-                         ** no more synchronization or mutex is needed to :
-                         *****/
+       ** Only the main thread can call rps_scripting_add_script, so
+       ** no more synchronization or mutex is needed to :
+       *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
@@ -251,6 +254,7 @@ rps_run_scripts_after_load(Rps_CallFrame* caller)
                 << rps_scripts_vector.size() << " scripts"
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_scripts_after_load"));
+  RPS_UNIQUE_BREAKPOINT();
   for (int ix=0;
        ix<(int)rps_scripts_vector.size();
        ix++) {
