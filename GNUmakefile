@@ -445,6 +445,7 @@ clean: clean-plugins
 	$(RM) *% %~
 	$(RM) *.gch
 	$(RM) *.orig
+	$(RM) *.rej
 	$(RM) doc*/*/*~
 	$(RM) */*~ */*% */*.orig
 	$(RM) */*.so

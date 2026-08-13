@@ -172,7 +172,7 @@ rps_scripting_add_script(const char*path)
     RPS_FATALOUT("realpath(3) or strdup(3) of "
                  <<  Rps_QuotedC_String(path) << " failed: "
                  << strerror(errno));
-  long fsiz= -1;
+  long fsiz = -1;
   if (!maker) {
       FILE* f = fopen(dupath, "r");
       if (f) {
@@ -186,6 +186,10 @@ rps_scripting_add_script(const char*path)
         RPS_FATALOUT("failed to fopen script file " << dupath
                      << " : " << strerror(errno));
     };
+  struct stat scriptstat = {};
+  if (stat(dupath, &scriptstat))
+    RPS_FATALOUT("failed to stat script file " << dupath
+                 << " : " << strerror(errno));
   if (fsiz==0)
     RPS_FATALOUT("script file " << dupath << " is empty");
   if (fsiz<0 && !maker) { /// non-seekable file, maybe FIFO or Unix socket?
@@ -198,9 +202,9 @@ rps_scripting_add_script(const char*path)
   if (rps_scripts_vector.empty()) {
       /////
       /****
-             ** Only the main thread can call rps_scripting_add_script, so
-             ** no more synchronization or mutex is needed to :
-             *****/
+                   ** Only the main thread can call rps_scripting_add_script, so
+                   ** no more synchronization or mutex is needed to :
+                   *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
