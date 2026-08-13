@@ -64,7 +64,7 @@ with the `refpersys` program.
 
 
 Perhaps some indian investors prefer cnsidering [github.com/bstarynk/yarefpersys](https://github.com/bstarynk/yarefpersys).
-
+that YaRefPerSys can be considered as an exercise ...
 
 ## A research project
 
