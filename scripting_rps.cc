@@ -189,18 +189,18 @@ rps_scripting_add_script(const char*path)
   if (fsiz==0)
     RPS_FATALOUT("script file " << dupath << " is empty");
   if (fsiz<0 && !maker) { /// non-seekable file, maybe FIFO or Unix socket?
-    RPS_UNIQUE_BREAKPOINT();
-    maker = rps_make_file_token_source;
-    RPS_DEBUG_LOG(REPL, "maker default to file token source for dupath=" << dupath);
-  };
+      RPS_UNIQUE_BREAKPOINT();
+      maker = rps_make_file_token_source;
+      RPS_DEBUG_LOG(REPL, "maker default to file token source for dupath=" << dupath);
+    };
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(maker);
   if (rps_scripts_vector.empty()) {
       /////
       /****
-       ** Only the main thread can call rps_scripting_add_script, so
-       ** no more synchronization or mutex is needed to :
-       *****/
+             ** Only the main thread can call rps_scripting_add_script, so
+             ** no more synchronization or mutex is needed to :
+             *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
@@ -627,14 +627,6 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
       fprintf(stdout, "###eof-limits (pid:%d) [%s:%d]\n", (int)getpid(),
               __FILE__, __LINE__-1);
       fflush(stdout);
-      snprintf(lbuf, sizeof(lbuf), "/bin/cat /proc/%d/limits",
-               (int)getpid());
-      fprintf(stdout, "*~* %s (%s:%d)\n", lbuf, __FILE__, __LINE__);
-      fflush(stdout);
-      int bad=system(lbuf);
-      if (bad)
-        RPS_WARNOUT("failed to run " << lbuf
-                    << " (got " << bad << ")");
     }
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
