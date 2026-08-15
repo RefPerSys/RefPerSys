@@ -49,6 +49,8 @@ extern "C" const char foxrps_self_basename[];
 #include <memory>
 #include <cstdio>
 #include <unistd.h>
+#include <dlfcn.h>
+#include <assert.h>
 /// a big FOX toolkit header file (including all other FOX headers)
 /// installed in /usr/local/include/fox-1.7/fx.h
 #include <fx.h>
@@ -61,7 +63,8 @@ extern "C" const char foxrps_shortgitid[];
 extern "C" char foxrps_host_name[];
 extern "C" int foxrps_argc;
 extern "C" char** foxrps_argv;
-extern "C" bool foxrps_debug;
+extern "C" bool foxrps_with_debug;
+extern "C" void* foxrps_dlh;
 extern "C" std::unique_ptr< FX::FXApp> foxrps_ptr_app;
 #ifndef GITID
 #error GITID should be defined in compilation command
@@ -150,7 +153,7 @@ extern "C" const char rps_cxx_compiler_version[];
 #define FOXRPS_WARNOUT(Out) FOXRPS_WARNOUT_AT(__FILE__,__LINE__,Out)
 
 #define FOXRPS_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {        \
-    if (foxrps_debug)                                   \
+    if (foxrps_with_debug)                              \
       std::clog << Fil << ":" << Lin                    \
 		<< "::"<< __FUNCTION__ << " "		\
 		<< Out << std::endl;			\
@@ -196,7 +199,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
-///////////// end of declaration part
+///////////// end of declaration part 
 const int foxrps_last_decl_line = __LINE__ -2;
 
 
@@ -222,7 +225,8 @@ std::unique_ptr< FX::FXApp> foxrps_ptr_app;
 int foxrps_argc;
 char**foxrps_argv;
 char foxrps_host_name[128];
-bool foxrps_debug;
+bool foxrps_with_debug;
+void* foxrps_dlh;
 
 
 FXDEFMAP(FoxrpsApp) FoxrpsAppMap[]=
@@ -307,15 +311,48 @@ static void
 foxrps_usage(void)
 {
   std::cout << foxrps_argv[0] << " usage:" << std::endl;
+  std::cout << " -D | --debug      # debug output" << std::endl;
+  std::cout << " --help          # this help" << std::endl;
+  std::cout << " --version       # version info" << std::endl;
   std::cout << "*incomplete* on "
 	    << __FILE__ << ":" << __LINE__ << std::endl;
 #warning incomplete foxrps_usage
 } // end foxrps_usage
 
 static void
+foxrps_show_version(void)
+{
+  std::cout << foxrps_argv[0] << " git " << foxrps_shortgitid
+	    << " compiled by " << rps_cxx_compiler_realpath
+	    << ": " << rps_cxx_compiler_version << std::endl
+	    << " … using FOX toolkit "
+	    << FOX_MAJOR << "." << FOX_MINOR
+	    << "." << FOX_LEVEL << "-"
+	    << FXApp::copyright << std::endl;
+  std::cout << "see "
+	    << __FILE__
+	    << " under github.com/RefPerSys/RefPerSys" << std::endl;
+  std::cout << "*NO WARRANTY* since GPLv3+ licensed, see "
+	    << "www.gnu.org/licenses/gpl-3.0.html" << std::endl;
+} // end foxrps_show_version
+
+static void
 foxrps_prog_args(void)
 {
-  // should parse (perhaps update) foxrps_argc & foxrps_argv
+  // should parse foxrps_argc & foxrps_argv
+  assert (foxrps_argc>0);
+  assert (foxrps_argv!=nullptr);
+  for (int argix=1; argix<foxrps_argc; argix++) {
+    const char*curarg = foxrps_argv[argix];
+    if (!curarg)
+      break;
+    if (!strcmp(curarg, "--debug") || !strcmp(curarg, "-D"))
+      foxrps_with_debug = true;
+    else if (!strcmp(curarg, "--version")) {
+    }
+    else if (!strcmp(curarg, "--help")) {
+    }
+  }
 #warning incomplete foxrps_prog_args
 } // end foxrps_prog_args
 
@@ -328,26 +365,26 @@ main(int argc, char**argv)
   foxrps_argv = argv;
   memset (foxrps_host_name, 0, sizeof(foxrps_host_name));
   gethostname(foxrps_host_name, sizeof(foxrps_host_name)-1);
+  foxrps_dlh = dlopen(nullptr, RTLD_NOW);
+  if (!foxrps_dlh)
+    FOXRPS_FATALOUT(argv[0] << " failed to dlopen self "
+		    << dlerror());
   FOXRPS_BREAKPOINT();
   if (foxrps_argc>1)
     {
       if (!strcmp(foxrps_argv[1], "--version"))
         {
-          std::cout << argv[0] << " git " << foxrps_shortgitid
-                    << " compiled by " << rps_cxx_compiler_realpath
-                    << ": " << rps_cxx_compiler_version
-                    << " on " __DATE__ "@" __TIME__ << std::endl
-                    << "using FOX toolkit "
-		    << FOX_MAJOR << "." << FOX_MINOR
-                    << "." << FOX_LEVEL << "-"
-		    << FXApp::copyright << std::endl;
+	  foxrps_show_version();
 	  return 0;
         }
       else if (!strcmp(foxrps_argv[1], "--help"))
         {
           foxrps_usage();
 	  return 0;
-        };
+        }
+      else if (!strcmp(foxrps_argv[1], "--debug")
+	       || !strcmp(foxrps_argv[1], "-D"))
+	foxrps_with_debug = true;
     };
   if (fxversion[0]!=FOX_MAJOR || fxversion[1]!=FOX_MINOR)
     {
