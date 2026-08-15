@@ -266,6 +266,9 @@ FXint
 FoxrpsApp::run(void)
 {
   FOXRPS_DEBUGOUT("run app @" << (void*)this);
+  _app_mainwin->layout();
+  _app_mainwin->show();
+  FOXRPS_DEBUGOUT("show _app_mainwin@" << (void*)_app_mainwin);
   FXint i = FX::FXApp::run();
   FOXRPS_DEBUGOUT("did run app @" << (void*)this << " i=" << i);
   return i;
