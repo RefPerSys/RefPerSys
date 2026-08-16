@@ -36,6 +36,14 @@
 #include "glibmm.h"
 //@@PKGCONFIG libelf
 #include "libelf.h"
+
+/// experimental, see also https://github.com/bstarynk/truc-gpl
+/// and its GtkMM-test and NanoEngine
+//@@PKGCONFIG gtkmm-4.0
+#include <gtkmm.h>
+
+
+
 extern "C" const char rps_main_gitid[];
 const char rps_main_gitid[]= RPS_GITID;
 

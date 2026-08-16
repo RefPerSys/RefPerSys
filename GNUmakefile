@@ -118,7 +118,7 @@ REFPERSYS_CXX_STANDARD?= -std=gnu++2c
 REFPERSYS_CLANGXX?= clang++
 
 ## packages in the pkg-config sense
-PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68 libelf
+PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68 libelf gtkmm-4.0
 
 ## Qt6 - see www.qt.io - provides a meta object compiler
 ## See also doc.qt.io/qt-6/moc.html
