@@ -39,7 +39,9 @@ ulimit -S -m $[2 * 1024]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
 
-[ -d $HOME/tmp/mytestdump ] && rm -rvf $HOME/tmp/mytestdump
+if [ -d $HOME/tmp/mytestdump ] ; then
+    /bin/rm -rvf $HOME/tmp/mytestdump
+fi
 
 
 ./refpersys --batch --chdir-after-load $HOME/tmp/ --dump mytestdump --run-name=012issue14

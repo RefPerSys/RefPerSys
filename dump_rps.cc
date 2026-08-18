@@ -10,7 +10,7 @@
  *      https://github.com/open-source-parsers/jsoncpp/
  *
  * Author(s):
- *      Basile Starynkevitch, France         <basile@starynkevitch.net>
+ *      Basile STARYNKEVITCH, France         <basile@starynkevitch.net>
  *
  * old indian contributors
  *      (Abhishek Chakravarti, Nimesh Neema)
@@ -1483,11 +1483,13 @@ Rps_Dumper::write_generated_data_file(void)
   const char *bdataslash = strrchr(datapathstr.c_str(), '/');
   const char *bdata = bdataslash?(bdataslash+1):datapathstr.c_str();
   RPS_UNIQUE_BREAKPOINT();
-  if (symlink(bdata, gendatapathstr.c_str()))
+  if (symlink(/*target:*/bdata, gendatapathstr.c_str())) {
+    RPS_UNIQUE_BREAKPOINT();
     RPS_FATALOUT("failed to symlink " << gendatapathstr << " to "
                  << bdata
                  << ":" << strerror(errno)
                  << " in " << du_curworkdir);
+  }
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
@@ -2002,7 +2004,8 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   if (dirpath.empty())
     dirpath = std::string(".");
   int lendirpath = dirpath.size();
-  if (dirpath[0] == '.' && lendirpath > 2 && dirpath[1] != '/' && dirpath[1] != '.')
+  if (dirpath[0] == '.' && lendirpath > 2
+      && dirpath[1] != '/' && dirpath[1] != '.')
     {
       RPS_WARNOUT("invalid directory to dump into " << Rps_QuotedC_String(dirpath));
       throw std::runtime_error("bad dump directory with dot");
@@ -2090,12 +2093,13 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
           else
             RPS_INFORMOUT("made real dump sub-directory: " << realdirpath
                           << "/persistore");
+	  RPS_UNIQUE_BREAKPOINT();
           if (!std::filesystem::create_directories(realdirpath
               + "/generated"))
             {
               RPS_UNIQUE_BREAKPOINT();
               RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
-                          << "/generated:" << strerror(errno));
+                          << "/generated :" << strerror(errno));
               std::string errmsg
                 = std::string{"failed to make dump directory:"}
                   + realdirpath + "/persistore";
