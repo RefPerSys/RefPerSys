@@ -229,6 +229,8 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
     memset(loadirpath, 0, sizeof(loadirpath));
     char *toprealpath = realpath(topdir.c_str(), topdirpath);
     du_topdir.assign(toprealpath);
+    du_fdtopdir = open(du_topdir.c_str(), O_RDONLY);
+    RPS_ASSERT(du_fdtopdir > 0);
     char *realoadirpath = realpath(rps_topdirectory, loadirpath);
     du_is_dumping_into_topdir = !strcmp(toprealpath, realoadirpath);
   }
@@ -250,6 +252,9 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
 
 Rps_Dumper::~Rps_Dumper()
 {
+  if (du_fdtopdir>0)
+    close(du_fdtopdir);
+  du_fdtopdir = -1;
   RPS_DEBUG_LOG(DUMP, "Rps_Dumper destr topdir=" << du_topdir
                 << " this@" << (void*)this
                 << std::endl
