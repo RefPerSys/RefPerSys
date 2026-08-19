@@ -99,6 +99,8 @@ class Rps_Dumper
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
   friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
+  int du_fdtopdir;		// if >0 should be a file descriptor
+				// for du_topdir and usedful for symlinkat
   std::string du_curworkdir;
   Json::StreamWriterBuilder du_jsonwriterbuilder;
   std::recursive_mutex du_mtx;
@@ -207,7 +209,10 @@ public:
 };        // end class Rps_Dumper
 
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
-  du_topdir(), du_curworkdir(), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
+  du_topdir(),
+  du_fdtopdir(-1),
+  du_curworkdir(), du_jsonwriterbuilder(), du_mtx(),
+  du_mapobjects(), du_scanque(),
   du_tempsuffix(make_temporary_suffix()),
   du_newobcount(0),
   du_is_dumping_into_topdir(false),

@@ -44,6 +44,6 @@ if [ -d $HOME/tmp/mytestdump ] ; then
 fi
 
 
-./refpersys --batch --chdir-after-load $HOME/tmp/ --dump mytestdump --run-name=012issue14
+./refpersys --batch --run-after-load "/bin/rm -rf $HOME/tmp/mytestdump" --chdir-after-load $HOME/tmp/ --dump mytestdump --run-name=012issue14
 
  ### end of file RefPerSys/test_dir/012issue14.bash
