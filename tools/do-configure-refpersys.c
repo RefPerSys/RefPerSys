@@ -1820,30 +1820,42 @@ main (int argc, char **argv)
     {
       if (!access ("/usr/bin/gcc", F_OK))
         cc =
-          rpsconf_defaulted_readline ("C compiler [default /usr/bin/gcc]: ",
+          rpsconf_defaulted_readline ("absolute path for C compiler [default /usr/bin/gcc]: ",
                                       "/usr/bin/gcc");
       else
-        cc = rpsconf_readline ("C compiler [default /usr/bin/gcc]: ");
+        cc = rpsconf_readline ("absolute path for C compiler [default /usr/bin/gcc]: ");
     };
   if (!cc)
     cc = "/usr/bin/gcc";
 
   if (rpsconf_cc_set (cc) == RPSCONF_FAIL)
     exit (EXIT_FAILURE);
+  if (cc && ccc[0] != '/') {
+      fprintf (stderr,
+               "%s requires an absolute path for the C compiler, but got %s [%s:%d]\n",
+	       argv[0], cc, __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+  }
 
   char *cxx = getenv ("CXX");
   if (!cxx)
     {
       if (!access ("/usr/bin/g++", F_OK))
         cxx =
-          rpsconf_defaulted_readline ("C++ compiler [default /usr/bin/g++:",
+          rpsconf_defaulted_readline ("absolute path for C++ compiler [default /usr/bin/g++:",
                                       "/usr/bin/g++");
       else
-        cxx = rpsconf_readline ("C++ compiler [default /usr/bin/g++]: ");
+        cxx = rpsconf_readline ("absolute path for C++ compiler [default /usr/bin/g++]: ");
     };
 
   if (!cxx)
     cxx = "/usr/bin/g++";
+  if (cxx && cxx[0] != '/') {
+      fprintf (stderr,
+               "%s requires an absolute path for the C++ compiler, but got %s [%s:%d]\n",
+	       argv[0], cxx, __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+  }
   ////
   ////
   char *optimflags = getenv ("CXXFLAGS");
