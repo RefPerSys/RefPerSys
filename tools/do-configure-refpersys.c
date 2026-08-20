@@ -1830,7 +1830,7 @@ main (int argc, char **argv)
 
   if (rpsconf_cc_set (cc) == RPSCONF_FAIL)
     exit (EXIT_FAILURE);
-  if (cc && ccc[0] != '/') {
+  if (cc && cc[0] != '/') {
       fprintf (stderr,
                "%s requires an absolute path for the C compiler, but got %s [%s:%d]\n",
 	       argv[0], cc, __FILE__, __LINE__);
