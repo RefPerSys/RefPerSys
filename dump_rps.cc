@@ -229,7 +229,10 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
     memset(loadirpath, 0, sizeof(loadirpath));
     char *toprealpath = realpath(topdir.c_str(), topdirpath);
     du_topdir.assign(toprealpath);
-    du_fdtopdir = open(du_topdir.c_str(), O_RDONLY);
+    du_fdtopdir = open(du_topdir.c_str(), O_RDONLY| O_DIRECTORY);
+    if (du_fdtopdir < 0)
+      RPS_FATALOUT("open rd of dump top dir " << du_topdir.c_str()
+		   << " failed " << strerror(errno));
     RPS_ASSERT(du_fdtopdir > 0);
     char *realoadirpath = realpath(rps_topdirectory, loadirpath);
     du_is_dumping_into_topdir = !strcmp(toprealpath, realoadirpath);
@@ -461,7 +464,7 @@ Rps_Dumper::open_output_file(const std::string& relpath)
   auto poutf= std::make_unique<std::ofstream>(tempathstr);
   if (!poutf || !poutf->is_open())
     {
-      RPS_WARNOUT("dump failed to open " << tempathstr);
+      RPS_WARNOUT("dump failed to open ofstream " << tempathstr);
       throw std::runtime_error(std::string{"duplicate failed to open "} + tempathstr + ":" + strerror(errno));
     }
   du_openedpathset.insert(relpath);
@@ -1486,18 +1489,20 @@ Rps_Dumper::write_generated_data_file(void)
          << " by " << __FUNCTION__
          << " for shortgitid:" << rps_shortgitid << std::endl;
   (void) remove(gendatapathstr.c_str());
-  /* FIXME: we need to add a symlink in the generated/ subdirectory,
-     using symlinkat since chdir is process-global and multi-thread
-     unfriendly, and later we might dump in a single thread...... */
-#warning TODO: use symlinkat in Rps_Dumper::write_generated_data_file
+  /* FIXME: we need to add a symbolic link in the generated/
+     subdirectory, using symlinkat since chdir is process-global and
+     multi-thread unfriendly, and later we might dump in a single
+     thread...... */
   const char *bdataslash = strrchr(datapathstr.c_str(), '/');
   const char *bdata = bdataslash?(bdataslash+1):datapathstr.c_str();
   RPS_UNIQUE_BREAKPOINT();
-  if (symlink(/*target:*/bdata, gendatapathstr.c_str())) {
+  if (symlinkat(/*target:*/bdata, du_fdtopdir, gendatapathstr.c_str())) {
     RPS_UNIQUE_BREAKPOINT();
-    RPS_FATALOUT("failed to symlink " << gendatapathstr << " to "
-                 << bdata
-                 << ":" << strerror(errno)
+    int er = errno;
+    RPS_FATALOUT("failed to symlinkat " << gendatapathstr << " to "
+                 << bdata << " fdtopdir#" << du_fdtopdir
+		 << " dump topdir " << du_topdir
+                 << ":" << strerror(er)
                  << " in " << du_curworkdir);
   }
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
