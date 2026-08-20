@@ -1525,6 +1525,7 @@ rpsconf_usage (void)
 {
   puts ("# configuration utility program for refpersys.org");
   printf ("%s usage:\n", rpsconf_prog_name);
+  printf ("# every file should be an absolute path!\n");
   puts ("\t --version                # show version");
   puts ("\t --help                   # this help");
   puts ("\t <var>=<value>            # putenv, set environment variable");
