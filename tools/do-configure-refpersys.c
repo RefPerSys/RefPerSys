@@ -53,6 +53,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <sys/utsname.h>
 
 #ifndef RPSCONF_WITHOUT_NCURSES
 #include "ncurses.h"
@@ -1775,31 +1776,45 @@ int
 main (int argc, char **argv)
 {
   rpsconf_prog_name = argv[0];
+  {
+    struct utsname un;
+    memset (&un, 0, sizeof (un));
+    printf ("%s: configurator program for RefPerSys inference engine\n",
+            rpsconf_prog_name);
+    printf ("%s: [FRENCH]\n\t programme de configuration du\n"  //
+            "\t moteur d'inférences RefPerSys\n", rpsconf_prog_name);
+    printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
+    printf ("\t   REFlexive PERsistent SYStem\n");
+    printf ("\t Contact: Basile STARYNKEVITCH,\n" //
+            "\t 8 rue de la Faïencerie,\n" //
+            "\t 92340 Bourg-la-Reine\n" //
+            "\t (France)\n");
+    if (uname (&un))
+      {
+        fprintf (stderr, "%s: uname(2) failed %s [%s:%d git %s]\n",
+                 argv[0], strerror (errno), __FILE__, __LINE__ - 1,
+                 RPSCONF_GIT_ID);
+        exit (EXIT_FAILURE);
+      }
+    printf ("%s (file %s:%d git %s) on sysname %s nodename %s\n"
+            "* release %s\n* version %s\n* machine %s\n",
+            argv[0], __FILE__, __LINE__ - 2, RPSCONF_GIT_ID,
+            un.sysname, un.nodename, un.release, un.version, un.machine);
+    fflush (NULL);
+  }
   rpsconf_prelude (argc, argv);
   atexit (rpsconf_remove_files);
-  printf ("%s: configurator program for RefPerSys inference engine\n",
-          rpsconf_prog_name);
-  printf ("%s: [FRENCH]\n\t programme de configuration du\n"  //
-          "\t moteur d'inférences RefPerSys\n", rpsconf_prog_name);
-  printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
-  printf ("\t   REFlexive PERsistent SYStem\n");
-  printf ("\t Contact: Basile STARYNKEVITCH,\n" //
-          "\t 8 rue de la Faïencerie,\n" //
-          "\t 92340 Bourg-la-Reine\n" //
-          "\t (France)\n");
-  fflush (NULL);
   printf ("%s: when asked for a file, you can run a shell command ...\n"
           "... if your input starts with an exclamation point\n",
           rpsconf_prog_name);
   printf ("%s: [FRENCH] quand un fichier est demandé,\n"
-          " ça doit être un chemin absolu (par exemple /etc/passwd)\n",
+          " ça doit être un chemin absolu (tel que /etc/passwd)\n",
           rpsconf_prog_name);
   printf ("\t une entrée commançant par ! est une commande shell\n"
           "\t et la question est alors répétée\n");
   printf
   ("\t When asked for file paths, you are expected to\n"
-   "\t enter an absolute one,\n"
-   "\t for example /etc/passwd\n"
+   "\t enter an absolute path, like /etc/passwd\n"
    "\t if you enter something starting with ! it is a shell command\n"
    "\t which is run and the question is repeated.\n");
   fflush (NULL);
@@ -1821,42 +1836,50 @@ main (int argc, char **argv)
     {
       if (!access ("/usr/bin/gcc", F_OK))
         cc =
-          rpsconf_defaulted_readline ("absolute path for C compiler [default /usr/bin/gcc]: ",
-                                      "/usr/bin/gcc");
+          rpsconf_defaulted_readline
+          ("absolute path for C compiler [default /usr/bin/gcc]: ",
+           "/usr/bin/gcc");
       else
-        cc = rpsconf_readline ("absolute path for C compiler [default /usr/bin/gcc]: ");
+        cc =
+          rpsconf_readline
+          ("absolute path for C compiler [default /usr/bin/gcc]: ");
     };
   if (!cc)
     cc = "/usr/bin/gcc";
 
   if (rpsconf_cc_set (cc) == RPSCONF_FAIL)
     exit (EXIT_FAILURE);
-  if (cc && cc[0] != '/') {
+  if (cc && cc[0] != '/')
+    {
       fprintf (stderr,
                "%s requires an absolute path for the C compiler, but got %s [%s:%d]\n",
-	       argv[0], cc, __FILE__, __LINE__);
-      exit(EXIT_FAILURE);
-  }
+               argv[0], cc, __FILE__, __LINE__);
+      exit (EXIT_FAILURE);
+    }
 
   char *cxx = getenv ("CXX");
   if (!cxx)
     {
       if (!access ("/usr/bin/g++", F_OK))
         cxx =
-          rpsconf_defaulted_readline ("absolute path for C++ compiler [default /usr/bin/g++:",
-                                      "/usr/bin/g++");
+          rpsconf_defaulted_readline
+          ("absolute path for C++ compiler [default /usr/bin/g++:",
+           "/usr/bin/g++");
       else
-        cxx = rpsconf_readline ("absolute path for C++ compiler [default /usr/bin/g++]: ");
+        cxx =
+          rpsconf_readline
+          ("absolute path for C++ compiler [default /usr/bin/g++]: ");
     };
 
   if (!cxx)
     cxx = "/usr/bin/g++";
-  if (cxx && cxx[0] != '/') {
+  if (cxx && cxx[0] != '/')
+    {
       fprintf (stderr,
                "%s requires an absolute path for the C++ compiler, but got %s [%s:%d]\n",
-	       argv[0], cxx, __FILE__, __LINE__);
-      exit(EXIT_FAILURE);
-  }
+               argv[0], cxx, __FILE__, __LINE__);
+      exit (EXIT_FAILURE);
+    }
   ////
   ////
   char *optimflags = getenv ("CXXFLAGS");
