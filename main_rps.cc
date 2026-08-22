@@ -1658,11 +1658,8 @@ main (int argc, char** argv)
   bool versionwanted = false;
   bool disableduserpref = false;
   _Pragma("message \"start of main\"");
-#warning should call Glib::init
-#if 0
   // https://fossies.org/linux/glibmm/glib/glibmm/init.h
   Glib::init(); /// initialize glibmm ....
-#endif
   if (argc>1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-?")))
     rps_helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
