@@ -1074,7 +1074,7 @@ rps_event_loop(void)
           };
         };
       bool debugpoll = RPS_DEBUG_ENABLED(REPL) //
-                       || RPS_DEBUG_ENABLED(EVENT_LOOP) //
+                       || RPS_DEBUG_ENABLED(EVLOOP) //
                        || RPS_DEBUG_ENABLED(GUI);
       if (debugpoll)
         {

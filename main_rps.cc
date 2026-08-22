@@ -1342,7 +1342,8 @@ const char*rps_debug_level_cstr(Rps_Debug dbgopt)
   static thread_local char levbuf[32];
   switch(dbgopt)
     {
-#define DEBUG_LEVEL_CSTR_MACRO(dbgopt) case RPS_DEBUG_##dbgopt: return #dbgopt;
+#define DEBUG_LEVEL_CSTR_MACRO(dbgopt,_Help) \
+      case RPS_DEBUG_##dbgopt: return #dbgopt;
       RPS_DEBUG_OPTIONS(DEBUG_LEVEL_CSTR_MACRO);
 #undef DEBUG_LEVEL_CSTR_MACRO
     case RPS_DEBUG__EVERYTHING:

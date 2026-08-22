@@ -298,7 +298,7 @@ rps_minicarb_data_st::reset_carbdata(int lin)
 {
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   RPS_ASSERT(lin>0);
-  RPS_DEBUG_LOG(LOW_REPL, "resetting minicarb_data@"
+  RPS_DEBUG_LOG(LOWREP, "resetting minicarb_data@"
                       << (void*)this << " line#" << lin);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(minicarb_path.empty());
@@ -551,7 +551,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
   else {
     data_mc->minicarb_vinst =  Rps_StringValue($text);
     data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-    RPS_DEBUG_LOG(LOW_REPL, "lexed literal }# in "
+    RPS_DEBUG_LOG(LOWREP, "lexed literal }# in "
                   << "}" << data_mc->minicarb_chunk_prefix << "#"
                   << " terminated code chunk as "
                   << data_mc->minicarb_vinst);
@@ -569,7 +569,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
     else {
       data_mc->minicarb_vinst =  Rps_StringValue($text);
       data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-      RPS_DEBUG_LOG(LOW_REPL, "lexed literal " << $text
+      RPS_DEBUG_LOG(LOWREP, "lexed literal " << $text
                     << " in " << data_mc->minicarb_chunk_prefix
                     << " terminated code chunk");
     }
@@ -595,7 +595,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
                             data_mc->minicarb_ob1
                           });
     data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-    RPS_DEBUG_LOG(LOW_REPL, "lexed metavariable " << data_mc->minicarb_ob1
+    RPS_DEBUG_LOG(LOWREP, "lexed metavariable " << data_mc->minicarb_ob1
                   << " as " << data_mc->minicarb_vinst
                   << " from " << Rps_QuotedC_String($text));
   };
@@ -610,7 +610,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
   data_mc->check_carbdata_callframe(fram_mc);
   data_mc->minicarb_vinst =  Rps_StringValue("$");
   data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-  RPS_DEBUG_LOG(LOW_REPL, "lexed literal dollar as "
+  RPS_DEBUG_LOG(LOWREP, "lexed literal dollar as "
                 << data_mc->minicarb_vinst);
   RPS_POSSIBLE_BREAKPOINT();
   //TODO: incomplete
@@ -628,7 +628,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
                           std::initializer_list<Rps_Value> {
                             data_mc->minicarb_ob1
                           });
-    RPS_DEBUG_LOG(LOW_REPL, "symbol in code chunk as "
+    RPS_DEBUG_LOG(LOWREP, "symbol in code chunk as "
                   << data_mc->minicarb_vinst);
   } else {
     data_mc->minicarb_v1 = Rps_StringValue($text);
@@ -638,7 +638,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
                             data_mc->minicarb_v1
                           });
     data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-    RPS_DEBUG_LOG(LOW_REPL, "name in code chunk as "
+    RPS_DEBUG_LOG(LOWREP, "name in code chunk as "
                   << data_mc->minicarb_vinst);
   };
   data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
@@ -658,7 +658,7 @@ extern "C" void rps_minicarb_on_feed_me(rps_minicarb_data_st*data_mc,
   data_mc->minicarb_vinst =  Rps_Value((intptr_t)atoll($text),
                                        Rps_Value::Rps_IntTag{});
   data_mc->minicarb_vectval.push_back(data_mc->minicarb_vinst);
-  RPS_DEBUG_LOG(LOW_REPL, "lexed literal integer in code chunk as "
+  RPS_DEBUG_LOG(LOWREP, "lexed literal integer in code chunk as "
                   << data_mc->minicarb_vinst);
   RPS_POSSIBLE_BREAKPOINT();
 }
@@ -671,7 +671,7 @@ LEX_KW_ECHO: [!]echo {
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_ASSERT(data_mc != nullptr);
-  RPS_DEBUG_LOG(LOW_REPL, "lexed !echo");
+  RPS_DEBUG_LOG(LOWREP, "lexed !echo");
   RPS_UNIQUE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "lexed !echo from l#"
                 << data_mc->carbdata_line_number()
@@ -684,7 +684,7 @@ LEX_KW_ECHO: [!]echo {
 LEX_KW_LET: [!]let {
   _Pragma("message \"lexical !let in minicarb_rps.cbrt\"");
   data_mc->check_carbdata_callframe(fram_mc);
-  RPS_DEBUG_LOG(LOW_REPL, "lexed !let");
+  RPS_DEBUG_LOG(LOWREP, "lexed !let");
   RPS_DEBUG_LOG(REPL, "lexed !let from l#"
                 << data_mc->carbdata_line_number()
                 << " in " << data_mc->carbdata_path()
@@ -710,7 +710,7 @@ LEX_INT: [\+\-]?[0-9]+ { // decimal integer
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
    $$ = (std::intptr_t) atol($text);
-   RPS_DEBUG_LOG(LOW_REPL, "lexed decimal integer " << $$
+   RPS_DEBUG_LOG(LOWREP, "lexed decimal integer " << $$
                  << " from " << $text);
 }
 
@@ -719,7 +719,7 @@ LEX_INT: [\+\-]?0[xX][0-9a-fA-F]+ { // hexadecimal integer
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
    $$ = (std::intptr_t) strtol($text, nullptr, 16);
-   RPS_DEBUG_LOG(LOW_REPL, "lexed hexadecimal integer " << $$
+   RPS_DEBUG_LOG(LOWREP, "lexed hexadecimal integer " << $$
                  << " from " << $text);
 }
 
@@ -728,7 +728,7 @@ LEX_INT: [\+\-]?0[oO]?[0-7]+ { // octal integer
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
    $$ = (std::intptr_t) strtol($text, nullptr, 16);
-   RPS_DEBUG_LOG(LOW_REPL, "lexed octal integer° " << $$
+   RPS_DEBUG_LOG(LOWREP, "lexed octal integer° " << $$
                  << " from " << $text);
 }
 
@@ -738,7 +738,7 @@ LEX_INT: [\+\-]?0[Bb][01]+ { // binary integer
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
    $$ = (std::intptr_t) strtol($text, nullptr, 2);
-   RPS_DEBUG_LOG(LOW_REPL, "lexed binary integer° " << $$
+   RPS_DEBUG_LOG(LOWREP, "lexed binary integer° " << $$
                  << " from " << $text);
 }
 
@@ -751,7 +751,7 @@ LEX_INT: [#][\']\P{Control}[\'] {
    int ln=u8_strmbtouc(&uc, (const uint8_t*)($text+3));
    if (ln>0) {
      $$ = (std::intptr_t)uc;
-     RPS_DEBUG_LOG(LOW_REPL, "lexed unicode° " << $$
+     RPS_DEBUG_LOG(LOWREP, "lexed unicode° " << $$
                    << " from " << Rps_QuotedC_String($text));
    }
    else {
@@ -803,7 +803,7 @@ LEX_INT: [#][\']\\.[\'] {
      };
      break;
    }
-   RPS_DEBUG_LOG(LOW_REPL, "lexed backslashed char "
+   RPS_DEBUG_LOG(LOWREP, "lexed backslashed char "
                  << $$ << " from " << $text);
 }
 
@@ -811,7 +811,7 @@ LEX_DOUBLE: [\+\-]?([0-9]+\.)|([0-9]*\.[0-9]+)([eE][\+\-]?[0-9]+)? {
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
    $$ =  strtod($text, nullptr);
-   RPS_DEBUG_LOG(LOW_REPL, "lexed decimal double° " << $$
+   RPS_DEBUG_LOG(LOWREP, "lexed decimal double° " << $$
                  << " from " << $text);
 }
 
@@ -819,7 +819,7 @@ LEX_DOUBLE: [\+\-]?0[xX]([0-9a-fA-F]+\.)|([0-9a-fA-F]+)([pP][\+\-]?[0-9]+)? {
    data_mc->check_carbdata_callframe(fram_mc);
    RPS_POSSIBLE_BREAKPOINT();
    $$ =  strtod($text, nullptr);
-   RPS_DEBUG_LOG(LOW_REPL, "lexed hex double° " << $$
+   RPS_DEBUG_LOG(LOWREP, "lexed hex double° " << $$
                  << " from " << $text);
 }
 
@@ -831,7 +831,7 @@ LEX_OID: [_][a-zA-z0-9]+ { // object oid like _02iWbXmFx8f04ldLRt
    const char*endid = nullptr;
    bool okid=false;
    data_mc->minicarb_oid = Rps_Id($text, &endid, &okid);
-   RPS_DEBUG_LOG(LOW_REPL, "lexed objectid° " << data_mc->minicarb_oid
+   RPS_DEBUG_LOG(LOWREP, "lexed objectid° " << data_mc->minicarb_oid
                  << " from " << $text);
    if (!okid) {
      RPS_WARNOUT("invalid objectid " << $text << " in "
@@ -876,7 +876,7 @@ LEX_SYMBOL: [A-Za-z]([\$][a-zA-Z0-9_]+)*[A-Za-z0-9_]* {
      return _RPSMINICARB_SYNTAX_ERROR;
     }
     else {
-      RPS_DEBUG_LOG(LOW_REPL, "found named object° "
+      RPS_DEBUG_LOG(LOWREP, "found named object° "
                     << data_mc->minicarb_ob1
                     << " named " << $text);
       return 0;
@@ -966,7 +966,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_INT {
   data_mc->check_carbdata_callframe(fram_mc);
   data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "!§echo integer° " << $1
+  RPS_DEBUG_LOG(LOWREP, "!§echo integer° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo integer"));
   RPS_DEBUG_LOG(REPL, "§!echo integer° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo integer"));
@@ -978,7 +978,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_SYMBOL {
   data_mc->check_carbdata_callframe(fram_mc);
   data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT(); 
-  RPS_DEBUG_LOG(LOW_REPL, "!§echo symbol° " << $1
+  RPS_DEBUG_LOG(LOWREP, "!§echo symbol° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo symbol"));
   RPS_DEBUG_LOG(REPL, "§!echo integer° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo symbol"));
@@ -990,7 +990,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_DOUBLE {
   data_mc->check_carbdata_callframe(fram_mc);
   data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "!§echo double° " << $1
+  RPS_DEBUG_LOG(LOWREP, "!§echo double° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo double"));
   RPS_DEBUG_LOG(REPL, "§!echo double° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo double"));
@@ -1002,7 +1002,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_STRING {
   data_mc->check_carbdata_callframe(fram_mc);
   data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "!§echo string° " << $1
+  RPS_DEBUG_LOG(LOWREP, "!§echo string° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo string"));
   RPS_DEBUG_LOG(REPL, "§!echo string° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo string"));
@@ -1015,7 +1015,7 @@ minicarbnt_command: LEX_KW_ECHO LEX_CHUNK {
   data_mc->check_carbdata_callframe(fram_mc);
   data_mc->incr_carbdata_command_count();
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "!§echo chunk° " << $1
+  RPS_DEBUG_LOG(LOWREP, "!§echo chunk° " << $1
                 << RPS_FULL_BACKTRACE(1, "echo chunk"));
   RPS_DEBUG_LOG(REPL, "§!echo chunk° "<< $1
                 << RPS_FULL_BACKTRACE(1, "echo chunk"));
@@ -1066,7 +1066,7 @@ minicarbnt_input: LEX_END {
   _Pragma("message \"input as eof\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "minicarb*input as eof° "
+  RPS_DEBUG_LOG(LOWREP, "minicarb*input as eof° "
                 << RPS_FULL_BACKTRACE(1, "input as eof"));
   RPS_DEBUG_LOG(REPL, "minicarb*input as eof° "
                 << RPS_FULL_BACKTRACE(1, "input as eof"));
@@ -1078,7 +1078,7 @@ minicarbnt_input: minicarbnt_command minicarbnt_input  {
   _Pragma("message \"input starting with command\"");
   data_mc->check_carbdata_callframe(fram_mc);
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "input starting with command° "
+  RPS_DEBUG_LOG(LOWREP, "input starting with command° "
                 << RPS_FULL_BACKTRACE(1, "input starts w. command"));
   RPS_DEBUG_LOG(REPL, "input starting with command° "
                 << RPS_FULL_BACKTRACE(1, "input as command"));

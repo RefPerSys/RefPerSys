@@ -2547,7 +2547,7 @@ bool
 rps_is_set_debug(const std::string &curlev)
 {
   if (curlev.empty()) return false;
-#define Rps_IS_SET_DEBUG(Opt) else if (curlev == #Opt)  \
+#define Rps_IS_SET_DEBUG(Opt,Help) else if (curlev == #Opt)	\
     return  rps_debug_flags & (1 << RPS_DEBUG_##Opt);
   RPS_DEBUG_OPTIONS(Rps_IS_SET_DEBUG);
 #undef Rps_IS_SET_DEBUG
@@ -2558,7 +2558,7 @@ Rps_Debug
 rps_debug_of_string(const std::string &deblev)
 {
   if (deblev.empty()) return RPS_DEBUG__NONE;
-#define Rps_TEST_DEBUG(Opt) else if (deblev == #Opt) return RPS_DEBUG_##Opt;
+#define Rps_TEST_DEBUG(Opt,Help) else if (deblev == #Opt) return RPS_DEBUG_##Opt;
   RPS_DEBUG_OPTIONS(Rps_TEST_DEBUG);
 #undef Rps_TEST_DEBUG
   return RPS_DEBUG__NONE;
@@ -2579,7 +2579,7 @@ rps_set_debug_flag(const std::string &curlev)
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
-#define Rps_SET_DEBUG(Opt)                            \
+#define Rps_SET_DEBUG(Opt,Hlp)			      \
   else if (curlev == #Opt) {                          \
     bool alreadygiven = rps_debug_flags               \
       & (1 << RPS_DEBUG_##Opt);                       \
@@ -2587,7 +2587,7 @@ rps_set_debug_flag(const std::string &curlev)
     goodflag = true;                                  \
     if (!alreadygiven)                                \
       RPS_INFORMOUT("setting debugging flag "         \
-                    << #Opt);  }
+                    << #Opt << " for " << Hlp);  }
   ///
   RPS_DEBUG_OPTIONS(Rps_SET_DEBUG);
 #undef Rps_SET_DEBUG
@@ -2610,7 +2610,7 @@ rps_set_debug(const std::string &deblev)
       fprintf(stderr, "Comma separated debugging levels with -D<debug-level>\n"
                       "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
 
-#define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
+#define Rps_SHOW_DEBUG(Opt,Hlp) fprintf(stderr, "\t%s [%s]\n", #Opt, Hlp);
       RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
 #undef Rps_SHOW_DEBUG
       fflush(nullptr);
@@ -2660,7 +2660,7 @@ rps_cstr_of_debug(Rps_Debug dbglev)
 {
   switch (dbglev)
     {
-#define Rps_CSTR_DEBUG(Lev) case RPS_DEBUG_##Lev: return #Lev;
+#define Rps_CSTR_DEBUG(Lev,Help) case RPS_DEBUG_##Lev: return #Lev;
       RPS_DEBUG_OPTIONS(Rps_CSTR_DEBUG);
 #undef Rps_CSTR_DEBUG
     default:
@@ -2677,12 +2677,12 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
   out << flags << "=" ;
   int nbf = 0;
   //
-#define SHOW_DBGFLAG(Lev)                       \
+#define SHOW_DBGFLAG(Lev,Hlp)			\
   do {                                          \
     if (flags & (1<< RPS_DEBUG_##Lev)) {        \
       if (nbf > 0)                              \
-  out << ',';       \
-      out << #Lev;                              \
+  out << ',';					\
+      out << #Lev << "//" << Hlp << std::endl;	\
       nbf++;                                    \
     }                                           \
   } while(0);

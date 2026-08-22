@@ -177,30 +177,29 @@ extern "C" void rps_readline_initialize(void); // for GNU readline
 ///
 /// Keep the debug options in alphabetical order in the list below
 ///
-#define RPS_DEBUG_OPTIONS(dbgmacro) \
-  dbgmacro(AGENDA)                  \
-  dbgmacro(CMD)                     \
-  dbgmacro(CODEGEN)                 \
-  dbgmacro(COMPL_REPL)              \
-  dbgmacro(DUMP)                    \
-  dbgmacro(EVENT_LOOP)              \
-  dbgmacro(GARBAGE_COLLECTOR)       \
-  dbgmacro(GUI)                     \
-  dbgmacro(LOAD)                    \
-  dbgmacro(LOWREP)                  \
-  dbgmacro(LOW_REPL)                \
-  dbgmacro(MISC)                    \
-  dbgmacro(MSGSEND)                 \
-  dbgmacro(PARSE)                   \
-  dbgmacro(PARSE_STRING)            \
-  dbgmacro(PROGARG)                 \
-  dbgmacro(REPL)                    \
-  dbgmacro(EXIT)                    \
-  dbgmacro(TMP1)                    \
-  dbgmacro(TMP2)                    \
+#define RPS_DEBUG_OPTIONS(Dbgmacro)	\
+  Dbgmacro(AGENDA, "agenda machinery")		\
+  Dbgmacro(CMD, "command")			\
+  Dbgmacro(CODEGEN, "code generation")		\
+  Dbgmacro(COMPL, "completion")			\
+  Dbgmacro(DUMP, "dump")			\
+  Dbgmacro(EVLOOP, "event loop")		\
+  Dbgmacro(GARBCOLL, "garbage collection")	\
+  Dbgmacro(GUI, "graphical user interface")	\
+  Dbgmacro(LOAD, "load")			\
+  Dbgmacro(LOWREP, "low level representation")	\
+  Dbgmacro(MISC, "miscellanous")		\
+  Dbgmacro(MSGSEND, "message sending")		\
+  Dbgmacro(PARSE, "parsing")			\
+  Dbgmacro(PARSTR, "parse of string")		\
+  Dbgmacro(PROGARG, "program arguments")	\
+  Dbgmacro(REPL, "read eval print loop")	\
+  Dbgmacro(EXIT, "exit code")			\
+  Dbgmacro(TMP1, "*temporary 1*")		\
+  Dbgmacro(TMP2, "*temporary 2*")		\
   /*end RPS_DEBUG_OPTIONS*/
 
-#define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
+#define RPS_DEBUG_OPTION_DEFINE(Dbgopt,Help) RPS_DEBUG_##Dbgopt,
 
 constexpr int RPS_INFORM_MSG_LEVEL= -1;
 constexpr int RPS_WARNING_MSG_LEVEL= -2;
@@ -902,7 +901,7 @@ void rps_set_debug_output_path(const char*filepath);
 // so we could code  RPS_DEBUG_PRINTF(NEVER, ....)
 #define RPS_DEBUG_NEVER RPS_DEBUG__NONE
 
-#define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
+#define RPS_DEBUG_ENABLED(Dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##Dbgopt))
 
 
 /* NB: before commit 73727a76ce7b6 at end of april 2026 we thought about

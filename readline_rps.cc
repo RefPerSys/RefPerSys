@@ -125,6 +125,7 @@ rps_readline_tab(int cnt, int key)
 {
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(rl_line_buffer);
+  RPS_DEBUG_LOG(COMPL,"cnt=" << cnt << " key=" << key);
   RPS_ASSERT(key=='\t');
   if (rl_point <= 0)    // first column
     return 1;

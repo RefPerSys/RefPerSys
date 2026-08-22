@@ -9,8 +9,9 @@
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net> (France)
- *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
- *      Nimesh Neema <nimeshneema@gmail.com> (India)
+ *
+ * past indian contributors:
+ *      (Abhishek Chakravarti, Nimesh Neema)
  *
  *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -250,7 +251,7 @@ Rps_TokenSource::starting_new_input_line(void)
   toksrc_line++;
   fill_current_line_buffer();
   RPS_UNIQUE_BREAKPOINT();
-  RPS_DEBUG_LOG(LOW_REPL, "starting_new_input_line " << *this
+  RPS_DEBUG_LOG(LOWREP, "starting_new_input_line " << *this
                 << " line@" << (void*)(toksrc_lincbuf)
                 << " " << Rps_QuotedC_String(toksrc_lincbuf));
 } // end Rps_TokenSource::starting_new_input_line
@@ -2208,7 +2209,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
                            Rps_ObjectRef namedob;
                 );
   _f.obchunk = obchkarg;
-  RPS_DEBUG_LOG(LOW_REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno="
+  RPS_DEBUG_LOG(LOWREP, "Rps_TokenSource::lex_chunk_element chunkdata_colno="
                 << chkdata->chunkdata_colno
                 << " curpos:" << position_str()
                 << " lincbuf:" << Rps_QuotedC_String(toksrc_lincbuf));

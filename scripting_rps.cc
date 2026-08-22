@@ -447,7 +447,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                                 << " (*ptsrc)=" << (*ptsrc)
                                 << " @"  << (*ptsrc).position_str()
                                 << " loop#" << loopcnt);
-                  RPS_DEBUG_LOG(LOW_REPL, "rps_run_one_script_file/MINICARB ix=" << ix
+                  RPS_DEBUG_LOG(LOWREP, "rps_run_one_script_file/MINICARB ix=" << ix
                                 << " sarg=" << Rps_QuotedC_String(sarg)
                                 << " *MINICARB* "
                                 << " (*ptsrc)=" << (*ptsrc)
@@ -614,7 +614,7 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
       RPS_INFORMOUT("did set core limit to 16Gb soft, 32Gb hard for pid "
                     << getpid());
   };
-  if (RPS_DEBUG_ENABLED(REPL) || RPS_DEBUG_ENABLED(LOW_REPL))
+  if (RPS_DEBUG_ENABLED(REPL) || RPS_DEBUG_ENABLED(LOWREP))
     {
       char lbuf[256];
       FILE*flim = fopen("/proc/self/limits", "r");
@@ -634,7 +634,7 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
     }
   RPS_DEBUG_LOG(REPL, "rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
-  RPS_DEBUG_LOG(LOW_REPL, "rps_run_script_minicarb_mode clp="
+  RPS_DEBUG_LOG(LOWREP, "rps_run_script_minicarb_mode clp="
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv
                 << " ix=" << ix << " loopcnt=" << loopcnt
                 << " tsrc=" << tsrc);
