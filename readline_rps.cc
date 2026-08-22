@@ -57,7 +57,7 @@ static char *readline_completion_rps (const char *, int);
 static char **readline_attempted_completion_rps (const char *, int, int);
 
 /// probably the readline prompt should be in a static buffer?
-static char rps_readline_buf_prompt[64];
+static char rps_readline_buf_prompt[64] = "°𝕣𝕡𝕤!";
 static std::mutex rps_readline_mtx_prompt;
 
 void
@@ -152,6 +152,7 @@ Rps_ReadlineTokenSource::fill_current_line_buffer(void)
   RPS_UNIQUE_BREAKPOINT();
   std::string prompt = rps_readline_fetch_string_prompt();
   RPS_DEBUG_LOG(REPL, "readline prompt=" << Rps_QuotedC_String(prompt));
+  RPS_ASSERT(!prompt.empty());
   char* rl = readline(prompt.c_str());
   RPS_DEBUG_LOG(REPL, "did readline " << Rps_QuotedC_String(rl));
   RPS_FATALOUT("incomplete Readline fill_current_line_buffer @"
