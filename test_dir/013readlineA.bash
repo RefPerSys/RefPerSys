@@ -41,8 +41,7 @@ ulimit -S -m $[3 * 1024]
 ulimit -S -f 32768
 
 ## the --script=_ is required to use Rps_ReadLineTokenSource!
-exec ./refpersys --run-name=013readlineA --script=_ -DREPL \
-     --run-delay=25s $*
+./refpersys --run-name=013readlineA --script=_ -DREPL --run-delay=25s $*
 
 ##
 ##**************

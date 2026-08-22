@@ -147,10 +147,16 @@ rps_scripting_add_script(const char*path)
     }
   else if (!strcmp(path, "_")) {
       RPS_UNIQUE_BREAKPOINT();
+      if (!isatty(STDIN_FILENO))
+	RPS_FATALOUT("cannot use readline with non tty stdin");
+      if (!isatty(STDOUT_FILENO))
+	RPS_FATALOUT("cannot use readline with non tty stdout");
       maker = rps_make_readline_token_source;		// use readline
       dupath = strdup("_");
       RPS_ASSERT(dupath);
       RPS_UNIQUE_BREAKPOINT();
+      RPS_INFORMOUT("will read using readline library "
+		    << rl_library_version);
     }
   else if (path[0]=='|' || path[0]=='!') {
       RPS_UNIQUE_BREAKPOINT();
@@ -187,10 +193,10 @@ rps_scripting_add_script(const char*path)
                      << " : " << strerror(errno));
     };
   struct stat scriptstat = {};
-  if (stat(dupath, &scriptstat))
+  if (!maker && stat(dupath, &scriptstat))
     RPS_FATALOUT("failed to stat script file " << dupath
                  << " : " << strerror(errno));
-  if (fsiz==0)
+  if (!maker && fsiz==0)
     RPS_FATALOUT("script file " << dupath << " is empty");
   if (fsiz<0 && !maker) { /// non-seekable file, maybe FIFO or Unix socket?
       RPS_UNIQUE_BREAKPOINT();
