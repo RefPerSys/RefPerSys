@@ -1666,7 +1666,8 @@ main (int argc, char** argv)
     versionwanted = true;
   /// we require the at(1) utility linuxize.com/post/at-command-in-linux/
   if (access("/bin/at", R_OK|X_OK))
-    RPS_FATALOUT("missing /bin/at utility program (related to batch)");
+    RPS_FATALOUT("missing /bin/at utility program (related to batch)\n"
+		"# probably install the at package");
   //// if --locale or --user-pref is given then process it quicky
   for (int lix=1; lix<argc; lix++)
     {
