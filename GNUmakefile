@@ -55,7 +55,7 @@ RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 # Carburetta is a parser generator on github.com/kingletbv/carburetta
 RPS_CARBURETTA := $(shell /usr/bin/which carburetta) #eg /usr/local/bin/carburetta
 
-# libpcodes.so is needed by GNU lightning libraries
+# libopcodes.so is needed by GNU lightning libraries
 RPS_LIBOPCODES_DIR := $(shell /bin/dirname $$(/usr/bin/locate libopcodes.so | /bin/head -1))
 Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
 FOXREFPERSYS_PACKAGES ?= 
@@ -118,13 +118,15 @@ REFPERSYS_CXX_STANDARD?= -std=gnu++2c
 REFPERSYS_CLANGXX?= clang++
 
 ## packages in the pkg-config sense
-PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68 libelf gtkmm-4.0
+PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68 libelf gtkmm-4.0 jsoncpp
 
 ## Qt6 - see www.qt.io - provides a meta object compiler
 ## See also doc.qt.io/qt-6/moc.html
 REFPERSYS_QT6MOC ?= /usr/lib/qt6/libexec/moc
 
 CFLAGS?= -Og -g -Wall $(RPS_LTO)
+
+CFLAGS += $(shell pkg-config --cflags $(PACKAGES_REFPERSYS))
 
 ### Human hand-written C++ sources
 REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
