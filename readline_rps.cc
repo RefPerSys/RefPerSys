@@ -129,6 +129,11 @@ rps_readline_tab(int cnt, int key)
   RPS_ASSERT(key=='\t');
   if (rl_point <= 0)    // first column
     return 1;
+  if (!strcmp(rl_line_buffer+rl_point, "\euro")) {
+    rl_delete_text(rl_point, strlen("\euro"));
+    rl_insert_text("€");
+    rl_forced_update_display();
+  }
 #warning incomplete rps_readline_tab
   return 0;
 } // end rps_readline_tab
@@ -148,15 +153,18 @@ rps_readline_esc(int cnt, int key)
 void
 Rps_ReadlineTokenSource::fill_current_line_buffer(void)
 {
-#warning unimplemented Rps_ReadlineTokenSource::fill_current_line_buffer
+#warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
   RPS_UNIQUE_BREAKPOINT();
   std::string prompt = rps_readline_fetch_string_prompt();
   RPS_DEBUG_LOG(REPL, "readline prompt=" << Rps_QuotedC_String(prompt));
   RPS_ASSERT(!prompt.empty());
   char* rl = readline(prompt.c_str());
   RPS_DEBUG_LOG(REPL, "did readline " << Rps_QuotedC_String(rl));
-  RPS_FATALOUT("incomplete Readline fill_current_line_buffer @"
-               << (void*)this << " rl=" << rl);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_WARNOUT("incomplete Readline fill_current_line_buffer @"
+	      << (void*)this << " rl=" << Rps_QuotedC_String(rl)
+	      << " readlinbuf=" << Rps_QuotedC_String(rl_line_buffer)
+	      << RPS_FULL_BACKTRACE_HERE(1, "readline fillcurlinbuf"));
 #warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
 } // end Rps_ReadlineTokenSource::fill_current_line_buffer
 
