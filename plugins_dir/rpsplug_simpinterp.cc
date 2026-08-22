@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // see http://refpersys.org/
 // GPLv3+ licensed
-// © Copyright 2024 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright (C) 2024 - 2026 Basile Starynkevitch <basile@starynkevitch.net>
 
 /***
     This plugin contains a simple interpreter. The interpreter's
@@ -25,7 +25,7 @@
 /// on whatsapp March 14 2024 Abhishek approved a C like syntax; we
 /// hope for him to be allowed to informally specify it in Feb 2025
 // See https://github.com/RefPerSys/RefPerSys/issues/21
-
+/// in summer 2026 Abhishek is forbidden to contribute to RefPerSys
 void
 rps_do_plugin(const Rps_Plugin*plugin)
 {
