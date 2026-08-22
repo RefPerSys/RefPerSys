@@ -53,6 +53,9 @@ extern "C" int rps_readline_tab(int, int);
 extern "C" int rps_readline_esc(int, int);
 
 
+static char *readline_completion_rps (const char *, int);
+static char **readline_attempted_completion_rps (const char *, int, int);
+
 /// probably the readline prompt should be in a static buffer?
 static char rps_readline_buf_prompt[64];
 static std::mutex rps_readline_mtx_prompt;
@@ -89,9 +92,33 @@ rps_readline_initialize(void)
   rl_initialize();
   rl_bind_key('\t', rps_readline_tab);
   rl_bind_key('\e', rps_readline_esc);
+  rl_completion_entry_function = readline_completion_rps;
+  rl_attempted_completion_function = readline_attempted_completion_rps;
   RPS_INFORMOUT("readline initialized " << rl_library_version);
 #warning incomplete rps_readline_initialize
 } // end rps_readline_initialize
+
+static char *
+readline_completion_rps (const char *str, int key)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented readline competion str="
+               << Rps_QuotedC_String(str)
+               << " rl.buf=" << Rps_QuotedC_String(rl_line_buffer)
+               << " key=" << (int)key << ":" << (char)key);
+#warning unimplemented readline_completion_rps
+} // end readline_completion_rps
+
+static char **
+readline_attempted_completion_rps (const char *text, int start, int end)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented readline attempted completion text="
+               << Rps_QuotedC_String(text)
+               << " rl.buf=" << Rps_QuotedC_String(rl_line_buffer)
+               << " start=" << start
+               << " end=" << end);
+} // end readline_attempted_completion_rps
 
 int
 rps_readline_tab(int cnt, int key)
