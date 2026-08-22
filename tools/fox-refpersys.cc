@@ -266,6 +266,11 @@ FXint
 FoxrpsApp::run(void)
 {
   FOXRPS_DEBUGOUT("run app @" << (void*)this);
+  int w = reg().readIntEntry("mainwin","width",400);
+  int h = reg().readIntEntry("mainwin","height",330);
+  FOXRPS_DEBUGOUT("w=" << w << ", h=" << h);
+  _app_mainwin->setWidth(w);
+  _app_mainwin->setHeight(h);
   _app_mainwin->layout();
   _app_mainwin->show();
   FOXRPS_DEBUGOUT("show _app_mainwin@" << (void*)_app_mainwin);
@@ -300,16 +305,22 @@ FoxrpsMainWindow::create(void)  // virtual method
 void
 FoxrpsMainWindow::layout(void)   // virtual method
 {
-  FOXRPS_DEBUGOUT("mainwin layout this@" << (void*)this);
   FXMainWindow::layout();
+  FOXRPS_DEBUGOUT("mainwin layout this@" << (void*)this
+		  << " id=" << id() << " width=" << getWidth()
+		  << " height=" << getHeight()
+		  << " x=" << getX() << " y=" << getY());
 #warning incomplete FoxrpsMainWindow::layout
 } // end FoxrpsMainWindow::layout
 
 void
 FoxrpsMainWindow::show(void)   // virtual method
 {
-  FOXRPS_DEBUGOUT("maywin show this@" << (void*)this);
   FXMainWindow::show();
+  FOXRPS_DEBUGOUT("mainwin show this@" << (void*)this
+		  << " id=" << id() << " width=" << getWidth()
+		  << " height=" << getHeight()
+		  << " x=" << getX() << " y=" << getY());
 #warning incomplete FoxrpsMainWindow::show
 } // end FoxrpsMainWindow::show
 
@@ -353,7 +364,7 @@ foxrps_show_version(void)
             << "." << FOX_LEVEL << "-"
             << FXApp::copyright << std::endl;
   std::cout << "see "
-            << __FILE__
+            << "tools/" __FILE__
             << " under github.com/RefPerSys/RefPerSys" << std::endl;
   std::cout << "*NO WARRANTY* since GPLv3+ licensed, see "
             << "www.gnu.org/licenses/gpl-3.0.html" << std::endl;
@@ -435,6 +446,7 @@ main(int argc, char**argv)
   foxrps_ptr_app.reset(&the_app);
   the_app.init(argc, argv);
   foxrps_prog_args();
+  the_app.reg().read();
   exitcode = the_app.run();
   foxrps_ptr_app.release();
   return exitcode;
