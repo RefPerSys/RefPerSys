@@ -59,7 +59,7 @@ extern "C" const char rps_main_baseid[];
 const char rps_main_baseid[] = RPS_BASEID;
 
 
-
+extern "C" bool rps_helpwanted;	// in utilities_rps.cc
 
 ////////////////
 extern "C" char rps_buffer_proc_version[];
@@ -488,7 +488,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_USER_PREFERENCES, ///
     /*arg:*/ "USER_PREF", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Set the user preferences to given\n"
+    /*doc:*/ "Set the\n"
+    "user preferences to given\n"
     "USER_PREF file; Lines there starting with # are comments.\n"
     "Lines before the first *REFPERSYS_USER_PREFERENCES are ignored.\n"
     "\t So they could be some shell script....\n"
@@ -1653,7 +1654,7 @@ main (int argc, char** argv)
   pthread_setname_np(pthread_self(), "rps--main");
   char*mylocale = nullptr;
   char*myuserpref = nullptr;
-  bool helpwanted = false;
+  rps_helpwanted = false;
   bool versionwanted = false;
   bool disableduserpref = false;
   _Pragma("message \"start of main\"");
@@ -1663,7 +1664,7 @@ main (int argc, char** argv)
   Glib::init(); /// initialize glibmm ....
 #endif
   if (argc>1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-?")))
-    helpwanted = true;
+    rps_helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
     versionwanted = true;
   /// we require the at(1) utility linuxize.com/post/at-command-in-linux/
@@ -1754,13 +1755,13 @@ main (int argc, char** argv)
       RPS_INFORMOUT("disabled user preferences");
       disableduserpref = true;
     };
-  if (helpwanted)
+  if (rps_helpwanted)
     printf("%s preference example file is in\n"
            "… %s/etc/user-preferences-refpersys.txt\n"
            "… so copy it to ~/" REFPERSYS_DEFAULT_PREFERENCE_PATH
            " and improve it\n",
            rps_progname, rps_topdirectory);
-  if (helpwanted || versionwanted)
+  if (rps_helpwanted || versionwanted)
     printf("%s minimal jobs or threads number %d, maximal %d, default %d\n",
            rps_progname, RPS_NBJOBS_MIN, RPS_NBJOBS_MAX, rps_nbjobs);
   fflush(nullptr);

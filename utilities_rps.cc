@@ -72,6 +72,7 @@ extern "C" char*rps_chdir_path_after_load;
 
 static bool rps_flag_pref_help;
 
+bool rps_helpwanted;
 std::string rps_run_name;
 
 /// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
@@ -1911,6 +1912,20 @@ rps_parse_program_arguments(int &argc, char**argv)
   if (argp_parse(&argparser_rps, argc, argv, 0, &aix, nullptr))
     RPS_FATALOUT("failed to parse program arguments to " << argv[0]
                  << " at program argument index aix=" << aix);
+  if (rps_helpwanted) {
+    RPS_UNIQUE_BREAKPOINT();
+    std::cout << "*** debug level flag in C++ code ***" << std::endl;
+    std::cout << "# levelname | explanation" << std::endl;
+    char levbuf[80];
+#define Rps_Explain_Level_Help(Level,Str) do {          \
+    memset(levbuf, 0, sizeof(levbuf));                  \
+    snprintf(levbuf, sizeof(levbuf), "\t %14s # %s",    \
+             #Level, Str);                              \
+    std::cout << levbuf << std::endl;                   \
+  } while(0);
+    RPS_DEBUG_OPTIONS(Rps_Explain_Level_Help);
+#undef Rps_Explain_Level_Help
+  } // end if rps_helpwanted
   RPS_POSSIBLE_BREAKPOINT();
 } // end rps_parse_program_arguments
 
@@ -2547,7 +2562,7 @@ bool
 rps_is_set_debug(const std::string &curlev)
 {
   if (curlev.empty()) return false;
-#define Rps_IS_SET_DEBUG(Opt,Help) else if (curlev == #Opt)	\
+#define Rps_IS_SET_DEBUG(Opt,Help) else if (curlev == #Opt)     \
     return  rps_debug_flags & (1 << RPS_DEBUG_##Opt);
   RPS_DEBUG_OPTIONS(Rps_IS_SET_DEBUG);
 #undef Rps_IS_SET_DEBUG
@@ -2579,7 +2594,7 @@ rps_set_debug_flag(const std::string &curlev)
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
-#define Rps_SET_DEBUG(Opt,Hlp)			      \
+#define Rps_SET_DEBUG(Opt,Hlp)                        \
   else if (curlev == #Opt) {                          \
     bool alreadygiven = rps_debug_flags               \
       & (1 << RPS_DEBUG_##Opt);                       \
@@ -2677,12 +2692,12 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
   out << flags << "=" ;
   int nbf = 0;
   //
-#define SHOW_DBGFLAG(Lev,Hlp)			\
+#define SHOW_DBGFLAG(Lev,Hlp)                   \
   do {                                          \
     if (flags & (1<< RPS_DEBUG_##Lev)) {        \
       if (nbf > 0)                              \
-  out << ',';					\
-      out << #Lev << "//" << Hlp << std::endl;	\
+  out << ',';                                   \
+      out << #Lev << "//" << Hlp << std::endl;  \
       nbf++;                                    \
     }                                           \
   } while(0);
