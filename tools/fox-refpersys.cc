@@ -279,6 +279,13 @@ FoxrpsApp::run(void)
   return i;
 } // end FoxrpsApp::run
 
+FXDEFMAP(FoxrpsMainWindow) FoxrpsMainWindowMap[]
+{
+};
+
+FXIMPLEMENT(FoxrpsMainWindow,FXMainWindow,
+            FoxrpsMainWindowMap, ARRAYNUMBER(FoxrpsMainWindowMap));
+
 FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp)
   :  FXMainWindow(),
      _main_vertframe(nullptr), _main_menubar(nullptr), _main_filemenu(nullptr), _main_quitcmd(nullptr)
@@ -307,9 +314,9 @@ FoxrpsMainWindow::layout(void)   // virtual method
 {
   FXMainWindow::layout();
   FOXRPS_DEBUGOUT("mainwin layout this@" << (void*)this
-		  << " id=" << id() << " width=" << getWidth()
-		  << " height=" << getHeight()
-		  << " x=" << getX() << " y=" << getY());
+                  << " id=" << id() << " width=" << getWidth()
+                  << " height=" << getHeight()
+                  << " x=" << getX() << " y=" << getY());
 #warning incomplete FoxrpsMainWindow::layout
 } // end FoxrpsMainWindow::layout
 
@@ -318,9 +325,9 @@ FoxrpsMainWindow::show(void)   // virtual method
 {
   FXMainWindow::show();
   FOXRPS_DEBUGOUT("mainwin show this@" << (void*)this
-		  << " id=" << id() << " width=" << getWidth()
-		  << " height=" << getHeight()
-		  << " x=" << getX() << " y=" << getY());
+                  << " id=" << id() << " width=" << getWidth()
+                  << " height=" << getHeight()
+                  << " x=" << getX() << " y=" << getY());
 #warning incomplete FoxrpsMainWindow::show
 } // end FoxrpsMainWindow::show
 
@@ -333,13 +340,6 @@ FoxrpsMainWindow::output(std::ostream&out) const
 
 
 ////////////////
-FXDEFMAP(FoxrpsMainWindow) FoxrpsMainWindowMap[]=
-{
-};
-
-FXIMPLEMENT(FoxrpsMainWindow,FXMainWindow,
-            FoxrpsMainWindowMap, ARRAYNUMBER(FoxrpsMainWindowMap));
-
 
 static void
 foxrps_usage(void)
