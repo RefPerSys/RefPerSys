@@ -1752,11 +1752,13 @@ rpsconf_ask_carburetta (void)
     }
   while (!feof (p));
   int fail = pclose (p);
-  if (!foundw_parser || !foundw_scanner
+  if (fail != 0 || !foundw_parser || !foundw_scanner
       || !foundw_carburetta || !foundw_generator || !foundw_cbrt)
     {
+      /*€ carburetta n'a pas été trouvé ou n'est pas conforme.*/
+      // carburetta is missing, bad or unexepected. cf carburetta.com
       fprintf (stderr, "%s [git %s] ran %s with disappointing output.\n"
-                       "See the comment near %s:%d\n",
+                       "See the comment near %s:%d (and carburetta.com)\n",
                rpsconf_prog_name, RPSCONF_GIT_ID, pcmdbuf,
                __FILE__, commline);
       exit (EXIT_FAILURE);
@@ -1811,7 +1813,7 @@ main (int argc, char **argv)
           " ça doit être un chemin absolu (tel que /etc/passwd)\n",
           rpsconf_prog_name);
   printf ("\t une entrée commançant par ! est une commande shell\n"
-          "\t et la question est alors répétée\n");
+          "\t qui est executée et la question est alors répétée\n");
   printf
   ("\t When asked for file paths, you are expected to\n"
    "\t enter an absolute path, like /etc/passwd\n"
