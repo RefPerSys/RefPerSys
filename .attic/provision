@@ -6,8 +6,8 @@
 # Description:
 #      This file is part of the Reflective Persistent System.
 #
-#      It provisions a Debian 11 virtual machine through Vagrant on which to
-#      build the RefPerSys binary.
+#      It provisions a Debian 11 virtual machine through Vagrant on
+#      which to build the RefPerSys binary.
 #
 # Author(s):
 #      Basile Starynkevitch <basile@starynkevitch.net>
