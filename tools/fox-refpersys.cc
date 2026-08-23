@@ -176,6 +176,7 @@ public:
   FoxrpsApp(const FXString&name, const FXString&vendor);
   virtual ~FoxrpsApp();
   virtual FXint run(void);
+  virtual void create(void);
 };                              // end FoxrpsApp
 
 // Our main window
@@ -257,6 +258,14 @@ FoxrpsApp::FoxrpsApp(const FXString&name, const FXString&vendor)
   _app_mainwin = new FoxrpsMainWindow(this);
 }// end constr FoxrpsApp::FoxrpsApp
 
+void
+FoxrpsApp::create(void)
+{
+  FOXRPS_DEBUGOUT("app @" << (void*)this << " create+");
+  FX::FXApp::create();
+  FOXRPS_DEBUGOUT("app @" << (void*)this << " create-d");
+} // end FoxrpsApp::create()
+
 FoxrpsApp::~FoxrpsApp()
 {
   FOXRPS_DEBUGOUT("destr app @" << (void*)this);
@@ -271,6 +280,7 @@ FoxrpsApp::run(void)
   FOXRPS_DEBUGOUT("w=" << w << ", h=" << h);
   _app_mainwin->setWidth(w);
   _app_mainwin->setHeight(h);
+  _app_mainwin->create();
   _app_mainwin->layout();
   _app_mainwin->show();
   FOXRPS_DEBUGOUT("show _app_mainwin@" << (void*)_app_mainwin);
@@ -455,6 +465,9 @@ main(int argc, char**argv)
   the_app.init(argc, argv);
   FOXRPS_DEBUGOUT("main the_app@" << (void*)&the_app);
   foxrps_prog_args();
+  FOXRPS_DEBUGOUT("main create the_app@" << (void*)&the_app);
+  the_app.create();
+  FOXRPS_DEBUGOUT("main registry read the_app@" << (void*)&the_app);
   the_app.reg().read();
   FOXRPS_DEBUGOUT("main run the_app@" << (void*)&the_app);
   exitcode = the_app.run();
