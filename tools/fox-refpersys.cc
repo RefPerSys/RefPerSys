@@ -283,8 +283,8 @@ FXint
 FoxrpsApp::run(void)
 {
   FOXRPS_DEBUGOUT("run app @" << (void*)this);
-  int w = reg().readIntEntry("mainwin","width",400);
-  int h = reg().readIntEntry("mainwin","height",330);
+  int w = reg().readIntEntry("mainwin","width",600);
+  int h = reg().readIntEntry("mainwin","height",430);
   FOXRPS_DEBUGOUT("w=" << w << ", h=" << h);
   _app_mainwin->setWidth(w);
   _app_mainwin->setHeight(h);
