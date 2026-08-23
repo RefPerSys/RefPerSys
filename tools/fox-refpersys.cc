@@ -288,23 +288,25 @@ FXIMPLEMENT(FoxrpsMainWindow,FXMainWindow,
 
 FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp)
   :  FXMainWindow(),
-     _main_vertframe(nullptr), _main_menubar(nullptr), _main_filemenu(nullptr), _main_quitcmd(nullptr)
+     _main_vertframe(nullptr), _main_menubar(nullptr),
+     _main_filemenu(nullptr), _main_quitcmd(nullptr)
 {
-  FOXRPS_DEBUGOUT("constr this@" << (void*)this);
+  FOXRPS_DEBUGOUT("constr this@" << (void*)this << " id=" << id());
   FOXRPS_BREAKPOINT();
 #warning incomplete FoxrpsMainWindow constructor
 } // end FoxrpsMainWindow::FoxrpsMainWindow
 
 FoxrpsMainWindow::~FoxrpsMainWindow()   //virtual destructor
 {
-  FOXRPS_DEBUGOUT("destr this@" << (void*)this);
+  FOXRPS_DEBUGOUT("destr this@" << (void*)this << " id=" << id());
 #warning incomplete FoxrpsMainWindow destructor
 } // end FoxrpsMainWindow::~FoxrpsMainWindow
 
 void
 FoxrpsMainWindow::create(void)  // virtual method
 {
-  FOXRPS_DEBUGOUT("FoxrpsMainWindow::create this@" << (void*)this);
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::create this@" << (void*)this
+		  << " id=" << id());
   FXMainWindow::create();
 #warning incomplete FoxrpsMainWindow::create
 } // end FoxrpsMainWindow::create
@@ -312,6 +314,8 @@ FoxrpsMainWindow::create(void)  // virtual method
 void
 FoxrpsMainWindow::layout(void)   // virtual method
 {
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::layout+ this@" << (void*)this
+		  << " id=" << id());
   FXMainWindow::layout();
   FOXRPS_DEBUGOUT("mainwin layout this@" << (void*)this
                   << " id=" << id() << " width=" << getWidth()
@@ -323,6 +327,8 @@ FoxrpsMainWindow::layout(void)   // virtual method
 void
 FoxrpsMainWindow::show(void)   // virtual method
 {
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::show+ this@" << (void*)this
+		  << " id=" << id());
   FXMainWindow::show();
   FOXRPS_DEBUGOUT("mainwin show this@" << (void*)this
                   << " id=" << id() << " width=" << getWidth()
@@ -334,6 +340,8 @@ FoxrpsMainWindow::show(void)   // virtual method
 void
 FoxrpsMainWindow::output(std::ostream&out) const
 {
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::output+ this@" << (void*)this
+		  << " id=" << id());
 #warning incomplete FoxrpsMainWindow::output
   out << "FoxrpsMainWindow@" << (void*)this;
 } // end FoxrpsMainWindow::output
@@ -445,10 +453,13 @@ main(int argc, char**argv)
   FoxrpsApp the_app("fox-refpersys", "refpersys.org");
   foxrps_ptr_app.reset(&the_app);
   the_app.init(argc, argv);
+  FOXRPS_DEBUGOUT("main the_app@" << (void*)&the_app);
   foxrps_prog_args();
   the_app.reg().read();
+  FOXRPS_DEBUGOUT("main run the_app@" << (void*)&the_app);
   exitcode = the_app.run();
   foxrps_ptr_app.release();
+  FOXRPS_DEBUGOUT("main exit code=" << exitcode);
   return exitcode;
 } // end of main
 
