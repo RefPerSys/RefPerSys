@@ -241,8 +241,10 @@ Rps_Agenda::run_agenda_worker(int ix)
         RPS_POSSIBLE_BREAKPOINT();
         std::this_thread::sleep_for(2ms);
       }
-    if (cnt>=maxloop) // won't happen in practice
-      RPS_FATALOUT("run_agenda_worker: failed to be in agenda_thread_array_[" << ix << "]");
+    if (cnt>=maxloop-1) // won't happen in practice
+      RPS_FATALOUT("run_agenda_worker (cnt=" << cnt
+                   << "): failed to be in agenda_thread_array_["
+                   << ix << "]");
   }
   ////
   RPS_POSSIBLE_BREAKPOINT();
