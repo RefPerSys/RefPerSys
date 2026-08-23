@@ -59,7 +59,7 @@ RPS_CARBURETTA := $(shell /usr/bin/which carburetta) #eg /usr/local/bin/carburet
 RPS_LIBOPCODES_DIR := $(shell /bin/dirname $$(/usr/bin/locate libopcodes.so | /bin/head -1))
 Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
 FOXREFPERSYS_PACKAGES ?=
-FLTKREFPERSYS_PACKAGES ?= 
+FLTKREFPERSYS_PACKAGES ?= gl gtk4
 ## see https://lists.debian.org/debian-user-french/2025/12/msg00005.html
 RPS_DEBARCH?=$(strip $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)) #eg x86_64-linux-gnu
 ## REFPERSYS_LTO is by convention for link-time optimization flags
