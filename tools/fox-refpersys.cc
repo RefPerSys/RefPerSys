@@ -66,6 +66,8 @@ extern "C" char** foxrps_argv;
 extern "C" bool foxrps_with_debug;
 extern "C" void* foxrps_dlh;
 extern "C" std::unique_ptr< FX::FXApp> foxrps_ptr_app;
+extern "C" FXRandom foxrps_random;
+
 #ifndef GITID
 #error GITID should be defined in compilation command
 #endif
@@ -205,6 +207,8 @@ public:
   void output (std::ostream&out) const;
 };        // end FoxrpsMainWindow
 
+extern "C" long foxrps_long_random(void);
+extern "C" double foxrps_double_random(void);
 
 ////////////////////////////////////////////////////////////////
 ///////////// end of declaration part 
@@ -235,7 +239,7 @@ char**foxrps_argv;
 char foxrps_host_name[128];
 bool foxrps_with_debug;
 void* foxrps_dlh;
-
+FXRandom foxrps_random;
 
 FXDEFMAP(FoxrpsApp) FoxrpsAppMap[]=
 {
@@ -330,10 +334,15 @@ FoxrpsMainWindow::create(void)  // virtual method
 void
 FoxrpsMainWindow::layout(void)   // virtual method
 {
+  int x= (foxrps_long_random() & 0xff) + 4;
+  int y= (foxrps_long_random() & 0xff) + 2;
   FOXRPS_DEBUGOUT("FoxrpsMainWindow::layout+ this@" << (void*)this
-		  << " id=" << id());
+		  << " id=" << id() << " x=" << x << " y=" << y);
+  FXMainWindow::move(x,y);
+  FOXRPS_DEBUGOUT("moved this@" << (void*)this << " to x=" << x
+		  << " y=" << y);
   FXMainWindow::layout();
-  FOXRPS_DEBUGOUT("mainwin layout this@" << (void*)this
+  FOXRPS_DEBUGOUT("layout this@" << (void*)this
                   << " id=" << id() << " width=" << getWidth()
                   << " height=" << getHeight()
                   << " x=" << getX() << " y=" << getY());
@@ -376,6 +385,20 @@ foxrps_usage(void)
             << __FILE__ << ":" << __LINE__ << std::endl;
 #warning incomplete foxrps_usage
 } // end foxrps_usage
+
+long
+foxrps_long_random(void)
+{
+  foxrps_random.next();
+  return foxrps_random.randLong();
+} // end foxrps_long_random
+
+double
+foxrps_double_random(void)
+{
+  foxrps_random.next();
+  return foxrps_random.randDouble();
+} // end foxrps_double_random
 
 static void
 foxrps_show_version(void)
@@ -426,6 +449,7 @@ main(int argc, char**argv)
   int exitcode = 0;
   foxrps_argc = argc;
   foxrps_argv = argv;
+  foxrps_random.seed(getpid());
   memset (foxrps_host_name, 0, sizeof(foxrps_host_name));
   gethostname(foxrps_host_name, sizeof(foxrps_host_name)-1);
   foxrps_dlh = dlopen(nullptr, RTLD_NOW);
