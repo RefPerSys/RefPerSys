@@ -58,7 +58,8 @@ RPS_CARBURETTA := $(shell /usr/bin/which carburetta) #eg /usr/local/bin/carburet
 # libopcodes.so is needed by GNU lightning libraries
 RPS_LIBOPCODES_DIR := $(shell /bin/dirname $$(/usr/bin/locate libopcodes.so | /bin/head -1))
 Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
-FOXREFPERSYS_PACKAGES ?= 
+FOXREFPERSYS_PACKAGES ?=
+FLTKREFPERSYS_PACKAGES ?= 
 ## see https://lists.debian.org/debian-user-french/2025/12/msg00005.html
 RPS_DEBARCH?=$(strip $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)) #eg x86_64-linux-gnu
 ## REFPERSYS_LTO is by convention for link-time optimization flags
@@ -235,6 +236,8 @@ everything: all
 	$(MAKE) q6refpersys
 	@/usr/bin/printf "\n\nMaking fox-refpersys\n\n"
 	$(MAKE) fox-refpersys
+	@/usr/bin/printf "\n\nMaking fltk-refpersys\n\n"
+	$(MAKE) fltk-refpersys
 
 
 fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
@@ -250,6 +253,22 @@ fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
         $< \
 	-U_Rps_FoxLibsA $(shell pkg-config --libs $(FOXREFPERSYS_PACKAGES)) \
 	-U_Rps_FoxLibsB $(shell fox-config --libs) \
+        -o $@
+
+
+fltk-refpersys: tools/fltk-refpersys.cc __buildinfo.o | GNUmakefile
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-U_Rps_Fltk_RefPerSys \
+	-DSELF_FILE='"$(realpath $<)"' \
+	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	__buildinfo.o \
+	-U_Rps_FltkPack $(shell pkg-config --cflags $(FLTKREFPERSYS_PACKAGES)) \
+	-U_Rps_FltkCflags $(shell fltk-config --cflags) \
+        $< \
+	-U_Rps_FltkLibsA $(shell pkg-config --libs $(FLTKREFPERSYS_PACKAGES)) \
+	-U_Rps_FltkLibsB $(shell fltk-config --libs -g) \
         -o $@
 
 objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __buildinfo.o _carbrepl_rps.o
