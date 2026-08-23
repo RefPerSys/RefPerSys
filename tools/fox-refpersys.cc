@@ -138,10 +138,12 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_FATALOUT(Out) FOXRPS_FATALOUT_AT(__FILE__,__LINE__,Out)
 
+#define FOXRPS_FUNC() (strrchr(__PRETTY_FUNCTION__, ' ')+1)
+
 /// serious warnings
 #define FOXRPS_WARNOUT_AT_BIS(Fil,Lin,Out) do {         \
   std::cerr << "FOXRPS WARNING: " << Out << std::flush  \
-      << Fil<<":"<< Lin<< "::"<< __FUNCTION__           \
+	    << Fil<<":"<< Lin<< "::"<< FOXRPS_FUNC()	\
         <<  "git:" << foxrps_shortgitid                 \
         << " host " << foxrps_host_name<< std::endl;    \
   FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
@@ -154,8 +156,8 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {        \
     if (foxrps_with_debug)                              \
-      std::clog << Fil << ":" << Lin                    \
-    << "::"<< __FUNCTION__ << " "   \
+      std::clog << basename(Fil) << ":" << Lin		\
+		<< "::"<< FOXRPS_FUNC() << " "		\
     << Out << std::endl;      \
     FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);      \
   } while(0)
