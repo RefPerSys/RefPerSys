@@ -195,7 +195,7 @@ protected:
     FOXRPS_DEBUGOUT("FoxrpsMainWindow @" << (void*)this);
   };
 public:
-  FoxrpsMainWindow(FXApp *theapp);
+  FoxrpsMainWindow(FXApp *theapp, const FXString&);
   virtual ~FoxrpsMainWindow();
   virtual void create(void);
   virtual void layout(void);
@@ -247,7 +247,9 @@ FoxrpsApp::FoxrpsApp():
   FX::FXApp(), _app_mainwin(nullptr)
 {
   FOXRPS_DEBUGOUT("app @" << (void*)this);
-  _app_mainwin = new FoxrpsMainWindow(this);
+  _app_mainwin = new FoxrpsMainWindow(this, "foxrps");
+  FOXRPS_DEBUGOUT("app mainwin@" << (void*)_app_mainwin
+		  << " id=" << _app_mainwin->id());
 } // end empty constr FoxrpsApp::FoxrpsApp
 
 FoxrpsApp::FoxrpsApp(const FXString&name, const FXString&vendor)
@@ -255,7 +257,7 @@ FoxrpsApp::FoxrpsApp(const FXString&name, const FXString&vendor)
 {
   FOXRPS_DEBUGOUT("name=" << name.text() << ", vendor=" << vendor.text()
                   << " git " << foxrps_shortgitid << " @" << (void*)this);
-  _app_mainwin = new FoxrpsMainWindow(this);
+  _app_mainwin = new FoxrpsMainWindow(this,name+"_mainwin");
 }// end constr FoxrpsApp::FoxrpsApp
 
 void
@@ -296,12 +298,14 @@ FXDEFMAP(FoxrpsMainWindow) FoxrpsMainWindowMap[]
 FXIMPLEMENT(FoxrpsMainWindow,FXMainWindow,
             FoxrpsMainWindowMap, ARRAYNUMBER(FoxrpsMainWindowMap));
 
-FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp)
-  :  FXMainWindow(),
+FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp, const FXString&name)
+  :  FXMainWindow(theapp,name),
      _main_vertframe(nullptr), _main_menubar(nullptr),
      _main_filemenu(nullptr), _main_quitcmd(nullptr)
 {
-  FOXRPS_DEBUGOUT("constr this@" << (void*)this << " id=" << id());
+  FOXRPS_DEBUGOUT("constr mainwin this@" << (void*)this << " id=" << id()
+		  << " name=" << name.text()
+		  << " theapp@" << (void*)theapp);
   FOXRPS_BREAKPOINT();
 #warning incomplete FoxrpsMainWindow constructor
 } // end FoxrpsMainWindow::FoxrpsMainWindow

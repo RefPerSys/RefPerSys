@@ -241,7 +241,7 @@ everything: all
 
 
 fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
-	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O -Wall -Wextra $(CXXFLAGS) \
 	-U_Rps_FoX_RefPerSys \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
