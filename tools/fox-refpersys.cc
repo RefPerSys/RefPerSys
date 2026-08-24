@@ -145,7 +145,7 @@ extern "C" const char rps_cxx_compiler_version[];
 /// serious warnings
 #define FOXRPS_WARNOUT_AT_BIS(Fil,Lin,Out) do {         \
   std::cerr << "FOXRPS WARNING: " << Out << std::flush  \
-	    << Fil<<":"<< Lin<< "::"<< FOXRPS_FUNC()	\
+      << Fil<<":"<< Lin<< "::"<< FOXRPS_FUNC()  \
         <<  "git:" << foxrps_shortgitid                 \
         << " host " << foxrps_host_name<< std::endl;    \
   FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
@@ -158,8 +158,8 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {        \
     if (foxrps_with_debug)                              \
-      std::clog << basename(Fil) << ":" << Lin		\
-		<< "::"<< FOXRPS_FUNC() << " "		\
+      std::clog << basename(Fil) << ":" << Lin    \
+    << "::"<< FOXRPS_FUNC() << " "    \
     << Out << std::endl;      \
     FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);      \
   } while(0)
@@ -194,7 +194,8 @@ class FoxrpsMainWindow : public FXMainWindow
   FXMenuCommand *_main_quitcmd;
 protected:
   FoxrpsMainWindow(): FXMainWindow(),
-    _main_vertframe(nullptr), _main_menubar(nullptr), _main_filemenu(nullptr), _main_quitcmd(nullptr)
+    _main_vertframe(nullptr), _main_menubar(nullptr),
+    _main_filemenu(nullptr), _main_quitcmd(nullptr)
   {
     FOXRPS_DEBUGOUT("FoxrpsMainWindow @" << (void*)this);
   };
@@ -255,7 +256,7 @@ FoxrpsApp::FoxrpsApp():
   FOXRPS_DEBUGOUT("app @" << (void*)this);
   _app_mainwin = new FoxrpsMainWindow(this, "foxrps");
   FOXRPS_DEBUGOUT("app mainwin@" << (void*)_app_mainwin
-		  << " id=" << _app_mainwin->id());
+                  << " id=" << _app_mainwin->id());
 } // end empty constr FoxrpsApp::FoxrpsApp
 
 FoxrpsApp::FoxrpsApp(const FXString&name, const FXString&vendor)
@@ -310,8 +311,8 @@ FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp, const FXString&name)
      _main_filemenu(nullptr), _main_quitcmd(nullptr)
 {
   FOXRPS_DEBUGOUT("constr mainwin this@" << (void*)this << " id=" << id()
-		  << " name=" << name.text()
-		  << " theapp@" << (void*)theapp);
+                  << " name=" << name.text()
+                  << " theapp@" << (void*)theapp);
   FOXRPS_BREAKPOINT();
 #warning incomplete FoxrpsMainWindow constructor
 } // end FoxrpsMainWindow::FoxrpsMainWindow
@@ -325,9 +326,16 @@ FoxrpsMainWindow::~FoxrpsMainWindow()   //virtual destructor
 void
 FoxrpsMainWindow::create(void)  // virtual method
 {
-  FOXRPS_DEBUGOUT("FoxrpsMainWindow::create this@" << (void*)this
-		  << " id=" << id());
+  FOXRPS_DEBUGOUT("this@" << (void*)this
+                  << " id=" << id());
   FXMainWindow::create();
+  _main_menubar = new FX::FXMenuBar(this, nullptr,
+                                    LAYOUT_TOP|LAYOUT_FILL_X,
+                                    1, // x
+                                    1); //y
+  _main_menubar->create();
+  FOXRPS_DEBUGOUT("winid#" << id()
+                  << " menubarid#" << _main_menubar->id());
 #warning incomplete FoxrpsMainWindow::create
 } // end FoxrpsMainWindow::create
 
@@ -337,15 +345,23 @@ FoxrpsMainWindow::layout(void)   // virtual method
   int x= (foxrps_long_random() & 0xff) + 4;
   int y= (foxrps_long_random() & 0xff) + 2;
   FOXRPS_DEBUGOUT("FoxrpsMainWindow::layout+ this@" << (void*)this
-		  << " id=" << id() << " x=" << x << " y=" << y);
+                  << " id=" << id() << " x=" << x << " y=" << y);
   FXMainWindow::move(x,y);
   FOXRPS_DEBUGOUT("moved this@" << (void*)this << " to x=" << x
-		  << " y=" << y);
+                  << " y=" << y);
   FXMainWindow::layout();
-  FOXRPS_DEBUGOUT("layout this@" << (void*)this
+  FOXRPS_DEBUGOUT("did mainwin layout"
                   << " id=" << id() << " width=" << getWidth()
                   << " height=" << getHeight()
                   << " x=" << getX() << " y=" << getY());
+  _main_menubar->layout();
+  FOXRPS_DEBUGOUT("layout this@" << (void*)this
+                  << " id=" << id()
+                  << " menubar: id=" << _main_menubar->id()
+                  << " width=" << _main_menubar->getWidth()
+                  << " height=" << _main_menubar->getHeight()
+                  << " x=" << _main_menubar->getX()
+                  << " y=" << _main_menubar->getY());
 #warning incomplete FoxrpsMainWindow::layout
 } // end FoxrpsMainWindow::layout
 
@@ -353,7 +369,7 @@ void
 FoxrpsMainWindow::show(void)   // virtual method
 {
   FOXRPS_DEBUGOUT("FoxrpsMainWindow::show+ this@" << (void*)this
-		  << " id=" << id());
+                  << " id=" << id());
   FXMainWindow::show();
   FOXRPS_DEBUGOUT("mainwin show this@" << (void*)this
                   << " id=" << id() << " width=" << getWidth()
@@ -366,7 +382,7 @@ void
 FoxrpsMainWindow::output(std::ostream&out) const
 {
   FOXRPS_DEBUGOUT("FoxrpsMainWindow::output+ this@" << (void*)this
-		  << " id=" << id());
+                  << " id=" << id());
 #warning incomplete FoxrpsMainWindow::output
   out << "FoxrpsMainWindow@" << (void*)this;
 } // end FoxrpsMainWindow::output
