@@ -56,7 +56,8 @@ extern "C" const char foxrps_self_basename[];
 #include <fx.h>
 
 
-
+extern "C" void foxrps_abort_in(const char*fil, int lin, const char*func)
+  [[no_return]];
 
 extern "C" const char foxrps_git_id[];
 extern "C" const char foxrps_shortgitid[];
@@ -125,6 +126,7 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_BREAKPOINT() FOXRPS_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
 
+#define FOXRPS_FUNC() (strrchr(__PRETTY_FUNCTION__, ' ')+1)
 /// fatal unrecoverable errors
 #define FOXRPS_FATALOUT_AT_BIS(Fil,Lin,Out) do {        \
   std::clog <<  "FOXRPS FATAL: " << Out << std::flush   \
@@ -132,7 +134,7 @@ extern "C" const char rps_cxx_compiler_version[];
         <<  "git:" << foxrps_shortgitid                 \
         << " host " << foxrps_host_name<< std::endl;    \
   FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
-    abort();                                            \
+  foxrps_abort_in(Fil,Lin,FOXRPS_FUNC());		\
   } while(0)
 
 #define FOXRPS_FATALOUT_AT(Fil,Lin,Out) \
@@ -140,7 +142,6 @@ extern "C" const char rps_cxx_compiler_version[];
 
 #define FOXRPS_FATALOUT(Out) FOXRPS_FATALOUT_AT(__FILE__,__LINE__,Out)
 
-#define FOXRPS_FUNC() (strrchr(__PRETTY_FUNCTION__, ' ')+1)
 
 /// serious warnings
 #define FOXRPS_WARNOUT_AT_BIS(Fil,Lin,Out) do {         \
@@ -522,6 +523,13 @@ main(int argc, char**argv)
   return exitcode;
 } // end of main
 
+void
+foxrps_abort_in(const char*fil, int lin, const char*func)
+{
+  FOXRPS_DEBUGOUT("**abort in " << fil << ":" << lin << ":" << func);
+  FOXRPS_BREAKPOINT();
+  abort();
+} // end foxrps_abort_in
 
 /****************
  **                           for Emacs...
