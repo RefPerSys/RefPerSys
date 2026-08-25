@@ -41,9 +41,9 @@ ulimit -S -f 32768
 
 /bin/head -v -n33 /proc/$$/limits
 
-echo running refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps --user-pref=. --batch --run-name=011sepminscript.bash
+echo running refpersys -AREPL,LOWREP --script=test_dir/011sepminscript.minrps --user-pref=. --batch --run-name=011sepminscript.bash
 
-exec ./refpersys -AREPL,LOW_REPL --script=test_dir/011sepminscript.minrps --user-pref=. --batch --run-name=011sepminscript.bash
+exec ./refpersys -AREPL,LOWREP --script=test_dir/011sepminscript.minrps --user-pref=. --batch --run-name=011sepminscript.bash
 
 exit $?
 

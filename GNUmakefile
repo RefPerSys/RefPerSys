@@ -1124,27 +1124,27 @@ test01a:  refpersys
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
 test01b: refpersys
-	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=test01b || (echo test01b failed; exit 1)
+	./refpersys -AREPL,LOWREP  -c 'show help' -B --run-name=test01b || (echo test01b failed; exit 1)
 	@printf '\n\n\n////test01b FINISHED¤\n'
 
 test01c: refpersys
 	@printf '\n\n\n//+ test01c !parse_sum 1 + 2\n' || (echo test01c failed; exit 1)
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B --run-name=test01c
+	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2' -B --run-name=test01c
 	@printf '\n\n\n////test01c FINISHED¤\n'
 
 test01d: refpersys
 	@printf '\n\n\n//+ test01d !parse_sum 1 + 2 + 3\n'
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 + 3' -B --run-name=test01d || (echo test01d failed; exit 1)
+	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2 + 3' -B --run-name=test01d || (echo test01d failed; exit 1)
 	@printf '\n\n\n////test01d FINISHED¤\n'
 
 test01e: refpersys
 	@printf '\n\n\n//+ test01e !parse_sum 1 + 2 * 3\n'
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=test01e || (echo test01e failed; exit 1)
+	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2 * 3' -B --run-name=test01e || (echo test01e failed; exit 1)
 	@printf '\n\n\n////test01e FINISHED¤\n'
 
 ### notice the space after the 3 below
 test01f: refpersys
-	./refpersys -AREPL,LOW_REPL  -c '!parse_primary 3 ' -B --run-name=test01f || (echo test01f failed; exit 1)
+	./refpersys -AREPL,LOWREP  -c '!parse_primary 3 ' -B --run-name=test01f || (echo test01f failed; exit 1)
 	@printf '\n\n\n////test01f FINISHED¤\n'
 
 
