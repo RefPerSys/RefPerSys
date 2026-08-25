@@ -280,7 +280,10 @@ rps_minicarb_data_st::set_carbdata_toksrc(Rps_TokenSource*tksrc, int l)
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
   RPS_ASSERT(l>=0);
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_ASSERT(minicarb_toksrc==nullptr);
+  RPS_DEBUG_LOG(LOWREP, "old minicarb_toksrc=" << minicarb_toksrc
+		<< " new tksrc=" << tksrc << " l=" << l);
+  RPS_ASSERTPRINTF(minicarb_toksrc==nullptr, "minicarb_toksrc=%p l=%d",
+		   minicarb_toksrc, l);
   minicarb_toksrc= tksrc;
 } // end rps_minicarb_data_st::set_carbdata_toksrc
 
