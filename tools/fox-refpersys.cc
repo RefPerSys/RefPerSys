@@ -57,7 +57,7 @@ extern "C" const char foxrps_self_basename[];
 
 
 extern "C" void foxrps_abort_in(const char*fil, int lin, const char*func)
-  [[no_return]];
+  __attribute__((noreturn));
 
 extern "C" const char foxrps_git_id[];
 extern "C" const char foxrps_shortgitid[];
@@ -134,7 +134,7 @@ extern "C" const char rps_cxx_compiler_version[];
         <<  "git:" << foxrps_shortgitid                 \
         << " host " << foxrps_host_name<< std::endl;    \
   FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
-  foxrps_abort_in(Fil,Lin,FOXRPS_FUNC());		\
+  foxrps_abort_in(Fil,Lin,FOXRPS_FUNC());   \
   } while(0)
 
 #define FOXRPS_FATALOUT_AT(Fil,Lin,Out) \
@@ -335,8 +335,11 @@ FoxrpsMainWindow::create(void)  // virtual method
                                     1, // x
                                     1); //y
   _main_menubar->create();
-  FOXRPS_DEBUGOUT("winid#" << id()
-                  << " menubarid#" << _main_menubar->id());
+  FOXRPS_DEBUGOUT("main winid#" << id());
+  FOXRPS_DEBUGOUT("main winid#" << id() << " x="<< getX());
+  FOXRPS_DEBUGOUT("menubarid#" << _main_menubar->id()
+                  << " x=" << _main_menubar->getX()
+                  << " y=" << _main_menubar-getY());
 #warning incomplete FoxrpsMainWindow::create
 } // end FoxrpsMainWindow::create
 
@@ -356,7 +359,7 @@ FoxrpsMainWindow::layout(void)   // virtual method
                   << " height=" << getHeight()
                   << " x=" << getX() << " y=" << getY());
   _main_menubar->layout();
-  FOXRPS_DEBUGOUT("layout this@" << (void*)this
+  FOXRPS_DEBUGOUT("did menubar layout this@" << (void*)this
                   << " id=" << id()
                   << " menubar: id=" << _main_menubar->id()
                   << " width=" << _main_menubar->getWidth()
@@ -507,6 +510,9 @@ main(int argc, char**argv)
                      << FOX_MAJOR << "." << FOX_MINOR
                      << "." << FOX_LEVEL);
     };
+  FOXRPS_DEBUGOUT("main before app fox " << fxversion[0]
+                  << "." << fxversion[1] << "." << fxversion[2]
+                  << " dlh=" << foxrps_dlh);
   FoxrpsApp the_app("fox-refpersys", "refpersys.org");
   foxrps_ptr_app.reset(&the_app);
   the_app.init(argc, argv);
@@ -516,8 +522,9 @@ main(int argc, char**argv)
   the_app.create();
   FOXRPS_DEBUGOUT("main registry read the_app@" << (void*)&the_app);
   the_app.reg().read();
-  FOXRPS_DEBUGOUT("main run the_app@" << (void*)&the_app);
+  FOXRPS_DEBUGOUT("main before run the_app@" << (void*)&the_app);
   exitcode = the_app.run();
+  FOXRPS_DEBUGOUT("after run exitcode=" << exitcode);
   foxrps_ptr_app.release();
   FOXRPS_DEBUGOUT("main exit code=" << exitcode);
   return exitcode;
