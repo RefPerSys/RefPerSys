@@ -1,0 +1,11 @@
+# file refpersys/tools/.gdbinit-fox-refpersys
+# SPDX-License-Identifier: GPL-3.0-or-later
+# GPLv3+ licensed - see https://www.gnu.org/licenses/gpl-3.0.en.html
+add-auto-load-safe-path ./.gdbinit
+file fox-refpersys
+set debuginfod enabled on
+break abort
+break foxrps_abort_in
+break main
+break std::terminate
+break exit
