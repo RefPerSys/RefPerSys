@@ -936,7 +936,7 @@ rps_show_version(void)
             << " alternative license: LGPLv3+,"
             << " see www.gnu.org/licenses/lgpl-3.0.en.html," << std::endl
             << " other licence: CeCILL,"
-            << " see cecill.info …" << std::endl
+            << " see cecill.info [donc sans garantie]…" << std::endl
             << "+++++ there is NO WARRANTY,"
             << "to the extent permitted by law ++++" << std::endl
             << "***** see also refpersys.org *****" << std::endl
