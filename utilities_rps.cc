@@ -1391,6 +1391,20 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_put_fifo_prefix(arg);
     }
     return 0;
+    case RPSPROGOPT_INTERACTIVE_PLUGIN_AFTER_LOAD:
+    {
+      RPS_FATALOUT("unimplemented program option --interactive-plugin "
+                   << arg);
+#warning unimplemented processing of --interactive-plugin
+    }
+    return 0;
+    case RPSPROGOPT_INTERACTIVE_PLUGIN_ARG:
+    {
+      RPS_FATALOUT("unimplemented program option --interactive-plugin-arg "
+                   << arg);
+#warning unimplemented processing of --interactive-plugin-arg
+    }
+    return 0;
     case RPSPROGOPT_BATCH:
     {
       rps_batch = true;
@@ -1912,20 +1926,21 @@ rps_parse_program_arguments(int &argc, char**argv)
   if (argp_parse(&argparser_rps, argc, argv, 0, &aix, nullptr))
     RPS_FATALOUT("failed to parse program arguments to " << argv[0]
                  << " at program argument index aix=" << aix);
-  if (rps_helpwanted) {
-    RPS_UNIQUE_BREAKPOINT();
-    std::cout << "*** debug level flag in C++ code ***" << std::endl;
-    std::cout << "# levelname | explanation" << std::endl;
-    char levbuf[80];
+  if (rps_helpwanted)
+    {
+      RPS_UNIQUE_BREAKPOINT();
+      std::cout << "*** debug level flag in C++ code ***" << std::endl;
+      std::cout << "# levelname | explanation" << std::endl;
+      char levbuf[80];
 #define Rps_Explain_Level_Help(Level,Str) do {          \
     memset(levbuf, 0, sizeof(levbuf));                  \
     snprintf(levbuf, sizeof(levbuf), "\t %14s # %s",    \
              #Level, Str);                              \
     std::cout << levbuf << std::endl;                   \
   } while(0);
-    RPS_DEBUG_OPTIONS(Rps_Explain_Level_Help);
+      RPS_DEBUG_OPTIONS(Rps_Explain_Level_Help);
 #undef Rps_Explain_Level_Help
-  } // end if rps_helpwanted
+    } // end if rps_helpwanted
   RPS_POSSIBLE_BREAKPOINT();
 } // end rps_parse_program_arguments
 
