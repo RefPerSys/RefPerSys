@@ -102,6 +102,8 @@ static pthread_t rps_main_thread_handle;
 extern "C" char*rps_pidfile_path;
 
 
+extern "C" void rps_util_interactive_plugin(const char*);
+extern "C" void rps_util_arg_interact_plugin(const char*);
 int
 rps_get_major_version(void)
 {
@@ -1393,16 +1395,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_INTERACTIVE_PLUGIN_AFTER_LOAD:
     {
-      RPS_FATALOUT("unimplemented program option --interactive-plugin "
-                   << arg);
-#warning unimplemented processing of --interactive-plugin
+      rps_util_interactive_plugin(arg);
     }
     return 0;
     case RPSPROGOPT_INTERACTIVE_PLUGIN_ARG:
     {
-      RPS_FATALOUT("unimplemented program option --interactive-plugin-arg "
-                   << arg);
-#warning unimplemented processing of --interactive-plugin-arg
+      rps_util_arg_interact_plugin(arg);
     }
     return 0;
     case RPSPROGOPT_BATCH:
@@ -2940,6 +2938,25 @@ rps_real_shell_file_path(const std::string& filpath)
 } // end of rps_real_shell_file_path
 
 
+/// called to give the interactive plugin
+void
+rps_util_interactive_plugin(const char*arg)
+{
+  RPS_FATALOUT("unimplemented rps_util_interactive_plugin arg="
+	       << Rps_QuotedC_String(arg));
+#warning unimplemented rps_util_interactive_plugin
+} // end rps_util_interactive_plugin
 
+
+/// called to give the optional argument to the interactive plugin
+void
+rps_util_arg_interact_plugin(const char*arg)
+{
+  RPS_FATALOUT("unimplemented rps_util_arg_interact_plugin arg="
+	       << Rps_QuotedC_String(arg));
+#warning unimplemented rps_util_arg_interact_plugin
+} // end rps_util_arg_interact_plugin
+
+/************************/
 #pragma message "may need to define output of more vectors (of objects, values, ...) and indented output"
 //// end of file utilities_rps.cc
