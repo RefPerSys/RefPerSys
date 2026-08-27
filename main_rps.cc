@@ -281,7 +281,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_NO_ASLR, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Forcibly disable Adress Space Layout Randomization. Might not work.\n", //
+    /*doc:*/ "Forcibly disable Adress Space Layout Randomization."
+    " Might not work.\n", //
     /*group:*/0 ///
   },
   /* ======= display the full git id ======= */
@@ -342,15 +343,15 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_INTERACTIVE_PLUGIN_ARG, ///
     /*arg:*/ "INTERACT_PLUGIN_ARG", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "pass to the unique interactive plugin the <INTERACT_PLUGIN_ARG>\n"
+    /*doc:*/ "pass to the unique interactive plugin the <INTERACT_PLUGIN_ARG>\n",
     /*group:*/0 ///
   },
-  /* ======= dlopen a given plugin file after load ======= */
-  {/*name:*/ "plugin-after-load", ///
-    /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
-    /*arg:*/ "PLUGIN", ///
+  /* ======= dlopen a unique interactive plugin file after load ======= */
+  {/*name:*/ "interactive-plugin", ///
+    /*key:*/ RPSPROGOPT_INTERACTIVE_PLUGIN_AFTER_LOAD, ///
+    /*arg:*/ "INTERACT_PLUGIN", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "dlopen(3) after load the given PLUGIN "
+    /*doc:*/ "dlopen(3) after load the given interactive INTERACT_PLUGIN\n"
     "(some *.so ELF shared object)"
     " and run its " RPS_INTERACTIVE_PLUGIN_INIT_NAME "(const Rps_Plugin*) function.\n", //
     /*group:*/0 ///
