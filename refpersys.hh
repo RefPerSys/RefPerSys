@@ -752,6 +752,7 @@ struct Rps_Plugin
   }
 };
 #define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
+#define RPS_INTERACTIVE_PLUGIN_INIT_NAME "rps_interactive_plugin"
 typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
 extern "C" rps_plugin_init_sig_t rps_do_plugin;
 // if plugin not found or without argument, return the nullptr
@@ -861,6 +862,8 @@ enum rps_progoption_en
   RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_ARG,
+  RPSPROGOPT_INTERACTVE_PLUGIN_AFTER_LOAD,
+  RPSPROGOPT_INTERACTIVE_PLUGIN_ARG,
   RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD,
   RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD,
   RPSPROGOPT_DEBUG_PATH,

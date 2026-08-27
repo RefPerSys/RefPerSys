@@ -337,6 +337,24 @@ struct argp_option rps_progoptions[] =
     "(notice the colon separating them).\n", //
     /*group:*/0 ///
   },
+  /* ======= string argument to a previously given plugin file after load ======= */
+  {/*name:*/ "interactive-plugin-arg", ///
+    /*key:*/ RPSPROGOPT_INTERACTIVE_PLUGIN_ARG, ///
+    /*arg:*/ "INTERACT_PLUGIN_ARG", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "pass to the unique interactive plugin the <INTERACT_PLUGIN_ARG>\n"
+    /*group:*/0 ///
+  },
+  /* ======= dlopen a given plugin file after load ======= */
+  {/*name:*/ "plugin-after-load", ///
+    /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
+    /*arg:*/ "PLUGIN", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "dlopen(3) after load the given PLUGIN "
+    "(some *.so ELF shared object)"
+    " and run its " RPS_INTERACTIVE_PLUGIN_INIT_NAME "(const Rps_Plugin*) function.\n", //
+    /*group:*/0 ///
+  },
   /* ====== after loading heap & plugins, show help about preferences
      ===== */
   {/*name:*/ "preferences-help", ///
