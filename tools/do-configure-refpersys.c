@@ -204,6 +204,8 @@ void rpsconf_should_remove_file (const char *path, int lineno);
 #define RPSCONF_DIAG(msg, ...)         \
   rpsconf_diag__(__FILE__, __LINE__, msg, ##__VA_ARGS__)
 
+
+#if 0 && obsolete
 /*
  * Interface for rpsconf_trash
  */
@@ -213,8 +215,6 @@ struct rpsconf_trash
   int pathc_;
   char state_;
 };
-
-#if 0 && obsolete
 static struct rpsconf_trash *rpsconf_trash_get_ (void);
 static void rpsconf_trash_push_ (const char *, int);
 static void rpsconf_trash_exit (void);
@@ -782,7 +782,7 @@ rpsconf_check_libgccjit_header (const char *jithpath)
   if (!jithf)
     {
       fprintf (stderr,
-               "%s fail to fopen '%s' [%s:%d]\n(%s)",
+               "%s fail to fopen '%s' for libgccjit [%s:%d]\n(%s)",
                rpsconf_prog_name, jithpath, __FILE__, __LINE__ - 2,
                strerror (errno));
       rpsconf_failed = true;
