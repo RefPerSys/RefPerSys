@@ -638,8 +638,8 @@ plugins_dir/rpsiplug_fox.so: plugins_dir/rpsiplug_fox.cc refpersys.hh |GNUmakefi
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
              -U_Rps_LinkPkgX2 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
-	    $(shell fox-config --libs) \
-	    $^ -o $@
+	    $< $(shell fox-config --libs) \
+	     -o $@
 
 
 
