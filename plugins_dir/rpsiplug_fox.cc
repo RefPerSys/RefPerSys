@@ -24,9 +24,14 @@
 
 #include "fxver.h"
 
+class RpsFxMainWindow : public FXMainWindow {
+  FXDECLARE(RpsFxMainWindow);
+};				// end RpsFxMainWindow
+
 class RpsFxApp : public FXApp {
 public:
   RpsFxApp(const FXString& name, const FXString&vendor);
+  ~RpsFxApp();
 };				// end class RpsFxApp
 
 static RpsFxApp* foxapp;
@@ -34,7 +39,11 @@ static RpsFxApp* foxapp;
 RpsFxApp::RpsFxApp(const FXString& name, const FXString&vendor)
   : FXApp(name,vendor)
 {
-} // end RpsFxApp::RpsFxApp
+} // end RpsFxApp constructor
+
+RpsFxApp::~RpsFxApp()
+{
+} // end RpsFxApp destructor
 
 static void
 rpsfox_delete_app(void)
@@ -42,6 +51,13 @@ rpsfox_delete_app(void)
   if (foxapp)
     delete foxapp;
 } // end rpsfox_delete_app
+
+
+FXDEFMAP(RpsFxMainWindow) RpsFxMainWindowMap[] = {
+};
+
+FXIMPLEMENT(RpsFxMainWindow,FXMainWindow,RpsFxMainWindowMap,
+	    ARRAYNUMBER(RpsFxMainWindowMap));
 
 extern "C" void
 rps_do_interactive_plugin(const char*arg)
@@ -54,14 +70,18 @@ rps_do_interactive_plugin(const char*arg)
                  << " linked " << fxversion[0] << "." << fxversion[1]
                  << "." << fxversion[2]);
   foxapp = new RpsFxApp("fox-refpersys-plugin-app", "refpersys.org");
+  foxapp->init(rps_main_argc, (char**)rps_main_argv);
   rps_atexit(rpsfox_delete_app);
-  RPS_FATALOUT("unimplemented fox rps_do_interactive_plugin arg="
+  RPS_WARNOUT("unimplemented fox rps_do_interactive_plugin arg="
                << Rps_QuotedC_String(arg)
                << " fox compiled version:" << FOX_MAJOR << "."
                << FOX_MINOR << "." << FOX_LEVEL
                << " linked " << (int)(fxversion[0])
                << "." << (int)(fxversion[1])
-               << "." << (int)(fxversion[2]));
+               << "." << (int)(fxversion[2])
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1,"fox rps_do_interactive_plugin"));
+#warning incomplete fox rps_do_interactive_plugin
 } // end rps_do_interactive_plugin
 
 #pragma message "done compiling " __FILE__ " at " __DATE__ "@" __TIME__
