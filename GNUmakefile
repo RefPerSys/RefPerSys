@@ -87,7 +87,7 @@ RPS_DEBARCH?=$(strip $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)) 
         test05 test06 test07 test07a test07x \
         test08 test09 test-load testq6-01 \
         test11 test11q \
-	test12 \
+	test12 test13 test14 \
         testcarb1 testcarb2 testcarb3 \
         testlex0 testlex1 testlex2 \
         testlex3 testlex4 testlex5 \
@@ -1293,6 +1293,11 @@ test12:
 test13:
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/013readlineA.bash
+
+## test14 is for the interactive fox plugin
+test14:
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/014foxplug.bash
 
 ########### show the testing commands
 showtests:
