@@ -24,7 +24,17 @@
 
 #include "fxver.h"
 
-static FXApp* foxapp;
+class RpsFxApp : public FXApp {
+public:
+  RpsFxApp(const FXString& name, const FXString&vendor);
+};				// end class RpsFxApp
+
+static RpsFxApp* foxapp;
+
+RpsFxApp::RpsFxApp(const FXString& name, const FXString&vendor)
+  : FXApp(name,vendor)
+{
+} // end RpsFxApp::RpsFxApp
 
 static void
 rpsfox_delete_app(void)
@@ -43,7 +53,7 @@ rps_do_interactive_plugin(const char*arg)
                  << FOX_MINOR << "." << FOX_LEVEL
                  << " linked " << fxversion[0] << "." << fxversion[1]
                  << "." << fxversion[2]);
-  foxapp = new FXApp("fox-refpersys-plugin-app", "refpersys.org");
+  foxapp = new RpsFxApp("fox-refpersys-plugin-app", "refpersys.org");
   rps_atexit(rpsfox_delete_app);
   RPS_FATALOUT("unimplemented fox rps_do_interactive_plugin arg="
                << Rps_QuotedC_String(arg)
