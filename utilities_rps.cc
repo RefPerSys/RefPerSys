@@ -842,14 +842,24 @@ void
 rps_show_version(void)
 {
   int nbfiles=0;
+  int nbcppfiles=0;
+  int nbcfiles=0;
   int nbsubdirs=0;
   static std::recursive_mutex versmtx;
   std::lock_guard<std::recursive_mutex> verslock(versmtx);
-  for (const char*const*pfiles=rps_files; *pfiles; pfiles++)
+  for (const char*const*pfiles=rps_files; *pfiles; pfiles++) {
     nbfiles++;
+    int clen = strlen(*pfiles);
+    if (clen>4 && (!strcmp(*pfiles+clen-3, ".hh")
+		   || !strcmp(*pfiles+clen-3, ".cc")))
+      nbcppfiles++;
+    if (clen>3 && (!strcmp(*pfiles+clen-3, ".h")
+		   || !strcmp(*pfiles+clen-3, ".c")))
+      nbcfiles++;
+  };
   for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
     nbsubdirs++;
-  char exepath[256];
+	char exepath[256];
   memset (exepath, 0, sizeof(exepath));
   static char realexepath[PATH_MAX];
   memset (realexepath, 0, sizeof(realexepath));
@@ -875,7 +885,9 @@ rps_show_version(void)
             << " gitbranch: " << rps_gitbranch << std::endl
             << " last git tag: " << rps_lastgittag << std::endl
             << " last git commit: " << rps_lastgitcommit << std::endl
-            << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
+            << " md5sum of " << nbfiles << " files: " << rps_md5sum << std::endl
+	    << " with " << nbcppfiles << " C++ files"
+	    << " and " << nbcfiles << " C files." << std::endl
             << " with " << nbsubdirs << " subdirectories." << std::endl
             << " GNU glibc: " << gnu_get_libc_version() << std::endl
             << " libopcodes for GNU lightning in: " << rps_libopcodes_dir << std::endl
