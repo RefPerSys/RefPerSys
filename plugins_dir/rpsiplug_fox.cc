@@ -24,6 +24,14 @@
 
 #include "fxver.h"
 
+static FXApp* foxapp;
+
+static void
+rpsfox_delete_app(void)
+{
+  if (foxapp)
+    delete foxapp;
+} // end rpsfox_delete_app
 
 extern "C" void
 rps_do_interactive_plugin(const char*arg)
@@ -31,17 +39,19 @@ rps_do_interactive_plugin(const char*arg)
   ///
   if (FOX_MAJOR != fxversion[0] && FOX_MINOR != fxversion[1])
     RPS_FATALOUT("incompatible FOX-toolkit versions" <<std::endl
-		 << " fox compiled version:" << FOX_MAJOR << "."
-		 << FOX_MINOR << "." << FOX_LEVEL
-		 << " linked " << fxversion[0] << "." << fxversion[1]
-		 << "." << fxversion[2]);
+                 << " fox compiled version:" << FOX_MAJOR << "."
+                 << FOX_MINOR << "." << FOX_LEVEL
+                 << " linked " << fxversion[0] << "." << fxversion[1]
+                 << "." << fxversion[2]);
+  foxapp = new FXApp("fox-refpersys-plugin-app", "refpersys.org");
+  rps_atexit(rpsfox_delete_app);
   RPS_FATALOUT("unimplemented fox rps_do_interactive_plugin arg="
-	       << Rps_QuotedC_String(arg)
-	       << " fox compiled version:" << FOX_MAJOR << "."
-	       << FOX_MINOR << "." << FOX_LEVEL
-	       << " linked " << (int)(fxversion[0])
-	       << "." << (int)(fxversion[1])
-	       << "." << (int)(fxversion[2]));
+               << Rps_QuotedC_String(arg)
+               << " fox compiled version:" << FOX_MAJOR << "."
+               << FOX_MINOR << "." << FOX_LEVEL
+               << " linked " << (int)(fxversion[0])
+               << "." << (int)(fxversion[1])
+               << "." << (int)(fxversion[2]));
 } // end rps_do_interactive_plugin
 
 #pragma message "done compiling " __FILE__ " at " __DATE__ "@" __TIME__
