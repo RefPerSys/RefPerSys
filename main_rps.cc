@@ -59,7 +59,7 @@ extern "C" const char rps_main_baseid[];
 const char rps_main_baseid[] = RPS_BASEID;
 
 
-extern "C" bool rps_helpwanted;	// in utilities_rps.cc
+extern "C" bool rps_helpwanted; // in utilities_rps.cc
 
 ////////////////
 extern "C" char rps_buffer_proc_version[];
@@ -737,18 +737,21 @@ rps_run_loaded_application(int &argc, char **argv)
     }
   else
     {
-      RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application before running rps_small_quick_tests_after_load from "
+      RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application before"
+                            " running rps_small_quick_tests_after_load from "
                     << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/quick-tests")
                     << std::endl
                     << " with call frame:" << std::endl
                     << Rps_ShowCallFrame(&_));
       rps_small_quick_tests_after_load();
-      RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application after running rps_small_quick_tests_after_load");
+      RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application"
+                            " after running rps_small_quick_tests_after_load");
     };
   /// create the fifos if a prefix is given with
   if (!rps_get_fifo_prefix().empty())
     {
-      RPS_DEBUG_LOG(REPL, "rps_run_loaded_application create fifo with prefix "
+      RPS_DEBUG_LOG(REPL, "rps_run_loaded_application create fifo"
+                          " with prefix "
                     << rps_get_fifo_prefix());
       rps_do_create_fifos_from_prefix();
     }
@@ -1686,7 +1689,7 @@ main (int argc, char** argv)
   /// we require the at(1) utility linuxize.com/post/at-command-in-linux/
   if (access("/bin/at", R_OK|X_OK))
     RPS_FATALOUT("missing /bin/at utility program (related to batch)\n"
-		"# probably install the at package");
+                 "# probably install the at package");
   //// if --locale or --user-pref is given then process it quicky
   for (int lix=1; lix<argc; lix++)
     {
