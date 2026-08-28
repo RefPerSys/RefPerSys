@@ -1906,9 +1906,14 @@ main (int argc, char** argv)
       RPS_POSSIBLE_BREAKPOINT();
       {
         RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
+		      << std::endl
+                      << RPS_FULL_BACKTRACE(1, "main"));
+        RPS_DEBUG_LOG(EVLOOP, "main before calling rps_event_loop"
+		      << std::endl
                       << RPS_FULL_BACKTRACE(1, "main"));
         rps_event_loop();
         RPS_DEBUG_LOG(REPL, "main after calling rps_event_loop");
+        RPS_DEBUG_LOG(EVLOOP, "main after calling rps_event_loop");
       };
       RPS_DEBUG_LOG(REPL, "main before calling rps_run_after_event_loop");
       RPS_POSSIBLE_BREAKPOINT();
