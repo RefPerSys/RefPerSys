@@ -2031,20 +2031,20 @@ rps_schedule_files_postponed_removal(void)
                 << RPS_FULL_BACKTRACE(1, "rps_schedule_files_postponed_removal"));
   //// commands will be executed using /bin/sh
   /// the -M option never send mail to user
-  FILE* pat = popen("/bin/at -M now + 5 minutes > /dev/null 2>&1", "w");
+  FILE* pat = popen("/bin/at -M now + 4 minutes > /dev/null 2>&1", "w");
   if (!pat)
     {
-      RPS_WARNOUT("failed to open /bin/at now + 5 minutes :"
+      RPS_WARNOUT("failed to open /bin/at now + 4 minutes :"
                   << strerror(errno));
       return;
     };
   if (rps_syslog_enabled)
     syslog(LOG_NOTICE, "RefPerSys will later remove %d files "
-                       "(in five minutes, with /bin/at)",
+                       "(in four minutes, with /bin/at)",
            (int) rps_postponed_removed_files_vector.size());
   else
     RPS_INFORM("RefPerSys will later remove %d files "
-               "(in five minutes, with /bin/at)",
+               "(in four minutes, with /bin/at)",
                (int) rps_postponed_removed_files_vector.size());
   for  (auto rf: rps_postponed_removed_files_vector)
     {
