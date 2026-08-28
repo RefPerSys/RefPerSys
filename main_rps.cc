@@ -1805,7 +1805,7 @@ main (int argc, char** argv)
       /// In practice this won't happen. When it does, increase
       /// rps_path_byte_size in refpersys.hh, currently it is more than
       /// three hundred. The POSIX limit of 4Kbytes is unreasonable and
-      /// since we often allocate abolute file paths on the call stack
+      /// since we often allocate absolute file paths on the call stack
       /// we avoid using _POSIX_PATH_MAX
       RPS_FATALOUT("too long current working directory " << cwdbuf
                    << " expecting less that " << (sizeof(cwdbuf)-4) << " bytes.");
