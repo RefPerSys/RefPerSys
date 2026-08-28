@@ -72,6 +72,10 @@ extern "C" char*rps_chdir_path_after_load;
 
 static bool rps_flag_pref_help;
 
+static void*rps_interact_dlh;
+
+static const char*rps_interact_arg;
+
 bool rps_helpwanted;
 std::string rps_run_name;
 
@@ -2955,9 +2959,21 @@ rps_real_shell_file_path(const std::string& filpath)
 void
 rps_util_interactive_plugin(const char*arg)
 {
-  RPS_FATALOUT("unimplemented rps_util_interactive_plugin arg="
-               << Rps_QuotedC_String(arg));
-#warning unimplemented rps_util_interactive_plugin
+  rps_interact_dlh = dlopen(arg, RTLD_GLOBAL|RTLD_NOW);
+  if (!rps_interact_dlh)
+    RPS_FATALOUT("fail to open interactive plugin "
+		 << Rps_QuotedC_String(arg)
+		 << " : " << dlerror());
+  void*iad = dlsym(rps_interact_dlh, RPS_INTERACTIVE_PLUGIN_INIT_NAME);
+  if (!iad)
+    RPS_FATALOUT("interactive plugin "
+		 << Rps_QuotedC_String(arg)
+		 << " without mandatory "
+		 << RPS_INTERACTIVE_PLUGIN_INIT_NAME
+		 << " : "<< dlerror());
+  rps_interactive_plugin_init_sig_t*ifun
+    = (rps_interactive_plugin_init_sig_t*)iad;
+  (*ifun)(rps_interact_arg);
 } // end rps_util_interactive_plugin
 
 
@@ -2965,9 +2981,8 @@ rps_util_interactive_plugin(const char*arg)
 void
 rps_util_arg_interact_plugin(const char*arg)
 {
-  RPS_FATALOUT("unimplemented rps_util_arg_interact_plugin arg="
-               << Rps_QuotedC_String(arg));
-#warning unimplemented rps_util_arg_interact_plugin
+  RPS_ASSERT(rps_interact_arg == nullptr);
+  rps_interact_arg = arg;
 } // end rps_util_arg_interact_plugin
 
 /************************/
