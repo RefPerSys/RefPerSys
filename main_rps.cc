@@ -944,6 +944,7 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
            "see www.gnu.org/licenses/lgpl-3.0.html\n");
   fprintf (tfil, "//// or CeCILL v2.1 licensed - "
            "see cecill.info\n");
+  fprintf (tfil, "//// ** NO WARRANTY - SANS GARANTIE **\n");
   fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
   fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
   fprintf (tfil,
