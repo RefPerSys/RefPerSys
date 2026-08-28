@@ -1895,6 +1895,8 @@ main (int argc, char** argv)
                 << " pid#" << getpid());
   if (!rps_batch)
     {
+      RPS_INFORMOUT("interactive refpersys git " << rps_shortgitid
+		    << " pid#" << getpid() << " on " << rps_hostname());
     }
   rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
