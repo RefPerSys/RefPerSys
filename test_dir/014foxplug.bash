@@ -42,7 +42,7 @@ ulimit -S -m $[3 * 1024]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
 
-./refpersys --run-name=014foxplug -AREPL --interactive-plugin=plugins_dir/rpsiplug_fox.so --run-delay=25s $*
+./refpersys --run-name=014foxplug -AREPL -dEVLOOP --interactive-plugin=plugins_dir/rpsiplug_fox.so --run-delay=25s $*
 
 ##
 ##**************
