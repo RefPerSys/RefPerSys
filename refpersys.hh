@@ -177,7 +177,7 @@ extern "C" void rps_readline_initialize(void); // for GNU readline
 ///
 /// Keep the debug options in alphabetical order in the list below
 ///
-#define RPS_DEBUG_OPTIONS(Dbgmacro)	\
+#define RPS_DEBUG_OPTIONS(Dbgmacro)		\
   Dbgmacro(AGENDA, "agenda machinery")		\
   Dbgmacro(CMD, "command")			\
   Dbgmacro(CODEGEN, "code generation")		\
@@ -187,7 +187,7 @@ extern "C" void rps_readline_initialize(void); // for GNU readline
   Dbgmacro(GARBCOLL, "garbage collection")	\
   Dbgmacro(GUI, "graphical user interface")	\
   Dbgmacro(LOAD, "load")			\
-  Dbgmacro(LOWREP, "low level representation")	\
+  Dbgmacro(LOWREP, "low level representation")  \
   Dbgmacro(MISC, "miscellanous")		\
   Dbgmacro(MSGSEND, "message sending")		\
   Dbgmacro(PARSE, "parsing")			\
@@ -752,8 +752,9 @@ struct Rps_Plugin
   }
 };
 #define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
-#define RPS_INTERACTIVE_PLUGIN_INIT_NAME "rps_interactive_plugin"
+#define RPS_INTERACTIVE_PLUGIN_INIT_NAME "rps_do_interactive_plugin"
 typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
+typedef void rps_interactive_plugin_init_sig_t(const char*arg);
 extern "C" rps_plugin_init_sig_t rps_do_plugin;
 // if plugin not found or without argument, return the nullptr
 extern "C" const char*rps_get_plugin_cstr_argument(const Rps_Plugin*plugin);
