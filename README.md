@@ -877,9 +877,9 @@ Other contributors, please email `basile@starynkevitch.net` about you.
 
 ## hope and help needed
 
-We hope to **make [RefPerSys](http://refpersys.org) a GNU accepted
-project**. Help (even of non-technical nature) for that ambition is
-welcome.
+We hope to **make [RefPerSys](http://refpersys.org) a [GNU accepted
+project](https://en.wikipedia.org/wiki/GNU_Project)**. Help (even of
+non-technical nature) for that ambition is welcome.
 
 ## HTTP service
 
