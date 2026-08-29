@@ -908,6 +908,9 @@ rps_run_loaded_application(int &argc, char **argv)
                 << "before_rps_run_scripts_after_load"
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/A"));
+  RPS_DEBUG_LOG(EVLOOP, "rps_run_loaded_application/ev"
+		<< std::endl
+		<< RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/evA"));
   RPS_POSSIBLE_BREAKPOINT();
   rps_run_scripts_after_load(&_);
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread "
