@@ -148,6 +148,8 @@ static void handle_self_pipe_byte_rps(unsigned char b);
 void
 rps_do_stop_event_loop(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_do_stop_event_loop thread:"
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_do_stop_event_loop thread:"
                 <<  rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE(1, "rps_do_stop_event_loop"));
@@ -167,6 +169,9 @@ rps_self_pipe_write_byte(unsigned char b)
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   rps_eventloopdata.eld_selfpipefifo.push_back(b);
+  RPS_DEBUG_LOG(EVLOOP, "rps_self_pipe_write_byte thread:"
+                <<  rps_current_pthread_name() << " b=" << (char)b
+		<< "=" << (int)b);
 } // end rps_self_pipe_write_byte
 
 
@@ -178,6 +183,9 @@ rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll,
   int ln = (int) rps_eventloopdata.eld_prepollvect.size();
   if (ln > 1000)
     RPS_FATALOUT("too many event loop prepoller " << ln);
+  RPS_DEBUG_LOG(EVLOOP, "rps_register_event_loop_prepoller thread:"
+                <<  rps_current_pthread_name() << " ln=" << (char)ln
+		<< "=" << (int)ln);
   for (int i=0; i<ln; i++)
     {
       if (!rps_eventloopdata.eld_prepollvect[i])
@@ -196,6 +204,9 @@ rps_unregister_event_loop_prepoller(int rank)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  //
+  RPS_DEBUG_LOG(EVLOOP, "rps_unregister_event_loop_prepoller thread:"
+                <<  rps_current_pthread_name() << " rank=" << rank);
   if (rank<0 || rank>(int) rps_eventloopdata.eld_prepollvect.size())
     {
       RPS_WARNOUT("invalid rank to rps_unregister_event_loop_prepoller "
@@ -212,6 +223,8 @@ rps_event_loop_get_entry(int ix,
                          struct pollfd*po, const char**pexpl, void**pdata)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_get_entry thread:"
+                <<  rps_current_pthread_name() << " ix=" << ix);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   if (pfun)
     *pfun = nullptr;
@@ -244,6 +257,9 @@ rps_event_loop_add_input_fd_handler (int fd,
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_add_input_fd_handler thread:"
+                <<  rps_current_pthread_name() << " fd=" << fd
+		<< " expl:" << explanation);
   unsigned lastfd = rps_eventloopdata.eld_lastix;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
   rps_eventloopdata.eld_pollarr[lastfd].fd = fd;
@@ -268,6 +284,9 @@ rps_event_loop_add_output_fd_handler (int fd,
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_add_output_fd_handler thread:"
+                <<  rps_current_pthread_name() << " fd=" << fd
+		<< " expl:" << explanation);
   RPS_POSSIBLE_BREAKPOINT();
   unsigned lastfd = rps_eventloopdata.eld_lastix;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
@@ -298,6 +317,8 @@ rps_event_loop_remove_input_fd_handler(int fd)
   memset (new_pollarr, 0, sizeof(new_pollarr));
   memset (new_datarr, 0, sizeof(new_datarr));
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_remove_input_fd_handler thread:"
+                <<  rps_current_pthread_name() << " fd=" << fd);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_input_fd_handler fd#" << fd
                 << " elapsed: "
@@ -347,6 +368,8 @@ rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
   RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipereadfd);
   RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
   memset(buf, 0, sizeof(buf));
+  RPS_DEBUG_LOG(EVLOOP, "rps_self_pipe_read_handler thread:"
+                <<  rps_current_pthread_name() << " fd=" << fd);
   int nbr = read(fd, buf, readsize);
   RPS_DEBUG_LOG(REPL, "rps_self_pipe_read_handler fd#" << fd << " nbr=" << nbr
                 << " buf=" << buf << "." << std::endl
@@ -400,6 +423,8 @@ rps_self_pipe_write_handler(Rps_CallFrame*cf, int fd, void* data)
                 << std::setw(3) << rps_elapsed_real_time()
                 << RPS_FULL_BACKTRACE(1, "rps_self_pipe_write_handler"));
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_DEBUG_LOG(EVLOOP, "rps_self_pipe_write_handler thread:"
+                <<  rps_current_pthread_name() << " fd=" << fd);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipewritefd);
   while (!rps_eventloopdata.eld_selfpipefifo.empty())
@@ -426,6 +451,8 @@ void
 rps_event_loop_remove_output_fd_handler(int fd)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_remove_output_fd_handler thread:"
+                <<  rps_current_pthread_name() << " fd=" << fd);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   unsigned lastfd = rps_eventloopdata.eld_lastix;
   Rps_EventHandler_sigt* new_handlarr[RPS_MAXPOLL_FD+1];
@@ -496,6 +523,8 @@ rps_initialize_pipe_to_self_in_event_loop(void)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_DEBUG_LOG(EVLOOP, "rps_initialize_pipe_to_self_in_event_loop thread:"
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop"
                 << " elapsed: "
                 << std::setw(3) << rps_elapsed_real_time());
@@ -538,6 +567,8 @@ void
 rps_initialize_signalfd_in_event_loop(void)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_DEBUG_LOG(EVLOOP, "rps_initialize_signalfd_in_event_loop thread:"
+                <<  rps_current_pthread_name());
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   sigset_t msk= {};
   sigemptyset(&msk);
@@ -564,6 +595,8 @@ void
 rps_initialize_timerfd_in_event_loop(void)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_DEBUG_LOG(EVLOOP, "rps_initialize_timerfd_in_event_loop thread:"
+                <<  rps_current_pthread_name());
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   rps_eventloopdata.eld_timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
   if (rps_eventloopdata.eld_timfd<=0)
@@ -582,6 +615,8 @@ void
 rps_initialize_jsonfifo_in_event_loop(void)
 {
   struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
+  RPS_DEBUG_LOG(EVLOOP, "rps_initialize_jsonfifo_in_event_loop thread:"
+                <<  rps_current_pthread_name());
   if (fdp.fifo_ui_wcmd <= 0)
     RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd
                  << " with FIFO prefix " << rps_get_fifo_prefix());
@@ -602,6 +637,8 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
   if (count++ > 0)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
+  RPS_DEBUG_LOG(EVLOOP, "rps_initialize_event_loop thread:"
+                <<  rps_current_pthread_name());
   rps_eventloopdata.eld_magic = RPS_EVENTLOOPDATA_MAGIC;
   rps_eventloopdata.eld_polldelaymillisec = (rps_debug_flags != 0)?666:111;
   rps_eventloopdata.eld_lastix = 0;
@@ -667,6 +704,8 @@ void
 rps_jsonrpc_initialize(void)
 {
   RPS_ASSERT(!rps_get_fifo_prefix().empty());
+  RPS_DEBUG_LOG(EVLOOP, "rps_jsonrpc_initialize thread:"
+                <<  rps_current_pthread_name());
   struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
   if (fdp.fifo_ui_wcmd <= 0)
     RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd
@@ -769,6 +808,9 @@ rps_jsonrpc_initialize(void)
 Json::Value
 rps_jsonrpc_make_rpc_call_json(const std::string methname, Json::Value*jparam)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_jsonrpc_make_rpc_call_json thread:"
+                <<  rps_current_pthread_name()
+		<< " methname=" << methname);
 #warning rps_jsonrpc_make_rpc_call_json need to check the methname
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
@@ -784,6 +826,8 @@ std::string
 rps_eventloop_explstring(void)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_DEBUG_LOG(EVLOOP, "rps_eventloop_explstring thread:"
+                <<  rps_current_pthread_name());
   char numbuf[32];
   memset(numbuf, 0, sizeof(numbuf));
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
@@ -819,6 +863,8 @@ rps_event_loop(void)
   double startcputime = rps_process_cpu_time();
   if (rps_run_delay > 0)
     elapsedtimethreshold = startelapsedtime + (double)rps_run_delay;
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop starting thread:"
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_event_loop starting elapsedtime=" << startelapsedtime
                 << " cputime=" << startcputime
                 << " run-delay=" << rps_run_delay
@@ -1282,6 +1328,8 @@ rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
                  << " thread:" << rps_current_pthread_name()
                  << " data:" << data
                  << RPS_FULL_BACKTRACE(1, "rps_sigfd_read_handler"));
+  RPS_DEBUG_LOG(EVLOOP, "rps_sigfd_read_handler thread:"
+                <<  rps_current_pthread_name() << " fd#" << fd);
   RPS_ASSERT (rps_eventloopdata.eld_sigfd>0);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   struct signalfd_siginfo infsig;
@@ -1359,6 +1407,9 @@ extern "C" void rps_may_start_process(const char*fil, int lin);
 void
 handle_self_pipe_byte_rps(unsigned char b)
 {
+  RPS_DEBUG_LOG(EVLOOP, "handle_self_pipe_byte_rps thread:"
+		 <<  rps_current_pthread_name() << " b=" << (char)b
+		 << "=" << (int)b);
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "handle_self_pipe_byte_rps b=" << (char)b
                 << "#" << (unsigned)b
@@ -1403,6 +1454,8 @@ handle_self_pipe_byte_rps(unsigned char b)
 bool
 rps_event_loop_is_running(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_is_running thread:"
+		<<  rps_current_pthread_name());
   return event_loop_is_active.load();
 } // end rps_event_loop_is_running
 
@@ -1413,6 +1466,8 @@ rps_event_loop_is_running(void)
 long
 rps_event_loop_counter(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_counter thread:"
+		<<  rps_current_pthread_name());
   if (rps_stop_event_loop_flag.load())
     return -1;
   if (event_loop_is_active.load())
@@ -1423,6 +1478,8 @@ rps_event_loop_counter(void)
 void
 rps_postpone_dump(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_postpone_dump thread:"
+		<<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_dump thread:"
                 << rps_current_pthread_name()
                 << std::endl
@@ -1433,6 +1490,8 @@ rps_postpone_dump(void)
 void
 rps_postpone_garbage_collection(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_postpone_garbage_collection thread:"
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_garbage_collection thread:"
                 << rps_current_pthread_name()
                 << std::endl
@@ -1443,6 +1502,8 @@ rps_postpone_garbage_collection(void)
 void
 rps_postpone_quit(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_postpone_quit thread:"
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_quit thread:"
                 << rps_current_pthread_name()
                 << std::endl
@@ -1453,6 +1514,8 @@ rps_postpone_quit(void)
 void
 rps_postpone_exit_with_dump(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_postpone_exit_with_dump thread:"
+		<<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_exit_with_dump thread:"
                 << rps_current_pthread_name()
                 << std::endl
@@ -1464,6 +1527,8 @@ rps_postpone_exit_with_dump(void)
 void
 rps_postpone_child_process(void)
 {
+  RPS_DEBUG_LOG(EVLOOP, "rps_postpone_child_process thread:"
+		<<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_child_process thread:"
                 << rps_current_pthread_name()
                 << std::endl
