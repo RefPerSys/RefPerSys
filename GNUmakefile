@@ -1303,7 +1303,7 @@ test13:
 ## test14 is for the interactive fox plugin
 test14:
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./test_dir/014foxplug.bas
+	./test_dir/014foxplug.bash
 	@printf '\n\n\n////test14 FINISHED¤\n'h
 
 ########### show the testing commands
