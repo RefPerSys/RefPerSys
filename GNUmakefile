@@ -1214,10 +1214,12 @@ test07x: refpersys
 	@printf '\n\n\n////test07x FINISHED¤\n'
 
 test08: refpersys
-	@echo missing test08 ; exit 1
+	./test_dir/008otherscript.bash
+	@printf '\n\n\n////test08 FINISHED¤\n'
 
 test09: refpersys
-	@echo missing test09 ; exit 1
+	./test_dir/009sepscript.bash
+	@printf '\n\n\n////test09 FINISHED¤\n'
 
 test10: refpersys |GNUmakefile
 	./refpersys -AREPL,EXIT --run-name=test10 --run-delay=6s || (echo test10 failed; exit 1)
@@ -1278,26 +1280,31 @@ test11: refpersys |GNUmakefile \
   test_dir/011sepminscript.minrps  test_dir/011sepminscript.bash
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/011sepminscript.bash
+	@printf '\n\n\n////test11 FINISHED¤\n'
 
 test11q: refpersys |GNUmakefile \
   test_dir/011sepminscript.minrps ./test_dir/011sepquietminscript.bash
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/011sepquietminscript.bash
+	@printf '\n\n\n////test11q FINISHED¤\n'
 
 ## test12 is for issue 14
 test12:
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/012issue14.bash
+	@printf '\n\n\n////test12 FINISHED¤\n'
 
 ## test13 is for the readline interface
 test13:
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/013readlineA.bash
+	@printf '\n\n\n////test13 FINISHED¤\n'
 
 ## test14 is for the interactive fox plugin
 test14:
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./test_dir/014foxplug.bash
+	./test_dir/014foxplug.bas
+	@printf '\n\n\n////test14 FINISHED¤\n'h
 
 ########### show the testing commands
 showtests:
