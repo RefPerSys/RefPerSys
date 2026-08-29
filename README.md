@@ -447,20 +447,23 @@ See also some files from
 You need a recent C99 compiler e.g. `gcc` (at least  [GCC
 14](https://gcc.gnu.org/gcc-14/)) and preferably Check with `gcc --version`.
 
-You need a recent C++17 compiler such as `g++` (We use 
-[GCC 14](https://gcc.gnu.org/gcc-14/) or [GCC 15](https://gcc.gnu.org/gcc-15/)
-and sometimes [`clang++`](http://clang.llvm.org/) whose warnings are different. 
-Look into, and perhaps improve, our `GNUmakefile`. Check with `g++ --version`. Build using `make -j 3` or more.
+**You need a recent GNU C++17 compiler** such as `g++` (We use [GCC
+15](https://gcc.gnu.org/gcc-15/) or [GCC
+16](https://gcc.gnu.org/gcc-16/) and sometimes
+[`clang++`](http://clang.llvm.org/) whose warnings are different.
+Look into, and perhaps improve, our `GNUmakefile`. Check with `g++
+--version`. Build using `make -j 3` or more. Your GNU compiler `g++`
+should provide its [libgccjit](https://gcc.gnu.org/wiki/JIT) library
+(generating slowing efficient and debuggable machine code in shared
+libraries that can be `dlopen`-ed).
 
 You need [GNU lightning](https://www.gnu.org/software/lightning/)
-(2.2.3 or later) built from source. I (Basile S.) used:
-```
-## configuration of GNU lightning
-./configure  --with-gnu-ld --enable-disassembler \
-    --enable-devel-disassembler --enable-devel-get-jit-size \
-    --disable-silent-rules 'CFLAGS=-O2 -g2' 
-```
-then ran `libtool --finish /usr/local/lib` and `ldconfig`
+(2.2.3 or later, a code generation library emitting quickly some slow
+running machine code) built from source. I (Basile S.) used: ```
+## configuration of GNU lightning ./configure --with-gnu-ld
+--enable-disassembler \ --enable-devel-disassembler
+--enable-devel-get-jit-size \ --disable-silent-rules 'CFLAGS=-O2 -g2'
+``` then ran `libtool --finish /usr/local/lib` and `ldconfig`
 
 Our `GNUmakefile` could be slightly buggy for parallel build (you need
 [GNU make](https://www.gnu.org/software/make/) version 4 with
@@ -484,10 +487,14 @@ You need a Linux `pkg-config` utility.
 
 The `--help` and `--version` program arguments should work.
 
-**You first need to `make config`. I recommend having the *GNU
-**readline* library.
+**You first need to `make config`**. I recommend having the [GNU
+readline](https://tiswww.case.edu/php/chet/readline/rltop.html)
+library and a recent [GNU emacs](https://www.gnu.org/gnu/emacs)
+programmable editor (which I [Basile
+STARYNKEVITCH](http://starynkevitch.net/Basile/) compile from its
+recent source code several times per week).
 
-You then build with `make -j4 refpersys && make all`
+You then **build** with `make -j4 refpersys && make all`
 
 
 Several testing scripts are under `test_dir/`. For example `make
@@ -867,6 +874,12 @@ several contributions.  Thanks to Abhishek Chkravarti (India) (he is
 more interested in august 2026).
 
 Other contributors, please email `basile@starynkevitch.net` about you.
+
+## hope and help needed
+
+We hope to **make [RefPerSys](http://refpersys.org) a GNU accepted
+project**. Help (even of non-technical nature) for that ambition is
+welcome.
 
 ## HTTP service
 
