@@ -1,5 +1,5 @@
 # Security Policy
-
+(cybersecurity is not a major concern; you could consider using frama-c.com)
 
 ## Reporting a Vulnerability
 You can add an issue on github.com
