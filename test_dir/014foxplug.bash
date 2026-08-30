@@ -1,6 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# file RefPerSys/test_dir/013readlineA.bash
+# file RefPerSys/test_dir/014foxplug.bash
+# testing the incremental plugin for fox toolkit
 #  © Copyright (C) 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 
@@ -42,7 +43,7 @@ ulimit -S -m $[3 * 1024]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
 
-./refpersys --run-name=014foxplug -AREPL -dEVLOOP --interactive-plugin=plugins_dir/rpsiplug_fox.so --run-delay=25s $*
+./refpersys --run-name=014foxplug -AREPL -dEVLOOP --interactive-plugin=plugins_dir/rpsiplug_fox.so --run-delay=25s --locale=C.utf8 $*
 
 ##
 ##**************
