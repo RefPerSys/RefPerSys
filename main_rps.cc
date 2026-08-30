@@ -1712,6 +1712,8 @@ main (int argc, char** argv)
       if (!l)
         RPS_FATALOUT("failed to set locale to " << mylocale);
       rps_stored_locale = l;
+      RPS_INFORMOUT("did set locale to mylocale=" << mylocale
+		    << " l=" << Rps_QuotedC_String(l));
     }
   else
     rps_stored_locale = setlocale(LC_ALL, nullptr);
