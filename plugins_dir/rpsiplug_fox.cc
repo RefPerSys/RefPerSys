@@ -70,9 +70,10 @@ rps_do_interactive_plugin(const char*arg)
                  << " linked " << fxversion[0] << "." << fxversion[1]
                  << "." << fxversion[2]);
   foxapp = new RpsFxApp("fox-refpersys-plugin-app", "refpersys.org");
+  RPS_ASSERT(foxapp != nullptr);
   foxapp->init(rps_main_argc, (char**)rps_main_argv);
   rps_atexit(rpsfox_delete_app);
-  RPS_WARNOUT("unimplemented fox rps_do_interactive_plugin arg="
+  RPS_WARNOUT("incomplete fox rps_do_interactive_plugin arg="
                << Rps_QuotedC_String(arg)
                << " fox compiled version:" << FOX_MAJOR << "."
                << FOX_MINOR << "." << FOX_LEVEL
