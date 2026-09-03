@@ -2037,10 +2037,11 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
   RPS_UNIQUE_BREAKPOINT();
-#warning should make a constant dumper object
+#warning should make a constant dumper object and know its pointer
 #if 0
   _f.obdumper = Rps_ObjectRef::make_object(&_,
                 /*constant dumper*/);
+  // keep the adress of _f.obdumper in the Rps_Dumper class
 #endif
   std::string cwdpath;
   {
