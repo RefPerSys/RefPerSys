@@ -919,6 +919,7 @@ Json::Value
 Rps_ObjectZone::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
+  RPS_UNIQUE_BREAKPOINT();
   return rps_dump_json_objectref(du,Rps_ObjectRef(this));
 } // end Rps_ObjectZone::dump_json
 
@@ -1859,7 +1860,9 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   // emit the prologue
   {
     *pouts << std::endl
-           << "///!!! prologue of RefPerSys space file:" << std::endl;
+           << "///!!! prologue of RefPerSys space "
+	   <<  spacid.to_string()
+	   << " file:" << std::endl;
 
     Json::Value jprologue(Json::objectValue);
     time_t dtim = time(nullptr);
@@ -1936,7 +1939,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
           RPS_WARNOUT("Rps_Dumper::write_space_file no obsymb for obr "
                       <<curobr->oid().to_string());
 
-      }
+      }	// end of start of object comment
+      //
       Json::Value jobject(Json::objectValue);
       jobject["oid"] = Json::Value (curobr->oid().to_string());
       curobr->dump_json_content(this,jobject);
@@ -2019,6 +2023,11 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
   RPS_UNIQUE_BREAKPOINT();
+#warning should make a constant dumper object
+#if 0
+  _f.obdumper = Rps_ObjectRef::make_object(&_,
+			/*constant dumper*/);
+#endif
   std::string cwdpath;
   {
     // not very good, but in practice good enough before bootstrapping

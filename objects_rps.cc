@@ -1283,6 +1283,10 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
   Rps_CallFrame* dumpcfra = rps_dump_call_frame(du);
   RPS_ASSERT_CALLFRAME(dumpcfra);
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 dumpcfra,
+		 Rps_ObjectRef dumpob;
+		);
   Rps_ObjectRef thisob(this);
   Rps_ObjectZone* obcla = ob_class.load();
   RPS_ASSERT(obcla != nullptr);
@@ -1297,6 +1301,9 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
     snprintf(mtbuf, sizeof(mtbuf), "%.2f", mt);
     double mtd = atof(mtbuf);
     json["mtime"] = Json::Value (mtd);
+  }
+  {
+    /// compute (if it exists) the name of the loadrout routine
   }
   /// magic getter function
   {
@@ -1374,9 +1381,12 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                       {
                         /* TODO: add more code */
 #warning Rps_ObjectZone::dump_json_content should deal with rpsapply_* function name (applying function)
-                        RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob <<
-                                    " applyingfun dli_sname:" << di.dli_sname
-                                    << " @@apoidfun:" << apoidfun << std::endl
+                        RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob="
+				    << thisob
+                                    << " applyingfun dli_sname:"
+				    << di.dli_sname
+                                    << " @@apoidfun:"
+				    << apoidfun << std::endl
                                     << RPS_FULL_BACKTRACE(1, "Rps_ObjectZone::dump_json_content@@apoidfun"));
                         json["applyfun"] = apoidfun.to_string();
                       }
