@@ -1284,9 +1284,9 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   Rps_CallFrame* dumpcfra = rps_dump_call_frame(du);
   RPS_ASSERT_CALLFRAME(dumpcfra);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 dumpcfra,
-		 Rps_ObjectRef dumpob;
-		);
+                 dumpcfra,
+                 Rps_ObjectRef dumpob;
+                );
   Rps_ObjectRef thisob(this);
   Rps_ObjectZone* obcla = ob_class.load();
   RPS_ASSERT(obcla != nullptr);
@@ -1304,6 +1304,8 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   }
   {
     /// compute (if it exists) the name of the loadrout routine
+#warning incomplete Rps_ObjectZone::dump_json_content for loadrout
+#warning use rps_dump_is_scanned_object
   }
   /// magic getter function
   {
@@ -1382,11 +1384,11 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                         /* TODO: add more code */
 #warning Rps_ObjectZone::dump_json_content should deal with rpsapply_* function name (applying function)
                         RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob="
-				    << thisob
+                                    << thisob
                                     << " applyingfun dli_sname:"
-				    << di.dli_sname
+                                    << di.dli_sname
                                     << " @@apoidfun:"
-				    << apoidfun << std::endl
+                                    << apoidfun << std::endl
                                     << RPS_FULL_BACKTRACE(1, "Rps_ObjectZone::dump_json_content@@apoidfun"));
                         json["applyfun"] = apoidfun.to_string();
                       }
@@ -1428,7 +1430,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
     }
   ///
   RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob="
-		 << thisob << ", comps#" << ob_comps.size());
+                 << thisob << ", comps#" << ob_comps.size());
   if (!ob_comps.empty())
     {
       Json::Value jcomps(Json::arrayValue);
@@ -1445,7 +1447,8 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       payl->dump_json_content(du,json);
     }
   RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content end thisob="
-		 << thisob << std::endl);
+                 << thisob << std::endl);
+
 } // end Rps_ObjectZone::dump_json_contents
 
 

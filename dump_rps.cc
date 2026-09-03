@@ -90,6 +90,7 @@ class Rps_Dumper
   friend double rps_dump_start_process_time(Rps_Dumper*);
   friend double rps_dump_start_wallclock_time(Rps_Dumper*);
   friend double rps_dump_start_monotonic_time(Rps_Dumper*);
+  friend bool rps_dump_is_scanned_object(Rps_Dumper*,Rps_ObjectRef obr);
   friend Rps_CallFrame* rps_dump_call_frame(Rps_Dumper*);
   friend std::string rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath);
   friend void rps_dump_into (const std::string dirpath, Rps_CallFrame*);
