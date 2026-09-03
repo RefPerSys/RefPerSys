@@ -765,13 +765,21 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
         {
           void*ldroutad = dlsym(rps_proghdl, loadroutstr.c_str());
           if (!ldroutad)
-            RPS_WARNOUT("cannot dlsym " << loadroutstr
-                        << " for loading routine function of objid:" <<  objid
+            RPS_WARNOUT("cannot dlsym [loadrout] " << loadroutstr
+                        << " for loading routine function of objid:"
+			<<  objid << " "
                         << Rps_ObjectRef(obz)
                         << " lineno:" << lineno << ", spacid:" << spacid
                         << ":: " << dlerror());
-          rpsldpysig_t*ldrout = (rpsldpysig_t*)ldroutad;
-          (*ldrout)(obz, this, objjson, spacid, lineno);
+	  else {
+	    RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass objid="
+			  << objid << " "
+			  << Rps_ObjectRef(obz)
+			  << " lineno:" << lineno << ", spacid:" << spacid
+			  << " running loadrout@" << ldroutad);
+	    rpsldpysig_t*ldrout = (rpsldpysig_t*)ldroutad;
+	    (*ldrout)(obz, this, objjson, spacid, lineno);
+	  }
         };
     };        // end if has "loadrout" member
   RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass end objid=" << objid << " #" << count

@@ -5861,7 +5861,6 @@ public:
       Rps_ObjectRef parentob,
       Rps_ObjectRef classob=nullptr,
       Rps_ObjectRef spaceob=nullptr);
-
   Rps_ObjectRef get_parent_environment() const
   {
     return  env_parent;
@@ -5876,12 +5875,13 @@ public:
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
 // same as used in rps_manifest.json file
+// previous format magic string:
 #define RPS_PREVIOUS_MANIFEST_FORMAT "RefPerSysFormat2023A"
 
 
-/// the next format should enable computing some data at load time...
-/// using the loadrout JSON member (for loading objects whose content
-/// is operating system or architecture dependent).
+/// the current format is enabling computing some data at load time...
+/// using (with dlsym) the loadrout JSON member (for loading objects
+/// whose content is operating system or architecture dependent).
 #define RPS_MANIFEST_FORMAT "RefPerSysFormat2024A"
 
 // the user manifest is optional, in the rps_homedir()
