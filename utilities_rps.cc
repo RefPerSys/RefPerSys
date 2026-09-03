@@ -2963,10 +2963,13 @@ rps_decimal_string(intptr_t i)
   char buf[rps_numlen] = "";
   char revbuf[rps_numlen] = "";
   int p=0;
+  if (i==0)
+    return std::string("0");
   memset (buf, 0, sizeof(buf));
   memset (revbuf, 0, sizeof(revbuf));
   if (i<0)
     i = -i;
+  RPS_UNIQUE_BREAKPOINT();
   while (i>0) {
     revbuf[p++] = '0' + (i%10);
     i = i % 10;
@@ -2974,10 +2977,12 @@ rps_decimal_string(intptr_t i)
   if (neg)
     revbuf[p++] = '-';
   RPS_ASSERT(p<rps_numlen-1);
+  RPS_UNIQUE_BREAKPOINT();
   for (int j=p-1; j>=0; j--)
     buf[j] = revbuf[p-j];
-  RPS_ASSERT(revbuf[0] != (char)0 && strlen(revbuf)<rps_numlen);
-  return std::string(revbuf);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
+  return std::string(buf);
 } // end rps_decimal_string
 
 
@@ -2988,10 +2993,13 @@ rps_hex_string(intptr_t i)
   char buf[rps_numlen] = "";
   char revbuf[rps_numlen] = "";
   int p=0;
+  if (i==0)
+    return std::string("0");
   memset (buf, 0, sizeof(buf));
   memset (revbuf, 0, sizeof(revbuf));
   if (i<0)
     i = -i;
+  RPS_UNIQUE_BREAKPOINT();
   while (i>0) {
     revbuf[p++] = "0123456789abcdef" [i&0xf];
     i = i >> 4;
@@ -2999,10 +3007,12 @@ rps_hex_string(intptr_t i)
   if (neg)
     revbuf[p++] = '-';
   RPS_ASSERT(p<rps_numlen-1);
+  RPS_UNIQUE_BREAKPOINT();
   for (int j=p-1; j>=0; j--)
     buf[j] = revbuf[p-j];
-  RPS_ASSERT(revbuf[0] != (char)0 && strlen(revbuf)<rps_numlen);
-  return std::string(revbuf);
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
+  return std::string(buf);
 } // end rps_hex_string
 
 

@@ -1353,6 +1353,10 @@ rps_small_quick_tests_after_load(void)
   _f.obfoundnew = Rps_ObjectRef::find_object_or_fail_by_oid(&_, _f.obnew->oid());
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obfoundnew=" << _f.obfoundnew << " obnew=" << _f.obnew);
   RPS_ASSERT(_f.obnew == _f.obfoundnew);
+  RPS_ASSERT(!strcmp(rps_decimal_string(120).c_str(), "120"));
+  RPS_ASSERT(!strcmp(rps_decimal_string(0).c_str(), "0"));
+  RPS_ASSERT(!strcmp(rps_decimal_string(123456).c_str(), "123456"));
+  RPS_ASSERT(!strcmp(rps_decimal_string(-987654).c_str(), "-987654"));
 #warning should add some clever tests on  Rps_Value::is_instance_of and Rps_Value::is_subclass_of
   RPS_DEBUG_LOG(CMD, "end rps_small_quick_tests_after_load");
 } // end rps_small_quick_tests_after_load
