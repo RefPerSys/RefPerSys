@@ -1286,6 +1286,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  dumpcfra,
                  Rps_ObjectRef dumpob;
+                 Rps_Value resv;
                 );
   Rps_ObjectRef thisob(this);
   Rps_ObjectZone* obcla = ob_class.load();
@@ -1304,8 +1305,17 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   }
   {
     /// compute (if it exists) the name of the loadrout routine
+    if (!rps_dump_is_scanned_object(du,thisob))
+      {
 #warning incomplete Rps_ObjectZone::dump_json_content for loadrout
-#warning use rps_dump_is_scanned_object
+        RPS_POSSIBLE_BREAKPOINT();
+#if 0
+        Rps_TwoValues twov
+          = thisob->send2(&_,
+                          RPS_ROOT_OB(_985eC6sUpNx00quHQQ), //dumper∈class
+                          nullptr);
+#endif
+      };
   }
   /// magic getter function
   {
