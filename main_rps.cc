@@ -1372,7 +1372,7 @@ rps_small_quick_tests_after_load(void)
     RPS_ASSERT(!strcmp(s.c_str(), "-987654"));
     s = rps_hex_string(0x123f);
     RPS_UNIQUE_BREAKPOINT();
-    RPS_ASSERT(!strcmp(s.c_str(), "123f");
+    RPS_ASSERT(!strcmp(s.c_str(), "123f"));
   }
 #warning should add some clever tests on  Rps_Value::is_instance_of and Rps_Value::is_subclass_of
   RPS_DEBUG_LOG(CMD, "end rps_small_quick_tests_after_load");
