@@ -754,7 +754,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
 
   if (objjson.isMember("loadrout"))
     {
-      auto loadroutstr = objjson["loadrout"].asString();
+      const std::string loadroutstr = objjson["loadrout"].asString();
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       if (loadroutstr.empty())
         RPS_WARNOUT("invalid loadrout for loading routine function of objid:" <<  objid
@@ -779,6 +779,8 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
 			  << " running loadrout@" << ldroutad);
 	    rpsldpysig_t*ldrout = (rpsldpysig_t*)ldroutad;
 	    (*ldrout)(obz, this, objjson, spacid, lineno);
+	    RPS_DEBUG_LOG(LOAD, "after loadrout@" << ldroutad << " obz="
+			  << RPS_OBJECT_DISPLAY(obz));
 	  }
         };
     };        // end if has "loadrout" member

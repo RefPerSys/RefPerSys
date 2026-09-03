@@ -90,6 +90,7 @@ class Rps_Dumper
   friend double rps_dump_start_process_time(Rps_Dumper*);
   friend double rps_dump_start_wallclock_time(Rps_Dumper*);
   friend double rps_dump_start_monotonic_time(Rps_Dumper*);
+  friend Rps_CallFrame* rps_dump_call_frame(Rps_Dumper*);
   friend std::string rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath);
   friend void rps_dump_into (const std::string dirpath, Rps_CallFrame*);
   friend void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
@@ -299,6 +300,19 @@ rps_dump_start_monotonic_time(Rps_Dumper*du)
   return du->du_startmonotonictime;
 } // end  rps_dump_start_monotonic_time
 
+Rps_CallFrame*
+rps_dump_call_frame(Rps_Dumper*du)
+{
+  Rps_CallFrame*cf = nullptr;
+  if (!du)
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
+  cf = du->du_callframe;
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT_CALLFRAME(cf);
+  return cf;
+} // end rps_dumper_call_frame
+  
 std::string
 rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
 {
@@ -1024,7 +1038,8 @@ Rps_Dumper::copy_one_source_file(const std::string& relsrcpath)
           break;
         outfil.write(ibuf, rdcnt);
         if (outfil.fail())
-          RPS_FATALOUT("copy_one_source_file realpath " << Rps_QuotedC_String(fullsrcpath)
+          RPS_FATALOUT("copy_one_source_file realpath "
+		       << Rps_QuotedC_String(fullsrcpath)
                        << " write failure  to " << outnam);
       }
     while (infil);
@@ -1065,7 +1080,8 @@ Rps_Dumper::write_all_space_files(void)
       write_space_file(spacobr);
       nbspace++;
     }
-  RPS_INFORMOUT("wrote " << nbspace << " space files into " << du_topdir);
+  RPS_INFORMOUT("wrote " << nbspace << " space files into "
+		<< du_topdir);
 } // end Rps_Dumper::write_all_space_files
 
 void
@@ -1301,7 +1317,8 @@ Rps_Dumper::write_generated_data_file(void)
   memset (cwdbuf, 0, sizeof(cwdbuf));
   if (getcwd(cwdbuf, rps_path_byte_size) == nullptr)
     RPS_FATALOUT("failed to getcwd into buffer of "
-                 << (rps_path_byte_size+4) << " bytes: " << strerror(errno));
+                 << (rps_path_byte_size+4) << " bytes: "
+		 << strerror(errno));
   int osl = strlen(rps_building_operating_system);
   if (osl > (int)sizeof(osbuf)-2)
     osl = sizeof(osbuf)-2;
@@ -1704,7 +1721,7 @@ Rps_Dumper::write_all_generated_files(void)
     }
   catch (std::exception&exc)
     {
-      RPS_WARNOUT("Rps_Dumper::write_all_generated_files failed to generate_code on RefPerSys_system dumpdirnamev=" << _f.dumpdirnamev
+      RPS_WARNOUT("write_all_generated_files failed to generate_code on RefPerSys_system dumpdirnamev=" << _f.dumpdirnamev
                   << " tempsuffixv=" << _f.tempsuffixv
                   << " got exception " << exc.what()
                   << std::endl

@@ -1281,6 +1281,8 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(json.type() == Json::objectValue);
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  Rps_CallFrame* dumpcfra = rps_dump_call_frame(du);
+  RPS_ASSERT_CALLFRAME(dumpcfra);
   Rps_ObjectRef thisob(this);
   Rps_ObjectZone* obcla = ob_class.load();
   RPS_ASSERT(obcla != nullptr);
@@ -1415,7 +1417,8 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       json["attrs"] = jattrs;
     }
   ///
-  RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << ", comps#" << ob_comps.size());
+  RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob="
+		 << thisob << ", comps#" << ob_comps.size());
   if (!ob_comps.empty())
     {
       Json::Value jcomps(Json::arrayValue);
@@ -1431,7 +1434,8 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       json["payload"] = Json::Value(payl->payload_type_name());
       payl->dump_json_content(du,json);
     }
-  RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content end thisob=" << thisob << std::endl);
+  RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content end thisob="
+		 << thisob << std::endl);
 } // end Rps_ObjectZone::dump_json_contents
 
 
