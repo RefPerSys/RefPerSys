@@ -183,26 +183,26 @@ extern "C" void rps_readline_initialize(void); // for GNU readline
 ///
 /// Keep the debug options in alphabetical order in the list below
 ///
-#define RPS_DEBUG_OPTIONS(Dbgmacro)		\
-  Dbgmacro(AGENDA, "agenda machinery")		\
-  Dbgmacro(CMD, "command")			\
-  Dbgmacro(CODEGEN, "code generation")		\
-  Dbgmacro(COMPL, "completion")			\
-  Dbgmacro(DUMP, "dump")			\
-  Dbgmacro(EVLOOP, "event loop")		\
-  Dbgmacro(GARBCOLL, "garbage collection")	\
-  Dbgmacro(GUI, "graphical user interface")	\
-  Dbgmacro(LOAD, "load")			\
+#define RPS_DEBUG_OPTIONS(Dbgmacro)   \
+  Dbgmacro(AGENDA, "agenda machinery")    \
+  Dbgmacro(CMD, "command")      \
+  Dbgmacro(CODEGEN, "code generation")    \
+  Dbgmacro(COMPL, "completion")     \
+  Dbgmacro(DUMP, "dump")      \
+  Dbgmacro(EVLOOP, "event loop")    \
+  Dbgmacro(GARBCOLL, "garbage collection")  \
+  Dbgmacro(GUI, "graphical user interface") \
+  Dbgmacro(LOAD, "load")      \
   Dbgmacro(LOWREP, "low level representation")  \
-  Dbgmacro(MISC, "miscellanous")		\
-  Dbgmacro(MSGSEND, "message sending")		\
-  Dbgmacro(PARSE, "parsing")			\
-  Dbgmacro(PARSTR, "parse of string")		\
-  Dbgmacro(PROGARG, "program arguments")	\
-  Dbgmacro(REPL, "read eval print loop")	\
-  Dbgmacro(EXIT, "exit code")			\
-  Dbgmacro(TMP1, "*temporary 1*")		\
-  Dbgmacro(TMP2, "*temporary 2*")		\
+  Dbgmacro(MISC, "miscellanous")    \
+  Dbgmacro(MSGSEND, "message sending")    \
+  Dbgmacro(PARSE, "parsing")      \
+  Dbgmacro(PARSTR, "parse of string")   \
+  Dbgmacro(PROGARG, "program arguments")  \
+  Dbgmacro(REPL, "read eval print loop")  \
+  Dbgmacro(EXIT, "exit code")     \
+  Dbgmacro(TMP1, "*temporary 1*")   \
+  Dbgmacro(TMP2, "*temporary 2*")   \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(Dbgopt,Help) RPS_DEBUG_##Dbgopt,
@@ -296,7 +296,7 @@ extern "C" bool rps_without_quick_tests;
 extern "C" std::string rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath);
 
 extern "C" Rps_CallFrame* rps_dump_call_frame(Rps_Dumper*du);
-
+extern "C" bool rps_dump_is_scanned_object(Rps_Dumper*,Rps_ObjectRef);
 /// Give a shell-compatible real path of a file path
 /// it uses shell conventions like ~/ - implemented in utilities_rps.cc
 extern "C" const std::string rps_real_shell_file_path(const std::string& filpath);

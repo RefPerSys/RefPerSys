@@ -171,7 +171,7 @@ rps_self_pipe_write_byte(unsigned char b)
   rps_eventloopdata.eld_selfpipefifo.push_back(b);
   RPS_DEBUG_LOG(EVLOOP, "rps_self_pipe_write_byte thread:"
                 <<  rps_current_pthread_name() << " b=" << (char)b
-		<< "=" << (int)b);
+                << "=" << (int)b);
 } // end rps_self_pipe_write_byte
 
 
@@ -185,7 +185,7 @@ rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll,
     RPS_FATALOUT("too many event loop prepoller " << ln);
   RPS_DEBUG_LOG(EVLOOP, "rps_register_event_loop_prepoller thread:"
                 <<  rps_current_pthread_name() << " ln=" << (char)ln
-		<< "=" << (int)ln);
+                << "=" << (int)ln);
   for (int i=0; i<ln; i++)
     {
       if (!rps_eventloopdata.eld_prepollvect[i])
@@ -259,7 +259,7 @@ rps_event_loop_add_input_fd_handler (int fd,
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_add_input_fd_handler thread:"
                 <<  rps_current_pthread_name() << " fd=" << fd
-		<< " expl:" << explanation);
+                << " expl:" << explanation);
   unsigned lastfd = rps_eventloopdata.eld_lastix;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
   rps_eventloopdata.eld_pollarr[lastfd].fd = fd;
@@ -286,7 +286,7 @@ rps_event_loop_add_output_fd_handler (int fd,
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_add_output_fd_handler thread:"
                 <<  rps_current_pthread_name() << " fd=" << fd
-		<< " expl:" << explanation);
+                << " expl:" << explanation);
   RPS_POSSIBLE_BREAKPOINT();
   unsigned lastfd = rps_eventloopdata.eld_lastix;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
@@ -810,7 +810,7 @@ rps_jsonrpc_make_rpc_call_json(const std::string methname, Json::Value*jparam)
 {
   RPS_DEBUG_LOG(EVLOOP, "rps_jsonrpc_make_rpc_call_json thread:"
                 <<  rps_current_pthread_name()
-		<< " methname=" << methname);
+                << " methname=" << methname);
 #warning rps_jsonrpc_make_rpc_call_json need to check the methname
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
@@ -1408,8 +1408,8 @@ void
 handle_self_pipe_byte_rps(unsigned char b)
 {
   RPS_DEBUG_LOG(EVLOOP, "handle_self_pipe_byte_rps thread:"
-		 <<  rps_current_pthread_name() << " b=" << (char)b
-		 << "=" << (int)b);
+                <<  rps_current_pthread_name() << " b=" << (char)b
+                << "=" << (int)b);
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "handle_self_pipe_byte_rps b=" << (char)b
                 << "#" << (unsigned)b
@@ -1455,7 +1455,7 @@ bool
 rps_event_loop_is_running(void)
 {
   RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_is_running thread:"
-		<<  rps_current_pthread_name());
+                <<  rps_current_pthread_name());
   return event_loop_is_active.load();
 } // end rps_event_loop_is_running
 
@@ -1467,7 +1467,7 @@ long
 rps_event_loop_counter(void)
 {
   RPS_DEBUG_LOG(EVLOOP, "rps_event_loop_counter thread:"
-		<<  rps_current_pthread_name());
+                <<  rps_current_pthread_name());
   if (rps_stop_event_loop_flag.load())
     return -1;
   if (event_loop_is_active.load())
@@ -1479,7 +1479,7 @@ void
 rps_postpone_dump(void)
 {
   RPS_DEBUG_LOG(EVLOOP, "rps_postpone_dump thread:"
-		<<  rps_current_pthread_name());
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_dump thread:"
                 << rps_current_pthread_name()
                 << std::endl
@@ -1515,7 +1515,7 @@ void
 rps_postpone_exit_with_dump(void)
 {
   RPS_DEBUG_LOG(EVLOOP, "rps_postpone_exit_with_dump thread:"
-		<<  rps_current_pthread_name());
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_exit_with_dump thread:"
                 << rps_current_pthread_name()
                 << std::endl
@@ -1528,7 +1528,7 @@ void
 rps_postpone_child_process(void)
 {
   RPS_DEBUG_LOG(EVLOOP, "rps_postpone_child_process thread:"
-		<<  rps_current_pthread_name());
+                <<  rps_current_pthread_name());
   RPS_DEBUG_LOG(REPL, "rps_postpone_child_process thread:"
                 << rps_current_pthread_name()
                 << std::endl

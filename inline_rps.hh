@@ -1614,7 +1614,7 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
   std::lock_guard<std::recursive_mutex> guthislock(this->ob_mtx);
   std::lock_guard<std::recursive_mutex> guclasslock(obwclass->ob_mtx);
   RPS_DEBUG_LOG(LOWREP, "+Rps_ObjectZone::is_instance_of call#"
-		<< curcallcnt << " thisob=" << Rps_ObjectRef(this)
+                << curcallcnt << " thisob=" << Rps_ObjectRef(this)
                 << " obwclass="<< obwclass);
   int cnt = 0;
   if (!obwclass->is_class())

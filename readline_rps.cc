@@ -129,11 +129,12 @@ rps_readline_tab(int cnt, int key)
   RPS_ASSERT(key=='\t');
   if (rl_point <= 0)    // first column
     return 1;
-  if (!strcmp(rl_line_buffer+rl_point, "\euro")) {
-    rl_delete_text(rl_point, strlen("\euro"));
-    rl_insert_text("€");
-    rl_forced_update_display();
-  }
+  if (!strcmp(rl_line_buffer+rl_point, "\euro"))
+    {
+      rl_delete_text(rl_point, strlen("\euro"));
+      rl_insert_text("€");
+      rl_forced_update_display();
+    }
 #warning incomplete rps_readline_tab
   return 0;
 } // end rps_readline_tab
@@ -162,9 +163,9 @@ Rps_ReadlineTokenSource::fill_current_line_buffer(void)
   RPS_DEBUG_LOG(REPL, "did readline " << Rps_QuotedC_String(rl));
   RPS_UNIQUE_BREAKPOINT();
   RPS_WARNOUT("incomplete Readline fill_current_line_buffer @"
-	      << (void*)this << " rl=" << Rps_QuotedC_String(rl)
-	      << " readlinbuf=" << Rps_QuotedC_String(rl_line_buffer)
-	      << RPS_FULL_BACKTRACE_HERE(1, "readline fillcurlinbuf"));
+              << (void*)this << " rl=" << Rps_QuotedC_String(rl)
+              << " readlinbuf=" << Rps_QuotedC_String(rl_line_buffer)
+              << RPS_FULL_BACKTRACE_HERE(1, "readline fillcurlinbuf"));
 #warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
 } // end Rps_ReadlineTokenSource::fill_current_line_buffer
 

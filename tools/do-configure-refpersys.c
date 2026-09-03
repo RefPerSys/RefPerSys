@@ -702,7 +702,7 @@ rpsconf_check_libgccjit_header (const char *jithpath)
 {
   /* TODO: perhaps rpsconf_check_libgccjit_header should return a bool
      and be renamed as rpsconf_has_libgccjit_header */
-#warning maybe rename rpsconf_check_libgccjit_header as rpsconf_has_libgccjit_header 
+#warning maybe rename rpsconf_check_libgccjit_header as rpsconf_has_libgccjit_header
   int olderr = 0;
   olderr = errno;
   FILE *jithf = fopen (jithpath, "r");

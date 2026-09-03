@@ -101,8 +101,8 @@ class Rps_Dumper
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
   friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
-  int du_fdtopdir;		// if >0 should be a file descriptor
-				// for du_topdir and usedful for symlinkat
+  int du_fdtopdir;    // if >0 should be a file descriptor
+  // for du_topdir and usedful for symlinkat
   std::string du_curworkdir;
   Json::StreamWriterBuilder du_jsonwriterbuilder;
   std::recursive_mutex du_mtx;
@@ -234,7 +234,7 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
     du_fdtopdir = open(du_topdir.c_str(), O_RDONLY| O_DIRECTORY);
     if (du_fdtopdir < 0)
       RPS_FATALOUT("open rd of dump top dir " << du_topdir.c_str()
-		   << " failed " << strerror(errno));
+                   << " failed " << strerror(errno));
     RPS_ASSERT(du_fdtopdir > 0);
     char *realoadirpath = realpath(rps_topdirectory, loadirpath);
     du_is_dumping_into_topdir = !strcmp(toprealpath, realoadirpath);
@@ -313,7 +313,7 @@ rps_dump_call_frame(Rps_Dumper*du)
   RPS_ASSERT_CALLFRAME(cf);
   return cf;
 } // end rps_dumper_call_frame
-  
+
 std::string
 rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
 {
@@ -358,6 +358,16 @@ rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
   return restemp;
 } // end rps_dumper_temporary_path
 
+
+bool
+rps_dump_is_scanned_object(Rps_Dumper*du, Rps_ObjectRef obr)
+{
+  RPS_ASSERT(du);
+  if (!obr)
+    return false;
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
+  return (du->du_mapobjects.find(obr->oid()) != du->du_mapobjects.end());
+} // end rps_dump_is_scanned_object
 
 void
 Rps_Dumper::scan_object(const Rps_ObjectRef obr)
@@ -1041,7 +1051,7 @@ Rps_Dumper::copy_one_source_file(const std::string& relsrcpath)
         outfil.write(ibuf, rdcnt);
         if (outfil.fail())
           RPS_FATALOUT("copy_one_source_file realpath "
-		       << Rps_QuotedC_String(fullsrcpath)
+                       << Rps_QuotedC_String(fullsrcpath)
                        << " write failure  to " << outnam);
       }
     while (infil);
@@ -1083,7 +1093,7 @@ Rps_Dumper::write_all_space_files(void)
       nbspace++;
     }
   RPS_INFORMOUT("wrote " << nbspace << " space files into "
-		<< du_topdir);
+                << du_topdir);
 } // end Rps_Dumper::write_all_space_files
 
 void
@@ -1320,7 +1330,7 @@ Rps_Dumper::write_generated_data_file(void)
   if (getcwd(cwdbuf, rps_path_byte_size) == nullptr)
     RPS_FATALOUT("failed to getcwd into buffer of "
                  << (rps_path_byte_size+4) << " bytes: "
-		 << strerror(errno));
+                 << strerror(errno));
   int osl = strlen(rps_building_operating_system);
   if (osl > (int)sizeof(osbuf)-2)
     osl = sizeof(osbuf)-2;
@@ -1515,15 +1525,16 @@ Rps_Dumper::write_generated_data_file(void)
   const char *bdataslash = strrchr(datapathstr.c_str(), '/');
   const char *bdata = bdataslash?(bdataslash+1):datapathstr.c_str();
   RPS_UNIQUE_BREAKPOINT();
-  if (symlinkat(/*target:*/bdata, du_fdtopdir, gendatapathstr.c_str())) {
-    RPS_UNIQUE_BREAKPOINT();
-    int er = errno;
-    RPS_FATALOUT("failed to symlinkat " << gendatapathstr << " to "
-                 << bdata << " fdtopdir#" << du_fdtopdir
-		 << " dump topdir " << du_topdir
-                 << ":" << strerror(er)
-                 << " in " << du_curworkdir);
-  }
+  if (symlinkat(/*target:*/bdata, du_fdtopdir, gendatapathstr.c_str()))
+    {
+      RPS_UNIQUE_BREAKPOINT();
+      int er = errno;
+      RPS_FATALOUT("failed to symlinkat " << gendatapathstr << " to "
+                   << bdata << " fdtopdir#" << du_fdtopdir
+                   << " dump topdir " << du_topdir
+                   << ":" << strerror(er)
+                   << " in " << du_curworkdir);
+    }
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
@@ -1862,8 +1873,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   {
     *pouts << std::endl
            << "///!!! prologue of RefPerSys space "
-	   <<  spacid.to_string()
-	   << " file:" << std::endl;
+           <<  spacid.to_string()
+           << " file:" << std::endl;
 
     Json::Value jprologue(Json::objectValue);
     time_t dtim = time(nullptr);
@@ -1940,7 +1951,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
           RPS_WARNOUT("Rps_Dumper::write_space_file no obsymb for obr "
                       <<curobr->oid().to_string());
 
-      }	// end of start of object comment
+      } // end of start of object comment
       //
       Json::Value jobject(Json::objectValue);
       jobject["oid"] = Json::Value (curobr->oid().to_string());
@@ -2027,7 +2038,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 #warning should make a constant dumper object
 #if 0
   _f.obdumper = Rps_ObjectRef::make_object(&_,
-			/*constant dumper*/);
+                /*constant dumper*/);
 #endif
   std::string cwdpath;
   {
@@ -2135,7 +2146,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
           else
             RPS_INFORMOUT("made real dump sub-directory: " << realdirpath
                           << "/persistore");
-	  RPS_UNIQUE_BREAKPOINT();
+          RPS_UNIQUE_BREAKPOINT();
           if (!std::filesystem::create_directories(realdirpath
               + "/generated"))
             {
