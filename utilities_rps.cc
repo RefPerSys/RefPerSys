@@ -2962,6 +2962,7 @@ rps_decimal_string(intptr_t i)
   bool neg = (i<0);
   char buf[rps_numlen] = "";
   char revbuf[rps_numlen] = "";
+  intptr_t argi= i;
   int p=0;
   if (i==0)
     return std::string("0");
@@ -2970,18 +2971,22 @@ rps_decimal_string(intptr_t i)
   if (i<0)
     i = -i;
   RPS_UNIQUE_BREAKPOINT();
-  while (i>0) {
-    revbuf[p++] = '0' + (i%10);
-    i = i % 10;
-  };
+  while (i>0)
+    {
+      RPS_ASSERT(p>=0 && p<rps_numlen);
+      revbuf[p++] = '0' + (i%10);
+      i = i % 10;
+    };
   if (neg)
     revbuf[p++] = '-';
-  RPS_ASSERT(p<rps_numlen-1);
+  RPS_ASSERT(p<rps_numlen-1 && p>=0);
   RPS_UNIQUE_BREAKPOINT();
   for (int j=p-1; j>=0; j--)
-    buf[j] = revbuf[p-j];
+    buf[p-1-j] = revbuf[j];
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
+  RPS_ASSERT(argi!=0);
+  RPS_UNIQUE_BREAKPOINT();
   return std::string(buf);
 } // end rps_decimal_string
 
@@ -2993,6 +2998,7 @@ rps_hex_string(intptr_t i)
   char buf[rps_numlen] = "";
   char revbuf[rps_numlen] = "";
   int p=0;
+  intptr_t argi= i;
   if (i==0)
     return std::string("0");
   memset (buf, 0, sizeof(buf));
@@ -3000,18 +3006,22 @@ rps_hex_string(intptr_t i)
   if (i<0)
     i = -i;
   RPS_UNIQUE_BREAKPOINT();
-  while (i>0) {
-    revbuf[p++] = "0123456789abcdef" [i&0xf];
-    i = i >> 4;
-  };
+  while (i>0)
+    {
+      RPS_ASSERT(p>=0 && p<rps_numlen);
+      revbuf[p++] = "0123456789abcdef" [i&0xf];
+      i = i >> 4;
+    };
   if (neg)
     revbuf[p++] = '-';
-  RPS_ASSERT(p<rps_numlen-1);
+  RPS_ASSERT(p<rps_numlen-1 && p>=0);
   RPS_UNIQUE_BREAKPOINT();
   for (int j=p-1; j>=0; j--)
-    buf[j] = revbuf[p-j];
+    buf[p-1-j] = revbuf[j];
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
+  RPS_ASSERT(argi!=0);
+  RPS_UNIQUE_BREAKPOINT();
   return std::string(buf);
 } // end rps_hex_string
 
@@ -3023,15 +3033,15 @@ rps_util_interactive_plugin(const char*arg)
   rps_interact_dlh = dlopen(arg, RTLD_GLOBAL|RTLD_NOW);
   if (!rps_interact_dlh)
     RPS_FATALOUT("fail to open interactive plugin "
-		 << Rps_QuotedC_String(arg)
-		 << " : " << dlerror());
+                 << Rps_QuotedC_String(arg)
+                 << " : " << dlerror());
   void*iad = dlsym(rps_interact_dlh, RPS_INTERACTIVE_PLUGIN_INIT_NAME);
   if (!iad)
     RPS_FATALOUT("interactive plugin "
-		 << Rps_QuotedC_String(arg)
-		 << " without mandatory "
-		 << RPS_INTERACTIVE_PLUGIN_INIT_NAME
-		 << " : "<< dlerror());
+                 << Rps_QuotedC_String(arg)
+                 << " without mandatory "
+                 << RPS_INTERACTIVE_PLUGIN_INIT_NAME
+                 << " : "<< dlerror());
   rps_interactive_plugin_init_sig_t*ifun
     = (rps_interactive_plugin_init_sig_t*)iad;
   (*ifun)(rps_interact_arg);

@@ -909,8 +909,8 @@ rps_run_loaded_application(int &argc, char **argv)
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/A"));
   RPS_DEBUG_LOG(EVLOOP, "rps_run_loaded_application/ev"
-		<< std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/evA"));
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_run_loaded_application/evA"));
   RPS_POSSIBLE_BREAKPOINT();
   rps_run_scripts_after_load(&_);
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread "
@@ -1353,10 +1353,27 @@ rps_small_quick_tests_after_load(void)
   _f.obfoundnew = Rps_ObjectRef::find_object_or_fail_by_oid(&_, _f.obnew->oid());
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obfoundnew=" << _f.obfoundnew << " obnew=" << _f.obnew);
   RPS_ASSERT(_f.obnew == _f.obfoundnew);
-  RPS_ASSERT(!strcmp(rps_decimal_string(120).c_str(), "120"));
-  RPS_ASSERT(!strcmp(rps_decimal_string(0).c_str(), "0"));
-  RPS_ASSERT(!strcmp(rps_decimal_string(123456).c_str(), "123456"));
-  RPS_ASSERT(!strcmp(rps_decimal_string(-987654).c_str(), "-987654"));
+  {
+    std::string s;
+    RPS_UNIQUE_BREAKPOINT();
+    s = rps_decimal_string(120);
+    RPS_UNIQUE_BREAKPOINT();
+    RPS_ASSERT(!strcmp(s.c_str(), "120"));
+    s = rps_decimal_string(0);
+    RPS_UNIQUE_BREAKPOINT();
+    RPS_ASSERT(!strcmp(s.c_str(), "0"));
+    RPS_UNIQUE_BREAKPOINT();
+    s = rps_decimal_string(123456);
+    RPS_UNIQUE_BREAKPOINT();
+    RPS_ASSERT(!strcmp(s.c_str(), "123456"));
+    RPS_UNIQUE_BREAKPOINT();
+    s = rps_decimal_string(-987654);
+    RPS_UNIQUE_BREAKPOINT();
+    RPS_ASSERT(!strcmp(s.c_str(), "-987654"));
+    s = rps_hex_string(0x123f);
+    RPS_UNIQUE_BREAKPOINT();
+    RPS_ASSERT(!strcmp(s.c_str(), "123f");
+  }
 #warning should add some clever tests on  Rps_Value::is_instance_of and Rps_Value::is_subclass_of
   RPS_DEBUG_LOG(CMD, "end rps_small_quick_tests_after_load");
 } // end rps_small_quick_tests_after_load
@@ -1717,7 +1734,7 @@ main (int argc, char** argv)
         RPS_FATALOUT("failed to set locale to " << mylocale);
       rps_stored_locale = l;
       RPS_INFORMOUT("did set locale to mylocale=" << mylocale
-		    << " l=" << Rps_QuotedC_String(l));
+                    << " l=" << Rps_QuotedC_String(l));
     }
   else
     rps_stored_locale = setlocale(LC_ALL, nullptr);
@@ -1905,7 +1922,7 @@ main (int argc, char** argv)
   if (!rps_batch)
     {
       RPS_INFORMOUT("interactive refpersys git " << rps_shortgitid
-		    << " pid#" << getpid() << " on " << rps_hostname());
+                    << " pid#" << getpid() << " on " << rps_hostname());
     }
   rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
@@ -1915,10 +1932,10 @@ main (int argc, char** argv)
       RPS_POSSIBLE_BREAKPOINT();
       {
         RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
-		      << std::endl
+                      << std::endl
                       << RPS_FULL_BACKTRACE(1, "main"));
         RPS_DEBUG_LOG(EVLOOP, "main before calling rps_event_loop"
-		      << std::endl
+                      << std::endl
                       << RPS_FULL_BACKTRACE(1, "main"));
         rps_event_loop();
         RPS_DEBUG_LOG(REPL, "main after calling rps_event_loop");
