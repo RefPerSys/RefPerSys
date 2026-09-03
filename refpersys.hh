@@ -162,6 +162,12 @@
 extern "C" void rps_atexit(typeof(void (void)) *function);
 extern "C" void rps_do_on_exit(std::function<void(void)>clos);
 
+
+//// simple utility functions (locale independent) to convert an
+//// intptr_t to strings (coded in file utilities_rps.cc)
+extern "C" const std::string rps_decimal_string(intptr_t i); //locale neutral
+extern "C" const std::string rps_hex_string(intptr_t i); //locale neutral
+
 //// the generated/rpsdata.h contain only preprocessor #define-s and #undef
 //// it should undef RPS_WITH_FLTK. It has a pragma message
 //// it is simpler to not use it... (but needed in some files)
