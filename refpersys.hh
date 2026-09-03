@@ -1394,6 +1394,9 @@ rps_timer_cpu_elapsed(const rps_timer *hnd)
 
 #define RPS_UNIQUE_BREAKPOINT() \
   RPS_UNIQUE_BREAKPOINT_AT_BIS(__FILE__,__LINE__,__COUNTER__)
+
+#define RPS_DELETE_BREAKPOINT() \
+  do { (void)__COUNTER__; } while(0)
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C" const char* rps_hostname(void);

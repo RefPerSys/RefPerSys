@@ -1358,7 +1358,8 @@ rps_small_quick_tests_after_load(void)
     RPS_UNIQUE_BREAKPOINT();
     s = rps_decimal_string(120);
     RPS_UNIQUE_BREAKPOINT();
-    RPS_ASSERT(!strcmp(s.c_str(), "120"));
+    RPS_ASSERTPRINTF(!strcmp(s.c_str(), "120"),
+		     "s is %s not 120", s.c_str());
     s = rps_decimal_string(0);
     RPS_UNIQUE_BREAKPOINT();
     RPS_ASSERT(!strcmp(s.c_str(), "0"));
