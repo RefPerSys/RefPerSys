@@ -547,9 +547,9 @@ __buildinfo.o: __buildinfo.c |GNUmakefile
 refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-refpersys.mk
 	$(MAKE) __buildinfo.o
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
-	/bin/sleep 0.05
+	/bin/sleep 0.001
 	$(MAKE) objects $(REFPERSYS_GENERATED_CPP_OBJECTS)
-	/bin/sleep 0.05
+	/bin/sleep 0.001
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
 	@echo RefPerSys dumped C++ files $(REFPERSYS_DUMPED_CPP_SOURCES)
