@@ -10,7 +10,8 @@
  *      https://github.com/open-source-parsers/jsoncpp/
  *
  * Author(s):
- *      Basile STARYNKEVITCH, France         <basile@starynkevitch.net>
+ *      Basile STARYNKEVITCH, 92340 Bourg-la-Reine, France
+ *                            <basile@starynkevitch.net>
  *
  * old indian contributors
  *      (Abhishek Chakravarti, Nimesh Neema)
@@ -126,6 +127,7 @@ class Rps_Dumper
   std::set<Rps_ObjectRef> du_pluginobset;
   std::set<Rps_ObjectRef> du_constantobset;
 #warning we probably want a Rps_ObjectRef du_dumpobj member (cf objects_rps.cc)
+  // actually, we better want ao pointer or reference to that object
   // see rps_dump_is_scanned_object and Rps_ObjectZone::dump_json_content
   // we maintain the set of opened file paths, since they are opened
   // with the temporary suffix above, and renamed by
