@@ -108,13 +108,13 @@ const char rpsconf_host[] = RPSCONF_HOST;
 #define RPSCONF_FAIL -1
 
 const char *rpsconf_prog_name;
-bool rpsconf_verbose = 1; /* will be set later with command line flag */
+bool rpsconf_verbose = 1;       /* will be set later with command line flag */
 bool rpsconf_failed;
 
-#define RPSCONF_BREAKPOINT_AT(Lin) do{    \
-  asm volatile (" nop; nop");     \
+#define RPSCONF_BREAKPOINT_AT(Lin) do{          \
+  asm volatile (" nop; nop");                   \
   asm volatile (" _rpsconf_break" #Lin  ":\n"); \
-  asm volatile("  nop; nop; nop; nop\n"); \
+  asm volatile("  nop; nop; nop; nop\n");       \
 } while(0)
 #define RPSCONF_BREAKPOINT_AT_BIS(Lin) \
   RPSCONF_BREAKPOINT_AT(Lin)
@@ -193,6 +193,7 @@ void rpsconf_emit_configure_refpersys_mk (void);
 static void
 rpsconf_diag__ (const char *, int, const char *, ...)
 RPSCONF_ATTR_PRINTF (3, 4);
+
 static int rpsconf_cc_set (const char *);
 static void rpsconf_cc_test (const char *);
 
@@ -208,9 +209,8 @@ void rpsconf_should_remove_file (const char *path, int lineno);
 
 
 /// return a malloced path to a temporary textual file
-char *
-rpsconf_temporary_textual_file (const char *prefix,
-                                const char *suffix, int lineno)
+     char *rpsconf_temporary_textual_file (const char *prefix,
+                                           const char *suffix, int lineno)
 {
   char buf[256];
   memset (buf, 0, sizeof (buf));
@@ -237,7 +237,7 @@ rpsconf_temporary_textual_file (const char *prefix,
   res = strdup (buf);
   if (!res)
     {
-      fprintf (stderr, "%s failed to strdup temporary file path %s" //
+      fprintf (stderr, "%s failed to strdup temporary file path %s"     //
                " from %s:%d (%s)\n",
                rpsconf_prog_name, buf, __FILE__, lineno, strerror (errno));
       rpsconf_failed = true;
@@ -247,7 +247,7 @@ rpsconf_temporary_textual_file (const char *prefix,
   printf ("%s temporary textual file is %s [%s:%d]\n",
           rpsconf_prog_name, res, __FILE__, lineno);
   return res;
-}       /* end rpsconf_temporary_textual_file */
+}                               /* end rpsconf_temporary_textual_file */
 
 /// Return a malloced path to a temporary binary file in the current
 /// directory
@@ -290,7 +290,7 @@ rpsconf_temporary_binary_file (const char *prefix, const char *suffix,
   printf ("%s temporary binary file is %s [%s:%d]\n",
           rpsconf_prog_name, res, __FILE__, lineno);
   return res;
-}       /* end rpsconf_temporary_binary_file */
+}                               /* end rpsconf_temporary_binary_file */
 
 char *
 rpsconf_readline (const char *prompt)
@@ -352,9 +352,9 @@ rpsconf_readline (const char *prompt)
         };
     }
   while again;
-return res;
+  return res;
 #endif // RPSCONF_WITHOUT_READLINE
-}       // end rpsconf_readline
+}                               // end rpsconf_readline
 
 static const char *rpsconf_readline_default_buffer;
 
@@ -365,7 +365,7 @@ rpsconf_readline_startup_hook (void)
   if (rpsconf_readline_default_buffer)
     res = rl_insert_text (rpsconf_readline_default_buffer);
   return res;
-}       /* end rpsconf_readline_startup_hook */
+}                               /* end rpsconf_readline_startup_hook */
 
 char *
 rpsconf_defaulted_readline (const char *prompt, const char *defstr)
@@ -436,9 +436,9 @@ rpsconf_defaulted_readline (const char *prompt, const char *defstr)
         };
     }
   while again;
-return res;
+  return res;
 #endif // RPSCONF_WITHOUT_READLINE
-}       // end rpsconf_readline
+}                               // end rpsconf_readline
 
 void
 rpsconf_should_remove_file (const char *path, int lineno)
@@ -454,7 +454,7 @@ rpsconf_should_remove_file (const char *path, int lineno)
       exit (EXIT_FAILURE);
     }
   rpsconf_files_to_remove_at_exit[rpsconf_removed_files_count++] = path;
-}       /* end rpsconf_should_remove_file */
+}                               /* end rpsconf_should_remove_file */
 
 
 void
@@ -547,7 +547,7 @@ rpsconf_test_cxx_compiler (const char *cxx)
     fprintf (mnf, "#include <vector>\n");
     fprintf (mnf, "#include <cassert>\n");
     fprintf (mnf, "extern\n"
-                  " void show_str_vect(const std::vector<std::string>&);\n");
+             " void show_str_vect(const std::vector<std::string>&);\n");
     fprintf (mnf, "\n\n");
     fprintf (mnf, "int main(int argc,char**argv) {\n");
     fprintf (mnf, "  std::vector<std::string> v;\n");
@@ -668,7 +668,7 @@ rpsconf_test_cxx_compiler (const char *cxx)
         };
     }
   }
-}       /* end rpsconf_test_cxx_compiler */
+}                               /* end rpsconf_test_cxx_compiler */
 
 
 void
@@ -693,7 +693,7 @@ rpsconf_try_then_set_cxx_compiler (const char *cxx)
     }
   rpsconf_test_cxx_compiler (cxx);
   rpsconf_cpp_compiler = cxx;
-}       /* end rpsconf_try_then_set_cxx_compiler */
+}                               /* end rpsconf_try_then_set_cxx_compiler */
 
 
 #ifndef RPSCONF_WITHOUT_GCCJIT
@@ -752,7 +752,7 @@ rpsconf_check_libgccjit_header (const char *jithpath)
       exit (EXIT_FAILURE);
     };
   fclose (jithf);
-}       /* end rpsconf_check_libgccjit_header */
+}                               /* end rpsconf_check_libgccjit_header */
 
 /// libgccjit++ is obsolete in 2025
 /// see https://gcc.gnu.org/pipermail/jit/2024q4/001955.html
@@ -863,7 +863,7 @@ rpsconf_test_libgccjit_compilation (const char *cc)
 #warning incomplete rpsconf_test_libgccjit_compilation
   /* We should write a temporary C file similar to
      https://gcc.gnu.org/onlinedocs/jit/intro/tutorial01.html */
-}       /* end rpsconf_test_libgccjit_compilation */
+}                               /* end rpsconf_test_libgccjit_compilation */
 
 void
 rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
@@ -917,7 +917,7 @@ rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
     rpsconf_check_libgccjit_header (jithpath);
   }
 #warning rpsconf_try_cxx_compiler_for_libgccjit is incomplete
-}       /* end  rpsconf_try_cxx_compiler_for_libgccjit */
+}                               /* end  rpsconf_try_cxx_compiler_for_libgccjit */
 #endif /*RPSCONF_WITHOUT_GCCJIT */
 
 int
@@ -932,7 +932,7 @@ rpsconf_compare_duped_name (const void *p1, const void *p2)
   const char *const *ps1 = (const char *const *) p1;
   const char *const *ps2 = (const char *const *) p2;
   return strcmp (*ps1, *ps2);
-}       /* end rpsconf_compare_duped_name */
+}                               /* end rpsconf_compare_duped_name */
 
 /// generate in buf of bufsiz the phony test name
 void
@@ -947,7 +947,7 @@ rpsconf_generate_testname (char *buf, size_t bufsiz, const char *testfile)
   assert (curdot != NULL);
   snprintf (buf, bufsiz - 1,
             "test-%.*s", (int) (curdot - testfile), testfile);
-}       /* end rpsconf_generate_testname */
+}                               /* end rpsconf_generate_testname */
 
 void
 rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
@@ -1004,8 +1004,8 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
               if (!newtarr)
                 {
                   fprintf (stderr, "%s: calloc [%s:%d] "
-                                   "for %d pointers failed"
-                                   " for test-dir %s (%s)\n",
+                           "for %d pointers failed"
+                           " for test-dir %s (%s)\n",
                            rpsconf_prog_name, __FILE__, __LINE__ - 1,
                            newsiz, testdir, strerror (errno));
                   rpsconf_failed = true;
@@ -1020,20 +1020,20 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
           if (!dupname)
             {
               fprintf (stderr, "%s: strdup(%s) [%s:%d] failed"
-                               " for test-dir %s (%s)\n",
+                       " for test-dir %s (%s)\n",
                        rpsconf_prog_name, dent->d_name, __FILE__,
                        __LINE__ - 2, testdir, strerror (errno));
               rpsconf_failed = true;
               exit (EXIT_FAILURE);
             };
           tarr[cntarr++] = dupname;
-        }     /* end if dent is a file starting with a digit */
+        }                       /* end if dent is a file starting with a digit */
     };
   closedir (tdirh);
   qsort (tarr, cntarr, sizeof (tarr[0]), rpsconf_compare_duped_name);
   fprintf (fconf, "\n\n## emitting %d phony tests in %s [%s:%d]\n",
            cntarr, testdir, __FILE__, __LINE__ - 1);
-  long bol = ftell (fconf); // begin of line
+  long bol = ftell (fconf);     // begin of line
   const long desired_line_width = 72;
   fprintf (fconf, ".PHONY: ");
   for (int i = 0; i < cntarr; i++)
@@ -1050,7 +1050,7 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
           if (fputs (" \\\n", fconf) < 0)
             {
               fprintf (stderr, "%s: fputs [%s:%d] failed"
-                               " for test-dir %s i=%d (%s)\n",
+                       " for test-dir %s i=%d (%s)\n",
                        rpsconf_prog_name, __FILE__,
                        __LINE__ - 2, testdir, i, strerror (errno));
               rpsconf_failed = true;
@@ -1092,7 +1092,7 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
            cntarr, testdir, __FILE__, __LINE__ - 1);
   fflush (fconf);
   free (tarr);
-}       /* end rpsconf_emit_from_testdir */
+}                               /* end rpsconf_emit_from_testdir */
 
 void
 rpsconf_remove_files (void)
@@ -1112,10 +1112,52 @@ rpsconf_remove_files (void)
       for (int i = 0; i < rpsconf_removed_files_count; i++)
         unlink (rpsconf_files_to_remove_at_exit[i]);
     }
-}       /* end rpsconf_remove_files */
+}                               /* end rpsconf_remove_files */
 
-
-
+void
+rpsconf_check_gnu_make_with_guile (void)
+{
+  const char *cmd = "make --no-print-directory -C / "
+    "--eval='all:;@echo ${.FEATURES}'";
+  // we run the above command, and make should be a GNU make with Guile
+  char linbuf[512];
+  memset (linbuf, 0, sizeof (linbuf));
+  FILE *p = popen (cmd, "r");
+  if (!p)
+    {
+      fprintf (stderr,
+               "%s failed to popen %s (%m) [%s:%d]\n",
+               rpsconf_prog_name, cmd, __FILE__, __LINE__ - 1);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  char *b = fgets (linbuf, (int) sizeof (linbuf), p);
+  if (!b)
+    {
+      fprintf (stderr,
+               "%s failed to fgets popen %s (%m) [%s:%d]\n",
+               rpsconf_prog_name, cmd, __FILE__, __LINE__ - 1);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  if (!strstr (b, "guile"))
+    {
+      fprintf (stderr,
+               "%s dont find a GNU make enabling guile with %s [%s:%d]\n",
+               rpsconf_prog_name, cmd, __FILE__, __LINE__ - 1);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  int ret = pclose (p);
+  if (ret != 0)
+    {
+      fprintf (stderr,
+               "%s failed to run %s (%m) [%s:%d]\n",
+               rpsconf_prog_name, cmd, __FILE__, __LINE__ - 1);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+}                               /* end rpsconf_check_gnu_make_with_guile */
 
 void
 rpsconf_emit_configure_refpersys_mk (void)
@@ -1182,7 +1224,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_preprocessor_argcount)
     {
       fprintf (f, "\n\n"
-                  "# the given %d preprocessor flags for RefPerSys:\n",
+               "# the given %d preprocessor flags for RefPerSys:\n",
                rpsconf_preprocessor_argcount);
       fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
       for (int i = 0; i < rpsconf_preprocessor_argcount; i++)
@@ -1195,7 +1237,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   else
     {
       fprintf (f, "\n\n"
-                  "# the preprocessor flags for RefPerSys [%s:%d]:\n",
+               "# the preprocessor flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
       fprintf (f, "REFPERSYS_PREPRO_FLAGS= -I/usr/local/include\n");
     };
@@ -1204,7 +1246,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_compiler_argcount > 0)
     {
       fprintf (f, "\n\n"
-                  "# the given %d compiler flags for RefPerSys:\n",
+               "# the given %d compiler flags for RefPerSys:\n",
                rpsconf_compiler_argcount);
       fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
       for (int i = 0; i < rpsconf_compiler_argcount; i++)
@@ -1218,7 +1260,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   else
     {
       fprintf (f, "\n\n"
-                  "# default compiler flags for RefPerSys [%s:%d]:\n",
+               "# default compiler flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
       /// most Linux compilers accept -Wall (but intel proprietary
       /// compiler might reject -Wextra)
@@ -1263,7 +1305,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_linker_argcount > 0)
     {
       fprintf (f, "\n\n"
-                  "# the given %d linker flags for RefPerSys:\n",
+               "# the given %d linker flags for RefPerSys:\n",
                rpsconf_linker_argcount);
       fputs ("REFPERSYS_LINKER_FLAGS=", f);
       for (int i = 0; i < rpsconf_linker_argcount; i++)
@@ -1279,8 +1321,8 @@ rpsconf_emit_configure_refpersys_mk (void)
       fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
       fputs
-      ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
-       " $(REFPERSYS_LTO)\n", f);
+        ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
+         " $(REFPERSYS_LTO)\n", f);
     }
 
   fflush (f);
@@ -1349,7 +1391,7 @@ rpsconf_emit_configure_refpersys_mk (void)
                rpsconf_prog_name, tmp_conf, strerror (lnkerrno),
                rpsconf_gitid);
       fflush (stderr);
-      if (lnkerrno == EXDEV)  /// Invalid cross-device link
+      if (lnkerrno == EXDEV)    /// Invalid cross-device link
         {
           /// if tmp_conf and _config-refpersys.mk are on different
           /// file systems e.g. if /tmp/ is a tmpfs on Linux, we copy
@@ -1404,7 +1446,7 @@ rpsconf_emit_configure_refpersys_mk (void)
                   rpsconf_failed = true;
                   exit (EXIT_FAILURE);
                 };
-            };      /// end while !feof fsrctmpconf
+            };                  /// end while !feof fsrctmpconf
           if (fclose (fdstconf))
             {
               fprintf (stderr,
@@ -1445,7 +1487,7 @@ rpsconf_emit_configure_refpersys_mk (void)
       }
     sync ();
   }
-}       /* end rpsconf_emit_configure_refpersys_mk */
+}                               /* end rpsconf_emit_configure_refpersys_mk */
 
 
 void
@@ -1482,11 +1524,11 @@ rpsconf_usage (void)
   puts ("\t -fPIC                   # position independent code");
   puts ("\t -fPIE                   # position independent executable");
   puts ("# generate the _configure-refpersys.mk file");
-  puts ("# for inclusion by GNU make");
+  puts ("# for inclusion by GNU make with Guile enabled");
   puts ("# GPLv3+ licensed, so no warranty");
   puts ("## using CC, CXX, CXXFLAGS, HOME for ~/.gitconfig ...");
   puts ("## and RPS_BUILDER_PERSON & RPS_BUILDER_EMAIL environment vars");
-}       /* end rpsconf_usage */
+}                               /* end rpsconf_usage */
 
 
 void
@@ -1542,6 +1584,8 @@ rpsconf_prelude (int argc, char **argv)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     };
+  /// we require a GNU make with Guile enabled
+  rpsconf_check_gnu_make_with_guile ();
   if (!access ("_config-refpersys.mk", F_OK))
     rename ("_config-refpersys.mk", "_config-refpersys.mk~");
   /// Any program argument like VAR=something is putenv-ed. And
@@ -1594,7 +1638,7 @@ rpsconf_prelude (int argc, char **argv)
       if (*pc == '=')
         putenv (curarg);
     };
-}       /* end rpsconf_prelude */
+}                               /* end rpsconf_prelude */
 
 void
 rpsconf_ask_carburetta (void)
@@ -1682,10 +1726,10 @@ rpsconf_ask_carburetta (void)
   if (fail != 0 || !foundw_parser || !foundw_scanner
       || !foundw_carburetta || !foundw_generator || !foundw_cbrt)
     {
-      /*€ carburetta n'a pas été trouvé ou n'est pas conforme.*/
+      /*€ carburetta n'a pas été trouvé ou n'est pas conforme. */
       // carburetta is missing, bad or unexepected. cf carburetta.com
       fprintf (stderr, "%s [git %s] ran %s with disappointing output.\n"
-                       "See the comment near %s:%d (and carburetta.com)\n",
+               "See the comment near %s:%d (and carburetta.com)\n",
                rpsconf_prog_name, RPSCONF_GIT_ID, pcmdbuf,
                __FILE__, commline);
       exit (EXIT_FAILURE);
@@ -1698,7 +1742,7 @@ rpsconf_ask_carburetta (void)
   free (pcmdbuf);
   pcmdbuf = NULL;
   rpsconf_carburetta = realcarb;
-}       /* end rpsconf_ask_carburetta */
+}                               /* end rpsconf_ask_carburetta */
 
 
 int
@@ -1714,8 +1758,8 @@ main (int argc, char **argv)
             "\t moteur d'inférences RefPerSys\n", rpsconf_prog_name);
     printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
     printf ("\t   REFlexive PERsistent SYStem\n");
-    printf ("\t Contact: Basile STARYNKEVITCH,\n" //
-            "\t 8 rue de la Faïencerie,\n" //
+    printf ("\t Contact: Basile STARYNKEVITCH,\n"       //
+            "\t 8 rue de la Faïencerie,\n"      //
             "\t 92340 Bourg-la-Reine\n" //
             "\t (France)\n");
     if (uname (&un))
@@ -1742,10 +1786,10 @@ main (int argc, char **argv)
   printf ("\t une entrée commançant par ! est une commande shell\n"
           "\t qui est executée et la question est alors répétée\n");
   printf
-  ("\t When asked for file paths, you are expected to\n"
-   "\t enter an absolute path, like /etc/passwd\n"
-   "\t if you enter something starting with ! it is a shell command\n"
-   "\t which is run and the question is repeated.\n");
+    ("\t When asked for file paths, you are expected to\n"
+     "\t enter an absolute path, like /etc/passwd\n"
+     "\t if you enter something starting with ! it is a shell command\n"
+     "\t which is run and the question is repeated.\n");
   fflush (NULL);
   if (argc > RPSCONF_MAX_PROG_ARGS)
     {
@@ -1757,8 +1801,8 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     };
   printf
-  ("\nThe C and C++ compilers (maybe $CC and $CXX) should be preferably\n"
-   "from gcc.gnu.org (or at least compatible)\n");
+    ("\nThe C and C++ compilers (maybe $CC and $CXX) should be preferably\n"
+     "from gcc.gnu.org (or at least compatible)\n");
   fflush (NULL);
   char *cc = getenv ("CC");
   if (!cc)
@@ -1815,7 +1859,7 @@ main (int argc, char **argv)
   if (!optimflags)
     {
       printf
-      ("## optimization flags should contain -fPIC and usually -g !\n");
+        ("## optimization flags should contain -fPIC and usually -g !\n");
       fflush (NULL);
       optimflags =
         rpsconf_defaulted_readline
@@ -1912,9 +1956,9 @@ main (int argc, char **argv)
       if (!rpsconf_builder_email)
         rpsconf_builder_email =
           rpsconf_readline ("email of person building "
-                          "(e.g. alan.turing@princeton.edu):");
+                            "(e.g. alan.turing@princeton.edu):");
       bool goodemail = rpsconf_builder_email != NULL
-                       && isalnum (rpsconf_builder_email[0]);
+        && isalnum (rpsconf_builder_email[0]);
       const char *pc = rpsconf_builder_email;
       for (pc = rpsconf_builder_email; *pc && goodemail && *pc != '@'; pc++)
         {
@@ -1984,7 +2028,7 @@ main (int argc, char **argv)
   return 0;
 #warning TODO perhaps we should emit also a refpersys-config.h file
   /// that hypothetical refpersys-config.h would be included by refpersys.hh
-}       /* end main */
+}                               /* end main */
 
 
 
@@ -2149,7 +2193,7 @@ rpsconf_cc_test (const char *cc)
     printf ("%s: tested hello world C compilation and run [%s:%d]\n",
             rpsconf_prog_name, __FILE__, __LINE__);
   }
-}       /* end rpsconf_cc_test */
+}                               /* end rpsconf_cc_test */
 
 
 /*
@@ -2197,7 +2241,7 @@ rpsconf_cc_set (const char *cc)
   rpsconf_cc_test (cc);
   rpsconf_c_compiler = cc;
   return RPSCONF_OK;
-}       /* end rpsconf_cc_set */
+}                               /* end rpsconf_cc_set */
 
 
 /****************
