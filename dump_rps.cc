@@ -1944,12 +1944,14 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
               {
                 *pouts << "//$" << namestr << "∈" /*U+2208 ELEMENT OF*/
                        << symb->symbol_name()
-                       << " h:" << curobr->obhash() <<  std::endl;
+                       << " h:" << rps_decimal_string(curobr->obhash())
+                       <<  std::endl;
               }
             else if (symb)
               *pouts << "//∈" /*U+2208 ELEMENT OF*/
                      << symb->symbol_name()
-                     << " h:" << curobr->obhash()<<  std::endl;
+                     << " h:" << rps_decimal_string(curobr->obhash())
+                     <<  std::endl;
           }
         else
           RPS_WARNOUT("Rps_Dumper::write_space_file no obsymb for obr "
