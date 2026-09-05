@@ -2972,29 +2972,29 @@ rps_decimal_string(intptr_t i)
   int p=0;
   if (i==0)
     return std::string("0");
-  RPS_UNIQUE_BREAKPOINT();
+  RPS_DELETED_BREAKPOINT();
   memset (buf, 0, sizeof(buf));
   memset (revbuf, 0, sizeof(revbuf));
   if (i<0)
     i = -i;
-  RPS_UNIQUE_BREAKPOINT();
+  //RPS_UNIQUE_BREAKPOINT();
   while (i>0)
     {
       RPS_ASSERT(p>=0 && p<rps_numlen);
       revbuf[p++] = '0' + (i%10);
       i = i / 10;
     };
-  RPS_UNIQUE_BREAKPOINT();
+  //RPS_UNIQUE_BREAKPOINT();
   if (neg)
     revbuf[p++] = '-';
   RPS_ASSERT(p<rps_numlen-1 && p>=0);
-  RPS_UNIQUE_BREAKPOINT();
+  //RPS_UNIQUE_BREAKPOINT();
   for (int j=p-1; j>=0; j--)
     buf[p-1-j] = revbuf[j];
-  RPS_UNIQUE_BREAKPOINT();
+  //RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
   RPS_ASSERT(argi!=0);
-  RPS_UNIQUE_BREAKPOINT();
+  //RPS_UNIQUE_BREAKPOINT();
   return std::string(buf);
 } // end rps_decimal_string
 
@@ -3007,32 +3007,80 @@ rps_hex_string(intptr_t i)
   char revbuf[rps_numlen] = {0};
   int p=0;
   intptr_t argi= i;
-  RPS_UNIQUE_BREAKPOINT();
+  RPS_DELETED_BREAKPOINT();
   if (i==0)
     return std::string("0");
   memset (buf, 0, sizeof(buf));
   memset (revbuf, 0, sizeof(revbuf));
   if (i<0)
     i = -i;
-  RPS_UNIQUE_BREAKPOINT();
+  //RPS_UNIQUE_BREAKPOINT();
   while (i>0)
     {
-      RPS_ASSERT(p>=0 && p<rps_numlen);
+      RPS_ASSERT(p>=0 && p<(int)rps_numlen);
       revbuf[p++] = "0123456789abcdef" [i % 16];
       i = i / 16;
     };
   if (neg)
     revbuf[p++] = '-';
-  RPS_ASSERT(p<rps_numlen-1 && p>=0);
-  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(p<(int)rps_numlen-1 && p>=0);
+  //RPS_UNIQUE_BREAKPOINT();
   for (int j=p-1; j>=0; j--)
     buf[p-1-j] = revbuf[j];
-  RPS_UNIQUE_BREAKPOINT();
-  RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
+  //RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<(size_t)rps_numlen);
   RPS_ASSERT(argi!=0);
-  RPS_UNIQUE_BREAKPOINT();
+  //RPS_UNIQUE_BREAKPOINT();
   return std::string(buf);
 } // end rps_hex_string
+
+
+const std::string
+rps_unsigned_dec_string(uintptr_t i)
+{
+  char buf[rps_numlen] = {0};
+  char revbuf[rps_numlen] = {0};
+  int p=0;
+  if (i==0)
+    return std::string("0");
+  memset (buf, 0, sizeof(buf));
+  memset (revbuf, 0, sizeof(revbuf));
+  while (i>0)
+    {
+      RPS_ASSERT(p>=0 && p<rps_numlen);
+      revbuf[p++] = '0' + (i%10);
+      i = i / 10;
+    };
+  RPS_ASSERT(p<rps_numlen-1 && p>=0);
+  for (int j=p-1; j>=0; j--)
+    buf[p-1-j] = revbuf[j];
+  RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
+  return std::string(buf);
+} // end rps_unsigned_dec_string
+
+
+const std::string
+rps_unsigned_hex_string(uintptr_t i)
+{
+  char buf[rps_numlen] = {0};
+  char revbuf[rps_numlen] = {0};
+  int p=0;
+  if (i==0)
+    return std::string("0");
+  memset (buf, 0, sizeof(buf));
+  memset (revbuf, 0, sizeof(revbuf));
+  while (i>0)
+    {
+      RPS_ASSERT(p>=0 && p<(int)rps_numlen);
+      revbuf[p++] = "0123456789abcdef" [i % 16];
+      i = i / 16;
+    };
+  RPS_ASSERT(p<(int)rps_numlen-1 && p>=0);
+  for (int j=p-1; j>=0; j--)
+    buf[p-1-j] = revbuf[j];
+  RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<(size_t)rps_numlen);
+  return std::string(buf);
+} // end rps_unsigned_hex_string
 
 
 /// called to give the interactive plugin
