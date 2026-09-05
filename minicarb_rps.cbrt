@@ -259,7 +259,6 @@ void
 rps_minicarb_data_st::incr_carbdata_command_count(int clin)
 {
   RPS_ASSERT(minicarb_magic == rps_magic_minicarb_data);
-  RPS_ASSERT(minicarb_cmdcount>=0);
   RPS_POSSIBLE_BREAKPOINT();
   unsigned u= minicarb_cmdcount++;
   RPS_DEBUG_LOG(REPL, "incremented minicarb_cmdcount#" << u
