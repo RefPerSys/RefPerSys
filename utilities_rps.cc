@@ -330,9 +330,9 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
     localtime_r(&nowtime, &nowtm);
     outs << linprefix
          << " © " "Copyright " "(C) "
-         << RPS_INITIAL_COPYRIGHT_YEAR
+         << rps_decimal_string(RPS_INITIAL_COPYRIGHT_YEAR)
          << " - "
-         << (nowtm.tm_year + 1900) << " "
+         << rps_decimal_string(nowtm.tm_year + 1900) << " "
          << ((owner.empty()) ? "The Reflective Persistent Team" : owner.c_str())
          << linsuffix << std::endl;
     outs << linprefix
@@ -370,7 +370,8 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
        << " branch " << rps_gitbranch << linsuffix << std::endl;
   if (fil && lin>0 && fromfunc)
     {
-      outs << linprefix << " emitted from " << fil << ":" << lin << linsuffix << std::endl;
+      outs << linprefix << " emitted from " << fil << ":"
+           << rps_decimal_string(lin) << linsuffix << std::endl;
       outs << linprefix << " by " << fromfunc << linsuffix << std::endl;
     }
 } // end rps_emit_gplv3_copyright_notice_AT
@@ -406,9 +407,9 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
     localtime_r(&nowtime, &nowtm);
     outs << linprefix
          << "© " "Copyright" " (C) "
-         << RPS_INITIAL_COPYRIGHT_YEAR
+         << rps_decimal_string(RPS_INITIAL_COPYRIGHT_YEAR)
          << " - "
-         << (nowtm.tm_year + 1900)
+         << rps_decimal_string(nowtm.tm_year + 1900)
          << ((owner.empty()) ? "The Reflective Persistent Team" : owner.c_str());
     outs << linsuffix << std::endl;
   }
@@ -444,7 +445,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
   if (fil && lin>0 && fromfunc)
     {
       outs << linprefix
-           << " emitted from " << fil << ":" << lin
+           << " emitted from " << fil << ":" << rps_decimal_string(lin)
            << linsuffix << std::endl;
       outs << linprefix
            << " by " << fromfunc
@@ -695,6 +696,7 @@ rps_show_version_handwritten_source_files(void)
     {
       char curbase[64];
       memset (curbase, 0, sizeof(curbase));
+      bool is_elf = false;
       int endpos = -1;
       const char*curfile = *curfileptr;
       if (!curfile)
@@ -718,8 +720,12 @@ rps_show_version_handwritten_source_files(void)
       // ignore header files
       if (strstr(curfile, ".hh"))
         continue;
-      // ignore markdown documentation
+      // ignore markdown or LaTeX or HTML or GNU lout documentation
       if (strstr(curfile, ".md"))
+        continue;
+      if (strstr(curfile, ".tex"))
+        continue;
+      if (strstr(curfile, ".lout"))
         continue;
       // ignore BisonC++ file
       if (strstr(curfile, "yyp"))
