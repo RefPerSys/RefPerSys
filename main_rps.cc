@@ -1705,6 +1705,9 @@ main (int argc, char** argv)
   rps_helpwanted = false;
   bool versionwanted = false;
   bool disableduserpref = false;
+  rps_stdout_istty = isatty(STDOUT_FILENO);
+  rps_stderr_istty = isatty(STDERR_FILENO);
+  rps_stdin_istty = isatty(STDIN_FILENO);
   _Pragma("message \"start of main\"");
   // https://fossies.org/linux/glibmm/glib/glibmm/init.h
   Glib::init(); /// initialize glibmm ....
@@ -1740,7 +1743,6 @@ main (int argc, char** argv)
   else
     rps_stored_locale = setlocale(LC_ALL, nullptr);
   RPS_ASSERT(rps_stored_locale != nullptr);
-  rps_stdout_istty = isatty(STDOUT_FILENO);
   static_assert(sizeof(rps_progexe) > 80);
   if (!getenv("REFPERSYS_TOPDIR"))
     RPS_FATALOUT("missing $REFPERSYS_TOPDIR in environment");
