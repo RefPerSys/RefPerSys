@@ -163,7 +163,8 @@ Rps_ReadlineTokenSource::fill_current_line_buffer(void)
   RPS_DEBUG_LOG(REPL, "did readline " << Rps_QuotedC_String(rl));
   RPS_UNIQUE_BREAKPOINT();
   RPS_WARNOUT("incomplete Readline fill_current_line_buffer @"
-              << (void*)this << " rl=" << Rps_QuotedC_String(rl)
+              << rps_unsigned_hex_string((uintptr_t)this)
+              << " rl=" << Rps_QuotedC_String(rl)
               << " readlinbuf=" << Rps_QuotedC_String(rl_line_buffer)
               << RPS_FULL_BACKTRACE_HERE(1, "readline fillcurlinbuf"));
 #warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
@@ -180,8 +181,10 @@ Rps_ReadlineTokenSource::output(std::ostream&out, unsigned depth,
     RPS_WARNOUT("Rps_ReadlineTokenSource " << name()
                 << " depth=" << depth
                 << " greater than maxdepth=" << maxdepth);
-  out << "ReadlineTokenSource:" << name() << ".S#" << unique_number()
-      << '@' << position_str() << " tok.cnt:" << token_count();
+  out << "ReadlineTokenSource:" << name()
+      << ".S#" << rps_decimal_string(unique_number())
+      << '@' << position_str() << " tok.cnt:"
+      << rps_decimal_string(token_count());
 }; // end Rps_ReadlineTokenSource::output
 
 
