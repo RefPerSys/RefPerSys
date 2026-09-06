@@ -1,1 +1,0 @@
-this subdirectory Make-dependencies contains GNU-make dependencies
