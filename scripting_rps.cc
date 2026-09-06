@@ -208,9 +208,9 @@ rps_scripting_add_script(const char*path)
   if (rps_scripts_vector.empty()) {
       /////
       /****
-                         ** Only the main thread can call rps_scripting_add_script, so
-                         ** no more synchronization or mutex is needed to :
-                         *****/
+                               ** Only the main thread can call rps_scripting_add_script, so
+                               ** no more synchronization or mutex is needed to :
+                               *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
@@ -344,7 +344,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
          && !(*ptsrc).reached_end()) {
       loopcnt++;
       RPS_DEBUG_LOG(REPL, "rps_run_one_script_file (*ptsrc)=" << (*ptsrc)
-                    << " start loop#" << loopcnt
+                    << std::endl
+                    << "… start loop#" << loopcnt
                     << " obenv=" << _f.obenv
                     << " curcptr=" << Rps_QuotedC_String((*ptsrc).curcptr()));
       RPS_POSSIBLE_BREAKPOINT();
@@ -360,13 +361,16 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                     << " clp=" << Rps_QuotedC_String(clp));
       RPS_POSSIBLE_BREAKPOINT();
       if (!clp) {
-          RPS_DEBUG_LOG(REPL, "rps_run_one_script_file (*ptsrc)=" << (*ptsrc)
+          RPS_DEBUG_LOG(REPL, "rps_run_one_script_file (*ptsrc)="
+                        << (*ptsrc)
                         << " loop#" << loopcnt
-                        <<  " ¤maybe-eof @" << (*ptsrc).position_str());
+                        <<  " ¤maybe-eof @"
+			<< (*ptsrc).position_str());
           RPS_POSSIBLE_BREAKPOINT();
           if ((*ptsrc).get_line()) {
               clp = (*ptsrc).curcptr();
-              RPS_DEBUG_LOG(REPL, "rps_run_one_script_file (*ptsrc)=" << (*ptsrc)
+              RPS_DEBUG_LOG(REPL, "rps_run_one_script_file (*ptsrc)="
+                            << (*ptsrc)
                             << " loop#" << loopcnt << " got-line "
                             << " clp=" << Rps_QuotedC_String(clp));
             }
@@ -391,8 +395,6 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                         << " " << ((*ptsrc).reached_end()?"°atend":"°notend")
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_run_one_script_file °NULL-clp"));
-          usleep(12345);        // temporary code to slow down
-          // debugging output
           RPS_POSSIBLE_BREAKPOINT();
 #warning rps_run_one_script_file incomplete when clp is null
         };
@@ -404,7 +406,8 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
           gotmagic= true;
           memset(modline, 0, sizeof(modline));
           int p = -1;
-          int n = sscanf(magp,  RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%n",
+          int n = sscanf(magp,
+			 RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%n",
                          modline, &p);
           if (n > 0 && isascii(modline[0]) && p>0) {
               RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
@@ -612,13 +615,13 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
     struct rlimit rlcore;
     rlcore.rlim_cur= (16<<30); //16Gbytes
     rlcore.rlim_max= (32<<30); //32Gbytes
-    RPS_DEBUG_LOG(REPL, "setrlimit rlimit_core pid " << getpid());
+    RPS_DEBUG_LOG(REPL, "setrlimit rlimit_core pid " << rps_decimal_string(getpid()));
     if (setrlimit(RLIMIT_CORE, &rlcore))
       RPS_FATALOUT("failed to set core limit (16Gb soft, 32Gb hard):"
                    << strerror(errno));
     else
       RPS_INFORMOUT("did set core limit to 16Gb soft, 32Gb hard for pid "
-                    << getpid());
+                    << rps_decimal_string(getpid()));
   };
   if (RPS_DEBUG_ENABLED(REPL) || RPS_DEBUG_ENABLED(LOWREP))
     {
@@ -626,7 +629,7 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
       FILE*flim = fopen("/proc/self/limits", "r");
       if (!flim)
         RPS_FATALOUT("failed to open /proc/self/limits " << strerror(errno));
-      RPS_INFORMOUT("our /proc/self/limits is (pid " << getpid() << "):");
+      RPS_INFORMOUT("our /proc/self/limits is (pid " << rps_decimal_string(getpid()) << "):");
       do {
           memset(lbuf, 0, sizeof(lbuf));
           if (!fgets(lbuf, (int)sizeof(lbuf), flim))

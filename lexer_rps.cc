@@ -381,15 +381,28 @@ Rps_FileTokenSource::Rps_FileTokenSource(std::string path)
   : Rps_TokenSource(std::string{"file "}+path),
     toksrc_input_file(nullptr)
 {
+  static const char*hom;
+  static int homlen;
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  if (RPS_UNLIKELY(hom==(const char*)nullptr)) {
+    hom = getenv("HOME");
+    RPS_ASSERT(hom != nullptr);
+    RPS_ASSERT(hom[0] != (char)0);
+    homlen = (int)strlen(hom);
+  };
+  std::string abrpath;
+  if (!strncmp(path.c_str(), hom, homlen))
+    abrpath = std::string("~/") + (path.c_str()+homlen);
+  else
+    abrpath = path;
   toksrc_input_file = fopen(path.c_str(), "r");
   if (!toksrc_input_file)
     {
-      RPS_WARNOUT("file token source for '" << Rps_Cjson_String(path)
+      RPS_WARNOUT("file token source for '" << Rps_Cjson_String(abrpath)
                   << "' failed to fopen " << strerror(errno));
       throw std::runtime_error(std::string{"bad file token source:"} + path);
     }
-  set_name(std::string("FILE ") + std::string(path));
+  set_name(std::string("FILE ") + std::string(abrpath));
   RPS_DEBUG_LOG(REPL, "constr FileTokenSource@ " <<(void*)this
                 << " " << *this);
   RPS_DEBUG_LOG(LOWREP, "constr FileTokenSource@ " <<(void*)this
