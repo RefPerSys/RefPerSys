@@ -280,7 +280,11 @@ rps_minicarb_data_st::set_carbdata_toksrc(Rps_TokenSource*tksrc, int l)
   RPS_ASSERT(l>=0);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(LOWREP, "old minicarb_toksrc=" << minicarb_toksrc
-		<< " new tksrc=" << tksrc << " l=" << l);
+		<< " new tksrc="
+		<< rps_unsigned_hex_string((uintptr_t)tksrc)
+		<< " l=" << rps_decimal_string(l)
+		<< std::endl
+		<< RPS_FULL_BACKTRACE(1, "mini/set_carbdata_toksrc"));
   RPS_ASSERTPRINTF(minicarb_toksrc==nullptr, "minicarb_toksrc=%p l=%d",
 		   minicarb_toksrc, l);
   minicarb_toksrc= tksrc;
