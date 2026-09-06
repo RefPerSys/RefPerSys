@@ -381,7 +381,8 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile,
           if (demangled && status==0)
             dempcfun = (char*) demangled;
         }
-      outs << ITALICS_esc << basepcfile << ':' << pclineno << "°:" << NORMAL_esc << " "
+      outs << ITALICS_esc << basepcfile << ':'
+           << rps_decimal_string(pclineno) << "°:" << NORMAL_esc << " "
            << UNDERLINE_esc << (dempcfun?dempcfun:pcfun) << NORMAL_esc
            << " "
            << FAINT_esc << "@" << rps_unsigned_hex_string((uintptr_t)pc) << NORMAL_esc
