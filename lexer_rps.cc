@@ -392,15 +392,16 @@ Rps_FileTokenSource::Rps_FileTokenSource(std::string path)
   };
   std::string abrpath;
   if (!strncmp(path.c_str(), hom, homlen))
-    abrpath = std::string("~/") + (path.c_str()+homlen);
+    abrpath = std::string("~/") + (path.c_str()+homlen+1);
   else
     abrpath = path;
   toksrc_input_file = fopen(path.c_str(), "r");
   if (!toksrc_input_file)
     {
-      RPS_WARNOUT("file token source for '" << Rps_Cjson_String(abrpath)
+      RPS_WARNOUT("file token source for '" << Rps_Cjson_String(path)
                   << "' failed to fopen " << strerror(errno));
-      throw std::runtime_error(std::string{"bad file token source:"} + path);
+      throw std::runtime_error(std::string{"bad file token source:"}
+                               + path);
     }
   set_name(std::string("FILE ") + std::string(abrpath));
   RPS_DEBUG_LOG(REPL, "constr FileTokenSource@ " <<(void*)this
@@ -429,9 +430,15 @@ Rps_FileTokenSource::~Rps_FileTokenSource()
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   fclose(toksrc_input_file);
   toksrc_input_file = nullptr;
-  RPS_DEBUG_LOG(REPL, "destr °FileTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(LOWREP, "destr °FileTokenSource@ " <<(void*)this << " " << *this);
-  RPS_DEBUG_LOG(CMD, "destr °FileTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "destr °FileTokenSource@ "
+		<<rps_unsigned_hex_string((uintptr_t)this)
+		<< " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "destr °FileTokenSource@ "
+		<<rps_unsigned_hex_string((uintptr_t)this)
+		<< " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr °FileTokenSource@ "
+		<<rps_unsigned_hex_string((uintptr_t)this)
+		<< " " << *this);
 } // end Rps_FileTokenSource::~Rps_FileTokenSource
 
 bool
