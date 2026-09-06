@@ -384,12 +384,13 @@ Rps_FileTokenSource::Rps_FileTokenSource(std::string path)
   static const char*hom;
   static int homlen;
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  if (RPS_UNLIKELY(hom==(const char*)nullptr)) {
-    hom = getenv("HOME");
-    RPS_ASSERT(hom != nullptr);
-    RPS_ASSERT(hom[0] != (char)0);
-    homlen = (int)strlen(hom);
-  };
+  if (RPS_UNLIKELY(hom==(const char*)nullptr))
+    {
+      hom = getenv("HOME");
+      RPS_ASSERT(hom != nullptr);
+      RPS_ASSERT(hom[0] != (char)0);
+      homlen = (int)strlen(hom);
+    };
   std::string abrpath;
   if (!strncmp(path.c_str(), hom, homlen))
     abrpath = std::string("~/") + (path.c_str()+homlen+1);
@@ -404,10 +405,15 @@ Rps_FileTokenSource::Rps_FileTokenSource(std::string path)
                                + path);
     }
   set_name(std::string("FILE ") + std::string(abrpath));
-  RPS_DEBUG_LOG(REPL, "constr FileTokenSource@ " <<(void*)this
+  RPS_DEBUG_LOG(REPL, "constr FileTokenSource@ "
+                << rps_unsigned_hex_string((uintptr_t)this)
                 << " " << *this);
-  RPS_DEBUG_LOG(LOWREP, "constr FileTokenSource@ " <<(void*)this
-                << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "constr FileTokenSource@ "
+                << rps_unsigned_hex_string((uintptr_t)this)
+                << " " << *this
+                << std::endl
+                << "… "
+                << RPS_FULL_BACKTRACE(1, "constr FileTokenSource"));
   RPS_DEBUG_LOG(CMD, "constr FileTokenSource@ " <<(void*)this
                 << " " << *this);
 } // end Rps_FileTokenSource::Rps_FileTokenSource
@@ -431,14 +437,14 @@ Rps_FileTokenSource::~Rps_FileTokenSource()
   fclose(toksrc_input_file);
   toksrc_input_file = nullptr;
   RPS_DEBUG_LOG(REPL, "destr °FileTokenSource@ "
-		<<rps_unsigned_hex_string((uintptr_t)this)
-		<< " " << *this);
+                <<rps_unsigned_hex_string((uintptr_t)this)
+                << " " << *this);
   RPS_DEBUG_LOG(LOWREP, "destr °FileTokenSource@ "
-		<<rps_unsigned_hex_string((uintptr_t)this)
-		<< " " << *this);
+                <<rps_unsigned_hex_string((uintptr_t)this)
+                << " " << *this);
   RPS_DEBUG_LOG(CMD, "destr °FileTokenSource@ "
-		<<rps_unsigned_hex_string((uintptr_t)this)
-		<< " " << *this);
+                <<rps_unsigned_hex_string((uintptr_t)this)
+                << " " << *this);
 } // end Rps_FileTokenSource::~Rps_FileTokenSource
 
 bool
@@ -527,14 +533,11 @@ Rps_PipeTokenSource::~Rps_PipeTokenSource()
   toksrc_input_pipe = nullptr;
   if (e)
     {
-      RPS_WARNOUT("pipe token source for '"
-                  << Rps_Cjson_String(name())
-                  << "' failed pclose with exit #" << e
-                  << std::endl
-                  << RPS_FULL_BACKTRACE(1,"destr °PipeTokenSource"));
-      throw
-      std::runtime_error(std::string{"bad pipe token source:"
-                                     + name()});
+      RPS_FATALOUT("pipe token source for '"
+                   << Rps_Cjson_String(name())
+                   << "' failed pclose with exit #" << e
+                   << std::endl
+                   << RPS_FULL_BACKTRACE(1,"destr °PipeTokenSource"));
     };
   RPS_DEBUG_LOG(REPL, "destr °PipeTokenSource@ " <<(void*)this
                 << " " << *this);
@@ -1011,6 +1014,8 @@ Rps_MemoryFileTokenSource::output(std::ostream&out,
     };
   if (reached_end())
     out <<  "°";
+  if (maxdepth>0)
+    out << " maxdepth=" << rps_decimal_string(maxdepth);
   out << std::endl;
 } // end Rps_MemoryFileTokenSource::output
 
@@ -1384,6 +1389,7 @@ Rps_TokenSource::get__shortstr__token(Rps_CallFrame*callframe,
   lextok->set_serial(++toksrc_counter);
   RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get__shortstr__token#" << toksrc_counter
                 << " from¤ " << *this << std::endl
+                << " curp=" << Rps_QuotedC_String(curp)
                 << " single-line string :-◑> " << _f.res << " @! " << position_str()
                 << " curcptr:" <<  Rps_QuotedC_String(curcptr())
                 << std::endl
@@ -1423,6 +1429,7 @@ Rps_TokenSource::get__longlitstr__token(Rps_CallFrame*callframe,
   lextok->set_serial(++toksrc_counter);
   RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                 << " from¤ " << *this << std::endl
+                << " curp=" << Rps_QuotedC_String(curp)
                 << " multi-line literal string :-◑> " << _f.res
                 << " @! " << position_str()
                 << " curcptr:" <<  Rps_QuotedC_String(curcptr())
@@ -1451,7 +1458,8 @@ Rps_TokenSource::get__codechunk__token(Rps_CallFrame*callframe,
   int colstart = toksrc_col;
   RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get__codechunk__token#"
                 << toksrc_counter
-                << " from¤ " << *this << " start");
+                << " from¤ " << *this << " start"
+                << " curp=" << Rps_QuotedC_String(curp));
   const Rps_String* str = _f.namev.to_string();
   _f.namev= source_name_val(&_);
   _f.lextokv = lex_code_chunk(&_);
