@@ -295,14 +295,14 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
                 {
                   outs <<  ' ' << (void*)pc
                        << "!: " << filnamestr
-                       << "+" << std::showbase << std::hex << delta
+                       << "+" << rps_hex_string(delta)
                        << NORMAL_esc << std::flush;
                 }
               else
                 {
                   outs << ' ' << (void*)pc
                        << "!: " << filnamestr
-                       << "+" << std::showbase << std::hex << delta
+                       << "+" << rps_hex_string(delta)
                        << ' ' << funamestr
                        << NORMAL_esc << std::flush;
                 }
@@ -329,7 +329,7 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
         }
       else // dladdr failed
         {
-          outs << " §:" << (void*)pc << '?' << std::flush;
+          outs << " §:" << rps_unsigned_hex_string((uintptr_t)pc) << '?' << std::flush;
           /// We should not use dlerror here, since it is invalid when
           /// the pc is not in a shared object.
         }
@@ -384,7 +384,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile,
       outs << ITALICS_esc << basepcfile << ':' << pclineno << "°:" << NORMAL_esc << " "
            << UNDERLINE_esc << (dempcfun?dempcfun:pcfun) << NORMAL_esc
            << " "
-           << FAINT_esc << "@" << (void*)pc << NORMAL_esc
+           << FAINT_esc << "@" << rps_unsigned_hex_string((uintptr_t)pc) << NORMAL_esc
            << std::flush;
       if (dempcfun)
         free((void*)dempcfun);
