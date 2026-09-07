@@ -1,8 +1,0 @@
-#pragma message "RefPerSys bisonc++ ltypedata.in"
-LTYPE_   d_loc_;
-
-LTYPE_  const &lsp_(int idx) const
-{
-    return *(d_lsp + idx);
-}
-
