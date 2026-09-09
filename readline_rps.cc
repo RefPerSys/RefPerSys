@@ -166,6 +166,7 @@ Rps_ReadlineTokenSource::fill_current_line_buffer(void)
               << rps_unsigned_hex_string((uintptr_t)this)
               << " rl=" << Rps_QuotedC_String(rl)
               << " readlinbuf=" << Rps_QuotedC_String(rl_line_buffer)
+	      << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "readline fillcurlinbuf"));
 #warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
 } // end Rps_ReadlineTokenSource::fill_current_line_buffer
