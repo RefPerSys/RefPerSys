@@ -1,7 +1,7 @@
 // file RefPerSys/plugins_dir/rpsiplug_fox.cc
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/***
+/*** ###  use make test14 to test this ###
     © Copyright (C) 2026 by Basile STARYNKEVITCH, France
    program released under GNU General Public License v3+
 
