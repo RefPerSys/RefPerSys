@@ -10,12 +10,7 @@ The intuition is to mention here a few things which should take less
 than a few days or weeks of work.
 
 
-## TODO List
-
-Improve both GNUmakefile and do-build-refpersys-plugin.cc to have secondary
-plugin C++ files
-
-### context
+## Context
 
 For *RefPerSys* near commit [d53653c37f7a](https://github.com/RefPerSys/RefPerSys/commit/d53653c37f7a5dd0817a5f86256ef6f095944e25)  (i.e. `d53653c37f7a`, May 2023). Please email
 [refpersys-forum@framalistes.org](mailto:refpersys-forum@framalistes.org)
@@ -26,23 +21,23 @@ private email to
 and [b.starynkevitch@gmail.com](mailto:b.starynkevitch@gmail.com) if you
 want to contribute.
 
-(I Basile can also be reached during French office hours by Whatapp
+(I Basile can also be reached during French office hours by WhatsApp
  to +33 6 8501 followed by the four digits product of 7 and 337)
 
 
 Please mention *RefPerSys* and the http://refpersys.org/ URL to colleagues, students, teachers et al...
 
+
+## TODO List
+
 ### small useful TODO coding tasks
+
+Improve both GNUmakefile and do-build-refpersys-plugin.cc to have secondary
+plugin C++ files
 
 Improve the REPL parsing so that `make test03` works
 
-
 Add a file `machlearn_rps.cc` including `mlpack.hpp` from https://www.mlpack.org/
-
-In commit c4935a77e45f3 (June 14, 2023) the `make test01`
-fails. Probably `Rps_ObjectZone::is_instance_of` and or
-`Rps_ObjectZone::is_subclass_of` are buggy. This is corrected in
-commit 889f895c0b (Jan 17, 2024)
 
 Improve *RefPerSys* so that its `--publish-me=http://localhost:8086/`
 program option works. See function `rps_curl_publish_me` in file
@@ -51,7 +46,7 @@ program option works. See function `rps_curl_publish_me` in file
 Review file `refpersys.hh` for spelling mistakes in comments.
 
 Not sure if we want to remove there `class Rps_PayloadWebPi` and
-`PaylWebHandler` and `PaylWebex` and simulatnously remove the
+`PaylWebHandler` and `PaylWebex` and simultaneously remove the
 persistent objects and classes related to Web from the persistent
 store....
 
@@ -73,8 +68,6 @@ call. It should cooperate with `Rps_PayloadUnixProcess` and manage
 both processes and file descriptors handled by that event loop. These
 file descriptors may be related to JSONRPC service, etc...
 
-
-
 Use [libgccjit](https://gcc.gnu.org/onlinedocs/jit/)
 
 
@@ -82,9 +75,14 @@ Use [libgccjit](https://gcc.gnu.org/onlinedocs/jit/)
 
 Define some different plugins for the user interface. So remove
 all dependencies on X11, readline and replace them with other plugins (not
-the ones in plugins_dir) dealing with user interfacve.
+the ones in plugins_dir) dealing with user interface.
 
-## DONE  List
+## DONE List
+
+Fixed `make test01` failure (which was caused by bugs in
+`Rps_ObjectZone::is_instance_of` and or
+`Rps_ObjectZone::is_subclass_of`, reported in commit c4935a77e45f3)
+in commit 889f895c0b (Jan 17, 2024).
 
 Added transient (non-dumped) payloads for: *forked* Unix processes,
 `popen`-ed file handles
@@ -98,4 +96,3 @@ The predefined root object `_4DsQEs8zZf901wT1LH` informally named
 `the_mutable_set_of_classes` and should be filled with all classes
 objects. The routine `Rps_ObjectRef::make_named_class` has been
 improved to fill `the_mutable_set_of_classes`
-
