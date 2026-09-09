@@ -5,3 +5,11 @@
 *.orig
 refpersys
 _*.mk
+Make-dependencies/*mkdep
+_*.c
+_*.cc
+_*.h
+_*.hh
+do-build-refpersys-plugin
+do-scan-refpersys-pkgconfig
+tools/do-configure-refpersys
