@@ -979,7 +979,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                 );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
-#pragma message emit_cplusplus_declarations needs a review and a new selector
+#pragma message "emit_cplusplus_declarations needs a review and a new selector"
   // TODO: we need a selector to send some message related to C++ declaration emission
   //
   // it could happen that the components number of the module is
