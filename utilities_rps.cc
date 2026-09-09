@@ -1452,6 +1452,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
     }
     return 0;
+    case RPSPROGOPT_LOCALE:
+    {
+      RPS_WARNOUT("--locale=" << Rps_QuotedC_String(arg)
+		  << " is not yet implemented");
+#warning should implelement --locale= program option
+    }
+    return 0;
     case RPSPROGOPT_DUMP:
     {
       if (side_effect)

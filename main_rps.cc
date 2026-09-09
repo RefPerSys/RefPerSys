@@ -319,6 +319,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Forcibly disable terminal ANSI escape codes, even if stdout is a tty.\n", //
     /*group:*/0 ///
   },
+  /* ======= set the locale for messages ======= */
+  {/*name:*/ "locale", ///
+    /*key:*/ RPSPROGOPT_LOCALE, ///
+    /*arg:*/ "LOCALE", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "set the locale for internationlization of messages",
+    /*group:*/0 ///
+  },
   /* ======= dlopen a given plugin file after load ======= */
   {/*name:*/ "plugin-after-load", ///
     /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
