@@ -525,7 +525,8 @@ Rps_Dumper::scan_source_file_for_constants(const std::string&relfilename)
         };
       const char*curpos = linbuf.c_str();
       char*foundpos = nullptr;
-      while ((foundpos = strstr((char*)curpos, RPS_CONSTANTOBJ_PREFIX)) != nullptr)
+      while ((foundpos
+              = strstr((char*)curpos, RPS_CONSTANTOBJ_PREFIX)) != nullptr)
         {
           const char*endpos=nullptr;
           bool ok=false;
@@ -1010,16 +1011,16 @@ Rps_Dumper::scan_every_source_file_for_constants(void)
       /// so should be skipped
       /// files under .attic are also ignored
       if (lencurpath < 8
-	  || strstr(curpath, "generated/") || strstr(curpath, ".attic/"))
+          || strstr(curpath, "generated/") || strstr(curpath, ".attic/"))
         continue;
       // Files whose name start with _ are also temporary C or C++
       // source code
       if (lencurpath>6 && curpath[0]=='_'
-	  && (!strcmp(curpath+lencurpath-3, ".cc")
-	      || !strcmp(curpath+lencurpath-3, ".hh")
-	      || !strcmp(curpath+lencurpath-2, ".c")
-	      || !strcmp(curpath+lencurpath-2, ".h")))
-	  continue;
+          && (!strcmp(curpath+lencurpath-3, ".cc")
+              || !strcmp(curpath+lencurpath-3, ".hh")
+              || !strcmp(curpath+lencurpath-2, ".c")
+              || !strcmp(curpath+lencurpath-2, ".h")))
+        continue;
       if (!strcmp(curpath+lencurpath-3, ".cc")
           || !strcmp(curpath+lencurpath-3, ".hh")
           || !strcmp(curpath+lencurpath-3, ".yy")
