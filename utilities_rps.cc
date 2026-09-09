@@ -1,4 +1,1423 @@
+/****************************************************************
+ * file utilities_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Description:
+ *      This file is part of the Reflective Persistent System.
+ *
+ *      It has some utility functions.
+ *
+ * Author(s):
+ *      Basile Starynkevitch (France) <basile@starynkevitch.net>
+ *      Niklas Rozencrantz (Sweden)   <niklasr@protonmail.com>
+ *
+ * past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
+ *
+ *      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
+ *      team@refpersys.org & http://refpersys.org/
+ *
+ * License:
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ******************************************************************************/
 
+#include "refpersys.hh"
+
+// comment for our do-scan-refpersys-pkgconfig.c utility
+//@@PKGCONFIG gmp
+//@@PKGCONFIG gmpxx
+
+//@@PKGCONFIG libelf
+#include "libelf.h"
+
+
+
+#include "libgccjit.h"
+
+extern "C" const char rps_utilities_gitid[];
+const char rps_utilities_gitid[]= RPS_GITID;
+
+
+extern "C" const char rps_utilities_shortgitid[];
+const char rps_utilities_shortgitid[]= RPS_SHORTGITID;
+
+
+extern "C" const char rps_utilities_basename[];
+const char rps_utilities_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_utilities_baseid[];
+const char rps_utilities_baseid[]= RPS_BASEID;
+
+
+
+////////////////////////////////////////////////////////////////
+extern "C" void rps_set_user_preferences(const char*path);
+
+extern "C" void rps_scripting_help(void);
+extern "C" void rps_scripting_add_script(const char*path);
+
+extern "C" char*rps_chdir_path_after_load;
+
+static bool rps_flag_pref_help;
+
+bool rps_helpwanted;
+std::string rps_run_name;
+
+/// for interactive plugins eg plugin_dir/rpsiplug_fox.cc
+static void*rps_interact_dlh;
+static const char*rps_interact_arg;
+/// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
+/// see also file lightgen_rps.cc
+
+
+static void rps_compute_program_invocation(int argc, char**argv);
+
+// we may have a pair of FIFO to communicate with some external
+// process (for graphical user interface), perhaps mini-edit-fltk on
+// https://github.com/bstarynk/misc-basile/ ... The FIFO prefix is
+// $FIFOPREFIX. The messages from the GUI user interface to RefPerSys
+// are on $FIFOPREFIX.out; the messages from RefPerSys to that GUI
+// user interface are on $FIFOPREFIX.cmd
+static std::string rps_fifo_prefix;
+char rps_bufpath_homedir[rps_path_byte_size];
+char rps_debug_path[rps_path_byte_size];
+static  struct rps_fifo_fdpair_st rps_fifo_pair;
+
+static std::vector<std::string> rps_postponed_removed_files_vector;
+static std::mutex rps_postponed_lock;
+
+std::string rps_publisher_url_str;
+
+static pthread_t rps_main_thread_handle;
+
+extern "C" char*rps_pidfile_path;
+
+
+int
+rps_get_major_version(void)
+{
+  return RPS_MAJOR_VERSION_NUM;
+} // end rps_get_major_version
+
+int
+rps_get_minor_version(void)
+{
+  return RPS_MINOR_VERSION_NUM;
+} // end rps_get_minor_version
+
+bool
+rps_is_main_thread(void)
+{
+  return pthread_self() == rps_main_thread_handle;
+} // end rps_is_main_thread
+
+
+bool
+rps_want_user_preferences_help(void)
+{
+  return rps_flag_pref_help;
+} // end rps_want_user_preferences_help
+
+static std::map<std::string,std::string> rps_dict_extra_arg;
+
+void
+rps_put_fifo_prefix(const char*pref)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  if (!rps_fifo_prefix.empty())
+    return;
+  if (pref && pref[0])
+    rps_fifo_prefix = std::string(pref);
+} // end rps_put_fifo_prefix
+
+std::string
+rps_get_fifo_prefix(void)
+{
+  return rps_fifo_prefix;
+} // end rps_get_fifo_prefix
+
+struct rps_fifo_fdpair_st
+rps_get_gui_fifo_fds(void)
+{
+  if (rps_gui_pid)
+    return rps_fifo_pair;
+  else return {-1, -1};
+} // end  rps_get_gui_fifo_fd
+
+pid_t
+rps_get_gui_pid(void)
+{
+  return rps_gui_pid;
+} // end rps_get_gui_pid
+
+
+static void
+rps_remove_fifos(void)
+{
+  std::string cmdfifo = rps_fifo_prefix+".cmd";
+  if (rps_is_fifo(cmdfifo))
+    remove(cmdfifo.c_str());
+  std::string outfifo = rps_fifo_prefix+".out";
+  if (rps_is_fifo(outfifo))
+    remove(outfifo.c_str());
+} // end rps_remove_fifos
+
+void
+rps_do_create_fifos_from_prefix(void)
+{
+  int cmdfd= -1;
+  int outfd= -1;
+  bool rmatex = false;
+  char cwdbuf[rps_path_byte_size+4];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
+  RPS_ASSERT(rps_is_main_thread());
+  if (!getcwd(cwdbuf, rps_path_byte_size))
+    strcpy(cwdbuf, "./");
+  std::string cmdfifo = rps_fifo_prefix+".cmd";
+  std::string outfifo = rps_fifo_prefix+".out";
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix " << rps_fifo_prefix
+                << " in " << cwdbuf << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_do_create_fifos_from_prefix"));
+  if (!rps_is_fifo(cmdfifo))
+    {
+      if (mkfifo(cmdfifo.c_str(), 0660)<0)
+        RPS_FATALOUT("failed to create command FIFO " << cmdfifo << ":" << strerror(errno));
+      RPS_INFORMOUT("created command FIFO " << cmdfifo
+                    << " cwd:" << cwdbuf << " pid "
+                    << (int)getpid() << " on " << rps_hostname()
+                    << " git " << rps_shortgitid);
+      rmatex = true;
+    }
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix opening cmdfifo " << cmdfifo);
+  cmdfd = open(cmdfifo.c_str(), 0660 | O_CLOEXEC | O_NONBLOCK);
+  if (cmdfd<0)
+    RPS_FATALOUT("failed to open command FIFO " << cmdfifo << ":" << strerror(errno));
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix cmdfd#" << cmdfd
+                << " cmdfifo:" << cmdfifo);
+  if (!rps_is_fifo(outfifo))
+    {
+      if (mkfifo(outfifo.c_str(), 0660)<0)
+        RPS_FATALOUT("failed to create output FIFO " << outfifo << ":" << strerror(errno));
+      RPS_INFORMOUT("created output FIFO " << outfifo
+                    << " cwd:" << cwdbuf << " pid "
+                    << (int)getpid() << " on " << rps_hostname()
+                    << " git " << rps_shortgitid);
+      rmatex = true;
+    }
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix opening outfifo " << outfifo);
+  outfd = open(outfifo.c_str(), 0440 | O_CLOEXEC | O_NONBLOCK);
+  if (outfd<0)
+    RPS_FATALOUT("failed to open output FIFO " << outfifo << ":" << strerror(errno));
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix outfd#" << outfd
+                << " outfifo:" << outfifo);
+  if (rmatex)
+    rps_atexit(rps_remove_fifos);
+  rps_fifo_pair.fifo_ui_wcmd = cmdfd;
+  rps_fifo_pair.fifo_ui_rout = outfd;
+  RPS_INFORMOUT("RefPerSys did create (in pid " << (int)getpid()
+                << ") command and output FIFOs to communicate with GUI" << std::endl
+                << "… using for writing commands to GUI " << cmdfifo << " fd#" << cmdfd
+                << std::endl
+                << "… and for reading JSON output from GUI " << outfifo << " fd#" << outfd
+                << "… git " << rps_shortgitid);
+  RPS_POSSIBLE_BREAKPOINT();
+} // end rps_do_create_fifos_from_prefix
+
+
+const char*
+rps_homedir(void)
+{
+  static std::mutex homedirmtx;
+  std::lock_guard<std::mutex> gu(homedirmtx);
+  if (RPS_UNLIKELY(rps_bufpath_homedir[0] == (char)0))
+    {
+      const char*rpshome = getenv("REFPERSYS_HOME");
+      const char*home = getenv("HOME");
+      const char*path = rpshome?rpshome:home;
+      if (!path)
+        RPS_FATAL("no RefPerSys home ($REFPERSYS_HOME or $HOME)");
+      char* rp = realpath(path, nullptr);
+      if (!rp)
+        RPS_FATAL("realpath failed on RefPerSys home %s - %m",
+                  path);
+      if (strlen(rp) >= sizeof(rps_bufpath_homedir) -1)
+        RPS_FATAL("too long realpath %s on RefPerSys home %s", rp, path);
+      strncpy(rps_bufpath_homedir, rp, sizeof(rps_bufpath_homedir) -1);
+    }
+  return rps_bufpath_homedir;
+} // end rps_homedir
+
+const std::string&
+rps_get_loaddir(void)
+{
+  return rps_my_load_dir;
+} // end rps_get_loaddir
+
+
+const char*
+rps_hostname(void)
+{
+  static char hnambuf[80];
+  if (RPS_UNLIKELY(!hnambuf[0]))
+    gethostname(hnambuf, sizeof(hnambuf)-1);
+  return hnambuf;
+} // end rps_hostname
+
+
+const char*
+rps_get_extra_arg(const char*name)
+{
+  if (!name) return nullptr;
+  bool is_good_name=isalpha(name[0]);
+  for (const char*pc = name; is_good_name && *pc; pc++)
+    is_good_name = isalnum(*pc) || *pc == '_';
+  if (RPS_UNLIKELY(!is_good_name))
+    return nullptr;
+  std::string goodstr{name};
+  auto it = rps_dict_extra_arg.find(goodstr);
+  if (it == rps_dict_extra_arg.end())
+    return nullptr;
+  return it->second.c_str();
+} // end rps_get_extra_arg
+
+void
+rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
+                                   const char*fil, int lin, const char*fromfunc,//
+                                   std::string path, std::string linprefix, std::string linsuffix, std::string owner, std::string reason)
+{
+  outs << linprefix << "SPDX-License-Identifier: GPL-3.0-or-later"
+       << linsuffix << std::endl;
+  outs << linprefix
+       << "GENERATED [GPLv3+] file " << path  << " / DO NOT EDIT!"
+       << linsuffix << std::endl;
+  outs << linprefix << "generating-git " << rps_shortgitid << linsuffix << std::endl;
+  if (reason.length()>0)
+    {
+      outs << linprefix << "~" << reason << linsuffix << std::endl;
+    };
+  outs << linprefix
+       << "This " << path << " file is generated by ..."
+       << linsuffix << std::endl << linprefix << " the RefPerSys "
+       << rps_get_major_version() << "." << rps_get_minor_version()
+       << linsuffix << std::endl;
+  outs << linprefix << "open source software." << linsuffix << std::endl
+       << linprefix << "See refpersys.org and github.com/RefPerSys."
+       << linsuffix << std::endl;
+  outs << linprefix << "contact team@refpersys.org"
+       << " (or Basile Starynkevitch in France)"
+       << linsuffix << std::endl;
+  outs << linprefix
+       << "This file is part of the Reflective Persistent System."
+       << linsuffix << std::endl;
+  {
+    time_t nowtime = time(nullptr);
+    struct tm nowtm = {};
+    localtime_r(&nowtime, &nowtm);
+    outs << linprefix
+         << " © " "Copyright " "(C) "
+         << RPS_INITIAL_COPYRIGHT_YEAR
+         << " - "
+         << (nowtm.tm_year + 1900) << " "
+         << ((owner.empty()) ? "The Reflective Persistent Team" : owner.c_str())
+         << linsuffix << std::endl;
+    outs << linprefix
+         << " see refpersys.org and contact team@refpersys.org for more."
+         << linsuffix << std::endl;
+  }
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "This program is free software: you can redistribute it and/or modify"
+       << linsuffix << std::endl;
+  outs << linprefix << "it under the terms of the GNU General Public License as published by"
+       << linsuffix << std::endl;
+  outs << linprefix << "the Free Software Foundation, either version 3 of the License, or"
+       << linsuffix << std::endl;
+  outs << linprefix << "(at your option) any later version."
+       << linsuffix << std::endl;
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "This program is distributed in the hope that it will be useful,"
+       << linsuffix << std::endl;
+  outs << linprefix << "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+       << linsuffix << std::endl;
+  outs << linprefix << "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+       << linsuffix << std::endl;
+  outs << linprefix << "GNU General Public License for more details."
+       << linsuffix << std::endl;
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "You should have received a copy of the GNU "
+                       "General Public License"
+       << linsuffix << std::endl;
+  outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
+       << linsuffix << std::endl;
+  outs << linprefix << "generated from git " << rps_shortgitid
+       << " branch " << rps_gitbranch << linsuffix << std::endl;
+  if (fil && lin>0 && fromfunc)
+    {
+      outs << linprefix << " emitted from " << fil << ":" << lin << linsuffix << std::endl;
+      outs << linprefix << " by " << fromfunc << linsuffix << std::endl;
+    }
+} // end rps_emit_gplv3_copyright_notice_AT
+
+
+void
+rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
+                                    const char*fil, int lin, const char*fromfunc, //
+                                    std::string path, std::string linprefix, std::string linsuffix, std::string owner, std::string reason)
+{
+  outs << linprefix << "SPDX-License-Identifier: LGPL-3.0-or-later"
+       << linsuffix << std::endl;
+  outs << linprefix
+       << "GENERATED [LGPLv3+] file " << path  << " / DO NOT EDIT!"
+       << linsuffix << std::endl;
+  outs << linprefix << "generating-git " << rps_shortgitid << linsuffix << std::endl;
+  if (reason.length()>0)
+    {
+      outs << linprefix << "~" << reason << linsuffix << std::endl;
+    };
+  outs << linprefix
+       << "This " << path << " file is generated by ..." << linsuffix << std::endl
+       << linprefix << " the RefPerSys "
+       << rps_get_major_version() << "." << rps_get_minor_version()
+       <<  linsuffix << std::endl;
+  outs << linprefix << "open source software.  See refpersys.org and contact"
+       << linsuffix << std::endl;
+  outs << linprefix << " team@refpersys.org ..."
+       << linsuffix << std::endl;
+  {
+    time_t nowtime = time(nullptr);
+    struct tm nowtm = {};
+    localtime_r(&nowtime, &nowtm);
+    outs << linprefix
+         << "© " "Copyright" " (C) "
+         << RPS_INITIAL_COPYRIGHT_YEAR
+         << " - "
+         << (nowtm.tm_year + 1900)
+         << ((owner.empty()) ? "The Reflective Persistent Team" : owner.c_str());
+    outs << linsuffix << std::endl;
+  }
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "This file is free software: you can redistribute it and/or modify"
+       << linsuffix << std::endl;
+  outs << linprefix << "it under the terms of the GNU Lesser General Public License as"
+       << linsuffix << std::endl;
+  outs << linprefix << "published by the Free Software Foundation, either version 3 of the"
+       << linsuffix << std::endl;
+  outs << linprefix << "License, or (at your option) any later version."
+       << linsuffix << std::endl;
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "This file is distributed in the hope that it will be useful,"
+       << linsuffix << std::endl;
+  outs << linprefix << "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+       << linsuffix << std::endl;
+  outs << linprefix << "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+       << linsuffix << std::endl;
+  outs << linprefix << "GNU Lesser General Public License for more details."
+       << linsuffix << std::endl;
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "You should have received a copy of the GNU "
+                       "Lesser General Public License"
+       << linsuffix << std::endl;
+  outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
+       << linsuffix << std::endl;
+  outs << linprefix << "generated from git " << rps_shortgitid
+       << " branch " << rps_gitbranch << linsuffix << std::endl;
+  if (fil && lin>0 && fromfunc)
+    {
+      outs << linprefix
+           << " emitted from " << fil << ":" << lin
+           << linsuffix << std::endl;
+      outs << linprefix
+           << " by " << fromfunc
+           << linsuffix << std::endl;
+    };
+} // end rps_emit_lgplv3_copyright_notice_AT
+
+
+
+const char*
+rps_type_name(std::int16_t typenum)
+{
+  switch (typenum)
+    {
+    case (int)Rps_Type::PaylLightCodeGen:
+      return "Rps_PayloadLightningCodeGen"; // in lightgen_rps.cc
+    case (int)Rps_Type::PaylCplusplusGen:
+      return "Rps_PayloadCplusplusGen"; // in cppgen_rps.cc
+    case (int)Rps_Type::PaylGccjit:
+      return "Rps_PayloadGccjit"; // in gccjit_rps.cc
+    case (int)Rps_Type::PaylEnviron:
+      return "Rps_PayloadEnviron"; // in cmdrepl_rps.cc & repl_rps.cc
+    case (int)Rps_Type::PaylObjMap:
+      return "Rps_PayloadObjMap"; // in morevalues_rps.cc
+    case (int)Rps_Type::PaylCppStream:
+      return "Rps_PayloadCppStream"; // in transientobj_rps.cc
+    case (int)Rps_Type::PaylPopenedFile:
+      return "Rps_PayloadPopenedFile"; // in transientobj_rps.cc
+    case (int)Rps_Type::PaylUnixProcess:
+      return "Rps_PayloadUnixProcess"; // in transientobj_rps.cc
+    case (int)Rps_Type::PaylTasklet:
+      return "Rps_PayloadTasklet"; // in agenda_rps.cc
+    case (int)Rps_Type::PaylStringDict:
+      return "Rps_PayloadStringDict"; // in strbufdict_rps.cc
+    case (int)Rps_Type::PaylStrBuf:
+      return "Rps_PayloadStrBuf"; // in strbufdict_rps.cc
+    case (int)Rps_Type::PaylAgenda:
+      return "Rps_PayloadAgenda"; // in agenda_rps.cc
+    case (int)Rps_Type::PaylSymbol:
+      return "Rps_PayloadSymbol"; // in utilities_rps.cc & object_rps.cc
+    case (int)Rps_Type::PaylSpace:
+      return "Rps_PayloadSpace"; // in utilities_rps.cc & object_rps.cc
+    case (int)Rps_Type::PaylRelation:
+      return nullptr;   // not implemented Rps_PayloadRelation
+    case (int)Rps_Type::PaylAssoc:
+      return nullptr;   // not implemented Rps_PayloadAssoc
+    case (int)Rps_Type::PaylVectVal:
+      return "Rps_PayloadVectVal"; // in object_rps.cc
+    case (int)Rps_Type::PaylVectOb:
+      return "Rps_PayloadVectOb"; // in object_rps.cc
+    case (int)Rps_Type::PaylSetOb:
+      return "Rps_PayloadSetOb"; // in object_rps.cc
+    case (int)Rps_Type::PaylClassInfo:
+      return "Rps_PayloadClassInfo"; // in object_rps.cc
+    ///
+    /// obsolete payloads:
+    case (int)Rps_Type::PaylMachlearn:
+      return nullptr; // in .attic/machlearn_rps.cc
+    case (int)Rps_Type::PaylWebHandler:
+      return nullptr; // in .attic/httpweb_rps.cc
+    case (int)Rps_Type::PaylWebex:
+      return nullptr; // in .attic/httpweb_rps.cc
+    case (int)Rps_Type::Int:
+      return "intptr_t";
+    case (int)Rps_Type::Double:
+      return "Rps_Double"; // in scalar_rps.cc
+    case (int)Rps_Type::Set:
+      return "Rps_SetOb"; // in values_rps.cc
+    case (int)Rps_Type::Tuple:
+      return "Rps_TupleOb"; // in values_rps.cc
+    case (int)Rps_Type::Object:
+      return "Rps_ObjectZone"; // in object_rps.cc
+    case (int)Rps_Type::Closure:
+      return "Rps_ClosureZone"; // in values_rps.cc
+    case (int)Rps_Type::Json:
+      return "Rps_JsonZone"; // in morevalues_rps.cc
+    case (int)Rps_Type::Instance:
+      return "Rps_InstanceZone";  // in morevalues_rps.cc
+    case (int)Rps_Type::LexToken:
+      return "Rps_LexTokenZone"; // in repl_rps.cc
+#warning rps_type_name need code review
+    default:
+      RPS_WARNOUT("rps_type_name strange typenum=" << typenum
+                  << RPS_FULL_BACKTRACE(1, "rps_type_name?"));
+      return nullptr;
+    };
+} // end rps_type_name
+
+
+#pragma message "perhaps some rps_emit_proprietary_copyright_notice is needed here"
+
+////////////////
+/// run   ./refpersys --type-info   to get this
+void
+rps_print_types_info(void)
+{
+#define TYPEFMT_rps "%-62s:"
+  printf(TYPEFMT_rps "   size  align   (bytes)\n", "**TYPE**");
+  /////
+#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty,  \
+        (int)sizeof(Ty), (int)alignof(Ty))
+  /////
+#define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n", \
+              #Ty1 "," #Ty2,                                    \
+              (int)sizeof(Ty1,Ty2),                             \
+              (int)alignof(Ty1,Ty2))
+  /////
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)              \
+  printf(TYPEFMT_rps " %5d %5d\n",              \
+   #Ty1 "," #Ty2 ",\n"                          \
+   "                     "#Ty3,                 \
+   (int)sizeof(Ty1,Ty2,Ty3),                    \
+   (int)alignof(Ty1,Ty2,Ty3))
+  /////
+#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)          \
+  printf(TYPEFMT_rps " %5d %5d\n",              \
+   #Ty1 "," #Ty2 ",\n                " #Ty3     \
+   "," #Ty4,                                    \
+   (int)sizeof(Ty1,Ty2,Ty3,Ty4),                \
+   (int)alignof(Ty1,Ty2,Ty3,Ty4))
+#define EXPLAIN_TYPE_ABSTRACT(Ty,Siz,Ali) printf(TYPEFMT_rps " %5d %5d\n", #Ty, \
+                                                 (int)(Siz), (int)(Ali))
+  /////
+  EXPLAIN_TYPE(int);
+  EXPLAIN_TYPE(double);
+  EXPLAIN_TYPE(char);
+  EXPLAIN_TYPE(bool);
+  EXPLAIN_TYPE(void*);
+  EXPLAIN_TYPE(time_t);
+  EXPLAIN_TYPE(pid_t);
+  //opaque in glib: EXPLAIN_TYPE(GMainLoop);
+  //opaque in glib: EXPLAIN_TYPE(GMainContext);
+  EXPLAIN_TYPE(std::mutex);
+  EXPLAIN_TYPE(std::shared_mutex);
+  EXPLAIN_TYPE(std::recursive_mutex);
+  EXPLAIN_TYPE(std::atomic<void*>);
+  EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
+  EXPLAIN_TYPE(std::lock_guard<std::recursive_mutex>);
+  EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
+  EXPLAIN_TYPE(std::string);
+  EXPLAIN_TYPE(std::istream);
+  EXPLAIN_TYPE(std::ifstream);
+  EXPLAIN_TYPE(std::ostream);
+  EXPLAIN_TYPE(std::ofstream);
+  EXPLAIN_TYPE(std::ostringstream);
+  EXPLAIN_TYPE(FILE);
+  EXPLAIN_TYPE(std::vector<std::string>);
+  EXPLAIN_TYPE(std::set<std::string>);
+  EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
+  EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
+  printf("########################## %s:%d\n", __FILE__, __LINE__);
+  fflush(nullptr);
+  EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
+  EXPLAIN_TYPE3(std::variant<unsigned, std::function<Rps_Value(void*)>,
+                std::function<int(void*,Rps_ObjectRef)>>);
+  EXPLAIN_TYPE(Rps_Backtracer);
+  EXPLAIN_TYPE(Rps_ClosureValue);
+  EXPLAIN_TYPE(Rps_ClosureZone);
+  EXPLAIN_TYPE(Rps_Double);
+  EXPLAIN_TYPE(Rps_DoubleValue);
+  EXPLAIN_TYPE(Rps_GarbageCollector);
+  EXPLAIN_TYPE(Rps_HashInt);
+  EXPLAIN_TYPE(Rps_Id);
+  EXPLAIN_TYPE(Rps_ObjectRef);
+  EXPLAIN_TYPE(Rps_ObjectValue);
+  EXPLAIN_TYPE(Rps_ObjectZone);
+  EXPLAIN_TYPE(Rps_Payload);
+  EXPLAIN_TYPE(Rps_PayloadClassInfo);
+  EXPLAIN_TYPE(Rps_PayloadSetOb);
+  EXPLAIN_TYPE(Rps_PayloadVectOb);
+  EXPLAIN_TYPE(Rps_QuasiZone);
+  EXPLAIN_TYPE(Rps_SetOb);
+  EXPLAIN_TYPE(Rps_SetValue);
+  EXPLAIN_TYPE(Rps_String);
+  EXPLAIN_TYPE(Rps_StringValue);
+  EXPLAIN_TYPE(Rps_TupleOb);
+  fflush(nullptr);
+  EXPLAIN_TYPE(Rps_TupleValue);
+  EXPLAIN_TYPE(Rps_Type);
+  EXPLAIN_TYPE(Rps_Value);
+  EXPLAIN_TYPE(Rps_ZoneValue);
+  EXPLAIN_TYPE_ABSTRACT(rpscarbrepl_stack,rpscarbrepl_stack_size,rpscarbrepl_stack_align);
+  ////
+  ////
+#undef EXPLAIN_TYPE4
+#undef EXPLAIN_TYPE3
+#undef EXPLAIN_TYPE
+#undef TYPEFMT_rps
+  putchar('\n');
+  fflush(nullptr);
+  std::cout << "rps_addr2string@" << (void*)rps_addr2string
+            << ":" << rps_addr2string((void*)rps_addr2string)
+            << std::endl
+            << "Rps_QuasiZone::initialize@"
+            << (void*)Rps_QuasiZone::initialize
+            << ":" << rps_addr2string((void*)Rps_QuasiZone::initialize)
+            << std::endl;
+  std::cout << "@@°°@@ The tagged integer one hundred is "
+            << Rps_Value::make_tagged_int(100)
+            << std::endl
+            << "… and the tagged integer minus one billion is "
+            <<  Rps_Value::make_tagged_int(-1000000000)
+            << " !!! " << std::endl;
+} // end rps_print_types_info
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+extern "C" void rps_show_version_handwritten_source_files(void);
+
+
+// Our rps_show_version_handwritten_source_file uses dlsym to query
+// some conventional constant strings in source files.
+static void rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int& nbshownfiles, bool&nl);
+
+void
+rps_show_version_handwritten_source_files(void)
+{
+  RPS_POSSIBLE_BREAKPOINT();
+  int nbsourcefiles =0;
+  int nbshownfiles =0;
+  bool nl= false;
+  for (const char*const*curfileptr = rps_files;
+       curfileptr && *curfileptr; curfileptr++)
+    {
+      RPS_POSSIBLE_BREAKPOINT();
+      if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
+        {
+          nbsourcefiles++;
+          RPS_POSSIBLE_BREAKPOINT();
+        }
+    };
+  RPS_INFORMOUT("showing versions " << std::endl
+                << " of " << nbsourcefiles
+                << " handwritten C++ source files (git "
+                << rps_utilities_shortgitid
+                << " from " __FILE__ << ":" << __LINE__ << ")");
+  RPS_DEBUG_LOG(PROGARG, "starting " << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files/start"));
+  //// show gitid of individual handwritten *cc files, using dlsym
+  //// since every file like utilities_rps.cc has by our conventions a
+  //// constant named rps_utilities_gitid
+  int curfilno=0;
+  for (const char*const*curfileptr = rps_files;
+       curfileptr && *curfileptr; curfileptr++)
+    {
+      char curbase[64];
+      memset (curbase, 0, sizeof(curbase));
+      int endpos = -1;
+      const char*curfile = *curfileptr;
+      if (!curfile)
+        break;
+      RPS_POSSIBLE_BREAKPOINT();
+      curfilno++;
+      char cursuffix[16];
+      memset (cursuffix, 0, sizeof(cursuffix));
+      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile));
+      if (!isalpha(curfile[0]))
+        continue;
+      if (strchr(curfile, '/'))
+        continue;
+      if (strchr(curfile, '~'))
+        continue;
+      if (strchr(curfile, '%'))
+        continue;
+      // ignore JSON files
+      if (strstr(curfile, ".json"))
+        continue;
+      // ignore header files
+      if (strstr(curfile, ".hh"))
+        continue;
+      // ignore markdown documentation
+      if (strstr(curfile, ".md"))
+        continue;
+      // ignore BisonC++ file
+      if (strstr(curfile, "yyp"))
+        continue;
+      if ((sscanf(curfile, "%60[a-zA-Z_].%10[a-z]%n", curbase, cursuffix, &endpos))<1
+          || endpos<2 || curfile[endpos]!=(char)0)
+        continue;
+      if (!isalpha(curbase[0]))
+        continue;
+      RPS_UNIQUE_BREAKPOINT();
+      rps_show_version_one_source_file(curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
+      if (!nl)
+        std::cout << " ";
+    };        // end major loop of rps_show_version_handwritten_source_files
+  ////
+  ////
+  if (!nl)
+    std::cout << std::endl;
+} // end rps_show_version_handwritten_source_files
+
+void
+rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int &nbshownfiles, bool&nl)
+{
+  //// notice that RPS_FULL_BACKTRACE cannot be used here....
+  RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno
+                << " =" << Rps_Cjson_String(curfile)
+                << " curbase=" <<  Rps_Cjson_String(curbase));
+  int lencurbase=strlen(curbase);
+  /// Human written source files (not scripts) are *_rps.* and dont start with underscores.
+  if (curbase[0]=='_' || lencurbase<6)
+    {
+      /// by convention basenames starting with an underscore are generated
+      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno
+                    << " =" << Rps_Cjson_String(curfile)
+                    << " skipping curbase=" << Rps_Cjson_String(curbase));
+      return;
+    }
+  RPS_POSSIBLE_BREAKPOINT();
+  // Human written source files are *_rps.* (except for refperys.hh)
+  if (!strcmp(curbase+lencurbase-4, "_rps"))
+    {
+      curbase[lencurbase-4]=(char)0;
+      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
+                    << " shrinked curbase=" << Rps_Cjson_String(curbase));
+      RPS_POSSIBLE_BREAKPOINT();
+    }
+  RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile)
+                << " curbase=" << Rps_Cjson_String(curbase)
+                << " testing cursuffix=" << Rps_Cjson_String(cursuffix));
+  if (!strcmp(cursuffix, "so") || !strcmp(cursuffix, "o") || !strcmp(cursuffix, "a")
+      || !strcmp(cursuffix, "la") || !strcmp(cursuffix, "status"))
+    {
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(PROGARG, "curfile=" << Rps_Cjson_String(curfile)
+                    << " skipped cursuffix=" << Rps_Cjson_String(cursuffix));
+      return;
+    };
+  RPS_POSSIBLE_BREAKPOINT();
+  ////
+  RPS_DEBUG_LOG(PROGARG, "before µdlsyming curfile=" << Rps_Cjson_String(curfile)
+                << " curbase=" << Rps_Cjson_String(curbase));
+  const char* symgit = nullptr;
+  const char* symshortgit = nullptr;
+  {
+    char cursymgit[80];
+    char cursymshortgit[80];
+    memset (cursymgit, 0, sizeof(cursymgit));
+    memset (cursymshortgit, 0, sizeof(cursymshortgit));
+    snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
+    snprintf (cursymshortgit, sizeof(cursymshortgit),
+              "rps_%s_shortgitid", curbase);
+    RPS_DEBUG_LOG(PROGARG, "before µdlsym cursymgit=" << cursymgit);
+    symgit = (const char*)dlsym(rps_proghdl, cursymgit);
+    RPS_UNIQUE_BREAKPOINT();
+    if (!symgit)
+      {
+        RPS_WARNOUT("µdlsym cursymgit=" << cursymgit << " failed "
+                    << dlerror()
+                    << " curbase=" << Rps_QuotedC_String(curbase));
+        RPS_POSSIBLE_BREAKPOINT();
+        return;
+      }
+    RPS_DEBUG_LOG(PROGARG, "µdlsym cursymgit=" << cursymgit
+                  << " gives symgit=" << Rps_Cjson_String(symgit));
+    if (!symgit || !isalnum(symgit[0]))
+      {
+        return;
+      }
+    symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
+    if (!symshortgit || !isalnum(symshortgit[0]))
+      return;
+    if (symgit && symshortgit
+        && strncmp(symgit, symshortgit,
+                   sizeof(rps_utilities_shortgitid)-2))
+      {
+        /// this should not happen and is likely a bug in C++ files or build procedure
+        RPS_WARNOUT("perhaps corrupted " << curfile
+                    << " in topdir " << rps_topdirectory
+                    << " with " << cursymgit << "=" << symgit
+                    << " and " << cursymshortgit << "=" << symshortgit);
+        RPS_POSSIBLE_BREAKPOINT();
+      }
+  };
+  if (symgit && isalnum(symgit[0]))
+    {
+      char msgbuf[96];
+      memset (msgbuf, 0, sizeof(msgbuf));
+      if (nbshownfiles % 2 == 0)
+        {
+          std::cout << std::endl;
+          nl= true;
+        };
+      nbshownfiles++;
+      RPS_UNIQUE_BREAKPOINT();
+      if (snprintf(msgbuf, sizeof(msgbuf)-1,
+                   "  #¤ %-20s git %.11s",
+                   curfile, symgit)>0)
+        std::cout << msgbuf << std::flush;
+    };
+} // end  rps_show_version_one_source_file
+
+
+void
+rps_show_version(void)
+{
+  int nbfiles=0;
+  int nbsubdirs=0;
+  static std::recursive_mutex versmtx;
+  std::lock_guard<std::recursive_mutex> verslock(versmtx);
+  for (const char*const*pfiles=rps_files; *pfiles; pfiles++)
+    nbfiles++;
+  for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
+    nbsubdirs++;
+  char exepath[256];
+  memset (exepath, 0, sizeof(exepath));
+  static char realexepath[PATH_MAX];
+  memset (realexepath, 0, sizeof(realexepath));
+  {
+    ssize_t sz = readlink("/proc/self/exe", exepath, sizeof(exepath));
+    RPS_ASSERT(sz>0 && exepath[0]);
+  }
+  {
+    char*rp= realpath(exepath, realexepath);
+    RPS_ASSERT(rp != nullptr);
+  }
+  std::cout << "RefPerSys "<< rps_get_major_version() << "."
+            << rps_get_minor_version() //
+            << ", an open source Artificial Intelligence system" << std::endl;
+  std::cout << "\t  symbolic inference engine - work in progress..." << std::endl;
+  std::cout << "version information:\n"
+            << " major version: " << RPS_MAJOR_VERSION_NUM << std::endl
+            << " minor version: " << RPS_MINOR_VERSION_NUM << std::endl
+            << " program name: " << rps_progname << std::endl
+            << " top directory: " << rps_topdirectory << std::endl
+            << " gitid: " << rps_gitid << std::endl
+            << " short-gitid: " << rps_shortgitid << std::endl
+            << " gitbranch: " << rps_gitbranch << std::endl
+            << " last git tag: " << rps_lastgittag << std::endl
+            << " last git commit: " << rps_lastgitcommit << std::endl
+            << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
+            << " with " << nbsubdirs << " subdirectories." << std::endl
+            << " GNU glibc: " << gnu_get_libc_version() << std::endl
+            << " libopcodes for GNU lightning in: " << rps_libopcodes_dir << std::endl
+            << " executable: " << exepath;
+  if (strcmp(exepath, realexepath))
+    std::cout <<  " really " << realexepath;
+  std::cout << std::endl;
+  std::cout << " GCCJIT version:" << gcc_jit_version_major()
+            << "." << gcc_jit_version_minor()
+            << "." << gcc_jit_version_patchlevel() << std::endl;
+  std::cout << " libelf version:" << elf_version(EV_NONE);
+  std::cout << std::endl
+            /* TODO: near commit 191d55e1b31c, march 2023; decide
+               which parser generator to really use... and drop the
+               other one.  Non technical considerations,
+               e.g. licensing, is important to some partners... */
+            << " Gnu multi-precision library version: " << gmp_version
+            << std::endl
+            << " default GUI script: " << rps_gui_script_executable << std::endl
+            << " Read Eval Print Loop: " << rps_repl_version() << std::endl
+#if RPS_USE_CURL
+            << " libCURL for web client: " << rps_curl_version() << std::endl
+#endif /*RPS_USE_CURL*/
+            ;
+  ////
+  RPS_POSSIBLE_BREAKPOINT();
+  ////
+  std::cout << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
+            << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
+            << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl
+            << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
+            << " made with: " << rps_gnumakefile << std::endl
+            << " running on: " << rps_hostname() << std::endl
+            << " /proc/version:" << std::endl
+            << " " << rps_get_proc_version() << std::endl
+            << "This executable was built by "
+            << rps_building_user_name
+            << " of email " << rps_building_user_email << std::endl
+            << "See refpersys.org and code on"
+            << " github.com/RefPerSys/RefPerSys"
+            << std::endl;
+  std::cout << "Compiled by " << rps_cxx_compiler_version
+            << " as " << rps_cxx_compiler_realpath
+            << std::endl
+            << "with " << rps_cxx_compiler_flags
+            << std::endl;
+  /////
+  rps_show_version_handwritten_source_files();
+  /////
+  {
+    char cwdbuf[rps_path_byte_size+4];
+    memset (cwdbuf, 0, sizeof(cwdbuf));
+    if (getcwd(cwdbuf, rps_path_byte_size))
+      std::cout << std::endl << " in: " << cwdbuf;
+  };
+  std::cout << std::endl << " C++ compiler: "
+            << rps_cxx_compiler_version << std::endl
+            << " free software license: GPLv3+,"
+            << " see www.gnu.org/licenses/gpl.html" << std::endl
+            << " alternative license: LGPLv3+,"
+            << " see www.gnu.org/licenses/lgpl-3.0.en.html," << std::endl
+            << " other licence: CeCILL,"
+            << " see cecill.info …" << std::endl
+            << "+++++ there is NO WARRANTY,"
+            << "to the extent permitted by law ++++" << std::endl
+            << "***** see also refpersys.org *****" << std::endl
+            << "and github.com/RefPerSys/RefPerSys commit "
+            << rps_shortgitid
+            << std::endl << std::endl;
+} // end rps_show_version
+
+/// In a format string passed to strftime, replace .__ with the
+/// centisecond fractional part of the time. See of course
+/// http://man7.org/linux/man-pages/man3/strftime.3.html etc... Notice
+/// that debugging facilities use that function, e.g. it gets called
+/// from rps_debug_printf_at used by RPS_DEBUG_LOG and RPS_DEBUG_PRINTF
+/// macros.
+char *
+rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
+                          double tm)
+{
+  if (!bfr || !fmt || len<4)
+    return nullptr;
+  //
+  memset (bfr, 0, len);
+  //
+  struct tm tmstruct;
+  memset(&tmstruct, 0, sizeof (tmstruct));
+  //
+  time_t time = static_cast<time_t>(tm);
+  strftime(bfr, len, fmt, localtime_r(&time, &tmstruct));
+  //
+  char *dotdunder = strstr(bfr, ".__");
+  if (dotdunder)
+    {
+      double intpart = 0.0;
+      double fraction = modf(tm, &intpart);
+
+      char minibuf[16];
+      memset(minibuf, 0, sizeof (minibuf));
+      assert(fraction >= 0.0 && fraction < 1.0);
+
+      snprintf(minibuf, sizeof (minibuf), "%.02f", fraction);
+      minibuf[4] = (char)0;
+      const char* dotminib = strchr(minibuf, '.');
+      if (dotminib && dotminib<minibuf+sizeof(minibuf)-4)
+        {
+          strncpy(dotdunder, dotminib, 3);
+        }
+    }
+
+  return bfr;
+} // end rps_strftime_centiseconds
+
+
+
+/// This rps_extend_env is called early from main and before loading
+/// the heap.  It is extending the Unix environment.  Try running
+///  ./refpersys "--run-after-load=env|grep REFPERSYS" --batch
+void
+rps_extend_env(void)
+{
+  static std::atomic<bool> extended;
+  if (extended) return;
+  RPS_ASSERT(rps_is_main_thread());
+  extended = true;
+  static char pidenv[64];
+  snprintf(pidenv, sizeof(pidenv), "REFPERSYS_PID=%d", (int)getpid());
+  putenv(pidenv);     // e.g. REFPERSYS_PID=2345
+  static char shortgitenv[64];
+  snprintf(shortgitenv, sizeof(shortgitenv), "REFPERSYS_SHORTGITID=%s",
+           rps_shortgitid);
+  putenv(shortgitenv);  // e.g. REFPERSYS_SHORTGITID=49466057bf7d+
+  static char gitenv[128];
+  snprintf(gitenv, sizeof(gitenv), "REFPERSYS_GITID=%s", rps_gitid);
+  putenv(gitenv);  // e.g. REFPERSYS_GITID=494...90+ with 40 hexdigit
+  static char topdirenv[384];
+  snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s",
+           rps_topdirectory);
+  putenv(topdirenv); // e.g. REFPERSYS_TOPDIR=$HOME/work/RefPerSys/
+  if (!rps_fifo_prefix.empty())
+    {
+      static char fifoenv[256];
+      snprintf(fifoenv, sizeof(fifoenv), "REFPERSYS_FIFO_PREFIX=%s", rps_fifo_prefix.c_str());
+      putenv(fifoenv); // e.g. REFPERSYS_FIFO_PREFIX=$HOME/tmp/rpsfifo
+    };
+  if (!rps_run_name.empty())
+    {
+      static char runamenv[256];
+      snprintf(runamenv, sizeof(runamenv), "REFPERSYS_RUN_NAME=%s", rps_run_name.c_str());
+      putenv(runamenv);   // e.g. REFPERSYS_RUN_NAME=testflk3.x
+    };
+} // end rps_extend_env
+
+
+
+
+void
+rps_check_mtime_files(void)
+{
+  time_t nowtim= 0;
+  time(&nowtim);
+  struct stat selfstat = {};
+  if (stat("/proc/self/exe", &selfstat))
+    RPS_FATAL("stat /proc/self/exe: %m");
+  char exebuf[128];
+  memset (exebuf, 0, sizeof(exebuf));
+  if (readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1)<0)
+    RPS_FATAL("readlink /proc/self/exe: %m");
+  for (const char*const*curpath = rps_files; *curpath; curpath++)
+    {
+      int lencurpath = strlen(*curpath);
+      if (lencurpath < 6 || strstr(*curpath, "attic/"))
+        continue;
+      std::string curpathstr(*curpath);
+      /// Files under webroot could be sent to browser, so we don't
+      /// care about them being newer than executable....
+      auto wrp = curpathstr.find("webroot/");
+      if (wrp < curpathstr.size())
+        continue;
+      std::string curfullpathstr=
+        std::string{rps_topdirectory} + "/" + curpathstr;
+      struct stat curstat = {};
+      if (stat(curfullpathstr.c_str(), &curstat))
+        {
+          RPS_WARNOUT("rps_check_mtime_files: stat "
+                      << curfullpathstr << " failed: "
+                      << strerror(errno));
+          continue;
+        };
+      if (curstat.st_mtime > (time_t) nowtim
+          && (curstat.st_mode & S_IFMT) == S_IFREG)
+        RPS_WARNOUT("rps_check_mtime_files: " << curfullpathstr.c_str()
+                    << " is younger by "
+                    << (curstat.st_mtime - (time_t) nowtim)
+                    << ", so consider rebuilding with make");
+    }
+  //// run a make -t command to check that objects are up to date
+  {
+    char tempmakefileout[128];
+    memset (tempmakefileout, 0, sizeof(tempmakefileout));
+    snprintf(tempmakefileout, sizeof(tempmakefileout),
+             "/var/tmp/rpsmkchkmtim-%s-r%u-p%u",
+             rps_shortgitid,
+             (unsigned) Rps_Random::random_32u(),
+             (unsigned) getpid());
+    RPS_ASSERT(strlen(tempmakefileout) < sizeof(tempmakefileout)-4);
+    {
+      FILE* ftemp = fopen(tempmakefileout, "w");
+      if (!ftemp)
+        RPS_FATALOUT("failed to open temporary make output "
+                     << tempmakefileout);
+      fprintf(ftemp, "# postponed temporary make output %s for...\n"
+              "#... refpersys run %s from %s:%d\n",
+              tempmakefileout, rps_run_name.c_str(), __FILE__, __LINE__);
+      rps_postponed_remove_file(std::string{tempmakefileout});
+      {
+        char cwdbuf[256];
+        memset (cwdbuf, 0, sizeof(cwdbuf));
+        char*pwd = getcwd(cwdbuf, sizeof(cwdbuf));
+        if (pwd)
+          fprintf (ftemp, "# running in %s\n", pwd);
+      }
+      char makecmd [256];
+      memset (makecmd, 0, sizeof(makecmd));
+      if (snprintf(makecmd, sizeof(makecmd),
+                   "%s -C %s -q objects 2>&1 >> %s",
+                   rps_gnu_make, rps_topdirectory,
+                   tempmakefileout)
+          < (int)sizeof(makecmd)-1)
+        {
+          int bad = system(makecmd);
+          if (bad)
+            RPS_WARNOUT("rps_check_mtime_files: " << makecmd
+                        << " failed with status# " << bad);
+          else
+            RPS_INFORMOUT("rps_check_mtime_files: did " << std::string(makecmd) << " successfully");
+        }
+      else        // makecmd too big
+        RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
+                  rps_topdirectory);
+      fprintf (ftemp, "successful %s\n", makecmd);
+      fprintf (ftemp, "#end of %s from %s:%d (%s)\n",
+               tempmakefileout, __FILE__, __LINE__, __FUNCTION__);
+      fclose (ftemp);
+    }
+  } // end running make -t command
+} // end rps_check_mtime_files
+
+
+
+
+////////////////////////////////////////////////////////////////
+
+static double rps_start_monotonic_time;
+static double rps_start_wallclock_real_time;
+
+
+
+/// rps_early_initialization is called by rps_parse_program_arguments
+/// which is called early from main.
+static void
+rps_early_initialization(int argc, char** argv)
+{
+  char*inside_emacs =
+    getenv("INSIDE_EMACS"); /// GNU emacs is setting this
+  rps_argc = argc;
+  rps_argv = argv;
+  rps_progname = argv[0];
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    strcpy(cwdbuf, "./");
+  /// dlopen to self
+  rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
+  if (!rps_proghdl)
+    {
+      char *err = dlerror();
+      fprintf(stderr, "%s failed to dlopen whole program (%s) in %s\n", rps_progname,
+              err, cwdbuf);
+      syslog(LOG_ERR, "%s failed to dlopen whole program (%s) in %s\n", rps_progname,
+             err, cwdbuf);
+      exit(EXIT_FAILURE);
+    };
+  if (argc == 2 && !strcmp(argv[1], "--full-git"))   /// see also rps_parse1opt
+    {
+      printf("%s\n", rps_gitid);
+      fflush(nullptr);
+      exit(EXIT_SUCCESS);
+    }
+  else if (argc == 2 && !strcmp(argv[1], "--short-git"))  /// see also rps_parse1opt
+    {
+      printf("%s\n", rps_shortgitid);
+      fflush(nullptr);
+      exit(EXIT_SUCCESS);
+    }
+  rps_start_monotonic_time = rps_monotonic_real_time();
+  rps_start_wallclock_real_time = rps_wallclock_real_time();
+  /// https://man.archlinux.org/man/elf_version.3.en
+  {
+    unsigned ev = elf_version(EV_CURRENT);
+    int l= __LINE__ -1;
+    if (ev == EV_NONE)
+      {
+        int er= errno;
+        std::cerr << "RefPerSys git " << RPS_SHORTGITID
+                  << " failed to call elf_version in "
+                  << __FILE__ << ":" << l
+                  << " " << strerror(er) << std::endl;
+      }
+  }
+  errno = 0;
+  if (!inside_emacs)
+    {
+      rps_stdin_istty = isatty(STDIN_FILENO);
+      rps_stderr_istty = isatty(STDERR_FILENO);
+      rps_stdout_istty = isatty(STDOUT_FILENO);
+      std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
+                << ", "<< (rps_stdin_istty?"tty stdin":"plain stdin")
+                << ", "<< (rps_stderr_istty?"tty stderr":"plain stderr")
+                << ", "<< (rps_stdout_istty?"tty stdout":"plain stdout")
+                << ", " << __FILE__ << ":" << __LINE__ << std::endl;
+      if (rps_stdin_istty && rps_stdout_istty)
+        rps_readline_initialize();
+    }
+  else   ////// called inside emacs
+    {
+      rps_stdin_istty = false;  // INSIDE_EMACS
+      rps_stderr_istty = false; // INSIDE_EMACS
+      rps_stdout_istty = false; // INSIDE_EMACS
+      std::cout << "since INSIDE_EMACS is " << inside_emacs
+                << " at " __FILE__ ":" << __LINE__ << std::endl
+                << " disabling ANSI escapes from " << __FUNCTION__
+                << " git " << RPS_SHORTGITID << std::endl;
+    };
+  if (uname (&rps_utsname))
+    {
+      fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s):"
+                      " %s\n", rps_progname,
+              (int) getpid(), rps_hostname(), __FILE__, __LINE__,
+              RPS_SHORTGITID,
+              strerror(errno));
+      syslog(LOG_ERR,  "%s: pid %d on %s failed to uname (%s:%d git %s):"
+                       " %s\n", rps_progname,
+             (int) getpid(), rps_hostname(), __FILE__, __LINE__,
+             RPS_SHORTGITID,
+             strerror(errno));
+      exit(EXIT_FAILURE);
+    };
+  // compute the program invocation string
+  rps_compute_program_invocation(argc, argv);
+  rps_main_thread_handle = pthread_self();
+  {
+    char cwdbuf[rps_path_byte_size];
+    memset (cwdbuf, 0, sizeof(cwdbuf));
+    char tmbfr[64];   // the time buffer string
+    memset(tmbfr, 0, sizeof (tmbfr));
+    if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
+      strcpy(cwdbuf, "./");
+    rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
+    std::cout << std::endl << "** STARTING RefPerSys git "
+              << rps_shortgitid << " on " << rps_hostname()
+              << " pid#" << getpid() << std::endl
+              << " in " << cwdbuf << " at " << tmbfr << std::endl;
+  }
+  /// handle early a debug flag request
+  if (argc > 1
+      && !strncmp(argv[1], "--debug=", strlen("--debug=")))
+    {
+      rps_add_debug_cstr(argv[1]+strlen("--debug="));
+    }
+  else if (argc > 1 && argv[1][0]=='-' && argv[1][1]==RPSPROGOPT_DEBUG)
+    {
+      rps_add_debug_cstr(argv[1]+2);
+    };
+  // also use REFPERSYS_DEBUG
+  {
+    const char*debugenv = getenv("REFPERSYS_DEBUG");
+    if (debugenv)
+      rps_add_debug_cstr(debugenv);
+  }
+  // For weird reasons, the program arguments are parsed more than
+  // once... We don't care that much in practice...
+  RPS_ASSERT(argc>0);
+  // we forcibly set the REFPERSYS_PID environment variable
+  {
+    static char envpid[32];
+    if (snprintf(envpid, sizeof(envpid), "REFPERSYS_PID=%d", (int)getpid()) < 1)
+      RPS_FATAL("failed to snprintf buffer for REFPERSYS_PID: %m");
+    if (putenv(envpid))
+      RPS_FATAL("failed to putenv %s %m", envpid);
+  }
+  /// disable ASLR programmatically if --no-aslr is passed ; this
+  /// should ease low-level debugging with GDB
+  /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
+  /// see https://askubuntu.com/a/507954/64680
+  rps_disable_aslr = false;
+  {
+    for (int ix=1; ix<argc; ix++)
+      {
+        if (!strcmp(argv[ix], "--no-aslr"))
+          rps_disable_aslr = true;
+        else if (!strcmp(argv[ix], "-B") || !strcmp(argv[ix], "--batch"))
+          rps_batch = true;
+        else if (!strcmp(argv[ix], "--without-terminal"))
+          rps_without_terminal_escape = true;
+        else if (!strcmp(argv[ix], "--daemon"))
+          {
+            rps_daemonized = true;
+            rps_syslog_enabled = true;
+          }
+        else if (!strcmp(argv[ix], "--syslog"))
+          rps_syslog_enabled = true;
+      }
+    if (rps_disable_aslr)
+      {
+        if (personality(ADDR_NO_RANDOMIZE) == -1)
+          RPS_FATAL("%s failed to disable ASLR: %m", rps_progname);
+        else
+          RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
+      }
+  }
+  Rps_Agenda::initialize();
+  unsetenv("LANG");
+  unsetenv("LC_ADDRESS");
+  unsetenv("LC_ALL");
+  unsetenv("LC_IDENTIFICATION");
+  unsetenv("LC_MEASUREMENT");
+  unsetenv("LC_MONETARY");
+  unsetenv("LC_NAME");
+  unsetenv("LC_NUMERIC");
+  unsetenv("LC_NUMERIC");
+  unsetenv("LC_PAPER");
+  unsetenv("LC_TELEPHONE");
+  unsetenv("LC_TIME");
+  setenv("LANG", "C", (int)true);
+  setenv("LC_ALL", "C.UTF-8", (int)true);
+  std::setlocale(LC_ALL, "C.UTF-8");
+  rps_backtrace_common_state =
+    backtrace_create_state(rps_progname, (int)true,
+                           Rps_Backtracer::bt_error_cb,
+                           nullptr);
+  if (!rps_backtrace_common_state)
+    {
+      fprintf(stderr, "%s failed to make backtrace state.\n", rps_progname);
+      exit(EXIT_FAILURE);
+    }
+  pthread_setname_np(pthread_self(), "rps-main");
+  // hack to handle debug flag as first program argument
+  if (argc>1 && !strncmp(argv[1], "--debug=", strlen("--debug=")))
+    rps_add_debug_cstr((argv[1]+strlen("--debug=")));
+  if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
+    rps_add_debug_cstr((argv[1]+strlen("-d")));
+  ///
+  if (rps_syslog_enabled && rps_debug_flags != 0)
+    openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+  RPS_INFORMOUT("done early initialization of RefPerSys process "
+                << (int)getpid() << " on host " << rps_hostname()
+                << " git " << rps_shortgitid);
+} // end rps_early_initialization
+
+////////////////////////////////////////////////////////////////
+// Parse a single program option, skipping side effects when state is
+// empty.
+error_t
+rps_parse1opt (int key, char *arg, struct argp_state *state)
+{
+  bool side_effect = state && (void*)state != RPS_EMPTYSLOT;
+  RPS_POSSIBLE_BREAKPOINT();
+  bool letterkey = (key>0 && key<256 && isalpha((char)key));
+  RPS_DEBUG_LOG(PROGARG, "rps_parse1opt key#" << key
+                << (letterkey?"'":"")
+                << (letterkey? ((char)key) : ' ')
+                << " arg:" << Rps_Cjson_String(arg)
+                << (side_effect?".":"")
+               );
+  RPS_DEBUG_LOG(EXIT, "rps_parse1opt key#" << key
+                << (letterkey?"'":"")
+                << (letterkey? ((char)key) : ' ')
+                << " arg:" << Rps_Cjson_String(arg)
+                << (side_effect?".":"")
+               );
+  if (side_effect)
+    RPS_DEBUG_LOG(PROGARG, "rps_parse1opt "
+                  << RPS_OUT_PROGARGS(state->argc, state->argv)
+                  << " argnum:" << state->arg_num
+                  << " state.next:" << state->next
+                  << std::endl
+                  << RPS_FULL_BACKTRACE(1,"rps_parse1opt"));
+  switch (key)
+    {
+    case RPSPROGOPT_DEBUG:
+    {
+      rps_add_debug_cstr(arg);
+    }
+    return 0;
+    case RPSPROGOPT_DEBUG_PATH:
+    {
+      if (side_effect)
+        rps_set_debug_output_path(arg);
+    }
+    return 0;
+    case RPSPROGOPT_LOADDIR:
+    {
+      rps_my_load_dir = std::string(arg);
+    }
+    return 0;
+    case RPSPROGOPT_COMMAND:
+    {
+      rps_command_vec.push_back(std::string(arg));
+    }
+    return 0;
+    case RPSPROGOPT_INTERFACEFIFO:
+    {
+      rps_put_fifo_prefix(arg);
+    }
+    return 0;
+    case RPSPROGOPT_BATCH:
+    {
+      rps_batch = true;
+    }
+    return 0;
+    case RPSPROGOPT_JOBS:
+    {
+      int nbjobs = atoi(arg);
+      if (nbjobs <= RPS_NBJOBS_MIN)
+        nbjobs = RPS_NBJOBS_MIN;
+      else if (nbjobs > RPS_NBJOBS_MAX)
+        nbjobs = RPS_NBJOBS_MAX;
+      rps_nbjobs = nbjobs;
+    }
+    return 0;
+    case RPSPROGOPT_PUBLISH_ME:
+    {
+      if (!rps_publisher_url_str.empty())
+        RPS_FATAL("cannot give twice the --publish-me <URL> option");
+      rps_publisher_url_str = arg;
+    }
+    return 0;
+    case RPSPROGOPT_PREFERENCES_HELP:
+    {
     }
     return 0;
     case RPSPROGOPT_DUMP:
