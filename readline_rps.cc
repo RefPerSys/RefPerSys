@@ -157,11 +157,7 @@ Rps_ReadlineTokenSource::fill_current_line_buffer(void)
 #warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
   RPS_UNIQUE_BREAKPOINT();
   std::string prompt = rps_readline_fetch_string_prompt();
-  RPS_DEBUG_LOG(REPL, "readline prompt=" << Rps_QuotedC_String(prompt)
-		<< " in " << rps_current_pthread_name());
-  if (!RPS_DEBUG_ENABLED(REPL))
-  RPS_DEBUG_LOG(EVLOOP, "readline prompt=" << Rps_QuotedC_String(prompt)
-		<< " in " << rps_current_pthread_name());
+  RPS_DEBUG_LOG(REPL, "readline prompt=" << Rps_QuotedC_String(prompt));
   RPS_ASSERT(!prompt.empty());
   char* rl = readline(prompt.c_str());
   RPS_DEBUG_LOG(REPL, "did readline " << Rps_QuotedC_String(rl));

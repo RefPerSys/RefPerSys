@@ -1,3 +1,4 @@
-# file refpersys/plugins/.gitignore
+# file RefPerSys/plugins_dir/.gitignore
 *.o
 *.so
+*~

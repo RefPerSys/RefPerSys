@@ -1,7 +1,7 @@
 // file RefPerSys/plugins_dir/rpsiplug_fox.cc
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/*** ###  use make test14 to test this ###
+/***
     © Copyright (C) 2026 by Basile STARYNKEVITCH, France
    program released under GNU General Public License v3+
 
@@ -41,41 +41,15 @@ static RpsFxApp* foxapp;
 RpsFxApp::RpsFxApp(const FXString& name, const FXString&vendor)
   : FXApp(name,vendor)
 {
-  RPS_DEBUG_LOG(EVLOOP, "RpsFxApp constr name=" << name.text()
-                << " vendor=" << vendor.text()
-                << " this@" << rps_unsigned_hex_string((uintptr_t)(this))
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "RpsFxApp constr"));
-  if (!RPS_DEBUG_ENABLED(EVLOOP))
-    RPS_DEBUG_LOG(REPL, "RpsFxApp constr name=" << name.text()
-                  << " vendor=" << vendor.text()
-                  << " this@" << rps_unsigned_hex_string((uintptr_t)(this)));
 } // end RpsFxApp constructor
 
 RpsFxApp::~RpsFxApp()
 {
-  RPS_DEBUG_LOG(EVLOOP, "RpsFxApp destr"
-                << " this@" << rps_unsigned_hex_string((uintptr_t)(this))
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "RpsFxApp destr"));
-  if (!RPS_DEBUG_ENABLED(EVLOOP))
-    RPS_DEBUG_LOG(REPL, "RpsFxApp destr"
-                  << " this@"
-                  << rps_unsigned_hex_string((uintptr_t)(this)));
 } // end RpsFxApp destructor
 
 static void
 rpsfox_delete_app(void)
 {
-  RPS_DEBUG_LOG(EVLOOP, "foxapp@"
-                << rps_unsigned_hex_string((uintptr_t)foxapp)
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"rpsfox_delete_app"));
-  if (!RPS_DEBUG_ENABLED(EVLOOP))
-    RPS_DEBUG_LOG(REPL, "foxapp@"
-                  << rps_unsigned_hex_string((uintptr_t)foxapp)
-                  << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,"rpsfox_delete_app"));
   if (foxapp)
     delete foxapp;
 } // end rpsfox_delete_app
@@ -101,14 +75,6 @@ rps_do_interactive_plugin(const char*arg)
   foxapp = new RpsFxApp("fox-refpersys-plugin-app", "refpersys.org");
   RPS_ASSERT(foxapp != nullptr);
   foxapp->init(rps_main_argc, (char**)rps_main_argv);
-  if (!RPS_DEBUG_ENABLED(EVLOOP))
-    RPS_DEBUG_LOG(REPL, "foxapp @"
-                  << rps_unsigned_hex_string((uintptr_t)foxapp)
-                  << " initialized");
-  else
-    RPS_DEBUG_LOG(EVLOOP, "foxapp @"
-                  << rps_unsigned_hex_string((uintptr_t)foxapp)
-                  << " initialized");
   rps_atexit(rpsfox_delete_app);
   RPS_WARNOUT("incomplete fox rps_do_interactive_plugin arg="
               << Rps_QuotedC_String(arg)

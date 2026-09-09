@@ -460,10 +460,9 @@ libraries that can be `dlopen`-ed).
 You need [GNU lightning](https://www.gnu.org/software/lightning/)
 (2.2.3 or later, a code generation library emitting quickly some slow
 running machine code) built from source. I (Basile S.) used: ```
-## configuration of GNU lightning 
-./configure --with-gnu-ld --enable-disassembler \
-   --enable-devel-disassembler --enable-devel-get-jit-size \
-   --disable-silent-rules 'CFLAGS=-O2 -g2'
+## configuration of GNU lightning ./configure --with-gnu-ld
+--enable-disassembler \ --enable-devel-disassembler
+--enable-devel-get-jit-size \ --disable-silent-rules 'CFLAGS=-O2 -g2'
 ``` then ran `libtool --finish /usr/local/lib` and `ldconfig`
 
 Our `GNUmakefile` could be slightly buggy for parallel build (you need

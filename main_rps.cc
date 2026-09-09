@@ -242,14 +242,6 @@ struct argp_option rps_progoptions[] =
     " use --script=help to get more help about them\n", ///
     /*group:*/0 ///
   },
-  /* ======= locale for some messages ======= */
-  {/*name:*/ "locale", ///
-    /*key:*/ RPSPROGOPT_LOCALE, ///
-    /*arg:*/ "LOCALE", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "To set the given LOCALE after loading.\n",
-    /*group:*/0 ///
-  },
   /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
   {/*name:*/ "interface-fifo", ///
     /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
