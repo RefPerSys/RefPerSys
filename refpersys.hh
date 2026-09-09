@@ -173,6 +173,11 @@ extern "C" const std::string rps_hex_string(intptr_t i); //locale neutral
 extern "C" const std::string rps_unsigned_dec_string(uintptr_t i); //locale neutral
 extern "C" const std::string rps_unsigned_hex_string(uintptr_t i); //locale neutral
 
+/// slightly safer version of strstr - in utilities_rps.cc
+extern "C" const char*rps_strstr(const char*haystack, const char *needle);
+/// slightly safer version of strchr - in utilities_rps.cc
+extern "C" const char*rps_strchr(const char*haystack, const char *needle);
+
 //// the generated/rpsdata.h contain only preprocessor #define-s and #undef
 //// it should undef RPS_WITH_FLTK. It has a pragma message
 //// it is simpler to not use it... (but needed in some files)
