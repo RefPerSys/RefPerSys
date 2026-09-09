@@ -1642,6 +1642,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_scripting_add_script(arg);
     }
     return 0;
+    case RPSPROGOPT_LOCALE:
+      {
+	RPS_WARNOUT("unimplemented --locale=" << Rps_QuotedC_String(arg));
+      }
+      return 0;
     case RPSPROGOPT_NO_TERMINAL:
     {
       rps_without_terminal_escape = true;
