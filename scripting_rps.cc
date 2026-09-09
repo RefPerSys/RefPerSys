@@ -208,9 +208,9 @@ rps_scripting_add_script(const char*path)
   if (rps_scripts_vector.empty()) {
       /////
       /****
-                               ** Only the main thread can call rps_scripting_add_script, so
-                               ** no more synchronization or mutex is needed to :
-                               *****/
+                                     ** Only the main thread can call rps_scripting_add_script, so
+                                     ** no more synchronization or mutex is needed to :
+                                     *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
@@ -365,7 +365,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
                         << (*ptsrc)
                         << " loop#" << loopcnt
                         <<  " ¤maybe-eof @"
-			<< (*ptsrc).position_str());
+                        << (*ptsrc).position_str());
           RPS_POSSIBLE_BREAKPOINT();
           if ((*ptsrc).get_line()) {
               clp = (*ptsrc).curcptr();
@@ -399,7 +399,9 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
 #warning rps_run_one_script_file incomplete when clp is null
         };
       RPS_UNIQUE_BREAKPOINT();
-      const char* magp = strstr(clp, rps_scripting_magic_string);
+      const char* magp = nullptr;
+      if (clp && rps_scripting_magic_string)
+        magp = strstr(clp, rps_scripting_magic_string);
       if (magp) {
           static_assert(sizeof(modline)>60);
           RPS_POSSIBLE_BREAKPOINT();
@@ -407,7 +409,7 @@ rps_run_one_script_file(Rps_CallFrame*callframe, int ix)
           memset(modline, 0, sizeof(modline));
           int p = -1;
           int n = sscanf(magp,
-			 RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%n",
+                         RPS_SCRIPT_MAGIC_STR " %60[A-Za-z0-9_]%n",
                          modline, &p);
           if (n > 0 && isascii(modline[0]) && p>0) {
               RPS_DEBUG_LOG(REPL, "rps_run_one_script_file clp="
