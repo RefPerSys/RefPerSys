@@ -139,7 +139,7 @@ REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES)
 REFPERSYS_HUMAN_CPPANAL_OBJECTS=$(patsubst %.cc, %.ana.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
 ### Generated C++ sources
-REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc _minicarb_rps.cc
+REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc _minicarb_rps.cc _parser_rps.cc
 
 ### corresponding C++ objects
 REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
@@ -480,6 +480,11 @@ clean: clean-plugins
 
 
 _carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --sym-names $^
+
+_parser_rps.cc: parser_rps.cbrt  |GNUmakefile $(RPS_CARBURETTA)
 # the --sym-names feature of carburetta is in
 # https://github.com/kingletbv/carburetta/issues/9
 	$(RPS_CARBURETTA) --c $@ --sym-names $^

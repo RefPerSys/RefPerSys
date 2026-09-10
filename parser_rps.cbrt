@@ -26,19 +26,19 @@
 #pragma message "prologue part of parser_rps.cbrt"
 
 #ifndef RPS_GITID
-#define RPS_GITID "unknown"
+#error RPS_GITID is not defined by compilation command
 #endif
 
 #ifndef RPS_SHORTGITID
-#define RPS_SHORTGITID "unknown"
+#error RPS_SHORTGITID is not defined by compilation command
 #endif
 
 #ifndef RPS_BASENAME
-#define RPS_BASENAME "parser_rps"
+#error RPS_BASENAME not defined by compilation command
 #endif
 
 #ifndef RPS_BASEID
-#define RPS_BASEID "parser_rps"
+#error RPS_BASEID not defined by compilation command
 #endif
 
 extern "C" const char rps_rule_parser_gitid[];
@@ -581,5 +581,22 @@ arg_list:
   arg_list COMMA expr { }
 
 %%
+void
+rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
+			   Rps_CallFrame* frame,
+                           void* extra,
+                           int lin)
+{
+#warning unimplemented rps_rule_parser_on_feed_me
+  
+}
 
 #pragma message "epilogue part of parser_rps.cbrt"
+
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** mode: c++ ;;
+ ** compile-command: "make _parser_rps.o && make" ;;
+ ** End: ;;
+ ****************/
