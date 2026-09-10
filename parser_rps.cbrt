@@ -93,6 +93,8 @@ struct rps_rule_parser_data_st {
   intptr_t rule_i;
   double rule_d;
   std::string rule_str;
+  char rule_chunk_prefix[16];
+  std::string rule_chunk_buf;
   void* rule_ptr;
   int rule_lineno;
   unsigned rule_count;
@@ -136,6 +138,8 @@ struct rps_rule_parser_data_st {
     rule_d = 0.0;
     rule_toksrc = nullptr;
     rule_str.clear();
+    memset(rule_chunk_prefix, 0, sizeof(rule_chunk_prefix));
+    rule_chunk_buf.clear();
     rule_ptr = nullptr;
     rule_oid.clear_oid();
     rule_ob1 = nullptr;
@@ -185,8 +189,8 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 %token ARROW
 %token EQUAL NOT_EQUAL LESS LESS_EQUAL GREATER GREATER_EQUAL
 
-/* Arithmetic operators */
-%token PLUS MINUS ASTERISK SLASH
+/* Arithmetic & assignment operators */
+%token PLUS MINUS ASTERISK SLASH PLUS_EQUAL
 
 /* Delimiters and punctuation */
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
@@ -208,8 +212,13 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 %token STRING_LITERAL
 %type STRING_LITERAL: std::string
 
+/* Code Chunk token */
+%token CODE_CHUNK
+%type CODE_CHUNK: std::string
+
 %mode IN_COMMENT
 %mode IN_STRING
+%mode IN_CODE_CHUNK
 
 %scanner%
 
@@ -243,6 +252,75 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 <IN_COMMENT>: [\*] {
   /* Skip asterisk */
+}
+
+/* Code chunk start without prefix: #{ ... }# */
+: [#][\{] {
+  data_rp->check_carbdata_callframe(fram_rp);
+  memset(data_rp->rule_chunk_prefix, 0, sizeof(data_rp->rule_chunk_prefix));
+  data_rp->rule_chunk_buf.clear();
+  $set_mode(IN_CODE_CHUNK);
+}
+
+/* Code chunk start with alphanumeric prefix: #cpp{ ... }cpp# */
+: [#][a-zA-Z0-9_]+[\{] {
+  data_rp->check_carbdata_callframe(fram_rp);
+  memset(data_rp->rule_chunk_prefix, 0, sizeof(data_rp->rule_chunk_prefix));
+  data_rp->rule_chunk_buf.clear();
+  size_t tlen = strlen($text);
+  if (tlen > 2 && tlen - 2 < sizeof(data_rp->rule_chunk_prefix)) {
+    strncpy(data_rp->rule_chunk_prefix, $text + 1, tlen - 2);
+  }
+  $set_mode(IN_CODE_CHUNK);
+}
+
+/* Code chunk end: standard }# */
+<IN_CODE_CHUNK> CODE_CHUNK: [\}][#] {
+  if (!data_rp->rule_chunk_prefix[0]) {
+    $set_mode(DEFAULT);
+    $$ = data_rp->rule_chunk_buf;
+  } else {
+    data_rp->rule_chunk_buf.append($text, strlen($text));
+  }
+}
+
+/* Code chunk end: prefixed }prefix# */
+<IN_CODE_CHUNK> CODE_CHUNK: [\}][a-zA-Z0-9_]+[#] {
+  size_t tlen = strlen($text);
+  if (data_rp->rule_chunk_prefix[0] &&
+      tlen - 2 == strlen(data_rp->rule_chunk_prefix) &&
+      !strncmp($text + 1, data_rp->rule_chunk_prefix, tlen - 2)) {
+    $set_mode(DEFAULT);
+    $$ = data_rp->rule_chunk_buf;
+  } else {
+    data_rp->rule_chunk_buf.append($text, tlen);
+  }
+}
+
+/* Literal dollar in code chunk */
+<IN_CODE_CHUNK>: [\$][\$] {
+  data_rp->rule_chunk_buf.push_back('$');
+}
+
+/* Metavariable in code chunk: $identifier */
+<IN_CODE_CHUNK>: [\$][a-zA-Z_][a-zA-Z0-9_]* {
+  data_rp->rule_chunk_buf.append($text);
+}
+
+/* Count newlines in code chunk */
+<IN_CODE_CHUNK>: [\n] {
+  data_rp->incr_carbdata_line_number();
+  data_rp->rule_chunk_buf.push_back('\n');
+}
+
+/* Non-control content inside code chunk */
+<IN_CODE_CHUNK>: [^\}\$\n]+ {
+  data_rp->rule_chunk_buf.append($text);
+}
+
+/* Single closing brace inside code chunk not followed by # */
+<IN_CODE_CHUNK>: [\}] {
+  data_rp->rule_chunk_buf.push_back('}');
 }
 
 : \" {
@@ -314,6 +392,7 @@ IDENT: [a-zA-Z_][a-zA-Z0-9_]* {
 }
 
 ARROW: [\-][>] { }
+PLUS_EQUAL: [\+][=] { }
 EQUAL: [=][=]? { }
 NOT_EQUAL: [!][=] { }
 LESS_EQUAL: [<][=] { }
@@ -497,6 +576,9 @@ primary_expr:
   STRING_LITERAL { }
 
 primary_expr:
+  CODE_CHUNK { }
+
+primary_expr:
   LOGIC_VAR { }
 
 primary_expr:
@@ -549,6 +631,12 @@ retract_stmt:
 
 modify_stmt:
   KEYW_MODIFY LOGIC_VAR LBRACE attr_assignment_list RBRACE { }
+
+put_stmt:
+  IDENT primary_expr PLUS_EQUAL expr { }
+
+put_stmt:
+  primary_expr PLUS_EQUAL expr { }
 
 put_stmt:
   IDENT primary_expr EQUAL expr { }
