@@ -2693,6 +2693,10 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
 {
   if (!flags)
     flags = rps_debug_flags.load();
+  if (!flags) {
+    out << "no-debug-⓪"; // U+24EA CIRCLED DIGIT ZERO;
+    return;
+  }
   out << flags << "=" ;
   int nbf = 0;
   //
