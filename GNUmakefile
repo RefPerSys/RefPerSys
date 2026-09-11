@@ -451,29 +451,28 @@ show-vtable: codetest_rps.cc |refpersys GNUmakefile _config-refpersys.mk
 	       -c $<
 	/bin/ls -l codetest_rps*.class
 
-clean: clean-plugins
-	$(RM) tmp* *~ *.o
-	$(RM) */*.o */*.so */*~
-	$(RM) -vf core*
+clean:
+	$(RM) -v tmp* *~ *.o
+	$(RM) -v */*.o */*.so */*~
+	$(RM) -v -f core*
 #	$(RM) -v _gramrepl_rps.*
-	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
-	$(RM) -vf _minicarb_rps.* _nl?minirepl_rps.cc
+	$(RM) -v -f _carbrepl_rps.* _nl?carbrepl_rps.cc
+	$(RM) -v -f _minicarb_rps.* _nl?minirepl_rps.cc
 #	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
-	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys
-	$(RM) do-build-refpersys-plugin 
-	$(RM) refpersys lto-refpersys
-	$(RM) -vf q6refpersys
-	$(RM) -vf fox-refpersys
-	$(RM) *% %~
-	$(RM) *.gch
-	$(RM) *.orig
-	$(RM) *.rej
-	$(RM) doc*/*/*~
-	$(RM) */*~ */*% */*.orig
-	$(RM) */*.so
-	$(RM) *.ii
-	$(RM) core*
-	$(RM) -f codetest*class
+	$(RM) -v -f do-scan-refpersys-pkgconfig tools/do-configure-refpersys
+	$(RM) -v -f do-build-refpersys-plugin 
+	$(RM) -v refpersys lto-refpersys
+	$(RM) -v -f q6refpersys
+	$(RM) -v -f fox-refpersys
+	$(RM) -v -f *% %~
+	$(RM) -v -f *.gch
+	$(RM) -v -f *.orig
+	$(RM) -v -f *.rej
+	$(RM) -v -f doc*/*/*~
+	$(RM) -v -f */*~ */*% */*.orig
+	$(RM) -v -f */*.so
+	$(RM) -v -f *.ii
+	$(RM) -v -f codetest*class
 	$(RM) .gdb_history */.gdb_history
 	$(RM) -vf generated/tmp* generated/*/tmp*
 	$(RM) Make-dependencies/__*
@@ -510,23 +509,23 @@ _nl_minicarb_rps.cc: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
 	$(RPS_CARBURETTA) --c $@ --nolinedir --sym-names $^
 
 clean-plugins:
-	$(RM) -v plugins_dir/*.o
-	$(RM) -v plugins_dir/*.so
-	$(RM) -v plugins_dir/_*
-	$(RM) -v _rpsplug* */_rpsplug*
-	$(RM) -v plugins_dir/rpsplug_synsimpinterp.gv
-	$(RM) -v plugins_dir/rpsplug_synsimpinterp.hh
-	$(RM) -v plugins_dir/rpsplug_synsimpinterp.cc
-	$(RM) -v plugins_dir/rpsplug_synsimpinterp.html
-	$(RM) -v plugins_dir/rpsplug_synsimpinterp.output
-	$(RM) -v plugins_dir/rpsplug_synsimpinterp.xml
-	$(RM) -v plugins_dir/location.hh
-	$(RM) -v plugins_dir/rpsplug_synsimpinterp.yy.output
+	$(RM) -v -f plugins_dir/*.o
+	$(RM) -v -f plugins_dir/*.so
+	$(RM) -v -f plugins_dir/_*
+	$(RM) -v -f _rpsplug* */_rpsplug*
+	$(RM) -v -f plugins_dir/rpsplug_synsimpinterp.gv
+	$(RM) -v -f plugins_dir/rpsplug_synsimpinterp.hh
+	$(RM) -v -f plugins_dir/rpsplug_synsimpinterp.cc
+	$(RM) -v -f plugins_dir/rpsplug_synsimpinterp.html
+	$(RM) -v -f plugins_dir/rpsplug_synsimpinterp.output
+	$(RM) -v -f plugins_dir/rpsplug_synsimpinterp.xml
+	$(RM) -v -f plugins_dir/location.hh
+	$(RM) -v -f plugins_dir/rpsplug_synsimpinterp.yy.output
 
 distclean: clean
-	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __buildinfo.*
-	$(RM) __*.mkdep Make-dependencies/__*.mkdep
-	$(RM) do-scan-refpersys-pkgconfig
+	$(RM) -v -f build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __buildinfo.*
+	$(RM) -v -f __*.mkdep Make-dependencies/__*.mkdep
+	$(RM) -v -f do-scan-refpersys-pkgconfig
 
 -include _scanned-pkgconfig.mk
 
