@@ -1136,7 +1136,7 @@ altdump: ./refpersys
 
 ################################################################
 #### simple tests; the --run-name should start with test and not use $@ because of showtests target
-test00: refpersys
+test00: refpersys |GNUmakefile
 	@printf '\f\n\n\n\n////test00 first *****\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=test00.1 || (echo test00.1 failed; exit 1)
 	@printf '\f\n\n\n\n////test00 second *****\n'
@@ -1149,12 +1149,12 @@ test00: refpersys
 	./refpersys -AREPL -c help -B --run-name=test00.5 || (echo test00.5 failed; exit 1)
 	@printf '\n\n\n////test00 FINISHED¤\n\n'
 
-test01: refpersys
+test01: refpersys |GNUmakefile
 	@echo test01 testing simple show help with a lot of debug
 	./refpersys -AREPL,CMD -c 'show help' -B --run-name=test01 || (echo test01 failed; exit 1)
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
-test01a:  refpersys
+test01a:  refpersys |GNUmakefile
 	@echo test01a testing simple show class with a lot of debug
 	./refpersys -AREPL -c 'show class' -B --run-name=test01a || (echo test01a failed; exit 1)
 	@printf '\n\n\n////test01 FINISHED¤\n'
@@ -1163,74 +1163,74 @@ test01b: refpersys
 	./refpersys -AREPL,LOWREP  -c 'show help' -B --run-name=test01b || (echo test01b failed; exit 1)
 	@printf '\n\n\n////test01b FINISHED¤\n'
 
-test01c: refpersys
+test01c: refpersys |GNUmakefile
 	@printf '\n\n\n//+ test01c !parse_sum 1 + 2\n' || (echo test01c failed; exit 1)
 	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2' -B --run-name=test01c
 	@printf '\n\n\n////test01c FINISHED¤\n'
 
-test01d: refpersys
+test01d: refpersys |GNUmakefile
 	@printf '\n\n\n//+ test01d !parse_sum 1 + 2 + 3\n'
 	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2 + 3' -B --run-name=test01d || (echo test01d failed; exit 1)
 	@printf '\n\n\n////test01d FINISHED¤\n'
 
-test01e: refpersys
+test01e: refpersys |GNUmakefile
 	@printf '\n\n\n//+ test01e !parse_sum 1 + 2 * 3\n'
 	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2 * 3' -B --run-name=test01e || (echo test01e failed; exit 1)
 	@printf '\n\n\n////test01e FINISHED¤\n'
 
 ### notice the space after the 3 below
-test01f: refpersys
+test01f: refpersys |GNUmakefile
 	./refpersys -AREPL,LOWREP  -c '!parse_primary 3 ' -B --run-name=test01f || (echo test01f failed; exit 1)
 	@printf '\n\n\n////test01f FINISHED¤\n'
 
 
-test02: refpersys
+test02: refpersys |GNUmakefile
 	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=test02 || (echo test02 failed; exit 1)
 	@printf '\n\n\n////test02 FINISHED¤\n'
 
-test03: refpersys
+test03: refpersys |GNUmakefile
 	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=test03 || (echo test03 failed; exit 1)
 	@printf '\n\n\n////test03 FINISHED¤\n'
 
 ## test03 no tty
-test03nt: refpersys
+test03nt: refpersys |GNUmakefile
 	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03nt || (echo test03nt failed; exit 1)
 	@printf '\n\n\n////test03nt FINISHED¤\n'
 
-test03bis: refpersys
+test03bis: refpersys |GNUmakefile
 	./refpersys -AREPL  -c 'show 1 + 2 + 3' -B --run-name=test03bis || (echo test03bis failed; exit 1)
 	@printf '\n\n\n////test03bis FINISHED¤\n'
 
-test04: refpersys
+test04: refpersys |GNUmakefile
 	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=test04 || (echo test04 failed; exit 1)
 	@printf '\n\n\n////test04 FINISHED¤\n'
 
-test05: refpersys
+test05: refpersys |GNUmakefile
 	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=test05 || (echo test05 failed; exit 1)
 	@printf '\n\n\n////test05 FINISHED¤\n'
 
-test06: refpersys
+test06: refpersys |GNUmakefile
 	./refpersys -AREPL  -c 'show 1' -B --run-name=test06 || (echo test06 failed; exit 1)
 	@printf '\n\n\n////test06 FINISHED¤\n'
 
-test07: refpersys
+test07: refpersys |GNUmakefile
 	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07.1 || (echo test07.1 failed; exit 1)
 	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=test07.2 || (echo test07.2 failed; exit 1)
 	@printf '\n\n\n////test07 FINISHED¤\n'
 
-test07a: refpersys
+test07a: refpersys |GNUmakefile
 	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07a || (echo test07a failed; exit 1)
 	@printf '\n\n\n////test07a FINISHED¤\n'
 
-test07x: refpersys
+test07x: refpersys |GNUmakefile
 	./refpersys -AEXIT -B --run-name=test07x || (echo test07x failed; exit 1)
 	@printf '\n\n\n////test07x FINISHED¤\n'
 
-test08: refpersys
+test08: refpersys |GNUmakefile
 	./test_dir/008otherscript.bash
 	@printf '\n\n\n////test08 FINISHED¤\n'
 
-test09: refpersys
+test09: refpersys |GNUmakefile
 	./test_dir/009sepscript.bash
 	@printf '\n\n\n////test09 FINISHED¤\n'
 
@@ -1314,16 +1314,16 @@ test13:
 	@printf '\n\n\n////test13 FINISHED¤\n'
 
 ## test14 is for the interactive fox plugin
-test14:
+test14: refpersys |GNUmakefile
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/014foxplug.bash
 	@printf '\n\n\n////test14 FINISHED¤\n'h
 
-## test15 is to understand the event loop
+## test15 to understand the event loop
+test15: refpersys |GNUmakefile
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/015evloopA.bash
-	@printf '\n\n\n////test15 FINISHED¤\n'
-
+	@printf '\n\n\n////test14 FINISHED¤\n'h
 ########### show the testing commands
 showtests:
 	@printf '\nRefPerSys has %d testing commands\n' $(shell /bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/wc -l)
