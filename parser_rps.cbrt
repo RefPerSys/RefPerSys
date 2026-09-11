@@ -51,11 +51,11 @@ const char rps_parser_gitid[] = RPS_GITID;
 extern "C" const char rps_parser_shortgitid[];
 const char rps_parser_shortgitid[] = RPS_SHORTGITID;
 
-extern "C" const char rps_rule_parser_basename[];
-const char rps_rule_parser_basename[] = RPS_BASENAME;
+extern "C" const char rps_parser_basename[];
+const char rps_parser_basename[] = RPS_BASENAME;
 
-extern "C" const char rps_rule_parser_baseid[];
-const char rps_rule_parser_baseid[] = RPS_BASEID;
+extern "C" const char rps_parser_baseid[];
+const char rps_parser_baseid[] = RPS_BASEID;
 
 extern "C" struct rpsruleparser_stack;
 
@@ -77,10 +77,10 @@ enum rps_rule_parser_keyw_enum {
 
 %header%
 #pragma message "header part of parser_rps.cbrt"
-extern "C" const char rps_rule_parser_gitid[];
-extern "C" const char rps_rule_parser_shortgitid[];
-extern "C" const char rps_rule_parser_basename[];
-extern "C" const char rps_rule_parser_baseid[];
+extern "C" const char rps_parser_gitid[];
+extern "C" const char rps_parser_shortgitid[];
+extern "C" const char rps_parser_basename[];
+extern "C" const char rps_parser_baseid[];
 extern "C" struct rps_rule_parser_data_st;
 extern "C" enum rps_rule_parser_keyw_enum;
 %%
