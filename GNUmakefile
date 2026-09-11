@@ -1,0 +1,1321 @@
+#!/usr/bin/gmake
+## SPDX-License-Identifier: GPL-3.0-or-later
+## Description:
+##      This file is part of the Reflective Persistent System. refpersys.org
+##
+##      It is its GNUmakefile, for the GNU make automation builder.
+##      Linux systems are the prefered target (64 bits)
+##
+## Author(s):
+##      Basile STARYNKEVITCH, 92340 Bourg-la-Reine, France,
+##                    <basile@starynkevitch.net>
+##      Niklas ROZENCRANTZ, Sweden and France,  <niklasro@gmail.com>
+##      Abdullah Siddiqui <siddiquiabdullah92@gmail.com>
+## Past indian contributors:
+##      (Abhishek Chakravarti,    Nimesh Neema)
+##
+##      © Copyright (C) 2019 - 2026 The Reflective Persistent System Team
+##      team@refpersys.org
+##
+## License:
+##    This program is free software: you can redistribute it and/or modify
+##    it under the terms of the GNU General Public License as published by
+##    the Free Software Foundation, either version 3 of the License, or
+##    (at your option) any later version.
+##
+##    This program is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License for more details.
+##
+##    You should have received a copy of the GNU General Public License
+##    along with this program.  If not, see <http://www.gnu.org/licenses/>
+
+
+
+## tell GNU make to export all variables by default
+export
+
+RPS_GIT_ID:= $(shell ./rps-generate-gitid.sh)
+RPS_SHORTGIT_ID:= $(shell ./rps-generate-gitid.sh -s)
+
+# GNU make builder, see www.gnu.org/software/make/
+RPS_MAKE:= $(MAKE)
+# GNU bison parser generator from www.gnu.org/software/bison/
+RPS_BISON := bison
+# bisonc++ is another parser generator by Frank B. Brokken on
+# fbb-git.gitlab.io/bisoncpp/
+#RPS_BISONCPP := bisonc++
+RPS_HOST := $(shell /bin/hostname -f)#eg abhishek.secret.host.in or lamartine
+RPS_ARCH := $(shell /bin/uname -m)#eg x86_64 or aarch64
+RPS_RAW_OPERSYS := $(shell /bin/uname -o)#eg GNU/Linux
+RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )#eg GNU_Linux
+RPS_ATSHARP := $(shell printf '@#')
+RPS_HOMETMP := $(shell echo '$$HOME/tmp')
+# Carburetta is a parser generator on github.com/kingletbv/carburetta
+RPS_CARBURETTA := $(shell /usr/bin/which carburetta) #eg /usr/local/bin/carburetta
+
+# libopcodes.so is needed by GNU lightning libraries
+RPS_LIBOPCODES_DIR := $(shell /bin/dirname $$(/usr/bin/locate libopcodes.so | /bin/head -1))
+Q6REFPERSYS_PACKAGES ?= Qt6Gui Qt6Widgets jsoncpp
+FOXREFPERSYS_PACKAGES ?=
+FLTKREFPERSYS_PACKAGES ?= gl gtk4
+## see https://lists.debian.org/debian-user-french/2025/12/msg00005.html
+RPS_DEBARCH?=$(strip $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)) #eg x86_64-linux-gnu
+## REFPERSYS_LTO is by convention for link-time optimization flags
+
+#                                                                
+
+
+.DEFAULT_GOAL: all
+
+.PHONY: all everything config objects showtests clean distclean \
+        gitpush gitpush2 \
+        show-vtable analysis \
+        print-plugin-settings indent \
+        redump altredump altdump clean-plugins plugins \
+        print-gmake-features utility-clang \
+        one-plugin \
+        lto-refpersys ana-objects ana-refpersys \
+        raw-refpersys raw-objects lto-objects \
+        snapshot \
+	q6refpersys \
+	plain-q6rps-plugin \
+	qt-q6rps-plugin \
+        test00 test01 test01a test01b test01c test01d test01e test01f \
+        test02 test03 test03nt test04 \
+        test05 test06 test07 test07a test07x \
+        test08 test09 test-load testq6-01 \
+        test11 test11q \
+	test12 test13 test14 \
+        testcarb1 testcarb2 testcarb3 \
+        testlex0 testlex1 testlex2 \
+        testlex3 testlex4 testlex5 \
+        testlex6 testlex7 testlex8 \
+        testlex9
+
+
+SYNC=/bin/sync
+
+## a formatter to restrict width to 75 columns
+FMT=/usr/bin/fmt
+
+## a C and C++ indenter and its flags
+ASTYLE=/usr/bin/astyle
+ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
+
+## uncrustify from github.com/uncrustify
+## if you don't have or don't want it, replace by /bin/cat
+## it is a source code beautifier/indenter
+#UNCRUSTIFY?= uncrustify -lcpp
+
+
+REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
+
+-include $(REFPERSYS_CONFIG_MAKE)
+
+RPS_PKGCONFIG ?= $(shell /usr/bin/which pkg-config)
+REFPERSYS_CXX_STANDARD?= -std=gnu++2c
+REFPERSYS_CLANGXX?= clang++
+
+## packages in the pkg-config sense
+PACKAGES_REFPERSYS += glib-2.0 gio-2.0 glibmm-2.68 libelf gtkmm-4.0 jsoncpp
+
+## Qt6 - see www.qt.io - provides a meta object compiler
+## See also doc.qt.io/qt-6/moc.html
+REFPERSYS_QT6MOC ?= /usr/lib/qt6/libexec/moc
+
+CFLAGS?= -Og -g -Wall $(RPS_LTO)
+
+CFLAGS += $(shell pkg-config --cflags $(PACKAGES_REFPERSYS))
+
+### Human hand-written C++ sources
+REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
+
+### corresponding object files
+REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
+
+### corresponding analyzed object files
+REFPERSYS_HUMAN_CPPANAL_OBJECTS=$(patsubst %.cc, %.ana.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
+
+### Generated C++ sources
+REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc _minicarb_rps.cc _parser_rps.cc
+
+### corresponding C++ objects
+REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
+
+### Dumped C++ sources which are written at dump time and needs to be git managed
+REFPERSYS_DUMPED_CPP_SOURCES := $(wildcard generated/*.cc)
+
+### in commit cdce494874af (end of March 2026) FLTK is not used
+
+REFPERSYS_RAW_SOURCES := $(REFPERSYS_HUMAN_CPP_SOURCES) \
+            $(REFPERSYS_GENERATED_CPP_SOURCES) \
+            $(REFPERSYS_DUMPED_CPP_SOURCES)
+
+REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, %.raw.o, $(REFPERSYS_RAW_SOURCES))
+
+REFPERSYS_ANA_OBJECTS := $(patsubst %.cc, %.ana.o, $(REFPERSYS_RAW_SOURCES))
+
+
+### corresponding object files
+REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+
+### corresponding analyzed object files
+REFPERSYS_DUMPED_ANA_OBJECTS=$(patsubst %.cc, %.ana.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+
+
+
+## altredump is dumping into....
+RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
+
+## By our convention, preprocessor flags starting with _Rps_ are not
+## expected to be used.  We use them to debug this makefile, and to
+## show the commands
+
+## Ian Lance Taylor libbacktrace is often in GCC
+ifndef RPS_LIBBACKTRACE
+RPS_LIBBACKTRACE := -D_Rps_libBacktrace_from_=\"$(REFPERSYS_CXX)\" $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a)
+else
+RPS_LIBBACKTRACE := -D_Rps_libBacktrace_plain_ -lbacktrace
+endif
+
+### required libraries not being known to pkg-config
+## unistring is https://www.gnu.org/software/libunistring/
+## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
+## libgccjit is from https://gcc.gnu.org/onlinedocs/jit/
+
+## Use GNU lightning is from www.gnu.org/software/lightning/ (for
+## machine code generation) -it needs opcodes and bfd libraries
+
+## Use libcurl, it is a web client library
+## use also libelf (to analyze ELF binaries) https://directory.fsf.org/wiki/Libelf
+REFPERSYS_NEEDED_LIBRARIES=  -llightning -lopcodes -lbfd -lgccjit \
+  -lunistring -lgmp -lcurl -lelf
+
+### desired plugins (their basename under plugins_dir/)
+### Basile removed _rpsplug_gramrepl in sept. 2024
+### and removed  rpsplug_simpinterp in march 2025
+REFPERSYS_DESIRED_PLUGIN_BASENAMES= \
+  rpsplug_createclass \
+  rpsplug_createnamedattribute \
+  rpsplug_createnamedselector \
+  rpsplug_create_cplusplus_primitive_type \
+  rpsplug_createdelim \
+  rpsplug_display \
+  rpsiplug_fox
+
+
+## perhaps add after Feb. 2025 a plugin generated by Carburetta? https://carburetta.com/
+
+all:
+	@echo Making all
+	@if [ -z "$(REFPERSYS_TOPDIR)" ]; then \
+		REFPERSYS_TOPDIR="$(pwd)"; \
+		/usr/bin/printf "missing REFPERSYS_TOPDIR, using default\n" > /dev/stderr; \
+	fi
+	@/usr/bin/printf 'RPS_HOMETMP is %s\n' "$(RPS_HOMETMP)"
+	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
+	$(MAKE) tools/do-configure-refpersys
+	@/usr/bin/printf "hand-written C++ code: %s\n" "$(REFPERSYS_HUMAN_CPP_SOURCES)" | $(FMT)
+	@if [ ! -f _config-refpersys.mk ]; then \
+	   echo missing _config-refpersys.mk for GNUmakefile > /dev/stderr; \
+	   echo run $(MAKE) config > /dev/stderr ; \
+	   exit 1 ; \
+	fi
+	-$(RM) plugins_dir/rpsplug_display.so
+	$(MAKE) refpersys
+	$(MAKE) do-build-refpersys-plugin
+	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
+	$(MAKE) plugins
+	./refpersys --version
+
+
+everything: all
+	@echo Making everything
+	@/usr/bin/printf "\n\nMaking q6refpersys\n\n"
+	$(MAKE) q6refpersys
+	@/usr/bin/printf "\n\nMaking fox-refpersys\n\n"
+	$(MAKE) fox-refpersys
+	@/usr/bin/printf "\n\nMaking fltk-refpersys\n\n"
+	$(MAKE) fltk-refpersys
+
+
+fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O -Wall -Wextra $(CXXFLAGS) \
+	-U_Rps_FoX_RefPerSys \
+	-DSELF_FILE='"$(realpath $<)"' \
+	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	__buildinfo.o \
+	-U_Rps_FoxPack $(shell pkg-config --cflags $(FOXREFPERSYS_PACKAGES)) \
+	-U_Rps_FoxCflags $(shell fox-config --cflags) \
+        $< \
+	-U_Rps_FoxLibsA $(shell pkg-config --libs $(FOXREFPERSYS_PACKAGES)) \
+	-U_Rps_FoxLibsB $(shell fox-config --libs) \
+        -o $@
+
+
+fltk-refpersys: tools/fltk-refpersys.cc __buildinfo.o | GNUmakefile
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O -Wall -Wextra $(CXXFLAGS) \
+	-U_Rps_Fltk_RefPerSys \
+	-DSELF_FILE='"$(realpath $<)"' \
+	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	__buildinfo.o \
+	-U_Rps_FltkPack $(shell pkg-config --cflags $(FLTKREFPERSYS_PACKAGES)) \
+	-U_Rps_FltkCflags $(shell fltk-config --cflags) \
+        $< \
+	-U_Rps_FltkLibsA $(shell pkg-config --libs $(FLTKREFPERSYS_PACKAGES)) \
+	-U_Rps_FltkLibsB $(shell fltk-config --libs -g) \
+        -o $@
+
+objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __buildinfo.o _carbrepl_rps.o
+
+
+_config-refpersys.mk: GNUmakefile tools/do-configure-refpersys.c
+
+### raw-objects are the set of *rps.raw.o files without FLTK interface
+raw-objects: $(REFPERSYS_RAW_OBJECTS)
+
+### lto-objects are the set of *rps.lto.o files without FLTK interface
+lto-objects: $(REFPERSYS_LTO_OBJECTS)
+
+### ana-objects are the set of *rps.ana.o files without FLTK interface
+### for static analysis by GCC
+ana-objects: $(REFPERSYS_ANA_OBJECTS)
+
+## Notice that near commit a4522ac97372ba (mid-March 2026) the
+## graphical interface is a separate Qt6 executable q6refpersys; that
+## executable communicates with the refpersys process using something
+## close to JSONRPC and may (later) recieve C++ code chunks to be
+## compiled (to some QGenericPlugin) and dlopen-ed.  For Qt6 see
+## https://doc.qt.io/qt-6/
+
+## on mid-April 2026 (near commit  df629861dc) we are considering a
+## fox-toolkit.org based graphical interface. Try make fox-refpersys
+
+### raw-refpersys executable has no FLTK or other graphical user
+### interface code or library dependencies; it communicates using HTTP
+### or JSONRPC protocols with a program for graphical user interface
+### that program might be a graphical browser or some program
+### under https://github.com/bstarynk/misc-basile or elsewhere
+raw-refpersys: raw-objects __raw_buildinfo.o |  GNUmakefile _config-refpersys.mk
+	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
+	-@echo Linking $@
+	$(REFPERSYS_CXX) -rdynamic -o $@ $(REFPERSYS_RAW_OBJECTS) \
+              $(RPS_LIBBACKTRACE) \
+              -L/usr/local/lib -rpath /usr/local/lib:$$LD_LIBRARY_PATH \
+               $(REFPERSYS_NEEDED_LIBRARIES) \
+              $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
+	-@echo Linked $@
+
+__raw_buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(REFPERSYS_RAW_OBJECTS)
+	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-buildinfo.sh $@ > $@
+
+### phony target to debug the RPS_ASSERT_LOG_AT_BIS macro and make utilities_rps.o with Clang C++ compiler
+### could be related to issue#37 on github
+utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CLANGXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_RAW=1 -DRPS_UTILITY_CLANG=1 \
+              -U_Rps_UtilClang \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_utilities_rps)) \
+            -DRPS_THIS_SOURCE=\"utilities_rps.cc\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	    -DRPS_BASENAME=\"utilities_rps\" \
+	    -DRPS_BASEID=\"utilities_rps\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o utilities_rps.o utilities_rps.cc
+
+#### TODO:fix it, so that make raw-objects work
+%rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_RAW=1 \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+#### TODO:fix it, so that make ana-objects work
+%rps.ana.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_ANALYZED=1  \
+              -U_Rps_Is_Ana \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+.SECONDARY:  __buildinfo.c 
+	$(SYNC)
+
+### snapshot expect a GNU tar...
+snapshot: refpersys snapshot-exclude-patterns.txt
+	$(MAKE) __buildinfo.c _carbrepl_rps.cc _minicarb_rps.cc
+	/bin/tar -c -j --exclude-from=snapshot-exclude-patterns.txt \
+	   -f $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
+
+lto-refpersys:
+	$(MAKE) clean
+	$(MAKE) -j3 REFPERSYS_LTO=-flto lto-objects
+	$(REFPERSYS_CXX) -flto -rdynamic \
+             $(REFPERSYS_COMPILER_FLAGS) \
+             $(REFPERSYS_LINKER_FLAGS) \
+             -o $@ \
+             -U_Rps_Lto1 $(REFPERSYS_LTO_OBJECTS) __buildinfo.lto.o \
+	      $(RPS_LIBBACKTRACE) \
+              -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
+              -Wl,-rpath /usr/local/lib:$$LD_LIBRARY_PATH \
+               $(REFPERSYS_LINKER_FLAGS) \
+              $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
+
+config: tools/do-configure-refpersys do-scan-refpersys-pkgconfig GNUmakefile
+	tools/do-configure-refpersys
+	$(MAKE) _scanned-pkgconfig.mk
+
+
+#### the configurator tool
+tools/do-configure-refpersys: tools/do-configure-refpersys.c |GNUmakefile rps-generate-gitid.sh
+	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
+              -DRPSCONF_OPERSYS=\"$(RPS_OPERSYS)\" \
+              -DRPSCONF_ARCH=\"$(RPS_ARCH)\" \
+              -DRPSCONF_HOST=\"$(RPS_HOST)\" \
+              $(CFLAGS) $^ -o $@ -lgccjit -lreadline -lncurses -ldl
+## If GNU readline library is unavailable add
+## -DRPSCONF_WITHOUT_READLINE above and remove the -lreadline above.
+##
+## If GNU ncurses library is unavailable add -DRPSCONF_WITHOUT_NCURSES
+## above and remove the -lncurses above.
+##
+## If libgccjit (see https://gcc.gnu.org/onlinedocs/jit/ ...) is
+## unavailable add -DRPSCONF_WITHOUT_GCCJIT
+
+######
+do-scan-refpersys-pkgconfig: do-scan-refpersys-pkgconfig.c |GNUmakefile rps-generate-gitid.sh
+	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" \
+              $(CFLAGS) $^ -o $@
+
+do-build-refpersys-plugin: do-build-refpersys-plugin.cc __buildinfo.c
+	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $(CFLAGS) $(shell pkg-config --cflags guile-3.0) -g $^ -o  $@  $(shell pkg-config --libs guile-3.0) 
+
+
+
+## phony target to show the vtable using -fdump-lang-class
+## https://peter0x44.github.io/posts/vtables-itanium-abi/
+show-vtable: codetest_rps.cc |refpersys GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+		-fdump-lang-class \
+               -U_Rps_vtable1 $(REFPERSYS_PREPRO_FLAGS) \
+               -U_Rps_vtable2 $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+		-U_Rps_vtable3 \
+	       -U_Rps_vtable4 $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               -U_Rps_vtable5 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c $<
+	/bin/ls -l codetest_rps*.class
+
+clean: clean-plugins
+	$(RM) tmp* *~ *.o
+	$(RM) */*.o */*.so */*~
+	$(RM) -vf core*
+#	$(RM) -v _gramrepl_rps.*
+	$(RM) -vf _carbrepl_rps.* _nl?carbrepl_rps.cc
+	$(RM) -vf _minicarb_rps.* _nl?minirepl_rps.cc
+#	$(RM) -v _bispprepl_rps* bispprepl_rps.yyp.output
+	$(RM) do-scan-refpersys-pkgconfig tools/do-configure-refpersys
+	$(RM) do-build-refpersys-plugin 
+	$(RM) refpersys lto-refpersys
+	$(RM) -vf q6refpersys
+	$(RM) -vf fox-refpersys
+	$(RM) *% %~
+	$(RM) *.gch
+	$(RM) *.orig
+	$(RM) *.rej
+	$(RM) doc*/*/*~
+	$(RM) */*~ */*% */*.orig
+	$(RM) */*.so
+	$(RM) *.ii
+	$(RM) core*
+	$(RM) -f codetest*class
+	$(RM) .gdb_history */.gdb_history
+	$(RM) -vf generated/tmp* generated/*/tmp*
+	$(RM) Make-dependencies/__*
+
+
+_carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --sym-names $^
+
+_parser_rps.cc: parser_rps.cbrt  |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --sym-names $^
+
+_nl_carbrepl_rps.cc: carbrepl_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --nolinedir --sym-names $^
+
+_minicarb_rps.cc: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c _minicarb_rps.cc --sym-names $^
+
+#-_minicarb_rps.hh: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+#-# the --sym-names feature of carburetta is in
+#-# https://github.com/kingletbv/carburetta/issues/9
+#-	$(RPS_CARBURETTA) --h _minicarb_rps.hh --sym-names $^
+
+_nl_minicarb_rps.cc: minicarb_rps.cbrt |GNUmakefile $(RPS_CARBURETTA)
+# the --sym-names feature of carburetta is in
+# https://github.com/kingletbv/carburetta/issues/9
+	$(RPS_CARBURETTA) --c $@ --nolinedir --sym-names $^
+
+clean-plugins:
+	$(RM) -v plugins_dir/*.o
+	$(RM) -v plugins_dir/*.so
+	$(RM) -v plugins_dir/_*
+	$(RM) -v _rpsplug* */_rpsplug*
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.gv
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.hh
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.cc
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.html
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.output
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.xml
+	$(RM) -v plugins_dir/location.hh
+	$(RM) -v plugins_dir/rpsplug_synsimpinterp.yy.output
+
+distclean: clean
+	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __buildinfo.*
+	$(RM) __*.mkdep Make-dependencies/__*.mkdep
+	$(RM) do-scan-refpersys-pkgconfig
+
+-include _scanned-pkgconfig.mk
+
+-include $(wildcard Make-dependencies/__*.mkdep)
+
+_scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-refpersys-pkgconfig
+	./do-scan-refpersys-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
+
+__buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
+	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)"
+	@echo REFPERSYS_GPP is "$(REFPERSYS_GPP)" and GPP is "$(GPP)"
+	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-buildinfo.sh $@ > $@
+
+__buildinfo.o: __buildinfo.c |GNUmakefile
+	$(CC) -std=gnu2x -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
+
+
+
+#was
+#refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
+#               $(REFPERSYS_DUMPED_CPP_OBJECTS) \
+#                   __buildinfo.c |  GNUmakefile
+refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-refpersys.mk
+	$(MAKE) __buildinfo.o
+	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
+	/bin/sleep 0.001
+	$(MAKE) objects $(REFPERSYS_GENERATED_CPP_OBJECTS)
+	/bin/sleep 0.001
+	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
+#       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
+	@echo RefPerSys dumped C++ files $(REFPERSYS_DUMPED_CPP_SOURCES)
+#	@echo RefPerSys dumped C++ object files $(REFPERSYS_DUMPED_CPP_OBJECTS)
+	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
+	@echo PACKAGES_LIST is $(PACKAGES_LIST)
+	@echo PACKAGES_REFPERSYS is $(PACKAGES_REFPERSYS)
+	@echo RPS_LTO is $(RPS_LTO)
+	@echo REFPERSYS_NEEDED_LIBRARIES is $(REFPERSYS_NEEDED_LIBRARIES)
+	@echo REFPERSYS_HUMAN_CPP_OBJECTS is $(REFPERSYS_HUMAN_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
+	@echo REFPERSYS_DUMPED_CPP_OBJECTS is $(REFPERSYS_DUMPED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
+	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
+	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) __buildinfo.o
+	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_GENERATED_CPP_OBJECTS)
+	@echo $@ PACKAGES_LIST is $(PACKAGES_LIST)
+	@echo $@ PACKAGES_REFPERSYS is $(PACKAGES_REFPERSYS)
+	@echo $@ packages --libs are  `pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)`
+	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
+	-@echo Linking $@ using \"RPS_LIBOPCODES_DIR=$(RPS_LIBOPCODES_DIR)\" with PACKAGES_LIST=$(PACKAGES_LIST)
+	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
+             -U_Rps_Linking \
+             $(REFPERSYS_HUMAN_CPP_OBJECTS) \
+             $(REFPERSYS_DUMPED_CPP_OBJECTS) \
+             $(REFPERSYS_GENERATED_CPP_OBJECTS) \
+             __buildinfo.o \
+             $(RPS_LIBBACKTRACE) \
+             -U_Rps_LinkOptA -Wl,--export-dynamic -Wl,--rpath='$$ORIGIN:/lib/$(strip $(RPS_DEBARCH)):$(RPS_LIBOPCODES_DIR)' \
+             -L/usr/local/lib -URps_LinkOptB -L$(RPS_LIBOPCODES_DIR) $(REFPERSYS_NEEDED_LIBRARIES) \
+             $(REFPERSYS_LINKER_FLAGS) \
+             -U_Rps_LinkPkgXX $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+             -ljsoncpp -lcurlpp -lINIReader -lreadline -ldl
+	-@echo Linked $@
+
+
+%.ii: %.cc | refpersys.hh GNUmakefile _config-refpersys.mk
+
+plugins: |GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
+	@printf "\n\n making plugins desired basenames=%s\n" "$(REFPERSYS_DESIRED_PLUGIN_BASENAMES)"
+	+$(MAKE) $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES))
+
+define RPS_GUILE_SCRIPT
+;; Scheme function for GUILE
+;; www.gnu.org/software/guile/manual/html_node/
+(use-modules (ice-9 textual-ports))
+(use-modules (ice-9 format))
+(define rpsg-stdout (current-output-port))
+(define (rpsguilemk-compile-plugin cppsrc plugobj)
+;; temporary guile code
+;; cppsrc is the C++ source file of the plugin
+;; plugobj is the generated shared object
+(format #t "rpsguilemk-compile-plugin cppsrc=~S plugob=~S\n"
+               cppsrc plugobj)
+)
+
+endef
+$(guile $(RPS_GUILE_SCRIPT))
+
+one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-pkgconfig
+	$(guile rpsguilemk-compile-plugin $(REFPERSYS_PLUGIN_SOURCE) $(REFPERSYS_PLUGIN_SHARED_OBJECT))
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -U_Rps_OnePlugin \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(REFPERSYS_PLUGIN_SOURCE)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\" -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX1 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+	    $(REFPERSYS_PLUGIN_SOURCE) -o $(REFPERSYS_PLUGIN_SHARED_OBJECT)
+
+######################################## interactive plugins
+plugins_dir/rpsiplug_fox.so: plugins_dir/rpsiplug_fox.cc refpersys.hh |GNUmakefile refpersys
+	@printf "\nRefPerSys-gnumake building interactive plugin %s from source %s in %s\n" "$@" "$<" "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) -I. $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I. \
+	     $(shell fox-config --cflags) \
+	     $(shell pkg-config --cflags jsoncpp \
+             $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $<))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+             -U_Rps_LinkPkgX2 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+	    $< $(shell fox-config --libs) \
+	     -o $@
+
+
+
+######################################## plugins
+plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpersys.hh  |GNUmakefile refpersys
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp \
+             $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $<))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+             -U_Rps_LinkPkgX2 $$(pkg-config --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+	    $^ -o $@
+
+plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp $(PACKAGES_REFPERSYS) $(PACKAGES_LIST))) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX3 $$(pkg-config --cflags --libs jsoncpp  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+	    $^ -o $@
+
+plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedselector.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+             -U_Rps_LinkPkgX4 $$(pkg-config --cflags --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+	    $^ -o $@
+
+plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedattribute.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+             -U_Rps_LinkPkgX5 $$(pkg-config --cflags --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+	    $^ -o $@
+
+plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpersys.hh  |GNUmakefile refpersys do-build-refpersys-plugin
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX6 $$(pkg-config --cflags --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+	    $^ -o $@
+
+
+plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
+   plugins_dir/rpsplug_create_cplusplus_primitive_type.cc  refpersys.hh \
+       |GNUmakefile refpersys do-build-refpersys-plugin
+	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+             -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX7 $$(pkg-config --cflags --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+	    $^ -o $@
+
+#- plugins_dir/rpsplug_simpinterp.so:  plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc refpersys.hh  |GNUmakefile refpersys
+#- 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+#- 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
+#-              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+#-             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+#-             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+#-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+#-             -DRPS_HOST=\"$(RPS_HOST)\" \
+#-	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+#-	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+#-             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+#-             -DRPS_OPERSYS=$(RPS_OPERSYS) -DRPS_HAS_OPERSYS_$(RPS_OPERSYS)  \
+#-             -U_Rps_LinkPkgX6 $$(pkg-config --cflags --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+#- 	    plugins_dir/rpsplug_simpinterp.cc  _rpsplug_synsimpinterp_parser_.cc -o $@
+
+
+plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-plugin
+	@printf "\n\nRefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	@printf "RPS_MAKE is %s and MAKE is %s for refpersys plugin at=%s PATH=%s\n" \ "$(RPS_MAKE)" "$(MAKE)" "$@"  "$$PATH"
+#	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) /usr/bin/printenv
+#	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./do-build-refpersys-plugin -v -i $< -o $@
+	/usr/bin/printenv
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared  $(REFPERSYS_CODEGEN_FLAGS) \
+	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
+	    -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+            -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+             -U_Rps_LinkPkgX7 $$(pkg-config --cflags --libs  $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
+	$< -o $@
+
+
+
+################################# obsolete stuff
+# _rpsplug_synsimpinterp_parser_.cc:  plugins_dir/rpsplug_synsimpinterp.yy |GNUmakefile
+#	$(RPS_BISONCPP)  --verbose  --show-filenames \
+#                 --thread-safe \
+#                 --skeleton-directory=plugins_dir/bisonc++-skeletons/ \
+#              $<
+
+
+
+
+#plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
+#	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+#	$(REFPERSYS_GPP) -x -I generated/ -I . \
+#            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+#            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+#            -DRPS_HOST=\"$(RPS_HOST)\" \
+#            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+#            -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+#            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
+#	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+#	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+#            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
+#            -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
+#            -o $@ $<
+#
+#
+#plugins_dir/_rpsplug_gramrepl.cc: plugins_dir/_rpsplug_gramrepl.yy
+#	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty \
+#                     --language=c++ --debug  --token-table \
+#                     --header=plugins_dir/_rpsplug_gramrepl.hh \
+#            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
+#                     --output=$@ \
+#                   $<
+################################
+
+# Target to facilitate git push to both origin and GitHub mirrors
+gitpush:
+	@echo RefPerSys git pushing.... ; grep -2 url .git/config
+	@git push origin
+ifeq ($(shell git remote | grep github), github)
+	@git push github
+else
+	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
+	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
+endif
+	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
+	        "$$(git config --get user.email)" "$$(./rps-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
+	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
+	if [ -x $$HOME/bin/push-refpersys ]; then \
+	$$HOME/bin/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); \
+	elif [ -x $$HOME/scripts/push-refpersys ]; then \
+	$$HOME/scripts/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); fi
+	$(SYNC)
+
+gitpush2:
+ifeq ($(RPS_GIT_ORIGIN), )
+	git remote add origin https://github.com/RefPerSys/RefPerSys.git
+	echo "Added GitHub repository as remote, run make gitpush2 again..."
+else
+	git push $(RPS_GIT_ORIGIN) master
+endif
+ifeq ($(RPS_GIT_MIRROR), )
+	git remote add mirror https://gitlab.com/bstarynk/refpersys.git
+	echo "Added GitLab repository as remote, run make gitpush2 again..."
+else
+	git push $(RPS_GIT_MIRROR) master
+endif
+	$(SYNC)
+
+
+
+
+################################################################
+load_rps.o: load_rps.cc refpersys.hh \
+            generated/rps-constants.hh  generated/rps-names.hh generated/rps-roots.hh |GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+		-U_Rps_LoadA \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	        $(shell pkg-config --cflags $(PKGLIST_refpersys) $(PACKAGES_REFPERSYS)) \
+                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_HOST=\"$(RPS_HOST)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+               -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+               -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+#- _gramrepl_rps.cc : gramrepl_rps.yy |GNUmakefile
+#- 	$(RPS_BISON) --verbose --debug --language=c++ --file-prefix=_ \
+#-                      --report=all --report-file=_gramrepl_rps.txt \
+#-                      --html=_gramrepl_rps.html \
+#-                      --header=_gramrepl_rps.hh \
+#-                      --output=$@ $^ --no-lines
+#-   
+
+%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               -U_Rps_CompilPre $(REFPERSYS_PREPRO_FLAGS) \
+               -U_Rps_CompilFla $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+		-U_Rps_CompilP1 \
+	       -U_RpsCompilPkg $(shell pkg-config --cflags $(PKGLIST_refpersys) $(PACKAGES_REFPERSYS)) \
+               -U_Rps_CompilP2 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
+               -U_Rps_CompilRaw \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+%_rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
+               -U_Rps_CompilRawB \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+%_rps.lto.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
+               -U_Rps_CompilLtoB -flto \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+## only useful to debug the carburetta carbrepl_rps.cbrt input file
+_nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+## only useful to debug the carburetta minicarb_rps.cbrt input file
+_nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+%_rps.ii:  %_rps.cc refpersys.hh $(wildcard generated/rps*.hh) | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) -C -E $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).ii.mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+               -DRPS_HOST=\"$(RPS_HOST)\" \
+               -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
+               -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       $< | /bin/sed 's:^#://#:g' | $(ASTYLE) $(ASTYLEFLAGS)  > $@
+
+
+%.ii.o: %.ii | GNUmakefile  _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+                         -c $(REFPERSYS_COMPILER_FLAGS) $< -o $@
+
+
+q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __buildinfo.o |GNUmakefile
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-U_Rps_Compilq6r \
+	-DSELF_FILE='"$(realpath $<)"' \
+	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	__buildinfo.o \
+	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
+	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
+
+_q6refpersys.ii:  tools/q6refpersys.cc _q6refpersys-moc.cc  |GNUmakefile
+	$(CXX) -rdynamic -C -E -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-DSELF_FILE='"$(realpath $<)"' \
+	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	__buildinfo.o \
+	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
+	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
+
+_q6refpersys-moc.cc: tools/q6refpersys.cc |GNUmakefile
+	$(REFPERSYS_QT6MOC)  -DGITID='"$(RPS_GIT_ID)"'   -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' $< > $@
+
+
+## the q6refpersys may generate C++ code in file XXX.cc and compile it with
+## make plain-q6rps-plugin Q6RPS_PLUGIN_SRC=XXX.cc QQRPS_PLUGIN_SHARED=YYY.so
+plain-q6rps-plugin: tools/q6refpersys.cc  $(Q6RPS_PLUGIN_SRC) |GNUmakefile
+	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
+	-DSELF_FILE='"$(realpath $(Q6RPS_PLUGIN_SRC))"' \
+	-DSELF_BASENAME='"$(notdir $(basename $(Q6RPS_PLUGIN_SRC)))"' \
+	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES)) \
+       -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
+	-shared -o $(Q6RPS_PLUGIN_SHARED)  \
+	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES) $(Q6RPS_PACKAGES))
+
+
+## same for C++ code requiring the Qt6 moc
+qt-q6rps-plugin:
+	$(warning unimplemented qt-q6rps-plugin)
+
+## for plugins, see do-build-refpersys-plugin.cc
+print-plugin-settings:
+	@printf "RPSPLUGIN_CXX='%s'\n" "$(REFPERSYS_CXX)"
+	@printf "RPSPLUGIN_CXX_STANDARD='%s'\n" "$(REFPERSYS_CXX_STANDARD)"
+	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) $(shell pkg-config --cflags $(PKGLIST_refpersys))"
+	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
+	@printf "RPSPLUGIN_HUMAN_CPP_SOURCES='%s'\n" "$(REFPERSYS_HUMAN_CPP_SOURCES)"
+	@printf "RPSPLUGIN_GENERATED_CPP_SOURCES='%s'\n" "$(REFPERSYS_GENERATED_CPP_SOURCES)"
+	@printf "RPSPLUGIN_DUMPED_CPP_SOURCES='%s'\n" "$(REFPERSYS_DUMPED_CPP_SOURCES)"
+
+print-gmake-features:
+	@echo $(.FEATURES)
+
+indent:
+	$(ASTYLE) $(ASTYLEFLAGS) tools/do-configure-refpersys.c
+	$(ASTYLE) $(ASTYLEFLAGS) do-scan-refpersys-pkgconfig.c
+	$(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
+	$(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
+	$(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh
+	for f in $(REFPERSYS_HUMAN_CPP_SOURCES) ; do \
+	    $(ASTYLE) $(ASTYLEFLAGS) $$f ; done
+	for p in $(patsubst %, plugins_dir/%.cc, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) ; do \
+	    $(ASTYLE) $(ASTYLEFLAGS) $$p ; done
+	$(ASTYLE) $(ASTYLEFLAGS) tools/do-configure-refpersys.c
+
+## redump target
+redump: refpersys
+	./refpersys --user-pref=. --dump=. --batch --run-name=$@
+	@if git diff -U1|grep '^[+-] ' | grep -v 'origitid|//: gen' ; then \
+	  printf "make redump changed in %s git %s\n" $$(pwd)  $(RPS_SHORTGIT_ID); \
+          git diff ; \
+        else \
+	  git checkout rps_manifest.json ; \
+            printf "make redump reached fixpoint in %s git %s\n" $$(pwd) $(RPS_SHORTGIT_ID) ; \
+        fi
+	$(SYNC)
+
+## alternate redump target
+altredump:  ./refpersys
+	./refpersys --user-pref=. --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
+	$(SYNC)
+
+### alternate dump to /tmp/altdumprefpersys
+altdump: ./refpersys
+	$(RM) -rf /tmp/altdumprefpersys
+	./refpersys --user-pref=. --dump=/tmp/altdumprefpersys --batch -AEXIT --run-name=$@ 2>&1
+	$(SYNC)
+
+
+################################################################
+#### simple tests; the --run-name should start with test and not use $@ because of showtests target
+test00: refpersys
+	@printf '\f\n\n\n\n////test00 first *****\n'
+	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=test00.1 || (echo test00.1 failed; exit 1)
+	@printf '\f\n\n\n\n////test00 second *****\n'
+	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=test00.2 || (echo test00.2 failed; exit 1)
+	@printf '\f\n\n\n////test00 third *****\n'
+	./refpersys  -AREPL  --test-repl-lexer '@show put' -B --run-name=test00.3 || (echo test00.3 failed; exit 1)
+	@printf '\f\n\n\n////test00 fourth *****\n'
+	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=test00.4 || (echo test00.4 failed; exit 1)
+	@printf '\f\n\n\n////test00 help REPL command (fifth) ****\n'
+	./refpersys -AREPL -c help -B --run-name=test00.5 || (echo test00.5 failed; exit 1)
+	@printf '\n\n\n////test00 FINISHED¤\n\n'
+
+test01: refpersys
+	@echo test01 testing simple show help with a lot of debug
+	./refpersys -AREPL,CMD -c 'show help' -B --run-name=test01 || (echo test01 failed; exit 1)
+	@printf '\n\n\n////test01 FINISHED¤\n'
+
+test01a:  refpersys
+	@echo test01a testing simple show class with a lot of debug
+	./refpersys -AREPL -c 'show class' -B --run-name=test01a || (echo test01a failed; exit 1)
+	@printf '\n\n\n////test01 FINISHED¤\n'
+
+test01b: refpersys
+	./refpersys -AREPL,LOWREP  -c 'show help' -B --run-name=test01b || (echo test01b failed; exit 1)
+	@printf '\n\n\n////test01b FINISHED¤\n'
+
+test01c: refpersys
+	@printf '\n\n\n//+ test01c !parse_sum 1 + 2\n' || (echo test01c failed; exit 1)
+	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2' -B --run-name=test01c
+	@printf '\n\n\n////test01c FINISHED¤\n'
+
+test01d: refpersys
+	@printf '\n\n\n//+ test01d !parse_sum 1 + 2 + 3\n'
+	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2 + 3' -B --run-name=test01d || (echo test01d failed; exit 1)
+	@printf '\n\n\n////test01d FINISHED¤\n'
+
+test01e: refpersys
+	@printf '\n\n\n//+ test01e !parse_sum 1 + 2 * 3\n'
+	./refpersys -AREPL,LOWREP  -c '!parse_sum 1 + 2 * 3' -B --run-name=test01e || (echo test01e failed; exit 1)
+	@printf '\n\n\n////test01e FINISHED¤\n'
+
+### notice the space after the 3 below
+test01f: refpersys
+	./refpersys -AREPL,LOWREP  -c '!parse_primary 3 ' -B --run-name=test01f || (echo test01f failed; exit 1)
+	@printf '\n\n\n////test01f FINISHED¤\n'
+
+
+test02: refpersys
+	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=test02 || (echo test02 failed; exit 1)
+	@printf '\n\n\n////test02 FINISHED¤\n'
+
+test03: refpersys
+	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=test03 || (echo test03 failed; exit 1)
+	@printf '\n\n\n////test03 FINISHED¤\n'
+
+## test03 no tty
+test03nt: refpersys
+	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03nt || (echo test03nt failed; exit 1)
+	@printf '\n\n\n////test03nt FINISHED¤\n'
+
+test03bis: refpersys
+	./refpersys -AREPL  -c 'show 1 + 2 + 3' -B --run-name=test03bis || (echo test03bis failed; exit 1)
+	@printf '\n\n\n////test03bis FINISHED¤\n'
+
+test04: refpersys
+	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=test04 || (echo test04 failed; exit 1)
+	@printf '\n\n\n////test04 FINISHED¤\n'
+
+test05: refpersys
+	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=test05 || (echo test05 failed; exit 1)
+	@printf '\n\n\n////test05 FINISHED¤\n'
+
+test06: refpersys
+	./refpersys -AREPL  -c 'show 1' -B --run-name=test06 || (echo test06 failed; exit 1)
+	@printf '\n\n\n////test06 FINISHED¤\n'
+
+test07: refpersys
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07.1 || (echo test07.1 failed; exit 1)
+	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=test07.2 || (echo test07.2 failed; exit 1)
+	@printf '\n\n\n////test07 FINISHED¤\n'
+
+test07a: refpersys
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07a || (echo test07a failed; exit 1)
+	@printf '\n\n\n////test07a FINISHED¤\n'
+
+test07x: refpersys
+	./refpersys -AEXIT -B --run-name=test07x || (echo test07x failed; exit 1)
+	@printf '\n\n\n////test07x FINISHED¤\n'
+
+test08: refpersys
+	./test_dir/008otherscript.bash
+	@printf '\n\n\n////test08 FINISHED¤\n'
+
+test09: refpersys
+	./test_dir/009sepscript.bash
+	@printf '\n\n\n////test09 FINISHED¤\n'
+
+test10: refpersys |GNUmakefile
+	./refpersys -AREPL,EXIT --run-name=test10 --run-delay=6s || (echo test10 failed; exit 1)
+	@printf '\n\n\n////test10 FINISHED¤\n'
+
+testq6-01: refpersys q6refpersys |GNUmakefile
+	$(RM) -vf /tmp/rpsjson*
+	./q6refpersys -D --jsonrpc /tmp/rpsjson --geometry 1000x800 --start-refpersys ./refpersys -- -AREPL
+
+testlex0: refpersys |GNUmakefile
+	./refpersys --test-repl-lexer='@display 12.3 "abc"' -B -AREPL
+
+testlex1: refpersys test_dir/009sepscript.rps |GNUmakefile
+	./refpersys --file-repl-lexer=test_dir/009sepscript.rps -B -AREPL
+
+testlex2: refpersys test_dir/009sepscript.rps |GNUmakefile
+	./refpersys '--file-repl-lexer=!cat test_dir/009sepscript.rps' -B -AREPL
+
+testlex3:    |GNUmakefile
+	@printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
+
+testlex4: refpersys test_dir/009sepscript.rps |GNUmakefile
+	./refpersys --file-repl-lexer=test_dir/010testlex4.rps -B -AREPL
+
+testlex5:    |GNUmakefile
+	@printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
+
+testlex6:    |GNUmakefile
+	@printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
+
+testlex7:    |GNUmakefile
+	printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
+
+testlex8:    |GNUmakefile
+	printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
+
+testlex9:    |GNUmakefile
+	printf "no $@ yet\n" $(warning no $@) > /dev/stderr; exit 1
+
+test-load: refpersys
+	./refpersys --batch --run-name=test-load || (echo test-load failed; exit 1)
+	@printf '\n\n\n////test-load FINISHED¤\n'
+
+## testing the carburetta-based command
+testcarb1: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./refpersys  -AREPL,CMD -c "@display help" -B --run-name=testcarb1 || (echo testcarb1 failed; exit 1)
+
+testcarb2: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./refpersys  -AREPL,CMD -c "@display 1 + 2" -B --run-name=testcarb2 || (echo testcarb2 failed; exit 1)
+
+testcarb3: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./refpersys  -AREPL,CMD -c "@display 1 + 2* 3" -B --run-name=testcarb3 || (echo testcarb3 failed; exit 1)
+
+test11: refpersys |GNUmakefile \
+  test_dir/011sepminscript.minrps  test_dir/011sepminscript.bash
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/011sepminscript.bash
+	@printf '\n\n\n////test11 FINISHED¤\n'
+
+test11q: refpersys |GNUmakefile \
+  test_dir/011sepminscript.minrps ./test_dir/011sepquietminscript.bash
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/011sepquietminscript.bash
+	@printf '\n\n\n////test11q FINISHED¤\n'
+
+## test12 is for issue 14
+test12:
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/012issue14.bash
+	@printf '\n\n\n////test12 FINISHED¤\n'
+
+## test13 is for the readline interface
+test13:
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/013readlineA.bash
+	@printf '\n\n\n////test13 FINISHED¤\n'
+
+## test14 is for the interactive fox plugin
+test14:
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/014foxplug.bash
+	@printf '\n\n\n////test14 FINISHED¤\n'h
+
+########### show the testing commands
+showtests:
+	@printf '\nRefPerSys has %d testing commands\n' $(shell /bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/wc -l)
+	@/bin/grep -v '@' GNUmakefile | /bin/grep --color 'run-name=test' GNUmakefile
+#	@/bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/tr -d '\t'
+	@printf 'showtests¤ done git %s in %s\n\n' $(RPS_SHORTGIT_ID) $(shell /bin/pwd)
+## eof GNUmakefile
+

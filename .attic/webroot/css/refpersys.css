@@ -1,0 +1,284 @@
+*/* File webroot/css/refpersys.css in RefPerSys http://refpersys.org/
+ *
+ * Description:
+ *      This file is part of the Reflective Persistent System.
+ *      It is the REFPERSYS specific CSS file.
+ *
+ * Author(s):
+ *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Abhishek Chakravarti <abhishek@taranjali.org>
+ *      Nimesh Neema <nimeshneema@gmail.com>
+ *
+ *      © Copyright 2020 - 2021 The Reflective Persistent System Team
+ *      team@refpersys.org & http://refpersys.org/
+ *
+ * License:
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* display of integer values, see C++ function rpsapply_0TwK4TkhEGZ03oTa5m */
+span.intval_rpscl {
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    background-color: lightcyan;
+}
+
+/* display of null values, see C++ function rpsapply_0TwK4TkhEGZ03oTa5m */
+span.nullval_rpscl {
+    font-family: "Lucida Console", Monaco, monospace;
+    background-color: cyan;
+}
+
+/* display of null objectref */
+span.nullobref_rpscl {
+    font-family: "Lucida Console", Monaco, monospace;
+    background-color: red;
+}
+
+span.emptyval_rpscl {
+    background-color: lavender;
+}
+
+/* display of the link to the URL running RefPerSys */
+a.selflink_rpscl {
+    background-color: peachpuff;
+}
+
+/* div containing the input for the object to show */
+div.showobjdiv_rpscl {
+    background-color: azure;
+    border: dashed 2px;
+    margin: 1.5px;
+    padding: 3px;
+}
+
+/* display of string values, see C++ function rpsapply_0TwK4TkhEGZ03oTa5m */
+q.decor_rpscl {
+    color: darkolivegreen;
+}
+span.stringval_rpscl {
+    font-family: "Lucida Console", Monaco, monospace;
+    background-color: lightyellow;
+}
+
+/* decoration of composite values */
+span.decorval_rpscl {
+    font-family: Arial Bold;
+    color: DarkSlateGrey;
+}
+
+br.decor_rpscl {
+    background-color: paleturquoise;
+}
+
+/* display of boxed double values */
+span.doubleval_rpscl {
+    font-family: Courier, monospace;
+    background-color: darkgoldenrod;
+}
+
+
+
+/* "horizontal" display of small set values */
+span.smallsetval_rpscl {
+    background-color: papayawhip;
+}
+/* "vertical" display of big set values */
+div.bigsetval_rpscl {
+    background-color: bisque;
+}
+
+
+
+/* "horizontal" display of small tuple values */
+span.smalltupleval_rpscl {
+    background-color: lightskyblue;
+}
+/* "vertical" display of big tuple values */
+div.bigtupleval_rpscl {
+    background-color: paleturquoise;
+}
+
+
+
+/* "vertical" display of big closure values */
+div.bigclosureval_rpscl {
+    background-color: aliceblue;
+}
+
+/* "horizontal" display of small closure values */
+span.closureval_rpscl {
+    background-color: lavenderblush;
+}
+
+
+/* display of arity */
+sup.aritycl_rpscl {
+    background-color: ivory;
+    font-size: 80%;
+}
+
+/*  "horizontal" display of small instance values */
+span.instanceval_rpscl {
+    background-color: lightyellow;
+}
+
+/* "vertical" display of big instance values */
+div.biginstanceleval_rpscl {
+    background-color: bisque;
+}
+
+
+/* display of JSON values */
+span.json_rpscl {
+    background-color: lemonchiffon;
+}
+
+/* display of object content */
+div.objcontent_rpscl {
+    background-color: oldlace;
+    border: 1px solid navy;
+    margin: 3px;
+}
+
+/* display of object class: */
+span.objclass_rpscl {
+    background-color: burlywood;
+    font-size: 90%;
+}
+
+/* display of object space: */
+span.objspace_rpscl {
+    color: darkmagenta;
+    font-size: 85%;
+}
+
+/* for the initial space: */
+i.objspace_rpscl {
+    color: darkmagenta;
+    font-size: 85%;
+    font-style: italic;
+}
+
+/* display of object attribute */
+ul.objattr_rpscl {
+    background-color: floralwhite;
+    border: 1px dashed indigo;
+}
+
+/* entry of object attribute: */
+li.obatentry_rpscl {
+    margin: 1px;
+    background-color: whitesmoke;
+}
+
+/* display of object component */
+li.objcomp_rpscl {
+    margin: 1px;
+    background-color: snow;
+}
+
+/* display of class information */
+div.classinfo_rpscl  {
+    margin: 1px;
+    border: 1px dashed maroon;
+    background-color: linen;
+}
+
+/* display of class attributes */
+div.classattr_rpscl {
+    margin: 1px;
+    border: 1px dashed lightcoral;
+    background-color: linen;
+}
+
+span.classattrcardinal_rpscl {
+    background-color: lightcyan;
+    font-size: 90%;
+}
+
+ul.classattrelem_rpscl {
+    margin: 1px;
+    border: 0.5px dashed teal;
+    background-color: mintcream;
+}
+
+li.classattr_rpscl {
+    margin: 1px;
+    background-color: aliceblue;
+}
+
+/* display of class methods */
+div.classmethsel_rpscl {
+    margin: 1px;
+    border: 1px dashed lightcoral;
+    background-color: linen;
+}
+
+span.classmethnb_rpscl {
+    background-color: powderblue;
+    font-size: 90%;
+}
+
+dl.classmethods_rpscl {
+    margin: 1px;
+    border: 1px dashed midnightblue;
+}
+
+dt.methodselob_rpscl {
+    background-color: aqua;
+    margin: 1px;
+    
+}
+
+dd.methodselclo_rpscl {
+    font-size: 90%;
+    background-color: cornsilk;
+    border: 0.5px dashed olive;
+}
+
+
+span.end_details_rpscl {
+    color: red;
+}
+
+small.gitinfo_rpscl {
+    font-size: 75%;
+    margin: 1px;
+    font-family: Courier, monospace;
+    background-color: mintcream;
+}
+
+small.version_rpscl {
+    font-size: 70%;
+    font-family: Helvetica;
+    color: firebrick;
+    background-color: beige;
+}
+
+/********************** input of objects by name or by oid *******/
+input.showobj_rpscl {
+    background-color: azure;
+    color: brown;
+    border: 0.5px dashed navy;
+    margin: 2px;
+}
+
+/******
+ * TODO: This remains incomplete, see #warning-s in C++ function
+ *  rpsapply_0TwK4TkhEGZ03oTa5m file webdisplay_rps.cc commit
+ *  eb8b84ec7d3754861f7f3 
+ ******/
+
+
+/* end of file webroot/css/refpersys.css */

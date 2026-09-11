@@ -1,0 +1,53 @@
+#!/bin/bash -x
+# SPDX-License-Identifier: GPL-3.0-or-later
+# file RefPerSys/tools/gdb-fox-refpersys
+#
+# Description:
+#      This file is part of the Reflective Persistent System.
+#
+#     It runs the GDB debugger on the fox-refpersys utility
+#
+# Author(s):
+#      Basile Starynkevitch, France <basile@starynkevitch.net>
+#
+#      © Copyright 2026 (C) Basile STARYNKEVITCH
+#
+# License:
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+
+# check that the current directory contains refpersys.hh and fox-refpersys
+if [ ! -f $PWD/refpersys.hh ] ; then
+  echo $0: missing refpersys.hh in cwd $PWD > /dev/stderr
+  exit 1
+fi
+
+if [ ! -x $PWD/fox-refpersys ] ; then
+  echo $0: missing fox-refpersys in cwd $PWD > /dev/stderr
+  exit 1
+fi
+
+## check existence of tools/.gdbinit-fox-refpersys
+if [ ! -x $PWD/tools/.gdbinit-fox-refpersys ] ; then
+  echo $0: missing tools/.gdbinit-fox-refpersys in cwd $PWD > /dev/stderr
+  exit 1
+fi
+
+if [ $# -gt 0 ]; then
+    gdb -n --init-command  $PWD/tools/.gdbinit-fox-refpersys --args $*
+else
+    gdb -n --init-command $PWD/tools/.gdbinit-fox-refpersys fox-refpersys
+fi
+
+## eof RefPerSys/tools/gdb-fox-refperys

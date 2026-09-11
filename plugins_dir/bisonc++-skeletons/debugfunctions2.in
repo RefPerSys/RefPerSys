@@ -1,0 +1,16 @@
+#pragma message "RefPerSys bisonc++ debugfunctions2.in"
+std::string \@Base::symbol_(int value) const
+{
+    using namespace std;
+    ostringstream ostr;
+    SMap::const_iterator it = s_symbol.find(value);
+    if (it != s_symbol.end())
+        ostr << '\'' << it->second << '\'';
+    else if (isprint(value))
+        ostr << '`' << static_cast<char>(value) << "' (" << value << ')';
+    else
+        ostr << "'\\x" << setfill('0') << hex << setw(2) << value << '\'';
+    return ostr.str();
+}
+
+

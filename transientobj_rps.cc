@@ -1,0 +1,701 @@
+/****************************************************************
+ * file transientobj_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Description:
+ *      This file is part of the Reflective Persistent System.
+ *
+ *      Low-level implementation of transient objects and payloads
+ *
+ * Author(s):
+ *      Basile Starynkevitch, France       <basile@starynkevitch.net>
+ *      Niklas Rozencrantz, Sweden     <niklasr@protonmail.com>
+ *
+ * Past indian authors (no more interested after summer 2026)
+ *      (Abhishek Chakravarti & Nimesh Neema)
+ *
+ *      © Copyright (C) 2023 - 2026 The Reflective Persistent System Team
+ *      team@refpersys.org & http://refpersys.org/
+ *
+ * License:
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
+
+
+#include "refpersys.hh"
+
+#if !defined(__GLIBCXX__) && !defined(__GLIBCPP__)
+#error need GNU libstdc++
+#endif
+
+extern "C" const char rps_transientobj_gitid[];
+const char rps_transientobj_gitid[]= RPS_GITID;
+
+
+extern "C" const char rps_transientobj_shortgitid[];
+const char rps_transientobj_shortgitid[]= RPS_SHORTGITID;
+
+
+extern "C" const char rps_transientobj_basename[];
+const char rps_transientobj_basename[]= RPS_BASENAME;
+
+extern "C" const char rps_transientobj_baseid[];
+const char rps_transientobj_baseid[]= RPS_BASEID;
+
+////////////////////////////////////////////////////////////////
+////// trensient unix process payload
+Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See PaylUnixProcess
+  : Rps_Payload(Rps_Type::PaylUnixProcess,owner),
+    _unixproc_pid(0),
+    _unixproc_exe(),
+    _unixproc_argv(),
+    _unixproc_closure(),
+    _unixproc_inputclos(),
+    _unixproc_outputclos(),
+    _unixproc_pipeinputfd(uninitialized_fd),
+    _unixproc_pipeoutputfd(uninitialized_fd),
+    _unixproc_cpu_time_limit(0),
+    _unixproc_elapsed_time_limit(0),
+    _unixproc_start_time(0),
+    _unixproc_as_mb_limit(0),
+    _unixproc_fsize_mb_limit(0),
+    _unixproc_core_mb_limit(0),
+    _unixproc_forbid_core(false),
+    _unixproc_nofile_limit(0)
+{
+} // end constructor Rps_PayloadUnixProcess
+
+
+/// needed but never called
+Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylUnixProcess,owner),
+    _unixproc_pid(0),
+    _unixproc_exe(),
+    _unixproc_argv(),
+    _unixproc_closure(),
+    _unixproc_inputclos(),
+    _unixproc_outputclos(),
+    _unixproc_pipeinputfd(uninitialized_fd),
+    _unixproc_pipeoutputfd(uninitialized_fd),
+    _unixproc_cpu_time_limit(0),
+    _unixproc_elapsed_time_limit(0),
+    _unixproc_start_time(0),
+    _unixproc_as_mb_limit(0),
+    _unixproc_fsize_mb_limit(0),
+    _unixproc_core_mb_limit(0),
+    _unixproc_forbid_core(false),
+    _unixproc_nofile_limit(0)
+{
+  RPS_FATALOUT("cannot load payload of unix process for owner " << owner);
+} // end constructor Rps_PayloadUnixProcess
+
+Rps_PayloadUnixProcess::~Rps_PayloadUnixProcess()
+{
+} // end destructor Rps_PayloadUnixProcess
+
+void
+Rps_PayloadUnixProcess::forbid_input(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  if (_unixproc_pid.load()>0)
+    RPS_FATALOUT("cannot forbid_input in " << owner() << " running pid "
+                 << _unixproc_pid.load()
+                 << " executable " << _unixproc_exe
+                 << " arguments " << _unixproc_argv);
+  _unixproc_pipeinputfd = forbidden_fd;
+} // end Rps_PayloadUnixProcess::forbid_input
+
+void
+Rps_PayloadUnixProcess::forbid_output(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  if (_unixproc_pid.load()>0)
+    RPS_FATALOUT("cannot forbid_output in " << owner() << " running pid "
+                 << _unixproc_pid.load()
+                 << " executable " << _unixproc_exe
+                 << " arguments " << _unixproc_argv);
+  _unixproc_pipeoutputfd = forbidden_fd;
+} // end Rps_PayloadUnixProcess::forbid_input
+
+void
+Rps_PayloadUnixProcess::add_process_argument(const std::string& arg)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_argv.push_back(arg);
+} // end Rps_PayloadUnixProcess::add_process_argument
+
+void
+Rps_PayloadUnixProcess::forbid_core_dump(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  _unixproc_forbid_core.store(true);
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=0, .rlim_max= RLIM_INFINITY};
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      prlimit(pid, RLIMIT_CORE, &newlim, &oldlim);
+    };
+} // end Rps_PayloadUnixProcess::forbid_core_dump
+
+
+unsigned
+Rps_PayloadUnixProcess::core_megabytes_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  _unixproc_forbid_core.store(false);
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=((newlimit>0)?(newlimit<<20):RLIM_INFINITY),
+                               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      (void)prlimit(pid, RLIMIT_CORE, &newlim, &oldlim);
+      if (oldlim.rlim_cur < RLIM_INFINITY)
+        return oldlim.rlim_cur>>20;
+    }
+  return _unixproc_core_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::core_megabytes_limit
+
+unsigned
+Rps_PayloadUnixProcess::address_space_megabytes_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=(newlimit?(newlimit<<20):RLIM_INFINITY),
+                               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      if (!prlimit(pid, RLIMIT_AS, &newlim, &oldlim))
+        {
+          _unixproc_as_mb_limit.store(oldlim.rlim_cur>>20);
+          return oldlim.rlim_cur>>20;
+        }
+    };
+  return _unixproc_as_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::address_space_megabytes_limit
+
+
+unsigned
+Rps_PayloadUnixProcess::file_size_megabytes_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=(newlimit?(newlimit<<20):RLIM_INFINITY),
+                               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      if (!prlimit(pid, RLIMIT_FSIZE, &newlim, &oldlim))
+        {
+          _unixproc_fsize_mb_limit.store(oldlim.rlim_cur>>20);
+          return oldlim.rlim_cur>>20;
+        }
+    };
+  return _unixproc_fsize_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::address_space_megabytes_limit
+
+
+unsigned
+Rps_PayloadUnixProcess::nofile_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=(newlimit?newlimit:RLIM_INFINITY),
+                               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      if (!prlimit(pid, RLIMIT_NOFILE, &newlim, &oldlim))
+        {
+          _unixproc_fsize_mb_limit.store(oldlim.rlim_cur);
+          return oldlim.rlim_cur;
+        }
+    };
+  return _unixproc_fsize_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::nofile_limit
+
+
+
+void
+Rps_PayloadUnixProcess::dump_scan(Rps_Dumper*du)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadUnixProcess::dump_scan
+
+
+void
+Rps_PayloadUnixProcess::dump_json_content(Rps_Dumper*du, Json::Value&)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadUnixProcess::dump_scan
+
+bool
+Rps_PayloadUnixProcess::is_erasable(void) const
+{
+  return false;
+} // end Rps_PayloadUnixProcess::is_erasable
+
+void
+Rps_PayloadUnixProcess::gc_mark(Rps_GarbageCollector&gc) const
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  if (_unixproc_closure)
+    {
+      RPS_ASSERT(_unixproc_closure.is_closure());
+      _unixproc_closure.gc_mark(gc,1);
+    }
+  if (_unixproc_inputclos)
+    {
+      RPS_ASSERT(_unixproc_inputclos.is_closure());
+      _unixproc_inputclos.gc_mark(gc,1);
+    }
+  if (_unixproc_outputclos)
+    {
+      RPS_ASSERT(_unixproc_outputclos.is_closure());
+      _unixproc_outputclos.gc_mark(gc,1);
+    }
+} // end Rps_PayloadUnixProcess::gc_mark
+
+const Rps_ClosureValue
+Rps_PayloadUnixProcess::get_process_closure(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  return _unixproc_closure;
+} // end Rps_PayloadUnixProcess::get_process_closure
+
+
+void
+Rps_PayloadUnixProcess::put_process_closure(Rps_ClosureValue closv)
+{
+  if (!closv || !closv.is_closure()) return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_closure = closv;
+} // end Rps_PayloadUnixProcess::put_process_closure
+
+const Rps_ClosureValue
+Rps_PayloadUnixProcess::get_input_closure(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  return _unixproc_inputclos;
+} // end Rps_PayloadUnixProcess::get_input_closure
+
+
+void
+Rps_PayloadUnixProcess::put_input_closure(Rps_ClosureValue closv)
+{
+  if (!closv || !closv.is_closure()) return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_inputclos = closv;
+} // end Rps_PayloadUnixProcess::put_input_closure
+
+const Rps_ClosureValue
+Rps_PayloadUnixProcess::get_output_closure(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  return _unixproc_outputclos;
+} // end Rps_PayloadUnixProcess::get_output_closure
+
+
+void
+Rps_PayloadUnixProcess::put_output_closure(Rps_ClosureValue closv)
+{
+  if (!closv || !closv.is_closure()) return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_outputclos = closv;
+} // end Rps_PayloadUnixProcess::put_output_closure
+
+
+
+/// static member function to create a dormant (potential, not yet forked) unix process object
+Rps_ObjectRef
+Rps_PayloadUnixProcess::make_dormant_unix_process_object(Rps_CallFrame*callerframe,
+    const std::string& exec)
+{
+  if (exec.empty())
+    throw std::runtime_error("no executable given to make_dormant_unix_process");
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_ROOT_OB(_61uFnhRCXfe00Mir2n), //unix_process∈class
+                 callerframe,
+                 Rps_ObjectRef obres;
+                );
+  std::string realexestr;
+  if (exec.find("/") > 0)
+    {
+      char *realexepath = ::realpath(exec.c_str(), nullptr);
+      if (!realexepath)
+        throw RPS_RUNTIME_ERROR_OUT("cannot make_dormant_unix_process_object from executable "
+                                    << Rps_QuotedC_String(exec)
+                                    << " without a real path for " << exec);
+      realexestr = std::string{realexepath};
+      free (realexepath);
+    }
+  else
+    {
+      const char*curpath = getenv("PATH");
+      RPS_ASSERT(curpath);
+      const char*pc= curpath;
+      const char*next = nullptr;
+      do
+        {
+          std::string dir;
+          next = nullptr;
+          const char*colon = strchr(pc, ':');
+          if (colon)
+            {
+              next = colon+1;
+              dir = std::string(pc, colon-1);
+              if (dir.empty())
+                dir= std::string{"."};
+              dir += '/';
+            }
+          else
+            {
+              dir = std::string(pc);
+              next= nullptr;
+            };
+          std::string curexepath = dir + exec;
+          if (!access(curexepath.c_str(), X_OK))
+            {
+              realexestr = curexepath;
+              break;
+            };
+          pc = next;
+        }
+      while(realexestr.empty());
+    };
+  _f.obres = Rps_ObjectRef::make_object(&_, RPS_ROOT_OB(_61uFnhRCXfe00Mir2n)); //unix_process∈class
+  Rps_PayloadUnixProcess* payl = //
+    _f.obres->put_new_plain_payload<Rps_PayloadUnixProcess>(); //
+  payl->_unixproc_exe = realexestr;
+  payl->_unixproc_argv.push_back(exec);
+  return _f.obres;
+} // end Rps_PayloadUnixProcess::make_dormant_unix_process_object
+
+std::set<Rps_PayloadUnixProcess*>
+Rps_PayloadUnixProcess::set_of_runnable_processes;
+
+std::mutex
+Rps_PayloadUnixProcess::mtx_of_runnable_processes;
+std::deque<Rps_PayloadUnixProcess*>
+Rps_PayloadUnixProcess::queue_of_runnable_processes;
+
+void
+Rps_PayloadUnixProcess::gc_mark_active_processes(Rps_GarbageCollector&gc)
+{
+  std::lock_guard<std::mutex> gu(mtx_of_runnable_processes);
+  /// Both set_of_runnable_processes and queue_of_runnable_processes
+  /// should contain the same objects, but for sure we want to mark
+  /// both.
+  for (Rps_PayloadUnixProcess*paylup : set_of_runnable_processes)
+    {
+      paylup->owner()->gc_mark(gc);
+    }
+  for (Rps_PayloadUnixProcess*paylup : queue_of_runnable_processes)
+    {
+      paylup->owner()->gc_mark(gc);
+    }
+} // end Rps_PayloadUnixProcess::gc_mark_active_processes
+
+void
+Rps_PayloadUnixProcess::start_process(Rps_CallFrame*callframe)
+{
+  RPS_ASSERT(!callframe || callframe->is_good_call_frame());
+  std::lock_guard<std::mutex> rungu(mtx_of_runnable_processes);
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  if (_unixproc_pid.load()>0)
+    {
+      RPS_WARNOUT("already running Rps_PayloadUnixProcess owned by " << owner()
+                  << std::endl << Rps_ShowCallFrame(callframe));
+      throw std::runtime_error("already running Rps_PayloadUnixProcess");
+    }
+  queue_of_runnable_processes.push_back(this);
+  // the rps_postpone_child_process is writing to a pipe to self, and
+  // the event loop will handle it later, probably by indirectly
+  // calling rps_may_start_process...
+  rps_postpone_child_process();
+  /// code in eventloop_rps.cc should be related.
+} // end Rps_PayloadUnixProcess::start_process
+
+void
+Rps_PayloadUnixProcess::do_on_active_process_queue(std::function<void(Rps_ObjectRef, Rps_CallFrame*,void*)> fun,
+    Rps_CallFrame*callframe, void*client_data)
+{
+  std::lock_guard<std::mutex> gu(mtx_of_runnable_processes);
+  RPS_ASSERT(!callframe || callframe->is_good_call_frame());
+  for (Rps_PayloadUnixProcess*paylup : queue_of_runnable_processes)
+    {
+      Rps_ObjectRef obown = paylup->owner();
+      std::lock_guard<std::recursive_mutex> gu(*obown->objmtxptr());
+      RPS_DEBUG_LOG(REPL,
+                    "Rps_PayloadUnixProcess::do_on_active_process_queue obown="
+                    << obown << std::endl
+                    << Rps_ShowCallFrame(callframe)
+                    << std::endl
+                    <<  RPS_FULL_BACKTRACE_HERE(1,"Rps_PayloadUnixProcess::do_on_active_process_queue"));
+      fun(obown,callframe,client_data);
+    }
+} // end Rps_PayloadUnixProcess::do_on_active_process_queue
+
+
+void
+rps_may_start_process(const char*fil, int lin)
+{
+  std::lock_guard<std::mutex> gu(Rps_PayloadUnixProcess::mtx_of_runnable_processes);
+  /* TODO: this is started in our event loop and could fork some
+     processes on the queue_of_runnable_processes */
+  RPS_DEBUG_LOG(REPL, "rps_may_start_process from " << fil << ":" << lin
+                << " with "
+                << Rps_PayloadUnixProcess::queue_of_runnable_processes.size()
+                << " runnable processes"
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1,"rps_may_start_process"));
+  std::deque<Rps_PayloadUnixProcess*>&procrunque =
+    Rps_PayloadUnixProcess::queue_of_runnable_processes;
+  if (procrunque.empty())
+    return;
+  Rps_PayloadUnixProcess*curpr = procrunque.front();
+  procrunque.pop_front();
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERTPRINTF(curpr != nullptr, "rps_may_start_process called from %s:%d",
+                   fil, lin);
+#warning rps_may_start_process is partly unimplemented
+  RPS_FATALOUT("partly unimplemented rps_may_start_process from " << fil << ":" << lin);
+}
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////
+///// transient C++ stream payload
+std::recursive_mutex Rps_PayloadCppStream::_cppstream_mtx;
+std::vector<Rps_PayloadCppStream*> Rps_PayloadCppStream::_cppstream_vector;
+#warning we want a static unsigned  Rps_PayloadCppStream::_cppstream_counter_
+
+//// needed but never called
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_no_stream),
+    _ptr_stream(nullptr),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
+{
+  RPS_FATALOUT("cannot load payload of C++ stream for owner " << owner);
+} // end loader constructor of Rps_PayloadCppStream
+
+int
+Rps_PayloadCppStream::register_cpp_stream(void)
+{
+  if (!owner())
+    return -1;
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  RPS_ASSERT(owner()
+             ->is_instance_of(RPS_ROOT_OB(_2OMC1QJo5H004kHTXV))); // _2OMC1QJo5H004kHTXV:cpp_stream
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
+  int uniqix = std::ios_base::xalloc();
+  /// see https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html
+  RPS_ASSERT(uniqix >= 0);
+  RPS_ASSERT(_ix_stream<0);
+  _cppstream_vector.reserve(rps_prime_above(5*uniqix+3));
+  RPS_ASSERT(_cppstream_vector[uniqix]==nullptr);
+  _cppstream_vector[uniqix] = this;
+  _ix_stream = uniqix;
+  return uniqix;
+} // end Rps_PayloadCppStream::register_cpp_stream
+
+int
+Rps_PayloadCppStream::posix_fd(void)
+{
+  if (!owner())
+    return -1;
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gudispob(*owner()->objmtxptr());
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
+  if (_ptr_stream == nullptr)
+    return -1;
+#warning FIXME Rps_PayloadCppStream::posix_fd see https://www.ginac.de/~kreckel/fileno/
+  switch(_kind_stream)
+    {
+    case rps_no_stream:
+      return -1;
+    case rps_input_stream:
+    {
+      /// https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1759r6.html
+      /// https://gcc.gnu.org/projects/cxx-status.html
+#if __cpplib_fstream_native_handle_type
+      std::ifstream*fs = dynamic_cast<std::ifstream*>(_in_stream);
+      if (fs)
+        return fs->native_handle();
+      else
+        return -1;
+#else
+#warning missing feature for  Rps_PayloadCppStream::posix_fd
+      return -1;
+#endif
+    }
+    case rps_output_stream:
+    {
+#if  __cpplib_fstream_native_handle_type
+      std::ofstream*fs = dynamic_cast<std::ofstream*>(_out_stream);
+      if (fs)
+        return fs->native_handle();
+      else
+        return -1;
+#else
+#warning missing feature for  Rps_PayloadCppStream::posix_fd
+      return -1;
+#endif
+    }
+    default:
+      return -1;
+    };
+} // end Rps_PayloadCppStream::posix_fd
+
+
+void
+Rps_PayloadCppStream::unregister_cpp_stream(void)
+{
+  if (!owner())
+    return;
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> guownob(*owner()->objmtxptr());
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
+  if (_ix_stream<0)
+    return;
+  RPS_ASSERT(_ix_stream<(int)_cppstream_vector.size());
+  RPS_ASSERT(_cppstream_vector[_ix_stream] == this);
+  _cppstream_vector[_ix_stream] = nullptr;
+  _ix_stream = -1;
+} // end Rps_PayloadCppStream::unregister_cpp_stream
+
+
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_no_stream),
+    _ptr_stream(nullptr),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
+{
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
+  RPS_ASSERT(owner->is_instance_of(RPS_ROOT_OB(_2OMC1QJo5H004kHTXV))); // cpp_stream∊class
+} // end Rps_PayloadCppStream constructor for no stream
+
+
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::ostream&output)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_output_stream),
+    _out_stream(&output),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
+{
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
+  RPS_ASSERT(owner->is_instance_of(RPS_ROOT_OB(_0HZtZlbMkBI00uoBym))); // cpp_out_stream∊class
+} // end Rps_PayloadCppStream constructor for output stream
+
+Rps_PayloadCppStream::Rps_PayloadCppStream(Rps_ObjectZone*owner, std::istream&input)
+  : Rps_Payload(Rps_Type::PaylCppStream,owner),
+    _kind_stream(rps_input_stream),
+    _in_stream(&input),
+    _ix_stream(-1),
+    _ix_magic(_ix_magicnum_)
+{
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  std::lock_guard<std::recursive_mutex> gustrob(*owner->objmtxptr());
+  RPS_ASSERT(owner->is_instance_of(RPS_ROOT_OB(_1RTqLIaARSI00A1YAU))); // cpp_in_stream∊class
+} // end Rps_PayloadCppStream constructor for input stream
+
+
+Rps_PayloadCppStream::~Rps_PayloadCppStream()
+{
+  std::lock_guard<std::recursive_mutex> _gu_(_cppstream_mtx);
+  /** TODO: each Rps_PayloadCppStream should be registered in a global
+   *  vector, using xalloc of C++ stream library (see
+   *  https://en.cppreference.com/w/cpp/io/ios_base/xalloc.html ...)
+   *  so that the _ptr_stream is cleared when the stream is destroyed
+   *  using its index...
+   *
+   * Hence the Rps_PayloadCppStream should have a private static
+   * vector of Rps_PayloadCppStream pointers and a mutex protecting
+   * it..
+  **/
+  RPS_ASSERT(_ix_magic == _ix_magicnum_);
+#warning Rps_PayloadCppStream destructor incomplete
+} // end Rps_PayloadCppStream destructor
+
+
+///////////////////////////////////////
+///// transient popened file payload
+Rps_PayloadPopenedFile::Rps_PayloadPopenedFile(Rps_ObjectZone*owner, const std::string command, bool reading)  // See PaylPopenedFile
+  : Rps_Payload(Rps_Type::PaylPopenedFile,owner),
+    _popened_cmd(command),
+    _popened_to_read(reading),
+    _popened_file(nullptr)
+{
+} // end constructor Rps_PayloadPopenedFile
+
+//// needed but never called
+Rps_PayloadPopenedFile::Rps_PayloadPopenedFile(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylPopenedFile,owner),
+    _popened_cmd(),
+    _popened_to_read(true),
+    _popened_file(nullptr)
+{
+  RPS_FATALOUT("cannot load payload of popened file for owner " << owner);
+} // end constructor Rps_PayloadUnixProcess
+
+Rps_PayloadPopenedFile::~Rps_PayloadPopenedFile()
+{
+} // end destructor Rps_PayloadPopenedFile
+
+
+void
+Rps_PayloadPopenedFile::dump_scan(Rps_Dumper*du)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadPopenedFile::dump_scan
+
+
+void
+Rps_PayloadPopenedFile::dump_json_content(Rps_Dumper*du, Json::Value&)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadPopenedFile::dump_scan
+
+bool
+Rps_PayloadPopenedFile::is_erasable(void) const
+{
+  return false;
+} // end Rps_PayloadPopenedFile::is_erasable
+
+void
+Rps_PayloadPopenedFile::gc_mark(Rps_GarbageCollector&gc) const
+{
+} // end Rps_PayloadPopenedFile::gc_mark
+
+
+#warning transientobj_rps.cc is probably incomplete
+
+/*** end of file transientobj_rps.cc ***/

@@ -1,0 +1,12 @@
+#pragma message "RefPerSys bisonc++ debugfunctions3.in"
+void \@Base::errorVerbose_()
+{
+    std::cout << "Parser State stack containing " << (d_stackIdx_ + 1) <<
+                                                                "elements:\n"
+                 "Each line shows a stack index followed "
+                                    "by the value of that stack element\n";
+    for (size_t idx = d_stackIdx_ + 1; idx--; )
+       std::cout << std::setw(2) << idx << ": " <<
+                    std::setw(3) << d_stateStack_[idx] << '\n';
+}
+
