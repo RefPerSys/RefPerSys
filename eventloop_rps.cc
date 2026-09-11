@@ -524,7 +524,8 @@ rps_initialize_pipe_to_self_in_event_loop(void)
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_DEBUG_LOG(EVLOOP, "rps_initialize_pipe_to_self_in_event_loop thread:"
-                <<  rps_current_pthread_name());
+                <<  rps_current_pthread_name() << std::endl
+		<< RPS_FULL_BACKTRACE(1, "rps_initialize_pipe_to_self_in_event_loop"));
   RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop"
                 << " elapsed: "
                 << std::setw(3) << rps_elapsed_real_time());
@@ -607,7 +608,8 @@ rps_initialize_timerfd_in_event_loop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_initialize_timerfd_in_event_loop")
                );
-  rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_sigfd, rps_timerfd_read_handler,
+  rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_sigfd,
+				      rps_timerfd_read_handler,
                                       "timerfd", nullptr);
 } // end rps_initialize_timerfd_in_event_loop
 
@@ -616,7 +618,10 @@ rps_initialize_jsonfifo_in_event_loop(void)
 {
   struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
   RPS_DEBUG_LOG(EVLOOP, "rps_initialize_jsonfifo_in_event_loop thread:"
-                <<  rps_current_pthread_name());
+                << rps_current_pthread_name() << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_initialize_json_in_event_loop")
+               );
+
   if (fdp.fifo_ui_wcmd <= 0)
     RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd
                  << " with FIFO prefix " << rps_get_fifo_prefix());
@@ -638,7 +643,8 @@ rps_initialize_event_loop(void)
   if (count++ > 0)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
   RPS_DEBUG_LOG(EVLOOP, "rps_initialize_event_loop thread:"
-                <<  rps_current_pthread_name());
+                <<  rps_current_pthread_name() << std::endl
+		<< RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop"));
   rps_eventloopdata.eld_magic = RPS_EVENTLOOPDATA_MAGIC;
   rps_eventloopdata.eld_polldelaymillisec = (rps_debug_flags != 0)?666:111;
   rps_eventloopdata.eld_lastix = 0;
