@@ -1,0 +1,961 @@
+\documentclass[final,a4,xcolor={svgnames,dvipsnames}]{beamer}
+\usetheme{Madrid}
+\title{le projet RefPerSys}
+\author{Basile STARYNKEVITCH}
+\date{mai 2025}
+\usepackage{relsize}
+\usepackage{luacode}
+\usepackage[svgnames]{xcolor}
+\usepackage{alltt}
+%\usepackage{wasysym}
+\usepackage{hyperref}
+%\usepackage{newunicodechar}
+
+ \hypersetup{
+   colorlinks   = true, %Colours links instead of ugly boxes
+   urlcolor     = DarkBlue, %Colour for external hyperlinks
+   linkcolor    = DarkGreen, %Colour of internal links
+   citecolor   = DarkMagenta, %Colour of citations
+   frenchlinks = true,
+ }
+
+\begin{document}
+ \begin{luacode*}
+   local gitpip=io.popen("git log --no-color --format=oneline -1 --abbrev=16 --abbrev-commit -q | cut -d' ' -f1")
+   gitid=gitpip:read()
+   gitpip:close()
+ \end{luacode*}
+ \newcommand{\mygitid}{\luadirect{tex.print(gitid)}}
+
+ \begin{frame}
+   \titlepage
+
+   \small{(un moteur d'inférences, ``intelligence artificielle'' symbolique)}
+
+   \bigskip
+
+   \begin{center}
+   \begin{relsize}{-2}
+     8 rue de la Faïencerie\\
+     92340 Bourg-la-Reine
+   \end{relsize}
+
+   \bigskip
+
+   \textbf{les opinions me sont personnelles}
+   
+   \bigskip
+   
+     \href{mailto:basile@starynkevitch.net}{\texttt{basile{@}starynkevitch.net}}
+
+     \bigskip
+
+     \begin{fbox}
+       {Journées Du Logiciel Libre - Lyon - mai 2025}
+     \end{fbox}
+     
+
+     git {\texttt \mygitid}
+   \end{center}
+   
+ \end{frame}
+
+ \begin{frame}{Plan}
+
+   \begin{relsize}{-1.5}
+   \tableofcontents
+   \end{relsize}
+   
+   \bigskip
+
+   \begin{center}
+     \relsize{+2}{\href{http://refpersys.org/}{\texttt{refpersys.org}}}
+
+     \bigskip
+     \includegraphics[width=0.45\textwidth]{refpersys-logo}
+
+     \smallskip
+
+     \relsize{-2}{Logo par Gaëtan Tapon}
+   \end{center}
+ \end{frame}
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \section{Introduction}
+ \label{sec:intro}
+ 
+ \begin{frame}{motivations pour RefPerSys}
+
+   \begin{itemize}
+   \item souveraineté numérique \small{(moins dépendre de logiciels
+     états-uniens, même libres)}
+   \item s'occuper 
+   \item expérimenter un logiciel
+   \item populariser et affiner des idées méconnues (celles de
+     \href{https://fr.wikipedia.org/wiki/Jacques_Pitrat}{\it Jacques
+       Pitrat})
+   \item \textbf{un projet \textcolor{red}{en cours de dévelopement} qui cherche des contributeurs}
+   \end{itemize}
+
+   \bigskip
+   \textbf{Le code source est libre} sous licence GPLv3+/CeCILLv2
+   \textbf{sans garantie} sur
+   \href{https://github.com/RefPerSys/RefPerSys}{\texttt{github.com/RefPerSys/RefPerSys}}
+   et peut-être même difficilement utilisable en mai 2025.
+
+   \bigskip
+
+   \begin{center}
+     \large\textsc{\textcolor{red}{REF}lexive \textcolor{red}{PER}sistent \textcolor{red}{SYS}tem}
+   \end{center}
+ \end{frame}
+ 
+ \begin{frame}{historique et systèmes inspirants pour RefPerSys}
+
+   \begin{itemize}
+
+   \item \textbf{les moteurs d'inférences des systèmes experts} des années 1990
+     \href{https://clipsrules.net/}{\textsc{CLIPSrules}} (NASA)
+
+   \item \textbf{le système \textcolor{red}{CAIA}} (``chercheur
+     artificiel en intelligence artificielle'') de J.Pitrat en
+     {\texttt{\href{https://github.com/bstarynk/caia-pitrat}{github.com/bstarynk/caia-pitrat/}}}
+     qui auto-génère son demi-million de lignes de C (1990-2018)
+     
+   \item \textbf{les outils d'aide à la démonstration} ou assistants
+     de preuve \href{https://rocq-prover.org/}{\textsc{Rocq}} (ex
+     \textsc{Coq})
+
+     \item La problématique de \textbf{\textcolor{red}{l'amorçage des
+         compilateurs}}: tous les compilateurs se compilent
+       eux-mêmes. Idéalement \textit{\textcolor{red}{RefPerSys devrait générer son
+         propre code}} mais en génère une petite partie en mai 2025.
+   \end{itemize}
+
+   \bigskip
+
+   En France, il existe une grosse culture mathématique de systèmes
+   formels de preuve. Ma philosophie est plus pragmatique et plus ludique.
+   
+ \end{frame}
+ 
+ \begin{frame}{une propriété méconnue de Linux: les greffons à foison}
+
+
+   Un programme sous Linux est {\relsize{-1}{(très souvent)}}
+   utilisateur de nombreuses bibliothèques dynamiques
+   {\relsize{-1}{(``shared objects'')}}, les fichiers
+   \texttt{lib*.so}. Ce mécanisme optimise l'utilisation de la mémoire
+   RAM et il est utilisé pour les
+   \href{https://fr.wikipedia.org/wiki/Plugin}{greffons}
+        {\relsize{-1}{(``plugins'')}} chargés par la fonction
+        \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlopen.3.html}{dlopen(3)}}}. Le
+        programme obtient par
+        \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{dlsym(3)}}},
+        durant l'exécution, les fonctions d'un greffon à partir de
+        leur nom.
+
+   \medskip
+     
+   Un grand nombre de programmes sous Linux {\relsize{-1.5}{(dont le
+       navigateur \href{https://firefox.org}{\textsc{Firefox}},
+       l'éditeur programmable
+       \href{https://www.gnu.org/software/emacs/}{\textsc{GNU emacs}},
+       le compilateur \href{https://gcc.gnu.org/}{\textsc{Gcc}}, les
+       interprètes de commandes
+       \href{https://www.gnu.org/software/bash/}{\textsc{Bash}} ou
+       \href{https://zsh.org}{\textsc{Zsh}} ou
+       \href{https://lua.org}{\textsc{Lua})}}} acceptent des greffons,
+   pour permettre d'en étendre le comportement. Ceux-ci peuvent être
+   codés par d'autres dévelopeurs.
+
+   \bigskip
+
+   En pratique \textbf{un programme qui s'exécute} (son processus)
+   \textbf{peut charger \textcolor{red}{un grand nombre} de greffons}
+   (dizaines ou centaines de milliers).
+
+   Donc \textbf{un programme \textcolor{red}{peut générer beaucoup de greffons}
+     temporaires}.
+
+   \smallskip
+
+   \small{Cf
+   \href{https://github.com/bstarynk/misc-basile/blob/master/manydl.c}{\texttt{manydl.c}
+     dans \texttt{github.com/bstarynk/misc-basile}}.}
+
+ \end{frame}
+
+ \begin{frame}{Chargement et déchargement de code, une idée ancienne}
+
+   Dans les années 1950 ou 1960, \textbf{les ordinateurs avaient peu
+     de mémoire} {\relsize{-1.5}{(quelques kilo-octets ou un-demi
+       méga-octet)}} \textbf{et}
+   {\relsize{-0.5}{l'\href{https://fr.wikipedia.org/wiki/IBM_1130_et_1800}{IBM
+         1130}, les
+       \href{https://fr.wikipedia.org/wiki/CAB500}{CAB500} et CAB2020
+       de la
+       \href{https://fr.wikipedia.org/wiki/Soci\%C3\%A9t\%C3\%A9_d\%27\%C3\%A9lectronique_et_d\%27automatisme}{SEA},
+       l'\href{https://fr.wikipedia.org/wiki/IBM_360_et_370}{IBM 360}
+       et d'autres machines}}\footnote{Les µ-ordinateurs des années
+   1970 ou 1980 aussi:
+   \href{https://fr.wikipedia.org/wiki/IBM_PC/XT}{PC/XT}, TRS-80,
+   \href{https://fr.wikipedia.org/wiki/Amiga_500}{Amiga 500}.}
+   \textbf{chargeaient le code par bouts}. \textbf{Un segment de code
+     devenu inutile était supprimé de la mémoire centrale}, et la
+   gestion fine du chargement et déchargement de ces segments
+   nécessitait la coopération des programmeurs humains, du système
+   d'exploitation (le ``moniteur'') et était une source de bogues
+   intéressants.
+
+   \bigskip
+
+   Sous Linux, il n'est guère indispensable de décharger un
+   greffon\footnote{L'exception serait un code hypothétique de calcul
+   qui tourne pendant des mois sur un \textit{super-calculateur} du
+   \href{https://top500.org/}{\texttt{top500.org}} en chargeant des
+   millions de greffons générés temporairement.\\} par
+   \textbf{\texttt{\href{https://man7.org/linux/man-pages/man3/dlclose.3.html}{dlclose(3)}}}. La
+   puissance des machines et la performance du noyau
+   {\relsize{-1.5}{(sous-système de gestion de la mémoire virtuelle)}}
+   permet de ne pas le faire\footnote{On accepte alors une fuite
+   mémoire sans dommage.\\}.
+
+ \end{frame}
+
+ \begin{frame}{Génération de code, une idée ancienne}
+
+  Les compilateurs traduisent un code source (compréhensible par le
+  dévelopeur) en du code machine\footnote{La notion de code objet ou
+  intermédiaire est apparue progressivement dans les années 1960;
+  certaines architectures -dont Harvard, qu'on retrouve encore dans
+  les micro-contrôleurs à l'intérieur de nos claviers et de nos
+  chaudières- séparent la mémoire du code et celles des données.} et
+  existaient déjà dans les années 1950 ou 1960 (Cobol, Fortran,
+  \href{https://fr.wikipedia.org/wiki/Programmation_automatique_des_formules}{PAF},
+  \href{https://en.wikipedia.org/wiki/Information_Processing_Language}{IPL-V},
+  \href{https://fr.wikipedia.org/wiki/Lisp}{Lisp}).
+
+  \bigskip
+
+  De nos jours, \textbf{les dévelopeurs utilisent des logiciels}
+  spécialisés \textbf{générateurs de code} (en C par exemple, ou en
+  Java ou Ocaml): \href{https://www.gnu.org/software/bison/}{GNU
+    bison} comme \href{https://carburetta.com/}{Carburetta} ou
+  \href{https://gallium.inria.fr/~fpottier/menhir/}{Menhir} génèrent
+  tous du code pour faciliter l'analyse lexicale ou syntaxique. La
+  théorie des languages formels est mûre
+  (\href{https://fr.wikipedia.org/wiki/Noam_Chomsky}{Chomsky}).
+ \end{frame}
+
+ \begin{frame}{Génération de code, une idée moderne}
+
+  Des bibliothèques logicielles pour générer du code existent:
+  \href{https://www.gnu.org/software/lightning/}{GNU lightning},
+  \href{https://asmjit.com/}{AsmJit}, et le compilateur
+  \href{https://gcc.gnu.org/}{GCC} fournit sa
+  \href{https://gcc.gnu.org/onlinedocs/jit/}{libgccjit}
+
+  \bigskip
+  
+  Le Common Lisp libre \href{https://sbcl.org/}{SBCL} génère du code
+  machine à chaque interaction de son utilisateur. C'est un langage \href{https://fr.wikipedia.org/wiki/Homoiconicité}{homoïconique}: le code y est manipulable comme donnée.
+
+  \bigskip
+  
+  La plupart des implémentations de Java (cf
+  \href{https://openjdk.org/}{OpenJDK}) ont une
+  \href{https://fr.wikipedia.org/wiki/Machine_virtuelle_Java}{JVM} qui
+  traduit petit à petit le code-octet (java bytecode) en du code
+  machine.
+
+ \end{frame}
+
+ \begin{frame}{Évaluation partielle: une manière d'optimiser}
+
+Beaucoup de calculs longs\footnote{La météo nationale calcule le temps
+de demain en des heures de calcul sur super-calculateur; de même en
+astrophysique -simulation de collisions de galaxies-; ou en
+bioinformatique -simulation des mouvements moléculaires dans une
+cellule-.\\} (durant des heures ou des semaines) dépendent de plusieurs
+paramètres.
+\medskip
+
+Certains paramètres sont constants durant tout le calcul\footnote{Pour
+la météo, les mesures physiques entrées des paramètres des capteurs,
+mais les résultats internes intermediaires varient durant ce calcul
+itératif.\\}.
+\medskip
+
+Dans certains cas, il peut être utile de particulariser le code pour ces paramètres constants.
+
+Par exemple simpliste, une affectation pourrait être \texttt{u := a*x
+  + b*y + c} et si on sait que \texttt{a} et \texttt{c} sont nuls elle
+se simplifie en \texttt{u := b*y} plus rapide à calculer.
+
+
+ \end{frame}
+
+ \begin{frame}{Évaluation partielle: formalisation}
+   
+Formellement:
+
+\begin{itemize}
+\item on connait le code source $\sigma$ (millions de lignes)
+\item ce code calcule sur des paramètres fixes \textcolor{DarkGreen}{$\pi_1, \pi_2, \ldots \pi_n$}
+\item ce code calcule sur des entrées variables $v_1, v_2, \ldots v_p$
+  
+\item les résultats obtenus sont $r_1, r_2 \ldots r_q = \sigma (\textcolor{DarkGreen}{\pi_1, \pi_2, \ldots \pi_n}, v_1, v_2 \ldots v_p)$
+\item par des algorithmes complexes on produit et génère un code
+  dérivé $\delta$ qui dépend des paramètres \textcolor{DarkGreen}{$\pi_i$} tel que
+  $\delta(v_1, v_2, \ldots v_p) = \sigma(\color{DarkGreen}{\pi_1, \pi_2, \ldots \pi_n}\color{black}{,  v_1, v_2 \ldots v_p)}$
+\end{itemize}
+
+La dérivation du code $\delta$ à partir du code source $\sigma$ et des
+valeurs connues des paramètres fixes \textcolor{DarkGreen}{$\pi_i$}
+est compliquée (peut être indécidable).
+ \end{frame}
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \section{Formaliser, représenter, traiter les connaissances}
+ \label{sec:form-conn}
+ 
+ \begin{frame}{Variété des connaissances}
+   Un programme est écrit par un dévelopeur\footnote{Sans présupposé
+   sur son genre, étant constaté qu'il y a moins de femmes que
+   d'hommes qui pratiquent ou étudient la programmation, et que le
+   métier d'informaticien me semble hélàs plus masculin que dans les années
+   1980!\\} qui a besoin de connaître:
+   \begin{relsize}{-0.5}
+   \begin{itemize}
+   \item des connaissances sur l'algorithmie (les tris, les automates, les arbres, \ldots)
+   \item des connaissances sur les langages de programmation et les systèmes d'exploitation utilisés
+   \item des connaissances sur le problème qu'il doit résoudre dans le logiciel qu'il développe.
+   \item des connaissances sur les ordinateurs\footnote{Un
+   super-calculateur est différent d'un portable, même si tous deux
+   utilisent Linux!\medskip\\} sur lequel s'exécutera le logiciel.
+   \item des connaissances sur les contraintes (délais, séverité des
+     bogues) et habitudes du projet: le logiciel de pilotage d'un
+     métro automatique a d'autres contraintes qu'un logiciel
+     bureautique ou un compilateur.
+   \end{itemize}
+   \end{relsize}
+ \end{frame}
+
+
+ \begin{frame}{Formaliser -ou pas- les connaissances.}
+
+   Certaines connaissances ne sont pas ou ne peuvent pas être
+   formalisées. Les legislations\footnote{Cf
+   \href{https://www.cnil.fr/fr/reglement-europeen-protection-donnees}{\it RGPD}
+   ou
+   \href{https://artificialintelligenceact.eu/high-level-summary/}{\it EU-AI
+     act}}, les habitudes, les intérêts individuels, la science et la
+   technique informatiques imposent des limitations.
+
+   \bigskip
+   
+   Le dévelopeur explicite certaines connaissances dans le code source et
+   dans sa documentation:
+   \begin{relsize}{-0.5}
+   \begin{itemize}
+   \item choix du (ou des) langages (formels) utilisés et de la forme des entrées et sorties.
+   \item importance des noms choisis
+   \item importance des commentaires
+   \item séparer l'interface logicielle de son implantation
+   \item importance de l'historique du code source et du projet
+     logiciel et des ``normes'' ou ``standards''
+   \item cohérence relative et imparfaite entre le code source et sa
+     documentation\footnote{La \href{https://fr.wikipedia.org/wiki/Programmation_lettrée}{programmation lettrée} est difficile,
+     et souvent coûteuse, peu utile ou inpraticable.\medskip\\}
+   \end{itemize}
+   \end{relsize}
+ \end{frame}
+
+ \begin{frame}{méta-connaissances}
+   Ce sont les connaissances sur les connaissances.
+
+
+   \begin{itemize}
+   \item pour formaliser des connaissances: par exemple grammaire
+     formelle de C ou de la syntaxe BNF des grammaires formelles.
+   \item pour utiliser des connaissances: par exemple: un compilateur
+     C\footnote{Les compilateurs C n'arrivent guère à compiler en
+     l'optimisant une fonction C de cent milles lignes de code dans un
+     fichier C généré par un logiciel.\medskip\\}peut supposer que
+     chaque fichier C a un nombre raisonnable de définition de
+     fonctions de taille raisonnable.
+   \end{itemize}
+
+   \bigskip
+
+   Un dévelopeur aguerri a des \href{https://theses.fr/1990PA066799}{méta-connaissances sur la programmation}.
+   \bigskip
+   
+   \textbf{Le même formalisme peut être utilisé pour représenter des
+     méta-connaissances qui peuvent s'appliquer à elles-mêmes.}
+     
+ \end{frame}
+
+ \begin{frame}{connaissances déclaratives ou procédurales}
+
+   \textbf{Une \textcolor{red}{connaissance déclarative} est un énoncé qui peut être utilisé de
+   plusieurs façons}. Par exemple: (grammaire française)
+   \textit{``l'adjectif s'accorde en genre et en nombre avec le nom
+     auquel il se rapporte''}. Elle s'étend facilement (grammaire
+   latine: \textit{``\ldots\! et en cas''}). Elle peut être formalisée:
+   $\forall x \in \mathbb{R}^{*}, \hspace{1.5em} 0x = 0  \hspace{1.em} \wedge \hspace{1.em} x^0 = 1 \hspace{1.em}  \wedge \hspace{1.em} 0+x = x$
+
+   \bigskip
+
+   \textbf{Une \textcolor{red}{connaissance procédurale} n'est
+     utilisable que d'une seule façon}.
+   Le code binaire\footnote{La
+   complexité et le coût des microprocesseurs s'explique aussi par le
+   fait que le silicium réordonne dynamiquement l'exécution des
+   instructions machines (``out of order superscalar processors'').}
+   est  procédural. En C
+{\relsize{-0.5}{\texttt{\textbf{while} (x>0) printf(\textquotedbl\%d\textbackslash{n}\textquotedbl,x--);}}}
+
+
+   \smallskip
+
+En fait \textbf{le distinguo est graduel} et ces définitions
+varient selon les époques et les lieux
+\footnote{Aux USA
+ ``declarative programming'' a un sens différent de ``programmation
+ déclarative'' en France!\\}.
+%%
+%%   \bigskip
+ \end{frame}
+
+ \begin{frame}{Avantages de connaissances plus déclaratives}
+     
+   \textbf{Fournir des connaissances formalisées et plus déclaratives
+     augmente la productivité des dévelopeurs}.
+
+   \bigskip
+
+   Le génie logiciel (``software engineering'') tend à privilégier
+   cette productivité\footnote{Au détriment d'autres facteurs, y
+   compris énergétiques: par exemple l'utilisation de PHP ou Python dans des
+   serveurs Web consomme plus de courant et de temps que le même
+   service codé en C et compilé. Le numérique consommerait 5 à 10\% de la
+   production électrique européenne.\medskip}.
+
+   \bigskip
+   
+   \textbf{Les outils logiciels pour les dévelopeurs doivent favoriser
+     la déclarativité des formalismes.}
+
+   \bigskip
+
+   L'ordre dans lequel sont formalisées les connaissances déclaratives n'a pas d'importance!
+ \end{frame}
+
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \begin{frame}{Traitement en machine des connaissances plus déclaratives}
+
+   Le formalisme déclaratif est représenté pour son utilisateur par du
+   texte (ou des images) formel\footnote{La présentation de ce texte -
+   couleurs et polices de caractères - en facilite la lisibilité et sa
+   compréhension par des humains.}, et en machine par des structures
+   de données compliquées. C'est mathématiquement un graphe ou un
+   hypergraphe. On suppose qu'il tient en mémoire centrale.
+   
+   Un formalisme plus ou moins déclaratif peut être ``interprété'' ou
+   ``compilé'' par l'outil logiciel l'acceptant.
+
+   \begin{itemize}
+   \item \textbf{interprétation}: l'outil logiciel parcourt
+     directement et itérativement, pour traiter ce formalisme,
+     l'hypergraphe de sa représentation et modifie les données
+     traitées.
+     
+   \item \textbf{compilation}: l'outil logiciel transforme cette
+     representation interne en d'autres représentations plus
+     procédurales, in fine interprétées ou transformées en du code
+     exécutable (ou plus efficace mais moins déclaratif).
+     
+   \end{itemize}
+   
+ \end{frame}
+
+ \begin{frame}{une définition de l' ``Intelligence Artificielle''}
+
+   Enseigné par Jacques Pitrat:
+   
+   \begin{block}{définition de l'IA}
+     \textbf{Un logiciel d'``intelligence artificielle'' est un programme qui peut surprendre \textcolor{red}{agréablement} ses utilisateurs}.
+   \end{block}
+
+   \bigskip
+   
+   \textbf{Tout gros logiciel est bogué} {\relsize{-1}{(et son nombre de bogues reste non-nul)}} \textbf{donc surprend \textcolor{red}{désagréablement} ses utilisateurs}.
+
+   \bigskip
+
+   Un logiciel d'IA peut être partiellement introspectif ou
+   \href{https://fr.wikipedia.org/wiki/Réflexion_(informatique)}{réflexif}:
+   en particulier en inspectant son code, ses données et ses
+   \href{https://fr.wikipedia.org/wiki/Pile_d'exécution}{piles
+     d'exécution}.
+
+   \bigskip
+   
+\begin{quote}{\href{https://fr.wikipedia.org/wiki/Loi_de_Hofstadter}{Loi de Hofstadter}} Il faut toujours plus de temps que prévu, même en tenant compte de la loi de Hofstadter.
+\end{quote}
+
+Elle s'applique au dévelopement de RefPerSys et à l'écriture de ces
+transparents.
+   
+ \end{frame}
+
+ \begin{frame}{Règles d'inférences  et bases de règles}
+
+   Une \textbf{règle d'inférences} comporte:
+
+   \begin{itemize}
+   \item un ensemble (\textit{non ordonné}, fini) de conditions
+     (déclanchant la règle)
+   \item une séquence d'actions (pouvant s'exécuter quand ou si les
+     conditions sont déclanchées)
+   \item des méta-informations supplémentaires
+   \end{itemize}
+
+   Exemple: Si $x$ est le père de $y$ et si $z$ est la fille de $y$
+   alors on peut en déduire que $x$ est le grand-père de $z$.
+
+   \bigskip
+   
+
+   Une \textbf{base de règles} contient un ensemble (\textit{non
+     ordonné}, fini) de règles d'inférences, et des méta-informations
+   supplémentaires
+ Une \textbf{base de faits} contient un ensemble
+ (\textit{non ordonné}, fini) de faits (expressions supposées vraies, entités, \ldots)
+
+ \bigskip
+ 
+   Un \textbf{système expert} comporte une ou des bases de règles et
+   des bases de faits
+ \end{frame}
+ 
+ \begin{frame}{Persistance}
+
+   Un logiciel
+   \href{https://fr.wikipedia.org/wiki/Persistance_(informatique)}{persistant}
+   sauvegarde son état sur disque et peut redémarrer (le lendemain?)
+   avec cet état.
+
+   \bigskip
+
+   \textbf{RefPerSys persiste son état dans des fichiers textuels} (JSON et
+   code C++ généré) \textbf{portables}.
+
+   \bigskip
+
+   Comment gérer la co-évolution du logiciel et des données
+   persistentes et du code?
+   
+ \end{frame}
+
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+ \section{RefPerSys en mai 2025}
+ \label{sec:refpersys-mai2025}
+ \begin{frame}{RefPerSys en mai 2025}
+   \begin{itemize}
+   \item dévelopé sous Linux (Debian ou Ubuntu ou Mint, parfois Raspbian)
+   \item c'est du logiciel libre sous licence GPL/CeCILL
+   \item historique accessible par \href{https://github.com/RefPerSys/RefPerSys/}{\texttt{github.com/RefPerSys/RefPerSys/}}
+   \item codé en C++17 et compilé par un \href{https://gcc.gnu.org/}{GCC} récent (v14 ou v15)
+   \item nombreuses dépendances (de logiciels libres) dont
+       \href{https://fltk.org}{FLTK} et
+       \href{https://github.com/ianlancetaylor/libbacktrace}{libbacktrace}
+       et \href{https://carburetta.com/}{Carburetta}
+     \item quelques contributeurs bénévoles (Suède, Inde, Egypte,
+       France, USA?)
+   \end{itemize}
+
+   \bigskip
+   
+   Pour le compiler: définir la variable d'environment
+   \texttt{REFPERSYS\_TOPDIR} au répertoire source (obtenu par
+   \texttt{git clone}) puis \texttt{make config} (logiciel interactif)
+   puis \texttt{make -j4}
+
+   Votre \texttt{\$HOME/tmp/} doit exister (votre répertoire temporaire)
+ \end{frame}
+ %
+ \begin{frame}{tester RefPerSys}
+   
+   Quelques tests:
+
+   \begin{itemize}
+     \item \texttt{make test-load} et d'autres (essayez
+      \texttt{make showtests}).
+
+      \item \texttt{make redump} ou \texttt{make
+     altredump} pour la persistance et regénération (doit être suivi
+      de \texttt{make clean} puis \texttt{make -j4})
+
+    \item \texttt{make testcarb1} (à améliorer)
+   \end{itemize}
+ \end{frame}
+ \begin{frame}{Données manipulées par RefPerSys}
+
+   \begin{itemize}
+   \item le pointeur \texttt{nullptr} a un status spécial (une absence de valeur).
+   \item les valeurs {\relsize{-0.5}{(un mot de 64 bits souvent pointeur, en C++ \texttt{Rps\_Value})}} peuvent être:
+     \begin{enumerate}
+     \item entiers directs (62 bits)
+     \item des valeurs scalaires immuables (chaînes, flottants, \ldots)
+     \item des valeurs composites immuables (ensembles, tuples,
+     fermetures,  instances)
+       \item des reférences (en C++ \texttt{Rps\_ObjectRef}) à des objets lourds et mutables
+     \end{enumerate}
+     \item les valeurs composites et les objets peuvent être
+       temporaires ou persistents
+       \item chaque valeur a sa classe (modèle
+         \href{https://en.wikipedia.org/wiki/ObjVlisp}{ObjVLisp})
+         et son type  {\relsize{-0.5}{(en C++ \texttt{enum class Rps\_Type})}}
+       \item quelques objets sont des racines préexistantes (fichier
+         C++ généré \href{https://github.com/RefPerSys/RefPerSys/blob/master/generated/rps-roots.hh}{\texttt{generated/rps-roots.hh}})
+   \end{itemize}
+
+ \end{frame}
+
+ \begin{frame}{Cadres d'appel explicites}
+   
+   Le code C++ représente un cadre d'appel réifié par
+   \texttt{Rps\_CallFrame}. On déclare en C++ ses valeurs locales par une macro \texttt{RPS\_LOCALFRAME}, e.g.
+
+   \begin{relsize}{-1}
+   \begin{alltt}
+     RPS\_LOCALFRAME(RPS\_ROOT\_OB(\_1aGtWm38Vw701jDhZn)\footnote{Cet
+     objet décrit le cadre d'appel pour en faciliter la réflexion et
+     l'inspection.\medskip\\}, //the\_agenda,\\
+     \hspace{8em}            RPS\_NULL\_CALL\_FRAME, // no caller frame\\
+     \hspace{8em}            Rps\_ObjectRef obtasklet;\\
+     \hspace{8em}            Rps\_InstanceValue descrval;\\
+     \hspace{8em}            Rps\_ClosureValue clostodo;\\
+                );
+   \end{alltt}
+   \end{relsize}
+%   \smallskip
+   
+   En C++ le cadre d'appel courant est \texttt{\_} et (dans l'exemple ci-dessus) la référence locale à son objet \texttt{obtasklet} se note \texttt{\_f.obtasklet}, etc.
+   
+   Ces cadres d'appels RefPerSys sont parcourus par le ramasse-miettes et les routines d'introspection.
+
+   On peut en C++ ajouter des collections C++ de valeurs au cadre
+   d'appel courant en explicitant le code C++ qui les parcourt.
+ \end{frame}
+
+ 
+ \begin{frame}{Les valeurs scalaires dans RefPerSys}
+   En plus des entiers directs (``tagged integers'') elles peuvent être une zone mémoire copiable par le ramasse-miettes pour (au choix):
+
+   \begin{itemize}
+     \item les chaînes de caractères emboîtées UTF-8 
+     \item les flottants emboîtés
+     \item les valeurs JSON
+   \end{itemize}
+
+   \bigskip
+  
+  \textbf{On devrait pouvoir rajouter d'autres types de valeurs}
+  (images, vecteurs de nombres complexes, \ldots) \textbf{et en
+    \textcolor{red}{générer le code} C++ les gérant}.
+ \end{frame}
+ 
+ \begin{frame}{Les objets dans RefPerSys}
+   \textbf{Ils ont chacun un identifiant ``mondialement''
+     \textcolor{red}{unique} et aléatoire} et persistant, leur
+   \textbf{objid}. \relsize{-0.5}{En mémoire 128 bits, dans les fichiers textuels
+   (JSON) ou le C++ une séquence telle que
+   \texttt{\_1Io89yIORqn02SXx4p} à partir duquel on forme des noms de fonctions C ou C++ tels que \texttt{rpsapply\_61pgHb5KRq600RLnKD}}.
+
+   \medskip
+   
+   \begin{relsize}{-0.5}
+   De plus chaque objet contient en propre:
+   \begin{itemize}
+   \item son verrou C++ \texttt{std::recursive\_mtx}
+     \item son espace de persistance (une référence à un objet ou \texttt{nullptr} pour les objets temporaires)
+     \item sa classe, qui est un \texttt{Rps\_ObjectRef} RefPerSys persistant.
+     \item une association d'attributs (en C++ un
+       \texttt{std::map}). Chaque attribut est un objet, sa valeur
+       quelconque (sauf \texttt{nullptr})
+     \item une séquence de composants (en C++ un \texttt{std::vector}) de valeurs (parfois \texttt{nullptr})
+       \item une charge utile optionnelle (sous classe de
+         \texttt{Rps\_Payload}) qui connait son objet propriétaire.
+       \item quelques pointeurs de fonctions C++ qui sont
+         \href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym}}-ables
+         et
+         \href{https://man7.org/linux/man-pages/man3/dladdr.3.html}{\texttt{dladdr}}-ables
+   \end{itemize}
+   \end{relsize}
+   \end{frame}
+
+ \begin{frame}{Les valeurs composites dans RefPerSys}
+
+   Elles sont \textbf{\textcolor{red}{immuables}} et
+   \textit{copiables} par le ramasse-miettes. Chacune peut être
+   temporaire ou persistante.
+
+   \begin{relsize}{-0.5}
+   \begin{itemize}
+     \item \textbf{ensemble} fini d'objets ordonné par leur \textit{objid}. Le
+       test d'appartenance est rapide (par dichotomie).
+     \item \textbf{tuple} (ou n-uplet) de réferences d'objets; une composante
+         de tuple peut-être absente (\texttt{nullptr}).
+       \item \textbf{fermeture}: sa routine est donnée par un objet
+           qui décrit cette routine. Ses valeurs closes sont
+           immuables. De plus elles peuvent contenir un méta-descripteur (référence d'objet) et un méta-rang (nombre descriptif).
+           \item \textbf{instance}: organisée comme une fermeture,
+             elles contient une connective (objet), des fils
+             (valeurs fixes), et un méta-descripteur et un méta-rang.
+   \end{itemize}
+
+
+   Attention à notre terminologie: \textbf{une instance
+     \textcolor{red}{n'est pas} un objet} (car immuable) mais toutes
+   les valeurs composites ont leur classe et leur type. Les instances
+   pourraient être utiles pour représenter des n{\oe}uds d'une syntaxe
+   ou des faits, etc...
+   \end{relsize}
+ \end{frame}
+
+ \begin{frame}{application d'une fermeture}
+   
+   Chaque fermeture connait son code (par un objet, sa ``connective'')
+   C++ (une fonction C++ dont le nom commence par \texttt{rpsapply}).
+
+   \bigskip
+   
+   Appliquer une fermeture à des arguments (tous des valeurs), c'est
+   appeler cette fonction C++ (avec la valeur fermeture).
+
+   \bigskip
+   
+   En C++ cette application se fait par du code tel que \texttt{\_f.clostodo.apply1(\&\_, \_f.obtasklet)}
+
+   \bigskip
+
+   Cette application renvoie deux valeurs (dans un couple en C++
+   \texttt{Rps\_TwoValues}) qui par convention ne doivent pas être
+   toutes deux \texttt{nullptr}. Elle devrait être presque aussi
+   rapide qu'un appel de méthode \texttt{virtual} en C++.
+   
+ \end{frame}
+ 
+ \begin{frame}{envoi de message}
+   
+   Inspiré par Smalltalk ou Common Lisp, il est plus souple (mais plus
+   coûteux en temps) qu'un appel de méthode \texttt{virtual} de C++.
+
+   \smallskip
+   On envoie à une valeur cible un message donné par un sélecteur et des arguments.
+   En C++ par exemple \texttt{Rps\_TwoValues two = \_f.refpersysv.send3(\&\_, \_f.gencodselob, \_f.dumpdirnamev, \_f.tempsuffixv, \_f.genstoreob);}
+
+   \bigskip
+   \textbf{Le selecteur est un objet}
+
+   \bigskip
+   L'envoi de message est implémenté par application d'une
+   fermeture. Chaque classe RefPerSys est un objet dont la charge
+   utile contient une superclasse et un dictionnaire de méthodes
+   asssociant à un selecteur la fermeture réalisant l'envoi. Ce
+   dictionnaire peut évoluer avec le temps.
+
+   \smallskip
+   \begin{small}
+     Ce modèle ressemble à celui de JavaScript, mais s'appuie sur les
+     classes (pas de prototypes).
+   \end{small}
+ \end{frame}
+ 
+ \begin{frame}{Le ramasse-miettes dans RefPerSys}
+   
+   \href{https://fr.wikipedia.org/wiki/Ramasse-miettes_(informatique)}{Il}
+   (``garbage collector'' ou glaneur de cellules) est conçu pour
+   devenir plus efficace (en C++ \texttt{class Rps\_GarbageCollector})
+   donc parfois copieur générationnel:
+
+   \begin{itemize}
+   \item les routines du R-M devraient être facilement générables.
+   \item les valeurs scalaires ou composites (toutes immuables)
+     doivent être copiables par le R-M
+   \item les objets lourds sont fixes en mémoire (contenant le verrou \texttt{std::recursive\_mutex} de chaque objet) et le R-M les marquent.
+     \item parcours de la pile d'exécution et de ses cadres d'appels (\texttt{Rps\_CallFrame})
+   \end{itemize}
+ \end{frame}
+ 
+ \begin{frame}{La persistance dans RefPerSys}
+
+   Le code C++ de persistance ressemble par sa forme au R-M. Les deux devraient devenir générés.
+   \medskip
+   Au démarrage:
+   \begin{itemize}
+   \item à froid préallocation statiques des zones mémoire des objets
+     racines
+   \item chargement des objets vides de chaque espace
+     \item remplissage des objets et initialisation des pointeurs de fonction conventionnels par 
+         \href{https://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym}}
+   \end{itemize}
+
+   \bigskip
+   \textbf{Le tas persistant} (``persistent heap'') \textbf{est donc \textcolor{red}{chargé} à chaque
+   démarrage à partir de fichiers textuels.}
+   
+   \bigskip
+   \textbf{À la fin normale du processus} (et peut-être tous les
+   quarts d'heure) \textbf{on écrit sur disque le tas persistant mis à
+     jour et le code généré en C++}. Le code C++ utilise
+   \href{https://man7.org/linux/man-pages/man3/dladdr.3.html}{\texttt{dladdr}}
+   pour retrouver le nom des pointeurs de fonctions.
+   
+ \end{frame}
+
+ \begin{frame}{Écriture du tas persistant}
+   \textbf{Le tas persistant est écrit sur disque}, avec le code C++ généré qui
+   va avec.
+
+   \bigskip
+   
+   Chaque espace de persitance correspond à un fichier JSON. On peut
+   donc distinguer le système (les objets nécessaires à la génération
+   de code C++) et plusieurs ``applications''.
+
+   \bigskip
+   
+   \textbf{On pourrait} à l'avenir \textbf{utiliser d'autres
+     représentations textuelles} (HJSON?, Yaml?) pour les données
+   persistées. \textbf{\textcolor{red}{Il faut veiller à leur
+       portabilité}}: un tas écrit sur x86-64 devrait être utilisable
+   et chargeable sur \href{https://riscv.org}{RISCV}.
+   
+ \end{frame}
+
+
+ \begin{frame}{agenda et millitâches}
+
+   \textbf{\textcolor{red}{L'agenda est un objet racine persistant}}
+   \relsize{-0.5}{\texttt{\_1aGtWm38Vw701jDhZn} nommé \texttt{the\_agenda}, unique de
+   sa classe \texttt{\_3s7ztCCoJsj04puTdQ}
+   \textit{\texttt{agenda$\in$class}}}.
+
+   \bigskip
+
+   \textbf{Cet agenda contient des millitâches} (``tasklets''), qui
+   sont des objets (persistants ou temporaires). \textbf{L'exécution
+     de chaque millitâche doit durer \textcolor{red}{quelques
+       millisecondes}}.
+
+     \textbf{Il existe plusieurs\footnote{Leur nombre est figé au
+       démarrage de RefPerSys (entre 3 et 24, selon la puissance du
+       processeur et son nombre de c{\oe}urs).} filaments d'exécution}
+     (\href{https://fr.wikipedia.org/wiki/Threads_POSIX}{POSIX
+       threads}).
+
+ \end{frame}
+
+ \begin{frame}{exécution parallèle des millitâches de l'agenda}
+
+ \textbf{Chacun des filaments d'exécution} de l'agenda
+  \textbf{boucle} sur:
+
+     \begin{enumerate}
+     \item choix\footnote{En mai 2025 l'agenda contient quelques files
+     d'attente de priorité haute, normale, ou basse de millitâches en
+     attente d'exécution.} et retrait d'une millitâche à exécuter dans
+       l'agenda
+     \item exécution de cette millitâche par envoi d'un message
+       \item cette exécution est rapide (millisecondes) et peut
+         inspecter et modifier l'agenda (peut-être s'y ajouter à nouveau)
+     \end{enumerate}
+
+     \bigskip
+     
+     Cette boucle {\relsize{-0.5}{(interrompue par le ramasse-miettes)}} s'arrête quand
+     RefPerSys termine normalement.
+
+     \bigskip
+     \textbf{Des événements extérieurs} \footnote{interaction
+     graphique ou Web avec l'utilisateur, ou
+     \href{https://www.jsonrpc.org/}{JSONRPC}, terminaison d'un
+     processus -compilation d'un greffon généré en C++?-, interruption
+     temporelle toutes les secondes?}  peuvent créer et ajouter (ou
+     ôter) des millitâches dans l'agenda.
+   
+ \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+ \section{Ce qui reste à faire dans RefPerSys}
+ \label{sec:refpersys-a-faire}
+ \begin{frame}{A faire avec votre aide}
+   \begin{itemize}
+   \item définir une syntaxe (règles, métarègles, ...) avec des exemples (cf \href{https://github.com/RefPerSys/RefPerSys/blob/master/carbrepl_rps.cbrt}{carbrepl\_rps.cbrt})
+   \item accroître le tas persistent pour décrire déclarativement dans
+     des objets RefPerSys le code C++ à générer (en reprenant des idées de \href{https://arxiv.org/abs/1109.0779}{GCC MELT})
+     \item coder une interface graphique {\relsize{-0.5}{(esquissée avec \href{https://fltk.org}{FLTK} ou autre et son code C++ doit en partie être généré à partir d'objets RefPerSys)}}.
+   \item coder les générateurs de codes C++ (y compris l'inférence) et machines\footnote{Le
+   code machine généré n'est pas persisté car non-portable; il
+   pourrait être généré rapidement par du code C++ généré qui utilise \textit{GNU lightning} ou autre!\medskip\\}
+     \item générer du code C++ qui remplace le code C++ écrit à la
+       main (qu'on \texttt{git mv} dans \texttt{attic/}
+   \end{itemize}
+
+ \end{frame}
+
+ \begin{frame}{co-dévelopement itératif de RefPerSys}
+   
+   \textbf{Ce développement de RefPerSys devrait être itératif,
+     collaboratif, et communautaire}. Le tas persistant de RefPerSys
+   doit générer de plus en plus de code (qui remplacerait celui
+   existant codé\footnote{J'ai pris soin de nommer les identifiants
+   C++ de manière à espérer les générer} à la main) à partir de
+   formalismes plus déclaratifs donc plus concis et plus
+   compréhensible.
+
+   \bigskip
+   
+   \textbf{Le formalisme de RefPerSys est appelé à évoluer avec le
+     temps en des representations de plus en plus déclaratives} qui
+   requièrent votre collaboration.
+
+   \bigskip
+   
+   \textit{Un système d' ``intelligence artificielle'' doit expliquer
+     son comportement aux utilisateurs pour être acceptable.}
+ \end{frame}
+
+ \begin{frame}{applications possibles de RefPerSys}
+
+   \begin{itemize}
+   \item jeux
+   \item optimisation et pilotage de codes de calculs sous Linux
+   \item aide à la décision (jardinage, médical?, pilotage de projets?
+     CAO?)
+   \item et toute autre chose
+   \item \ldots
+   \end{itemize}
+
+   En respectant le cadre légal et l'éthique du libre.
+ \end{frame}
+ 
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Local Variables: ;;
+%% compile-command: "./build-refpersys-jdll2025.sh" ;;
+%% End: ;;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

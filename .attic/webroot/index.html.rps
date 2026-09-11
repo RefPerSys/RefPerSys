@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!-- 
+   file webroot/index.html.rps 
+   SPDX-License-Identifier: GPL-3.0-or-later
+
+      This file is part of the Reflective Persistent System. See
+      refpersys.org
+
+      It holds the root HTML content when e.g. http://localhost:9090/
+      is accessed, and ./refpersys -W. is running.
+-->
+<!--
+ Author(s):
+      Basile Starynkevitch <basile@starynkevitch.net>
+      Abhishek Chakravarti <abhishek@taranjali.org>
+      Nimesh Neema <nimeshneema@gmail.com>
+
+      © Copyright 2020 - 2021 The Reflective Persistent System Team
+      team@refpersys.org & http://refpersys.org/
+
+ License:
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="the RefPerSys system"/>
+    <meta name="author" content="team@refpersys.org"/>
+    <link rel="icon" href="./favicon.ico">
+    <!-- self-link is: -->
+   <?refpersys suffix='rpshtml' action='_5DZWF0ZGjIM00eyylS' rps_json='{}'?>
+
+    <title>RefPerSys</title>
+
+
+    <!-- RefPerSys CSS; conventionally our CSS class names end with _rpscl -->
+    <link href="./css/refpersys.css" rel="stylesheet">
+
+    <!-- we use JQuery, at least 3.6, see http://jquery.com/ -->
+    <script src="./js/jquery.js"></script>
+
+    <!-- we need JQueryUI, at least 1.12, see http://jqueryui.com/ -->
+    <script src="./js/jquery-ui.js"></script>
+
+  </head>
+
+  <body>
+
+    <h1><a href='http://refpersys.org/'>RefPerSys</a>
+      running on
+     <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
+    </h1>
+
+    <!-- should use another processing instruction for gitid-->
+    <h3>version: 
+      <?refpersys suffix='rpshtml' action='_5uPNoIZjxAw00VptvB' rps_json='{"showing":"gitid"}'?>
+    </h3>
+
+    <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{"show":"details"}'?>
+      <span class='end_details_rpscl'>•</span></p>
+
+    <section class="rpsShowObject">
+      <h2>Show object:</h2>
+
+      <div class="showobjdiv_rpscl">
+        <label for='showobjinp_rpsid'>Object to show:&nbsp;</label> 
+        <input type="input" id='showobjinp_rpsid'
+               title="Enter object (by name or by oid)">
+      </div> <!-- showobjdiv_rpscl" -->
+
+    </section> <!-- .rpsShowObject -->
+
+    <h3 id='shownobjects_webrpsid'>objects</h3>
+
+    <!-- the intuition is that AJAX machinery will add HTML elements inside the below div to show objects -->
+    <div id='shownobjects_webrpsid'>
+    </div>
+
+    <!-- RefPerSys handwritten JavaScript: -->
+    <script src="./js/refpersys.js"></script>
+  </body>
+  <!-- end of file webroot/index.html.rps in refpersys.org -->
+</html>
+

@@ -1,0 +1,1656 @@
+// file RefPerSys/tools/q6refpersys.cc
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/***
+    © Copyright (C) 2024 - 2026 by Basile STARYNKEVITCH, France
+   program released under GNU General Public License v3+
+
+   This is free software; you can redistribute it and/or modify it under
+   the terms of the GNU General Public License as published by the Free
+   Software Foundation; either version 3, or (at your option) any later
+   version.
+
+   This is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
+
+   This q6refpersys program is an opensource Qt6 application (Qt is a
+   graphical user toolkit for Linux; see https://www.qt.io/product/qt6
+   ...) It is the interface to the RefPerSys inference engine on
+   http://refpersys.org/ and communicates with the refpersys process
+   using some JSONRPC2 protocol on named fifos. In contrast to
+   refpersys itself, the q6refpersys process is short lived.
+
+****/
+
+
+///// We may want to generate Qt6 temporary C++ code which has to
+///// contain the declarations then compile that code into a dlopen-ed
+///// plugin....  So we remember the first and last lines of this very
+///// C++ source file q6refpersys.cc to be replicated in generated C++
+///// code by this utility, to be compiled by it (in temporary C++
+///// files) into a temporary C++ plugin.
+
+////////
+extern "C" const int myqr_first_decl_line, myqr_last_decl_line;
+const int myqr_first_decl_line = __LINE__ -2;
+
+extern "C" const char myqr_self_file[];
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
+
+#define UNUSED __attribute__((unused))
+extern "C" const char myqr_git_id[];
+extern "C" const char myqr_shortgitid[];
+extern "C" char myqr_host_name[];
+
+#ifndef GITID
+#error GITID should be defined in compilation command
+#endif
+
+
+
+#include <QApplication>
+#include <QProcess>
+#include <QCommandLineParser>
+#include <QGenericPlugin>
+#include <QDebug>
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QTextEdit>
+#include <QLineEdit>
+#include <QSizePolicy>
+#include <QMessageBox>
+#include <QLabel>
+#include <QSocketNotifier>
+#include <QTemporaryFile>
+//#include <QJsonValue>
+#include <QtCore/QtCoreVersion>
+//#include <QJsonValue>
+#include <QtCore/qglobal.h>
+
+
+// from jsoncpp (see https://github.com/open-source-parsers/jsoncpp)
+#include "json/value.h"
+#include "json/reader.h"
+#include "json/writer.h"
+
+#include <iostream>
+#include <sstream>
+#include <functional>
+#include <mutex>
+#include <deque>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <signal.h>
+
+
+extern "C" char myqr_host_name[96];
+extern "C" char* myqr_progname;
+extern "C" bool myqr_debug;
+extern "C" std::string myqr_jsonrpc; // the FIFO prefix
+extern "C" std::string myqr_refpersys_topdir;
+extern "C" int myqr_jsonrpc_cmd_fd; /// written by RefPerSys, read by q6refpersys
+extern "C" QSocketNotifier* myqr_notifier_jsonrpc_cmd;
+extern "C" std::recursive_mutex myqr_mtx_jsonrpc_cmd;
+extern "C" std::stringstream myqr_stream_jsonrpc_cmd;
+extern "C" Json::CharReader* myqr_jsonrpc_reader;
+extern "C" Json::CharReaderBuilder myqr_jsoncpp_reader_builder;
+
+extern "C" QSocketNotifier* myqr_notifier_jsonrpc_out;
+extern "C" int myqr_jsonrpc_out_fd; /// read by RefPerSys, written by q6refpersys
+extern "C" std::recursive_mutex myqr_mtx_jsonrpc_out;
+extern "C" std::deque<Json::Value> myqr_deque_jsonrpc_out;
+extern "C" std::stringstream myqr_stream_jsonrpc_out;
+extern "C" std::map<int,std::function<void(const Json::Value&res)>> myqr_jsonrpc_out_procmap;
+extern "C" Json::StreamWriterBuilder myqr_jsoncpp_writer_builder;
+
+extern "C" pid_t myqr_refpersys_pid;
+
+extern "C" std::string myqr_json2str(const Json::Value&jv);
+
+//// from generated __buildinfo.c
+extern "C" const char rps_topdirectory[];
+extern "C" const char rps_gitid[];
+extern "C" const char rps_qt6moc[];
+extern "C" const char rps_shortgitid[];
+extern "C" const char rps_gitbranch[];
+extern "C" const char rps_lastgittag[];
+extern "C" const char rps_lastgitcommit[];
+extern "C" const char rps_md5sum[];
+extern "C" const char*const rps_files[];
+extern "C" const char*const rps_subdirectories[];
+extern "C" /// see https://www.gnu.org/software/make/ - a builder tool
+extern "C" const char rps_gnumakefile[];
+extern "C" const char rps_gnu_make[];
+extern "C" const char rps_gnu_make_version[];
+extern "C" const char rps_gnu_make_features[];
+extern "C" /// see https://www.gnu.org/software/bison/ - a parser generator
+extern "C" const char rps_gnu_bison[];
+extern "C" const char rps_gnu_bison_version[];
+extern "C" /// carburetta.com is a lexer & parser generator
+extern "C" /// cf github.com/kingletbv/carburetta
+extern "C" const char rps_carburetta[];
+extern "C" const char rps_carburetta_version[];
+extern "C" const char rps_gui_script_executable[];
+extern "C" const char rps_building_user_name[];
+extern "C" const char rps_building_user_email[];
+extern "C" const char rps_building_host[];
+extern "C" const char rps_building_operating_system[];
+extern "C" const char rps_building_opersysname[];
+extern "C" const char rps_building_machine[];
+extern "C" const char rps_building_machname[];
+extern "C" const char rps_plugin_builder[];
+extern "C" const char rps_cxx_compiler_realpath[];
+extern "C" const char rps_cxx_compiler_version[];
+// end from __timestamp.c
+
+class MyqrApplication;
+
+/// process the JSONRPC2 message recieved from refpersys
+extern "C" void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
+
+
+/// do a remote procedure call to RefPerSys using our JSONRPC variant
+extern "C" void myqr_call_jsonrpc_to_refpersys
+(const std::string& method,
+ const Json::Value& args,
+ const std::function<void(const Json::Value&res)>& resfun);
+
+
+#ifndef SELF_BASENAME // should be defined in the compile command
+#error SELF_BASENAME should be a compile string and is needed here
+#endif
+
+
+
+#define MYQR_BREAKPOINT_AT(Fil,Lin) do {    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+    asm volatile ("__" SELF_BASENAME "_brk_" #Lin ": nop\n");    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+ } while(0)
+
+#define MYQR_BREAKPOINT_AT_BIS(Fil,Lin) \
+  MYQR_BREAKPOINT_AT(Fil,Lin)
+
+#define MYQR_BREAKPOINT() MYQR_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
+
+/// fatal unrecoverable errors
+#define MYQR_FATALOUT_AT_BIS(Fil,Lin,Out) do {  \
+    std::ostringstream outs##Lin;               \
+    outs##Lin << Out << std::flush;             \
+    qFatal("%s:%d: %s\n[git %s@%s] on %s",      \
+     Fil, Lin, outs##Lin.str().c_str(),         \
+     myqr_git_id, __DATE__" " __TIME__,         \
+     myqr_host_name);                           \
+    abort();                                    \
+  } while(0)
+
+#define MYQR_FATALOUT_AT(Fil,Lin,Out) \
+  MYQR_FATALOUT_AT_BIS(Fil,Lin,Out)
+
+#define MYQR_FATALOUT(Out) MYQR_FATALOUT_AT(__FILE__,__LINE__,Out)
+
+/// serious warnings
+#define MYQR_WARNOUT_AT_BIS(Fil,Lin,Out) do {   \
+    std::ostringstream outs##Lin;               \
+    outs##Lin << Out << std::flush;             \
+    qWarning("%s:%d: %s\n[git %s] on %s",       \
+     Fil, Lin, outs##Lin.str().c_str(),         \
+      myqr_shortgitid, myqr_host_name);         \
+  } while(0)
+
+#define MYQR_WARNOUT_AT(Fil,Lin,Out) \
+  MYQR_WARNOUT_AT_BIS(Fil,Lin,Out)
+
+#define MYQR_WARNOUT(Out) MYQR_WARNOUT_AT(__FILE__,__LINE__,Out)
+
+#define MYQR_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {  \
+    if (myqr_debug)                             \
+      std::clog << Fil << ":" << Lin << " "     \
+    << Out << std::endl;                        \
+  } while(0)
+
+#define MYQR_DEBUGOUT_AT(Fil,Lin,Out) \
+  MYQR_DEBUGOUT_AT_BIS(Fil,Lin,Out)
+
+#define MYQR_DEBUGOUT(Out) MYQR_DEBUGOUT_AT(__FILE__,__LINE__,Out)
+
+extern "C" MyqrApplication *myqr_app;
+
+extern "C" {
+  class MyqrApplication;
+  class MyqrProcess;
+  class MyqrJsonRpcFromRefPerSys;
+  class MyqrMainWindow;
+  class MyqrDisplayWindow;
+};
+
+
+//// Initiate the compilation of a vector of C++ lines into a Qt6
+//// plugin; the prefix lines ( myqr_first_decl_line ⋯ ⋯
+//// myqr_last_decl_line) gets copied verbatim. The `name` identify
+//// somehows the plugin. The flag `needqtmoc` is set if the generated
+//// code needs to run the Qt6 meta object protocol compiler (cf
+//// https://doc.qt.io/qt-6/moc.html ...).  The `data` is private to
+//// the compilation. If it succeeds the `handler` is called, and when
+//// it fails the `failer`gets called.
+extern "C" void myqr_initiate_cpp_compilation_to_plugin
+(const std::vector<std::string> &srcvec,
+ const QString& name,
+ void* data,
+ bool needqtmoc,
+ std::function<void(QGenericPlugin*,QString&,void*)> handler,
+ std::function<void(QString,void*)> failer);
+extern "C" void myqr_output_qobject(std::ostream& out, const QObject*qob);
+
+inline std::ostream&operator << (std::ostream&out, const QObject*qob)
+{
+  myqr_output_qobject(out, qob);
+  return out;
+}
+
+//// regarding JSONRPC v2.0 see www.jsonrpc.org/specification
+class MyqrJsonRpcData
+{
+  std::string data_name;
+public:
+  MyqrJsonRpcData(std::string name);
+  virtual ~MyqrJsonRpcData();
+}; // end MyqrJsonRpcData
+
+class MyqrApplication: public QApplication
+{
+  Q_OBJECT;
+public:
+  MyqrApplication(int argc, char**argv);
+  virtual ~MyqrApplication();
+public slots:
+  void compilation_process_started(void);
+  void compilation_process_finished(int exitCode,
+                                    QProcess::ExitStatus exitStatus
+                                    = QProcess::NormalExit);
+  void compilation_process_changed_state(QProcess::ProcessState newstate);
+  void compilation_process_errored(QProcess::ProcessError error);
+  void compilation_process_readable(void);
+};        // end MyqrApplication
+
+
+typedef bool Myqr_Handler_jsonRpcFrom_sig (const unsigned long num,
+    const Json::Value& request,
+    Json::Value& reply,
+    MyqrJsonRpcData*data);
+
+constexpr int myjr_hdler_namesize= 32;
+struct myjr_handler_st
+{
+  Myqr_Handler_jsonRpcFrom_sig* hdlr;
+  MyqrJsonRpcData* data;
+  char hdname[myjr_hdler_namesize];
+};
+
+extern "C" void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
+
+class MyqrJsonRpcFromRefPerSys
+{
+  friend void myqr_process_jsonrpc_from_refpersys(const Json::Value&js);
+  static std::recursive_mutex myjr_mtx;
+  static std::map<const std::string,myjr_handler_st> myjr_handler_map;
+public:
+  static void register_handler(const std::string& methname,
+                               Myqr_Handler_jsonRpcFrom_sig*fct,
+                               MyqrJsonRpcData*data= nullptr,
+                               const char*hdlername= nullptr);
+  static void forget_handler(const std::string& methname);
+  static struct myjr_handler_st* find_handler(const std::string&methname);
+};        // end class MyqrJsonRpcFromRefPerSys
+
+////////////////////////////////////////////////////////////////
+typedef bool MyqrProcess_until_sigt(const MyqrProcess*, std::string, QObject*, void*data);
+class MyqrProcess : public QProcess
+{
+  Q_OBJECT;
+  mutable std::recursive_mutex _proc_mtx;
+  std::map<std::string,QObject*> _proc_map;
+public:
+  explicit MyqrProcess(QObject*parent = nullptr);
+  virtual ~MyqrProcess();
+public slots:
+  QObject*get(const std::string&) const;
+  virtual void put(const std::string&, QObject*);
+  virtual void remove(const std::string);
+  /// iterate on entries until the function returns true (then return true)
+  virtual bool repeat_until(const std::function<MyqrProcess_until_sigt>&fun,
+                            void*data=nullptr) const;
+  virtual bool repeat_until(const MyqrProcess_until_sigt*pfun,
+                            void*data=nullptr) const;
+}; // end MyqrProcess
+
+class MyqrMainWindow : public QMainWindow
+{
+  Q_OBJECT;
+  //// the menubar
+  QMenuBar* _mainwin_menubar;
+  QMenu* _mainwin_appmenu;
+  QAction* _mainwin_aboutact;
+  QAction* _mainwin_aboutqtact;
+  QAction* _mainwin_debugact;
+  QMenu* _mainwin_editmenu;
+  QAction* _mainwin_copyact;
+  QAction* _mainwin_pasteact;
+  /// the central widget is a vertical group box
+  QGroupBox* _mainwin_centralgroup;
+  QLabel*_mainwin_toplabel;
+  QLineEdit*_mainwin_cmdline;
+  QTextEdit*_mainwin_textoutput;
+private slots:
+  void about();
+  void aboutQt();
+  void toggle_debug();
+public:
+  static MyqrMainWindow*the_instance;
+  explicit MyqrMainWindow(QWidget*parent = nullptr);
+  virtual ~MyqrMainWindow();
+  static constexpr int minimal_width = 512;
+  static constexpr int minimal_height = 360;
+  static constexpr int default_width = 600;
+  static constexpr int default_height = 480;
+  static constexpr int maximal_width = 2048;
+  static constexpr int maximal_height = 1536;
+};        // end MyqrMainWindow
+MyqrMainWindow*MyqrMainWindow::the_instance;
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+class MyqrDisplayWindow : public QMainWindow
+{
+  Q_OBJECT;
+private slots:
+  void about();
+public:
+  explicit MyqrDisplayWindow(QWidget*parent = nullptr);
+  virtual ~MyqrDisplayWindow();
+};        // end MyqrDisplayWindow
+std::ostream& operator << (std::ostream&out, const QList<QString>&qslist);
+////////////////////////////////////////////////////////////////
+extern "C" QProcess*myqr_refpersys_process;
+//=============================================================
+
+extern std::ostream& operator << (std::ostream&out, const QList<QString>&qslist);
+
+
+//////// lines before have been copied in generated C++ files
+const int myqr_last_decl_line = __LINE__ + 1;
+////////
+
+#ifndef SELF_FILE
+#error missing SELF_FILE in compilation command
+#endif
+const char myqr_self_file[] = SELF_FILE; /// defined in compilation command
+
+#ifndef SELF_BASENAME
+#error missing SELF_BASENAME in compilation command
+#endif
+const char myqr_self_basename[] = SELF_BASENAME; // in compilation command
+
+std::recursive_mutex MyqrJsonRpcFromRefPerSys::myjr_mtx;
+std::map<const std::string,struct myjr_handler_st>
+  MyqrJsonRpcFromRefPerSys::myjr_handler_map;
+
+
+void
+myqr_output_qobject(std::ostream& out, const QObject*qob)
+{
+  if (!qob)
+    out << "*NULL*";
+  else
+    {
+      out << qob->objectName().toStdString() << "@" << (void*)qob;
+    };
+  out << std::flush;
+} // end myqr_output_qobject
+
+void
+MyqrJsonRpcFromRefPerSys::register_handler
+(const std::string& methname,
+ Myqr_Handler_jsonRpcFrom_sig*fct,
+ MyqrJsonRpcData*data,
+ const char*hname
+)
+{
+  if (methname.empty() || !isalpha(methname[0]))
+    MYQR_FATALOUT("register_handler with invalid methname=" << methname);
+  if (!fct)
+    MYQR_FATALOUT("register_handler with methname=" << methname
+                  << " has no function");
+  if (hname)
+    {
+      for (const char*pc=hname; *pc; pc++)
+        if (!isalnum(*pc) && *pc!='_' && *pc!='-')
+          MYQR_FATALOUT("register_handler with methname=" << methname
+                        << " has invalid hname=" << hname);
+    }
+  std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
+  myjr_handler_st h{.hdlr=fct, .data=data};
+  memset(h.hdname, 0, myjr_hdler_namesize);
+  if (hname)
+    strncpy(h.hdname, hname, myjr_hdler_namesize-1);
+  myjr_handler_map.insert({methname, h});
+  MYQR_DEBUGOUT("register_handler for methname=" << methname);
+} // end of MyqrJsonRpcFromRefPerSys::register_handler
+
+struct myjr_handler_st*
+MyqrJsonRpcFromRefPerSys::find_handler(const std::string& methname)
+{
+  if (methname.empty() || !isalpha(methname[0]))
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
+  auto it = myjr_handler_map.find(methname);
+  if (it != myjr_handler_map.end())
+    {
+      return &it->second;
+    }
+  else
+    return nullptr;
+} // end MyqrJsonRpcFromRefPerSys::find_handler
+
+void
+MyqrJsonRpcFromRefPerSys::forget_handler(const std::string& methname)
+{
+  if (methname.empty() || !isalpha(methname[0]))
+    MYQR_FATALOUT("forget_handler with invalid methname=" << methname);
+  std::lock_guard<std::recursive_mutex> gu(myjr_mtx);
+  myjr_handler_map.erase(methname);
+  MYQR_DEBUGOUT("forget_handler for methname=" << methname);
+} // end of MyqrJsonRpcFromRefPerSys::forget_handler
+
+
+std::ostream& operator << (std::ostream&out, const QList<QString>&qslist)
+{
+  int nbl=0;
+  for (const QString&qs: qslist)
+    {
+      if (nbl++ > 0)
+        out << ' ';
+      std::string s = qs.toStdString();
+      bool needquotes=false;
+      for (char c: s)
+        {
+          if (!isalnum(c)&& c!='_') needquotes=true;
+        }
+      if (needquotes)
+        out << "'";
+      for (QChar qc : qs)
+        {
+          switch (qc.unicode())
+            {
+            case '\\':
+              out << "\\\\";
+              break;
+            case '\'':
+              out << "\\'";
+              break;
+            case '\"':
+              out << "\\\"";
+              break;
+            case '\r':
+              out << "\\r";
+              break;
+            case '\n':
+              out << "\\n";
+              break;
+            case '\t':
+              out << "\\t";
+              break;
+            case '\v':
+              out << "\\v";
+              break;
+            case '\f':
+              out << "\\f";
+              break;
+            case ' ':
+              out << " ";
+              break;
+            default:
+              out << QString(qc).toStdString();
+              break;
+            }
+        }
+      if (needquotes)
+        out << "'";
+    }
+  return out;
+}// end operator << (std::ostream&out, const QList<QString>&qslist)
+
+////////////////////////////////////////////////////////////////
+
+
+MyqrMainWindow::MyqrMainWindow(QWidget*parent)
+  : QMainWindow(parent),
+    _mainwin_menubar(nullptr),
+    _mainwin_appmenu(nullptr),
+    _mainwin_aboutact(nullptr),
+    _mainwin_aboutqtact(nullptr),
+    _mainwin_debugact(nullptr),
+    _mainwin_editmenu(nullptr),
+    _mainwin_copyact(nullptr),
+    _mainwin_pasteact(nullptr),
+    _mainwin_centralgroup(nullptr),
+    _mainwin_toplabel(nullptr),
+    _mainwin_cmdline(nullptr),
+    _mainwin_textoutput(nullptr)
+{
+  if (the_instance != nullptr)
+    MYQR_FATALOUT("duplicate MyqrMainWndow @" << (void*)the_instance
+                  << " and this@" << (void*)this);
+  _mainwin_menubar = menuBar();
+  _mainwin_appmenu =_mainwin_menubar-> addMenu("App");
+  _mainwin_aboutact = _mainwin_appmenu->addAction("About");
+  _mainwin_aboutact->setToolTip("Give information about software");
+  QObject::connect(_mainwin_aboutact,&QAction::triggered,this,
+                   &MyqrMainWindow::about);
+  _mainwin_aboutqtact = _mainwin_appmenu->addAction("About Qt");
+  _mainwin_debugact = _mainwin_appmenu->addAction("Debug");
+  _mainwin_debugact->setToolTip("Debugging of this q6refpersys");
+  QObject::connect(_mainwin_debugact,&QAction::triggered,this,
+                   &MyqrMainWindow::toggle_debug);
+  _mainwin_debugact->setCheckable(true);
+  _mainwin_debugact->setChecked(myqr_debug);
+  QObject::connect(_mainwin_aboutqtact,&QAction::triggered,this,
+                   &MyqrMainWindow::aboutQt);
+  _mainwin_editmenu =_mainwin_menubar-> addMenu("Edit");
+  _mainwin_copyact =  _mainwin_editmenu->addAction("Copy");
+  _mainwin_pasteact = _mainwin_editmenu->addAction("Paste");
+  _mainwin_centralgroup = new QGroupBox(this);
+  {
+    QVBoxLayout *vbox = new QVBoxLayout;
+    _mainwin_centralgroup->setLayout(vbox);
+    _mainwin_toplabel = new QLabel("q6refpersys");
+    vbox->addWidget(_mainwin_toplabel);
+    _mainwin_cmdline = new QLineEdit(_mainwin_centralgroup);
+    _mainwin_cmdline->setFixedWidth(this->width()-16);
+    vbox->addWidget(_mainwin_cmdline);
+    _mainwin_textoutput = new QTextEdit();
+    _mainwin_textoutput->setReadOnly(true);
+    vbox->addWidget(_mainwin_textoutput);
+  }
+  setCentralWidget(_mainwin_centralgroup);
+  the_instance = this;
+  MYQR_DEBUGOUT("MyqrMainWndow the_instance@" << (void*)the_instance
+                << " parent@" << (void*)parent);
+  setMinimumWidth(minimal_width);
+  setMinimumHeight(minimal_height);
+  setMaximumWidth(maximal_width);
+  setMaximumHeight(maximal_height);
+  MYQR_DEBUGOUT("MyqrMainWndow incomplete constructor this@"
+                << (void*)this);
+  MYQR_BREAKPOINT();
+#warning incomplete MyqrMainWindow constructor
+} // end MyqrMainWindow constructor
+
+MyqrDisplayWindow::MyqrDisplayWindow(QWidget*parent)
+  : QMainWindow(parent)
+{
+  MYQR_DEBUGOUT("MyqrDisplayWindow incomplete constructor this@"
+                << (void*)this);
+  MYQR_BREAKPOINT();
+} // end MyqrDisplayWindow constructor
+
+void
+MyqrDisplayWindow::about()
+{
+  MYQR_DEBUGOUT("unimplemented MyqrDisplayWindow::about this@"
+                << (void*)this);
+  MYQR_BREAKPOINT();
+} // end MyqrDisplayWindow::about
+
+MyqrMainWindow::~MyqrMainWindow()
+{
+  MYQR_DEBUGOUT("MyqrMainWindow destruct this@" << (void*)this);
+  if (the_instance != this)
+    MYQR_FATALOUT("corruption in MyqrMainWndow the_instance@" << (void*)the_instance
+                  << " this@" << (void*)this);
+  the_instance = nullptr;
+  MYQR_BREAKPOINT();
+} // end MyqrMainWindow destructor
+
+MyqrDisplayWindow::~MyqrDisplayWindow()
+{
+  MYQR_DEBUGOUT("MyqrDisplayWindow destruct this@" << (void*)this);
+  MYQR_BREAKPOINT();
+} // end MyqrDisplayWindow destructor
+
+void
+MyqrMainWindow::aboutQt()
+{
+  QApplication::aboutQt();
+} // end MyqrDisplayWindow::aboutQt
+
+void
+MyqrMainWindow::toggle_debug()
+{
+  bool fl = _mainwin_debugact->isChecked();
+#warning unimplemented MyqrMainWindow::toggle_debug
+  MYQR_WARNOUT("unimplemented MyqrMainWindow::toggle_debug "
+               << (fl?"checked":"unchecked")
+               << " "
+               << (myqr_debug?"debugged":"notdebug"));
+} // end MyqrDisplayWindow::toggle_debug
+
+void
+MyqrMainWindow::about()
+{
+  MYQR_DEBUGOUT("MyqrMainWindow::about this=" << this);
+  int ret =
+    QMessageBox::information(this,
+                             QString(myqr_progname),
+                             QString(" built "  __DATE__ "@" __TIME__ "\n")
+                             + QString("git id ")
+                             + QString(myqr_shortgitid)
+                             + QString("\n")
+                             + QString("compiled by ")
+                             + QString(rps_cxx_compiler_realpath));
+  MYQR_DEBUGOUT("incomplete MyqrMainWindow::about ret=" << ret);
+#warning incomplete MyqrMainWindow::about
+} // end MyqrDisplayWindow::about
+////////////////////////////////////////////////////////////////
+
+MyqrApplication::MyqrApplication(int argc, char**argv)
+  : QApplication(argc, argv)
+{
+  MYQR_DEBUGOUT("MyqrApplication constr this@" << (void*)this);
+} // end MyqrApplication::MyqrApplication
+
+MyqrApplication::~MyqrApplication()
+{
+  MYQR_DEBUGOUT("MyqrApplication destr this@" << (void*)this);
+} // end MyqrApplication::MyqrApplication
+
+
+void
+MyqrApplication::compilation_process_started(void)
+{
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  MYQR_DEBUGOUT("compilation_process_started comproc@" << comproc
+                << " pid=" << comproc->processId());
+} // end MyqrApplication::compilation_process_started
+
+void
+MyqrApplication::compilation_process_finished(int exitCode,
+    QProcess::ExitStatus exitStatus)
+{
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  const char*reason=nullptr;
+  bool crashed=false;
+  switch (exitStatus)
+    {
+    case QProcess::NormalExit:
+      reason="normal-exit";
+      break;
+    case QProcess::CrashExit:
+      reason="crash-exit";
+      crashed=true;
+      break;
+    default:
+      MYQR_FATALOUT("unexpected exitStatus#" << (int)exitStatus);
+    };
+  MYQR_WARNOUT("incomplete compilation_process_finished comproc@"
+               << comproc
+               << " pid=" << comproc->processId()
+               << " exitcode=" << exitCode << ' '
+               << (crashed?"crashed":"exited")
+               << " reason=" << reason);
+#warning MyqrApplication::compilation_process_finished incomplete
+} // end MyqrApplication::compilation_process_finished
+
+void
+MyqrApplication::compilation_process_changed_state(QProcess::ProcessState newstate)
+{
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  MYQR_FATALOUT("unimplemented compilation_process_changed_state newstate#"
+                << (int)newstate
+                << " comproc@"
+                << comproc
+                << " pid=" << comproc->processId());
+#warning unimplemented MyqrApplication::compilation_process_changed_state
+} // end MyqrApplication::compilation_process_changed_state
+
+void
+MyqrApplication::compilation_process_errored(QProcess::ProcessError error)
+{
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  MYQR_FATALOUT("unimplemented compilation_process_error newstate#"
+                << (int)error
+                << " comproc@"
+                << comproc
+                << " pid=" << comproc->processId());
+#warning unimplemented MyqrApplication::compilation_process_errored
+} // end MyqrApplication::compilation_process_errored
+
+void
+MyqrApplication::compilation_process_readable(void)
+{
+  MyqrProcess*comproc = dynamic_cast<MyqrProcess*>(sender());
+  MYQR_FATALOUT("unimplemented compilation_process_readable comproc@"
+                << comproc
+                << " pid=" << comproc->processId());
+#warning unimplemented MyqrApplication::compilation_process_readable
+} // end MyqrApplication::compilation_process_readable
+
+
+////////////////////////////////////////////////////////////////
+MyqrProcess::MyqrProcess(QObject*parent)
+  : QProcess(parent), _proc_mtx(), _proc_map()
+{
+  MYQR_DEBUGOUT("MyqrProcess constr this@" << (void*)this);
+};
+
+MyqrProcess::~MyqrProcess()
+{
+  MYQR_DEBUGOUT("MyqrProcess destr this@" << (void*)this);
+  _proc_map.clear();
+};
+
+QObject*
+MyqrProcess::get(const std::string&nam) const
+{
+  QObject* res = nullptr;
+  if (!nam.empty())
+    {
+      auto gpr = std::lock_guard(_proc_mtx);
+      auto it = _proc_map.find(nam);
+      if (it != _proc_map.end())
+        res = it->second;
+    };
+  return res;
+} // end MyqrProcess:get
+
+void
+MyqrProcess::put(const std::string&nam, QObject*obj)
+{
+  if (nam.empty())
+    {
+      MYQR_WARNOUT("empty nam to put inside MyqrProcess");
+      return;
+    };
+  if (!obj)
+    {
+      MYQR_WARNOUT("null obj to put inside MyqrProcess");
+      return;
+    };
+  int ix=0;
+  for (char c: nam)
+    {
+      if (c=='-')
+        {
+          if (ix==0)
+            {
+              MYQR_WARNOUT("bad nam " << nam
+                           << " (dash starting) to put inside MyqrProcess");
+              return;
+            }
+        }
+      else if (!isalnum(c) && c!='_')
+        {
+          MYQR_WARNOUT("bad nam " << nam
+                       << " (non-id) to put inside MyqrProcess");
+          return;
+        };
+      ix++;
+    }
+  auto gpr = std::lock_guard(_proc_mtx);
+  _proc_map.insert({nam,obj});
+} // end MyqrProcess::put
+
+void
+MyqrProcess::remove(const std::string nam)
+{
+  if (nam.empty())
+    return;
+  auto gpr = std::lock_guard(_proc_mtx);
+  _proc_map.erase(nam);
+} // end MyqrProcess::remove
+
+/// iterate on entries until the function returns true (then return true)
+bool
+MyqrProcess::repeat_until(const std::function<MyqrProcess_until_sigt>&fun,
+                          void*data) const
+{
+  if (!fun)
+    return false;
+  auto gpr = std::lock_guard(_proc_mtx);
+  for (auto it: _proc_map)
+    {
+      const std::string curnam = it.first;
+      QObject*curobj = it.second;
+      if (fun(this, curnam, curobj, data))
+        return true;
+    };
+  return false;
+} // end MyqrProcess::repeat_until
+
+bool
+MyqrProcess::repeat_until(const MyqrProcess_until_sigt*pfun,
+                          void*data) const
+{
+  if (!pfun)
+    return false;
+  auto gpr = std::lock_guard(_proc_mtx);
+  for (auto it: _proc_map)
+    {
+      const std::string curnam = it.first;
+      QObject*curobj = it.second;
+      if ((*pfun)(this, curnam, curobj, data))
+        return true;
+    };
+  return false;
+} // end MyqrProcess::repeat_until
+
+void myqr_create_windows(const QString& geom);
+
+void
+myqr_create_windows(const QString& geom)
+{
+  MYQR_DEBUGOUT("incomplete myqr_create_windows geometry "
+                << geom.toStdString() << ";");
+  int w= -1, h= -1;
+  const char*geomcstr = geom.toStdString().c_str();
+  if (geomcstr != nullptr)
+    {
+      int p= -1;
+      MYQR_DEBUGOUT("myqr_create_windows geomcstr='" << geomcstr << "'");
+      if (sscanf(geomcstr, " %dx%d %n", &w, &h, &p) >= 2)
+        {
+          MYQR_DEBUGOUT("scanned w=" << w << " h=" << h
+                        << " geomcstr='" << geomcstr << "' p=" << p);
+        }
+    }
+  if (w<0)
+    w = MyqrMainWindow::default_width;
+  if (h<0)
+    h = MyqrMainWindow::default_height;
+  if (w< MyqrMainWindow::minimal_width)
+    w=MyqrMainWindow::minimal_width;
+  if (h< MyqrMainWindow::minimal_height)
+    h= MyqrMainWindow::minimal_height;
+  MYQR_DEBUGOUT("myqr_create_windows normalized w=" << w << ", h=" << h
+                << " from  geomcstr='" << geomcstr << "'");
+  auto mainwin = new MyqrMainWindow(nullptr);
+  mainwin->resize(w,h);
+  mainwin->show();
+  MYQR_DEBUGOUT("myqr_create_windows incomplete mainwin@" << (void*)mainwin);
+#warning incomplete myqr_create_windows
+} // end myqr_create_windows
+
+std::string myqr_refpersystop;
+
+/// This function gets called when some bytes could be read on the
+/// file descriptor (FIFO) from refpersys to GUI.
+void
+myqr_readable_jsonrpc_cmd(void)
+{
+  MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd start myqr_jsonrpc_cmd_fd="
+                << myqr_jsonrpc_cmd_fd);
+  /*** NOTE:
+
+       We actually expect that most JSON objects sent by refpersys to
+       this GUI process are short, typically a few dozen bytes
+       each. And each JSON message is terminated by a formfeed (which is
+       invalid in JSON, in C "\f") or a double newline, in C "\n\n" ...
+
+       In rare cases refpersys might send a large JSON (over a
+       kilobyte), but we expect this to be not frequent.  In other
+       words, there is a lot of string copying happening here, to ease
+       coding.
+   ***/
+  const std::lock_guard<std::recursive_mutex> lock(myqr_mtx_jsonrpc_cmd);
+  constexpr unsigned jrbufsize= 2048;
+  char buf [jrbufsize+4];
+  memset (buf, 0, sizeof(buf));
+  char errbuf[64];
+  memset (errbuf, 0, sizeof(errbuf));
+  char*errmsg = nullptr;
+  errno = 0;
+  ssize_t rdcnt = read(myqr_jsonrpc_cmd_fd, buf, jrbufsize);
+  int rderr = errno;
+  MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd read JSONRPC cmdfd#" <<
+                myqr_readable_jsonrpc_cmd << " recieved "
+                << rdcnt << " bytes in buffer of " << jrbufsize);
+  if (rdcnt < 0 && rderr > 0)
+    {
+      errmsg = strerror_r(rderr, errbuf, sizeof(errbuf));
+      assert(errbuf[0] != (char)0);
+      MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd read cmdfd#"
+                    << myqr_jsonrpc_cmd_fd << " failed:" << errmsg);
+    };
+  MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd got rdcnt=" << rdcnt
+                << (rderr?" : ":".")
+                << (rderr?errbuf:""));
+  if (rdcnt<0)
+    {
+      if (rderr == EWOULDBLOCK || rderr == EAGAIN || rderr == EINTR)
+        return;
+      MYQR_FATALOUT("myqr_readable_jsonrpc_cmd read fd#"
+                    << myqr_jsonrpc_cmd_fd << " failed: " << errbuf);
+    }
+  else if (rdcnt==0)
+    {
+      MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd got EOF on fd#"
+                    << myqr_jsonrpc_cmd_fd);
+      myqr_jsonrpc_cmd_fd = -1;
+      exit(EXIT_SUCCESS);
+    }
+  buf[rdcnt] = (char)0;
+  MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd incomplete read " << rdcnt
+                << " bytes:" << std::endl << buf);
+  size_t oldcmdlen = myqr_stream_jsonrpc_cmd.tellp();
+  MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd oldcmdlen:" << oldcmdlen);
+  myqr_stream_jsonrpc_cmd.write(buf, rdcnt);
+  char*begm = buf;
+  while(begm && *begm)
+    {
+      char*ff = strchr(begm, '\f');
+      char*nn = strstr(begm, "\n\n");
+      char*eom = nullptr;
+      if (!ff && !nn)
+        {
+          /// the JSON message is incomplete since not ended by formfeed
+          /// or double-newline
+          return;
+        };
+      if (ff != nullptr && nn != nullptr)
+        {
+          eom = (ff < nn)?ff:nn;
+        }
+      else if (ff != nullptr)
+        eom = ff+1;
+      else if (nn != nullptr)
+        eom = nn+2;
+      else
+        {
+          /// this should never happen
+          MYQR_FATALOUT("myqr_readable_jsonrpc_cmd bug ff=" << ff << " nn=" << nn);
+        };
+      int deltaeom = eom - begm;
+      assert(deltaeom > 0);
+      std::string jsonstr;
+      if (oldcmdlen>0)
+        {
+          jsonstr.assign(myqr_stream_jsonrpc_cmd.str());
+          jsonstr.append(begm, deltaeom);
+          oldcmdlen=0;
+        }
+      else
+        jsonstr.assign(begm, deltaeom);
+      begm = eom+1;
+      MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd jsonstr=" << jsonstr);
+      Json::Value jv;
+      std::string errmsg;
+      bool okparse = //
+        myqr_jsonrpc_reader->parse(jsonstr.c_str(), &jsonstr.back(),
+                                   &jv, &errmsg);
+      if (!okparse)
+        MYQR_FATALOUT("myqr_readable_jsonrpc_cmd failed to parse:"
+                      << std::endl  << jsonstr
+                      << std::endl << "error:" << errmsg);
+      MYQR_DEBUGOUT("myqr_readable_jsonrpc_cmd parsed json:"
+                    << std::endl << jv.asString() << std::endl);
+      myqr_process_jsonrpc_from_refpersys(jv);
+    };
+} // end myqr_readable_jsonrpc_cmd
+
+
+
+void
+myqr_writable_jsonrpc_out(void)
+{
+  /// this routine has been Qt-connected to the activated signal of
+  /// myqr_writable_jsonrpc_out
+  MYQR_DEBUGOUT("myqr_writable_jsonrpc_out unimplemented"
+                << " myqr_jsonrpc_out_fd="
+                << myqr_jsonrpc_out_fd
+                << " for myqr_writable_jsonrpc_out="
+                << myqr_writable_jsonrpc_out);
+#warning unimplemented myqr_writable_jsonrpc_out
+} // end myqr_writable_jsonrpc_out
+
+
+
+/// a JSONRPC communication happens with RefPerSys
+void
+myqr_have_jsonrpc(const std::string&jsonrpc)
+{
+  MYQR_DEBUGOUT("myqr_have_jsonrpc incomplete " << jsonrpc);
+  std::string jsonrpc_cmd = jsonrpc+".cmd"; /// written by RefPerSys, read by q6refpersys
+  std::string jsonrpc_out = jsonrpc+".out"; /// read by RefPerSys, written by q6refpersys
+  if (access(jsonrpc_cmd.c_str(), F_OK))
+    {
+      if (mkfifo(jsonrpc_cmd.c_str(), 0660)<0)
+        MYQR_FATALOUT("failed to create command JSONRPC fifo " << jsonrpc_cmd << ":" << strerror(errno));
+      else
+        MYQR_DEBUGOUT("myqr_have_jsonrpc created command fifo " << jsonrpc_cmd);
+    };
+  if (access(jsonrpc_out.c_str(), F_OK))
+    {
+      if (mkfifo(jsonrpc_out.c_str(), 0660)<0)
+        MYQR_FATALOUT("failed to create output JSONRPC fifo " << jsonrpc_out << ":" << strerror(errno));
+      else
+        MYQR_DEBUGOUT("myqr_have_jsonrpc created output fifo " << jsonrpc_out);
+    };
+  myqr_jsonrpc_cmd_fd = open(jsonrpc_cmd.c_str(), 0440 | O_CLOEXEC | O_NONBLOCK);
+  if (myqr_jsonrpc_cmd_fd<0)
+    MYQR_FATALOUT("failed to open command JSONRPC " << jsonrpc_cmd << " for reading:" << strerror(errno));
+  else
+    MYQR_DEBUGOUT("myqr_have_jsonrpc cmd fd#" << myqr_jsonrpc_cmd_fd);
+  myqr_notifier_jsonrpc_cmd = new QSocketNotifier(myqr_jsonrpc_cmd_fd, QSocketNotifier::Read);
+  QObject::connect(myqr_notifier_jsonrpc_cmd,&QSocketNotifier::activated,
+                   myqr_readable_jsonrpc_cmd);
+  myqr_jsonrpc_out_fd = open(jsonrpc_out.c_str(), 0660 | O_CLOEXEC | O_NONBLOCK);
+  if (myqr_jsonrpc_out_fd<0)
+    MYQR_FATALOUT("failed to open output JSONRPC " << jsonrpc_out << " for writing:" << strerror(errno));
+  else
+    MYQR_DEBUGOUT("myqr_have_jsonrpc out fd#" << myqr_jsonrpc_out_fd);
+  myqr_notifier_jsonrpc_out = new QSocketNotifier(myqr_jsonrpc_out_fd,
+    QSocketNotifier::Write);
+  QObject::connect(myqr_notifier_jsonrpc_out,&QSocketNotifier::activated,
+                   myqr_writable_jsonrpc_out);
+  if (setenv("REFPERSYS_JSONRPC", jsonrpc.c_str(), /*overwrite:*/(int)true))
+    {
+      MYQR_FATALOUT("failed to setenv REFPERSYS_JSONRPC to " << jsonrpc
+                    << " :" << strerror(errno));
+    }
+  else
+    {
+      MYQR_DEBUGOUT("myqr_have_jsonrpc did setenv REFPERSYS_JSONRPC to "
+                    << jsonrpc.c_str());
+    };
+  MYQR_DEBUGOUT("myqr_have_jsonrpc installed cmd: " << jsonrpc_cmd << " fd#" << myqr_jsonrpc_cmd_fd
+                << " out: " << jsonrpc_out
+                << " fd#" << myqr_jsonrpc_out_fd);
+  MYQR_DEBUGOUT("myqr_have_jsonrpc ending jsonrpc:" << jsonrpc
+                << " cmd.fd#" << myqr_jsonrpc_cmd_fd << " out.fd#" << myqr_jsonrpc_out_fd);
+} // end myqr_have_jsonrpc
+
+constexpr int myqr_plugin_max_name_length=100;
+
+void
+myqr_initiate_cpp_compilation_to_plugin(const std::vector<std::string> &srcvec,
+                                        const QString& name,
+                                        void* data,
+                                        bool needqtmoc,
+                                        std::function<void(QGenericPlugin*,QString&,void*)> handler,
+                                        std::function<void(QString,void*)> failer)
+{
+  MYQR_DEBUGOUT("starting myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString() << " pid:" << getpid());
+  int namlen = 0;
+  bool badname = false;
+  for (QChar c: name)
+    {
+      if (c=='/' || c=='\\' || c.isNull() || c.isSurrogate() || c.isSpace())
+        badname = true;
+      if (c=='-')
+        badname = (namlen==0);
+      if (!c.isPrint())
+        badname = true;
+      namlen++;
+    };
+  if (name.contains("XXXXXX")) //cf doc.qt.io/qt-6/qtemporaryfile.html
+    badname = true;
+  MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString() << " namlen:" << namlen
+                << " is " << (badname?"bad":"good"));
+  if (badname || namlen>myqr_plugin_max_name_length)
+    MYQR_FATALOUT("myqr_initiate_cpp_compilation_to_plugin name="
+                  << name.toStdString() << " of length " << namlen
+                  << "is bad");
+  QTemporaryFile* tsrcfil = new QTemporaryFile(QString(name)+".cc");
+  QTemporaryFile* tfilso = new QTemporaryFile(QString(name)+".so");
+  int srclen = (int) srcvec.size();
+  MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin name="
+                << name.toStdString()
+                << " tsrcfil:" << tsrcfil->fileName().toStdString()
+                << " tfilso:" << tfilso->fileName().toStdString()
+                << " srclen=" << srclen << " "
+                << (needqtmoc?"need Qt MOC":"no_Qt6moc"));
+  {
+    char inibuf[512];
+    memset (inibuf, 0, sizeof(inibuf));
+    snprintf(inibuf, sizeof(inibuf)-2,
+             "/" "/ temporary C++ file %.250s from %s pid %d git %s",
+             tsrcfil->fileName().toStdString().c_str(), __FILE__,
+             getpid(), myqr_shortgitid);
+    tsrcfil->write(inibuf);
+    tsrcfil->write("\n");
+    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin"
+                  " wrote first line "
+                  << inibuf);
+    snprintf(inibuf, sizeof(inibuf)-2,
+             "/" "/ plugin %.250s to be generated from %s pid %d git %s",
+             tfilso->fileName().toStdString().c_str(), __FILE__,
+             getpid(), myqr_shortgitid);
+    tsrcfil->write(inibuf);
+    tsrcfil->write("\n");
+    tsrcfil->flush();
+    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote second line "
+                  << inibuf);
+  };
+  //// copy the lines myqr_first_decl_line ⋯ myqr_last_decl_line of
+  //// this very file...
+  {
+    char slinbuf[512];
+    int maxwidth = 0;
+    memset (slinbuf, 0, sizeof(slinbuf));
+    FILE* selfil= fopen(myqr_self_file, "r");
+    if (!selfil)
+      MYQR_FATALOUT("failed to read self file " << myqr_self_file
+                    << " : " << strerror(errno));
+    int lineno=0;
+    do
+      {
+        memset (slinbuf, 0, sizeof(slinbuf));
+        char*curlin = fgets(slinbuf, sizeof(slinbuf)-2, selfil);
+        if (!curlin)
+          break;
+        lineno++;
+        int curwidth = strlen(curlin);
+        if (maxwidth < curwidth)
+          maxwidth = curwidth;
+        if (lineno >= myqr_first_decl_line && lineno<=  myqr_last_decl_line)
+          {
+            int wsiz = tsrcfil->write(curlin);
+            if (wsiz<curwidth)
+              MYQR_FATALOUT("failed to copy line#" << lineno << std::endl
+                            << curlin);
+          };
+        if (lineno > myqr_last_decl_line)
+          break;
+      }
+    while (!feof(selfil));
+    if (maxwidth >= (int)sizeof(slinbuf)-4)
+      {
+        MYQR_WARNOUT("maximum width of copied C++ lines is big " << maxwidth
+                     << " bytes");
+      };
+  }
+  //// the comment separating copied lines to own ones
+  {
+    char midbuf[512];
+    memset (midbuf, 0, sizeof(midbuf));
+    snprintf(midbuf, sizeof(midbuf)-2,
+             "\n\f\n/" "/"
+             "// own C++ code file %.250s from %s pid %d git %s",
+             tsrcfil->fileName().toStdString().c_str(),
+             __FILE__,
+             getpid(), myqr_shortgitid);
+  }
+  //// the own emitted lines
+  for (int i= 0; i < srclen; i++)
+    {
+      std::string curlin = srcvec[i];
+      if (curlin.empty() || curlin[curlin.size()-1] != '\n')
+        curlin += '\n';
+      long l = tsrcfil->write(curlin.c_str(), curlin.size());
+      MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote line#" << i
+                    << " " << curlin);
+      if (l < (long)curlin.size())
+        MYQR_FATALOUT("failed to write line#" << i
+                      << " of " << l << " bytes");
+    };
+  {
+    char inibuf[512];
+    memset (inibuf, 0, sizeof(inibuf));
+    snprintf(inibuf, sizeof(inibuf)-2,
+             "/" "/ end of file %.250s from %s pid %d git %s - %d lines",
+             tsrcfil->fileName().toStdString().c_str(), __FILE__,
+             getpid(), myqr_shortgitid, srclen);
+    tsrcfil->write(inibuf);
+    tsrcfil->write("\n");
+    tsrcfil->flush();
+    MYQR_DEBUGOUT("myqr_initiate_cpp_compilation_to_plugin wrote last line "
+                  << inibuf);
+  };
+  /* Should start a compilation process using QProcess */
+  MyqrProcess* comproc = new MyqrProcess();
+  QProcessEnvironment compenv = QProcessEnvironment::systemEnvironment();
+  comproc->setProgram(rps_gnu_make);
+  comproc->setWorkingDirectory(rps_topdirectory);
+  QStringList compargs;
+  compenv.insert("Q6RPS_PLUGIN_SRC", tsrcfil->fileName());
+  compenv.insert("Q6RPS_PLUGIN_SHARED", tfilso->fileName());
+  /**
+   * Our GNUmakefile is building plain q6refpersys plugins (not
+   * needing Qt6 moc tool) with the following command (or run GNU make
+   * with an environment containing Q6RPS_PLUGIN_SRC &
+   * Q6RPS_PLUGIN_SHARED)
+   *
+   * make plain-q6rps-plugin Q6RPS_PLUGIN_SRC=⋯ Q6RPS_PLUGIN_SHARED=⋯
+  **/
+  if (needqtmoc)
+    {
+      compargs << "qt-q6rps-plugin";
+#warning unimplemented myqr_initiate_cpp_compilation_to_plugin for Qt6 moc
+      MYQR_FATALOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
+                    << name.toStdString() << " file "
+                    << tsrcfil->fileName().toStdString()
+                    << " needs to run Qt6 moc compiler");
+    }
+  else
+    {
+      compargs << "plain-q6rps-plugin";
+    };
+  /// redirect stdin from /dev/null
+  comproc->setStandardInputFile(QProcess::nullDevice());
+  /// merge stderr & stdout of the compilation process
+  comproc->setProcessChannelMode(QProcess::MergedChannels);
+  // should connect appropriately to read compilation errors.
+  QObject::connect(comproc, SIGNAL(MyqrProcess::started()),
+                   myqr_app,
+                   SLOT(MyqrApplication::compilation_process_started()));
+  QObject::connect(comproc, SIGNAL(MyqrProcess::finished()),
+                   myqr_app,
+                   SLOT(MyqrApplication::compilation_process_finished()));
+  comproc->start();
+#warning incomplete myqr_initiate_cpp_compilation_to_plugin
+  MYQR_WARNOUT("incomplete myqr_initiate_cpp_compilation_to_plugin name="
+               << name.toStdString() << " file "
+               << tsrcfil->fileName().toStdString());
+} // end myqr_initiate_cpp_compilation_to_plugin
+
+void
+myqr_start_refpersys(const std::string& refpersysprog,
+                     QStringList&arglist)
+{
+  std::string prog= refpersysprog;
+  qint64 pid= 0;
+  MYQR_DEBUGOUT("starting myqr_start_refpersys " << refpersysprog
+                << " " << arglist << " from " << myqr_progname
+                << " on " << myqr_host_name
+                << " pid " << (int)getpid() << " git " << myqr_git_id);
+  if (refpersysprog.empty())
+    {
+      prog = "refpersys";
+    }
+  else if (refpersysprog[0] == '-')
+    {
+      prog = "refpersys";
+      arglist.prepend(QString(refpersysprog.c_str()));
+    };
+  MYQR_DEBUGOUT("myqr_start_refpersys prog=" << prog << " arglist=" << arglist
+                << "before process creation from pid " << (int)getpid());
+  myqr_refpersys_process = new QProcess();
+  std::string progname;
+  if (prog.find('/') == std::string::npos)
+    {
+      const char* path = getenv("PATH");
+      const char*pc = nullptr;
+      const char*colon = nullptr;
+      const char*nextpc = nullptr;
+      MYQR_DEBUGOUT("myqr_start_refpersys PATH=" << path
+                    << " prog=" << prog);
+      for (pc = path; pc && *pc; pc = nextpc)
+        {
+          colon = strchr(pc, ':');
+          nextpc = colon?(colon+1):nullptr;
+          std::string dir(pc, colon?(colon-pc):strlen(pc));
+          std::string exepath = dir + "/" + prog;
+          MYQR_DEBUGOUT("myqr_start_refpersys pc="
+                        << pc << " dir=" << dir << " exepath=" << exepath);
+          if (!access(exepath.c_str(), F_OK|X_OK))
+            {
+              progname = exepath;
+              MYQR_DEBUGOUT("myqr_start_refpersys progname=" << progname);
+              nextpc = nullptr;
+              break;
+
+            }
+        };
+      if (progname.empty())
+        MYQR_FATALOUT("failed to find program " << prog
+                      << " in PATH=" << path);
+    }
+  else
+    {
+      MYQR_DEBUGOUT("myqr_start_refpersys prog has slash " << prog);
+      progname = prog;
+    };
+  myqr_refpersys_process->setProgram(QString(progname.c_str()));
+  myqr_refpersys_process->setArguments(arglist);
+  MYQR_DEBUGOUT("myqr_start_refpersys before starting " << progname
+                << " with arguments " << arglist
+                << " git " << myqr_git_id
+                << " myqr_refpersys_process@" << (void*)myqr_refpersys_process);
+  errno = 0;
+  if (!myqr_refpersys_process->startDetached(&pid))
+    {
+      int e = errno;
+      MYQR_FATALOUT("failed to start refpersys program: " << prog
+                    << " from " << myqr_progname << " pid:" << getpid()
+                    << " errno:" << strerror(e));
+    };
+  MYQR_DEBUGOUT("myqr_start_refpersys started " << prog
+                << " with arguments " << arglist
+                << " as pid " << pid);
+  myqr_refpersys_pid = (pid_t) pid;
+  usleep (320*1024);
+  /// hopefully let the refpersys process run a little bit...
+} // end myqr_start_refpersys
+
+
+
+/// process the JSONRPC2 message recieved from refpersys
+void
+myqr_process_jsonrpc_from_refpersys(const Json::Value&js)
+{
+  static std::atomic<unsigned int> cnt;
+  unsigned int num = ++cnt;
+  MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys got JSONRPC#" << num
+                << std::endl
+                << myqr_json2str(js));
+  if (!js.isObject())
+    MYQR_FATALOUT("non object jsonrpc#" << num
+                  << " from refpersys " << std::endl
+                  << myqr_json2str(js));
+  if (!js.isMember("jsonrpc") || js["jsonrpc"] != "2.0")
+    MYQR_FATALOUT("invalid jsonrpc2#" << num
+                  <<" from refpersys " << std::endl
+                  << myqr_json2str(js));
+  if (!js.isMember("method") || !js["method"].isString())
+    MYQR_FATALOUT("missing or bad method from JSONRPC#" << num
+                  << " refpersys " << std::endl
+                  << myqr_json2str(js));
+  const std::string methname = js["method"].asString();
+  MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys JSONRPC#" << num
+                << " methname=" << methname);
+  /// the below lock is useful if another thread is calling
+  /// MyqrJsonRpcFromRefPerSys::forget_handler
+  std::lock_guard<std::recursive_mutex>
+  gu(MyqrJsonRpcFromRefPerSys::myjr_mtx);
+  struct myjr_handler_st* handlerp =
+    MyqrJsonRpcFromRefPerSys::find_handler(methname);
+  if (handlerp)
+    {
+      MYQR_DEBUGOUT("myqr_process_jsonrpc_from_refpersys JSONRPC#" << num
+                    << " methname=" << methname << " found handler");
+    }
+#warning myqr_process_jsonrpc_from_refpersys incomplete
+  MYQR_FATALOUT("incomplete myqr_process_jsonrpc_from_refpersys"
+                << std::endl
+                << myqr_json2str(js));
+} // end myqr_process_jsonrpc_from_refpersys
+
+
+
+
+/// do a remote procedure call to RefPerSys using our JSONRPC variant
+void
+myqr_call_jsonrpc_to_refpersys
+(const std::string& method,
+ const Json::Value& args,
+ const std::function<void(const Json::Value&res)>& resfun)
+{
+  Json::Value jresult;
+  static int count;
+  {
+    std::lock_guard<std::recursive_mutex> lock(myqr_mtx_jsonrpc_out);
+    Json::Value jreq(Json::objectValue);
+    jreq["jsonrpc"] = "2.0";
+    jreq["method"] = method;
+    jreq["params"] = args;
+    jreq["id"] = ++count;
+    myqr_deque_jsonrpc_out.push_back(jreq);
+    myqr_jsonrpc_out_procmap.insert_or_assign(count, resfun);
+    MYQR_DEBUGOUT("myqr_call_jsonrpc_to_refpersys jreq:"
+                  << myqr_json2str(jreq));
+
+  }
+  usleep(500);
+  {
+    std::lock_guard<std::recursive_mutex> lock(myqr_mtx_jsonrpc_out);
+    if (!myqr_deque_jsonrpc_out.empty())
+      {
+        Json::Value joldreq = myqr_deque_jsonrpc_out.front();
+        myqr_deque_jsonrpc_out.pop_front();
+        myqr_stream_jsonrpc_out << myqr_json2str(joldreq)
+                                << "\n\f" << std::flush;
+      }
+    std::string outs = myqr_stream_jsonrpc_out.str();
+    size_t outslen = outs.size();
+    errno = 0;
+    ssize_t wcnt = write(myqr_jsonrpc_out_fd, outs.c_str(), outslen);
+    MYQR_DEBUGOUT("myqr_call_jsonrpc_to_refpersys outslen:" << outslen
+                  << " wcnt:" << wcnt << " outfd#" << myqr_jsonrpc_out_fd
+                  << " errno:" << strerror(errno) << " pid:" << (int)getpid());
+    if (wcnt>0)   // https://stackoverflow.com/a/4546562
+      {
+        if ((long)wcnt<(long)outslen)
+          {
+            outs.erase(0, wcnt);
+            MYQR_DEBUGOUT("myqr_call_jsonrpc_to_refpersys outs becomes: '"
+                          << outs << "'");
+            myqr_stream_jsonrpc_out.str(outs);
+          }
+        else   // https://stackoverflow.com/a/20792
+          {
+            MYQR_DEBUGOUT("myqr_call_jsonrpc_to_refpersys outs cleared");
+            myqr_stream_jsonrpc_out.str("");
+          }
+      }
+#warning incomplete myqr_call_jsonrpc_to_refpersys
+  }
+} // end  myqr_call_jsonrpc_to_refpersys
+
+
+
+std::string
+myqr_json2str(const Json::Value&jv)
+{
+  Json::StreamWriterBuilder builder;
+  builder["commentStyle"] = "None";
+  builder["indentation"] = " ";
+  auto str = Json::writeString(builder, jv);
+  return str;
+} // end myqr_json2str
+
+
+
+
+////////////////////////////////////////////////////////////////
+extern "C" void myqr_get_topdir(void);
+void
+myqr_get_topdir(void)
+{
+  char*rfpt = getenv("REFPERSYS_TOPDIR");
+  if (rfpt)
+    {
+      if (access(rfpt, R_OK))
+        {
+          int e=errno;
+          std::clog << myqr_progname << " has bad REFPERSYS_TOPDIR="
+                    << rfpt << ":" << strerror(e) << std::endl;
+          exit(EXIT_FAILURE);
+        }
+      else
+        myqr_refpersys_topdir = std::string(rfpt);
+    }
+  else
+    {
+      std::clog << myqr_progname << " needs a REFPERSYS_TOPDIR from environment"
+                << std::endl;
+      exit(EXIT_FAILURE);
+    };
+} // end myqr_get_topdir
+
+int
+main(int argc, char **argv)
+{
+  myqr_progname = argv[0];
+  for (int i=1; i<argc; i++)
+    {
+      if (!strcmp(argv[i], "-D") || !strcmp(argv[i], "--debug"))
+        {
+          qDebug().setVerbosity(QDebug::DefaultVerbosity);
+          myqr_debug = true;
+        }
+    }
+  MYQR_BREAKPOINT();
+  myqr_get_topdir();
+  MYQR_BREAKPOINT();
+  gethostname(myqr_host_name, sizeof(myqr_host_name)-1);
+  char parentbuf[384];
+  memset (parentbuf, 0, sizeof(parentbuf));
+  {
+    char exbuf[40];
+    memset (exbuf, 0, sizeof(exbuf));
+    snprintf(exbuf, sizeof(exbuf)-1, "/proc/%d/exe", (int)getppid());
+    if (readlink(exbuf, parentbuf, sizeof(parentbuf)-1) < 0)
+      strcpy(parentbuf, "??");
+  }
+  MYQR_DEBUGOUT("starting " << myqr_progname << " on " << myqr_host_name
+                << " git " << myqr_shortgitid << " pid " << (int)getpid()
+                << " ppid=" << (int)getppid() << " running " << parentbuf
+                << " argc=" << argc
+                << " dynamic qVersion=" << qVersion());
+  myqr_jsoncpp_reader_builder["collectComments"] = false;
+  myqr_jsoncpp_reader_builder["rejectDupKeys"] = true;
+  myqr_jsoncpp_writer_builder["commentStyle"] = "None";
+  myqr_jsoncpp_writer_builder["indentation"] = "";
+  myqr_jsonrpc_reader = myqr_jsoncpp_reader_builder.newCharReader();
+  QCoreApplication::setApplicationName("q6refpersys");
+  QCoreApplication::setApplicationVersion(QString("version ") + myqr_git_id
+                                          + " " __DATE__ "@" __TIME__);
+  MyqrApplication the_app(argc, argv);
+  myqr_app = &the_app;
+  MYQR_DEBUGOUT("main the_app@" << (void*)&the_app << " argc:" << argc
+                << " myqr_app:" << myqr_app);
+  QCommandLineParser cli_parser;
+  MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser);
+  cli_parser.setApplicationDescription("Qt6 graphical interface"
+                                       " to refpersys inference engine");
+  cli_parser.addVersionOption();
+  cli_parser.addHelpOption();
+  MYQR_DEBUGOUT("main cli_parser has version&help"
+                << " cli_parser@" << (void*)&cli_parser);
+  QCommandLineOption debug_opt(QStringList() << "D" << "debug",
+                               "show debugging messages");
+  cli_parser.addOption(debug_opt);
+  QCommandLineOption jsonrpc_opt{{"J", "jsonrpc"},
+    "Use $JSONRPC.out and $JSONRPC.cmd fifos.\n"
+    "Also sets the REFPERSYS_JSONRPC environment variable to $JSONRPC.", "JSONRPC"};
+  cli_parser.addOption(jsonrpc_opt);
+  QCommandLineOption geometry_opt{{"G", "geometry"},
+    "Main window geometry is W*H,\n... e.g. --geometry 400x650", "WxH"};
+  cli_parser.addOption(geometry_opt);
+  QCommandLineOption
+  refpersys_opt{{"S", "start-refpersys"},
+    "Starts the given $REFPERSYS, defaulted to refpersys\n"
+    "if a --jsonrpc was given the refpersys command gets them",
+    "REFPERSYS", QString("refpersys")};
+  cli_parser.addOption(refpersys_opt);
+  MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser
+                << " before process");
+  cli_parser.process(the_app);
+  MYQR_DEBUGOUT("main cli_parser@" << (void*)&cli_parser
+                << " myqr_app=" << myqr_app);
+  QStringList args = cli_parser.positionalArguments();
+  MYQR_DEBUGOUT("main args:" << args);
+  QString geomstr = cli_parser.value(geometry_opt);
+  MYQR_DEBUGOUT("main geomstr:" << geomstr.toStdString());
+  MYQR_DEBUGOUT("main debug:" << cli_parser.value(debug_opt).toStdString());
+  MYQR_DEBUGOUT("main startrefpersys:" << cli_parser.value(refpersys_opt).toStdString()
+                << (cli_parser.isSet(refpersys_opt)?" is set":" is not set"));
+  myqr_create_windows(geomstr);
+  if (cli_parser.isSet(jsonrpc_opt))
+    myqr_have_jsonrpc(cli_parser.value(jsonrpc_opt).toStdString());
+  if (cli_parser.isSet(refpersys_opt))
+    {
+      if (cli_parser.isSet(jsonrpc_opt))
+        args += cli_parser.value(jsonrpc_opt);
+      myqr_start_refpersys(cli_parser.value(refpersys_opt).toStdString(), args);
+    };
+  ///
+  MYQR_DEBUGOUT("main jsonrpc_opt:" << cli_parser.value(jsonrpc_opt).toStdString()
+                << " refpersys_opt: " <<  cli_parser.value(refpersys_opt).toStdString()
+                << " jsonrpc:" << myqr_jsonrpc << " pid:" << myqr_refpersys_pid);
+  if (cli_parser.isSet(jsonrpc_opt) && cli_parser.isSet(refpersys_opt))
+    {
+      Json::Value jargs(Json::objectValue);
+      jargs["gitid"] = myqr_git_id;
+      jargs["runtime_Qt"] = qVersion();
+      jargs["compile_Qt"] = QTCORE_VERSION_STR;
+      MYQR_DEBUGOUT("myqr_have_jsonrpc jargs is " << myqr_json2str(jargs));
+      MYQR_DEBUGOUT("myqr_have_jsonrpc jargs=" << jargs << " call _VERSION" << " refpersys_pid:" << myqr_refpersys_pid);
+      myqr_call_jsonrpc_to_refpersys("_VERSION", jargs,
+                                     [&] (const Json::Value&jres)
+      {
+        MYQR_DEBUGOUT("myqr_have_jsonrpc _VERSION got " <<  myqr_json2str(jres)
+                      << " with jargs " <<  myqr_json2str(jargs));
+      });
+    }
+  MYQR_DEBUGOUT("main before applexecloop");
+  int execret = myqr_app->exec();
+  MYQR_DEBUGOUT("main after applexecloop execret=" << execret);
+  if (myqr_refpersys_pid>0)
+    {
+      /// the RefPerSys engine has been started by q6refpersys so
+      /// should be killed here...
+      MYQR_DEBUGOUT("main kill with SIGTERM refpersys pid#" << myqr_refpersys_pid);
+      errno = 0;
+      if (kill(myqr_refpersys_pid, SIGTERM)<0)
+        {
+          MYQR_FATALOUT("failed to TERM refpersys pid#" << myqr_refpersys_pid
+                        << ":" << strerror(errno));
+        }
+    }
+  myqr_app = nullptr;
+  MYQR_DEBUGOUT("main returns execret=" << execret);
+  return execret;
+} // end main
+
+
+
+const char myqr_git_id[] = GITID;
+const char myqr_shortgitid[] = SHORT_GITID;
+char* myqr_progname;
+char myqr_host_name[sizeof(myqr_host_name)];
+std::string myqr_refpersys_topdir;
+MyqrApplication *myqr_app;
+bool myqr_debug;
+std::string myqr_jsonrpc;
+Json::CharReaderBuilder myqr_jsoncpp_reader_builder;
+Json::StreamWriterBuilder myqr_jsoncpp_writer_builder;
+Json::CharReader* myqr_jsonrpc_reader;
+int myqr_jsonrpc_cmd_fd = -1;
+int myqr_jsonrpc_out_fd = -1;
+std::recursive_mutex myqr_mtx_jsonrpc_cmd;
+std::stringstream myqr_stream_jsonrpc_cmd;
+QProcess*myqr_refpersys_process;
+QSocketNotifier* myqr_notifier_jsonrpc_cmd;
+QSocketNotifier* myqr_notifier_jsonrpc_out;
+std::recursive_mutex myqr_mtx_jsonrpc_out;
+std::deque<Json::Value> myqr_deque_jsonrpc_out;
+std::stringstream myqr_stream_jsonrpc_out;
+std::map<int,std::function<void(const Json::Value&res)>> myqr_jsonrpc_out_procmap;
+pid_t myqr_refpersys_pid;
+
+
+#include "_q6refpersys-moc.cc"
+
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR; make q6refpersys" ;;
+ ** End: ;;
+ **
+ ****************/

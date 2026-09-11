@@ -1,0 +1,547 @@
+// file RefPerSys/tools/fox-refpersys.cc
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/***
+    © Copyright (C) 2026 by Basile STARYNKEVITCH, France
+   program released under GNU General Public License v3+
+
+   This is free software; you can redistribute it and/or modify it under
+   the terms of the GNU General Public License as published by the Free
+   Software Foundation; either version 3, or (at your option) any later
+   version.
+
+   This is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
+
+   This fox-refpersys program is an opensource FOX toolkit application
+   (FOX is a graphical user toolkit for Linux; see
+   https://fox-toolkit.org/ ...) It is the interface to the
+   RefPerSys inference engine on http://refpersys.org/ and
+   communicates with the refpersys process using some JSONRPC2
+   protocol on named fifos. In contrast to refpersys itself, the
+   fox-refpersys process is short lived.
+
+****/
+
+
+///// We may want to generate FOX toolkit temporary C++ code which has to
+///// contain the declarations then compile that code into a dlopen-ed
+///// plugin....  So we remember the first and last lines of this very
+///// C++ source file fox-refpersys.cc to be replicated in generated C++
+///// code by this utility, to be compiled by it (in temporary C++
+///// files) into a temporary C++ plugin.
+
+////////
+extern "C" const int foxrps_first_decl_line, foxrps_last_decl_line;
+const int foxrps_first_decl_line = __LINE__ -2;
+
+extern "C" const char foxrps_self_file[];
+extern "C" const char foxrps_self_basename[];
+
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
+
+#include <iostream>
+#include <memory>
+#include <cstdio>
+#include <unistd.h>
+#include <dlfcn.h>
+#include <assert.h>
+/// a big FOX toolkit header file (including all other FOX headers)
+/// installed in /usr/local/include/fox-1.7/fx.h
+#include <fx.h>
+
+
+extern "C" void foxrps_abort_in(const char*fil, int lin, const char*func)
+  __attribute__((noreturn));
+
+extern "C" const char foxrps_git_id[];
+extern "C" const char foxrps_shortgitid[];
+extern "C" char foxrps_host_name[];
+extern "C" int foxrps_argc;
+extern "C" char** foxrps_argv;
+extern "C" bool foxrps_with_debug;
+extern "C" void* foxrps_dlh;
+extern "C" std::unique_ptr< FX::FXApp> foxrps_ptr_app;
+extern "C" FXRandom foxrps_random;
+
+#ifndef GITID
+#error GITID should be defined in compilation command
+#endif
+
+
+
+//// from generated __buildinfo.c
+extern "C" const char rps_topdirectory[];
+extern "C" const char rps_gitid[];
+extern "C" const char rps_qt6moc[];
+extern "C" const char rps_shortgitid[];
+extern "C" const char rps_gitbranch[];
+extern "C" const char rps_lastgittag[];
+extern "C" const char rps_lastgitcommit[];
+extern "C" const char rps_md5sum[];
+extern "C" const char*const rps_files[];
+extern "C" const char*const rps_subdirectories[];
+extern "C" /// see https://www.gnu.org/software/make/ - a builder tool
+extern "C" const char rps_gnumakefile[];
+extern "C" const char rps_gnu_make[];
+extern "C" const char rps_gnu_make_version[];
+extern "C" const char rps_gnu_make_features[];
+extern "C" /// see https://www.gnu.org/software/bison/ - a parser generator
+extern "C" const char rps_gnu_bison[];
+extern "C" const char rps_gnu_bison_version[];
+extern "C" /// carburetta.com is a lexer & parser generator
+extern "C" /// cf github.com/kingletbv/carburetta
+extern "C" const char rps_carburetta[];
+extern "C" const char rps_carburetta_version[];
+extern "C" const char rps_gui_script_executable[];
+extern "C" const char rps_building_user_name[];
+extern "C" const char rps_building_user_email[];
+extern "C" const char rps_building_host[];
+extern "C" const char rps_building_operating_system[];
+extern "C" const char rps_building_opersysname[];
+extern "C" const char rps_building_machine[];
+extern "C" const char rps_building_machname[];
+extern "C" const char rps_plugin_builder[];
+extern "C" const char rps_cxx_compiler_realpath[];
+extern "C" const char rps_cxx_compiler_version[];
+// end from __timestamp.c
+
+
+
+
+#define FOXRPS_BREAKPOINT_AT(Fil,Lin) do {    \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+    asm volatile ("_" SELF_BASEID "_brk_" #Lin ": nop; nop\n");   \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+    asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n"); \
+ } while(0)
+
+#define FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin) \
+  FOXRPS_BREAKPOINT_AT(Fil,Lin)
+
+#define FOXRPS_BREAKPOINT() FOXRPS_BREAKPOINT_AT_BIS(__FILE__,__LINE__)
+
+#define FOXRPS_FUNC() (strrchr(__PRETTY_FUNCTION__, ' ')+1)
+/// fatal unrecoverable errors
+#define FOXRPS_FATALOUT_AT_BIS(Fil,Lin,Out) do {        \
+  std::clog <<  "FOXRPS FATAL: " << Out << std::flush   \
+      << Fil<<":"<< Lin<< "::"<< __FUNCTION__           \
+        <<  "git:" << foxrps_shortgitid                 \
+        << " host " << foxrps_host_name<< std::endl;    \
+  FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
+  foxrps_abort_in(Fil,Lin,FOXRPS_FUNC());   \
+  } while(0)
+
+#define FOXRPS_FATALOUT_AT(Fil,Lin,Out) \
+  FOXRPS_FATALOUT_AT_BIS(Fil,Lin,Out)
+
+#define FOXRPS_FATALOUT(Out) FOXRPS_FATALOUT_AT(__FILE__,__LINE__,Out)
+
+
+/// serious warnings
+#define FOXRPS_WARNOUT_AT_BIS(Fil,Lin,Out) do {         \
+  std::cerr << "FOXRPS WARNING: " << Out << std::flush  \
+      << Fil<<":"<< Lin<< "::"<< FOXRPS_FUNC()  \
+        <<  "git:" << foxrps_shortgitid                 \
+        << " host " << foxrps_host_name<< std::endl;    \
+  FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);                    \
+  } while(0)
+
+#define FOXRPS_WARNOUT_AT(Fil,Lin,Out) \
+  FOXRPS_WARNOUT_AT_BIS(Fil,Lin,Out)
+
+#define FOXRPS_WARNOUT(Out) FOXRPS_WARNOUT_AT(__FILE__,__LINE__,Out)
+
+#define FOXRPS_DEBUGOUT_AT_BIS(Fil,Lin,Out) do {        \
+    if (foxrps_with_debug)                              \
+      std::clog << basename(Fil) << ":" << Lin    \
+    << "::"<< FOXRPS_FUNC() << " "    \
+    << Out << std::endl;      \
+    FOXRPS_BREAKPOINT_AT_BIS(Fil,Lin);      \
+  } while(0)
+
+#define FOXRPS_DEBUGOUT_AT(Fil,Lin,Out) \
+  FOXRPS_DEBUGOUT_AT_BIS(Fil,Lin,Out)
+
+#define FOXRPS_DEBUGOUT(Out) FOXRPS_DEBUGOUT_AT(__FILE__,__LINE__,Out)
+
+class FoxrpsMainWindow;
+
+class FoxrpsApp : public FX::FXApp
+{
+  FXDECLARE(FoxrpsApp);
+  FoxrpsApp();
+  FoxrpsMainWindow* _app_mainwin;
+public:
+  FoxrpsApp(const FXString&name, const FXString&vendor);
+  virtual ~FoxrpsApp();
+  virtual FXint run(void);
+  virtual void create(void);
+};                              // end FoxrpsApp
+
+// Our main window
+class FoxrpsMainWindow : public FXMainWindow
+{
+  friend class RoxrpsApp;
+  FXDECLARE(FoxrpsMainWindow);
+  FXVerticalFrame* _main_vertframe;
+  FXMenuBar* _main_menubar;
+  FXMenuPane *_main_filemenu;
+  FXMenuCommand *_main_quitcmd;
+protected:
+  FoxrpsMainWindow(): FXMainWindow(),
+    _main_vertframe(nullptr), _main_menubar(nullptr),
+    _main_filemenu(nullptr), _main_quitcmd(nullptr)
+  {
+    FOXRPS_DEBUGOUT("FoxrpsMainWindow @" << (void*)this);
+  };
+public:
+  FoxrpsMainWindow(FXApp *theapp, const FXString&);
+  virtual ~FoxrpsMainWindow();
+  virtual void create(void);
+  virtual void layout(void);
+  virtual void show(void);
+  void output (std::ostream&out) const;
+};        // end FoxrpsMainWindow
+
+extern "C" long foxrps_long_random(void);
+extern "C" double foxrps_double_random(void);
+
+////////////////////////////////////////////////////////////////
+///////////// end of declaration part 
+const int foxrps_last_decl_line = __LINE__ -2;
+
+
+
+
+
+
+
+
+#ifndef SELF_FILE
+#error SELF_FILE should be defined in compilation command
+#endif
+
+#ifndef SELF_BASENAME
+#error SELF_BASENAME should be defined in compilation command
+#endif
+
+const char foxrps_self_file[]= SELF_FILE;
+const char foxrps_self_basename[]= SELF_BASENAME;
+const char foxrps_shortgitid[]=SHORT_GITID;
+const char foxrps_git_id[]=GITID;
+std::unique_ptr< FX::FXApp> foxrps_ptr_app;
+int foxrps_argc;
+char**foxrps_argv;
+char foxrps_host_name[128];
+bool foxrps_with_debug;
+void* foxrps_dlh;
+FXRandom foxrps_random;
+
+FXDEFMAP(FoxrpsApp) FoxrpsAppMap[]=
+{
+};
+
+FXIMPLEMENT(FoxrpsApp,FXApp,
+            FoxrpsAppMap, ARRAYNUMBER(FoxrpsAppMap));
+
+
+FoxrpsApp::FoxrpsApp():
+  FX::FXApp(), _app_mainwin(nullptr)
+{
+  FOXRPS_DEBUGOUT("app @" << (void*)this);
+  _app_mainwin = new FoxrpsMainWindow(this, "foxrps");
+  FOXRPS_DEBUGOUT("app mainwin@" << (void*)_app_mainwin
+                  << " id=" << _app_mainwin->id());
+} // end empty constr FoxrpsApp::FoxrpsApp
+
+FoxrpsApp::FoxrpsApp(const FXString&name, const FXString&vendor)
+  : FX::FXApp(name,vendor), _app_mainwin(nullptr)
+{
+  FOXRPS_DEBUGOUT("name=" << name.text() << ", vendor=" << vendor.text()
+                  << " git " << foxrps_shortgitid << " @" << (void*)this);
+  _app_mainwin = new FoxrpsMainWindow(this,name+"_mainwin");
+}// end constr FoxrpsApp::FoxrpsApp
+
+void
+FoxrpsApp::create(void)
+{
+  FOXRPS_DEBUGOUT("app @" << (void*)this << " create+");
+  FX::FXApp::create();
+  FOXRPS_DEBUGOUT("app @" << (void*)this << " create-d");
+} // end FoxrpsApp::create()
+
+FoxrpsApp::~FoxrpsApp()
+{
+  FOXRPS_DEBUGOUT("destr app @" << (void*)this);
+} // end destr FoxrpsApp::~FoxrpsApp
+
+FXint
+FoxrpsApp::run(void)
+{
+  FOXRPS_DEBUGOUT("run app @" << (void*)this);
+  int w = reg().readIntEntry("mainwin","width",600);
+  int h = reg().readIntEntry("mainwin","height",430);
+  FOXRPS_DEBUGOUT("w=" << w << ", h=" << h);
+  _app_mainwin->setWidth(w);
+  _app_mainwin->setHeight(h);
+  _app_mainwin->create();
+  _app_mainwin->layout();
+  _app_mainwin->show();
+  FOXRPS_DEBUGOUT("show _app_mainwin@" << (void*)_app_mainwin);
+  FXint i = FX::FXApp::run();
+  FOXRPS_DEBUGOUT("did run app @" << (void*)this << " i=" << i);
+  return i;
+} // end FoxrpsApp::run
+
+FXDEFMAP(FoxrpsMainWindow) FoxrpsMainWindowMap[]
+{
+};
+
+FXIMPLEMENT(FoxrpsMainWindow,FXMainWindow,
+            FoxrpsMainWindowMap, ARRAYNUMBER(FoxrpsMainWindowMap));
+
+FoxrpsMainWindow::FoxrpsMainWindow(FXApp *theapp, const FXString&name)
+  :  FXMainWindow(theapp,name),
+     _main_vertframe(nullptr), _main_menubar(nullptr),
+     _main_filemenu(nullptr), _main_quitcmd(nullptr)
+{
+  FOXRPS_DEBUGOUT("constr mainwin this@" << (void*)this << " id=" << id()
+                  << " name=" << name.text()
+                  << " theapp@" << (void*)theapp);
+  FOXRPS_BREAKPOINT();
+#warning incomplete FoxrpsMainWindow constructor
+} // end FoxrpsMainWindow::FoxrpsMainWindow
+
+FoxrpsMainWindow::~FoxrpsMainWindow()   //virtual destructor
+{
+  FOXRPS_DEBUGOUT("destr this@" << (void*)this << " id=" << id());
+#warning incomplete FoxrpsMainWindow destructor
+} // end FoxrpsMainWindow::~FoxrpsMainWindow
+
+void
+FoxrpsMainWindow::create(void)  // virtual method
+{
+  FOXRPS_DEBUGOUT("this@" << (void*)this
+                  << " id=" << id());
+  FXMainWindow::create();
+  _main_menubar = new FX::FXMenuBar(this, nullptr,
+                                    LAYOUT_TOP|LAYOUT_FILL_X,
+                                    1, // x
+                                    1); //y
+  _main_menubar->create();
+  FOXRPS_DEBUGOUT("main winid#" << id());
+  FOXRPS_DEBUGOUT("main winid#" << id() << " x="<< getX());
+  FOXRPS_DEBUGOUT("menubarid#" << _main_menubar->id()
+                  << " x=" << _main_menubar->getX()
+                  << " y=" << _main_menubar-getY());
+#warning incomplete FoxrpsMainWindow::create
+} // end FoxrpsMainWindow::create
+
+void
+FoxrpsMainWindow::layout(void)   // virtual method
+{
+  int x= (foxrps_long_random() & 0xff) + 4;
+  int y= (foxrps_long_random() & 0xff) + 2;
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::layout+ this@" << (void*)this
+                  << " id=" << id() << " x=" << x << " y=" << y);
+  FXMainWindow::move(x,y);
+  FOXRPS_DEBUGOUT("moved this@" << (void*)this << " to x=" << x
+                  << " y=" << y);
+  FXMainWindow::layout();
+  FOXRPS_DEBUGOUT("did mainwin layout"
+                  << " id=" << id() << " width=" << getWidth()
+                  << " height=" << getHeight()
+                  << " x=" << getX() << " y=" << getY());
+  _main_menubar->layout();
+  FOXRPS_DEBUGOUT("did menubar layout this@" << (void*)this
+                  << " id=" << id()
+                  << " menubar: id=" << _main_menubar->id()
+                  << " width=" << _main_menubar->getWidth()
+                  << " height=" << _main_menubar->getHeight()
+                  << " x=" << _main_menubar->getX()
+                  << " y=" << _main_menubar->getY());
+#warning incomplete FoxrpsMainWindow::layout
+} // end FoxrpsMainWindow::layout
+
+void
+FoxrpsMainWindow::show(void)   // virtual method
+{
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::show+ this@" << (void*)this
+                  << " id=" << id());
+  FXMainWindow::show();
+  FOXRPS_DEBUGOUT("mainwin show this@" << (void*)this
+                  << " id=" << id() << " width=" << getWidth()
+                  << " height=" << getHeight()
+                  << " x=" << getX() << " y=" << getY());
+#warning incomplete FoxrpsMainWindow::show
+} // end FoxrpsMainWindow::show
+
+void
+FoxrpsMainWindow::output(std::ostream&out) const
+{
+  FOXRPS_DEBUGOUT("FoxrpsMainWindow::output+ this@" << (void*)this
+                  << " id=" << id());
+#warning incomplete FoxrpsMainWindow::output
+  out << "FoxrpsMainWindow@" << (void*)this;
+} // end FoxrpsMainWindow::output
+
+
+////////////////
+
+static void
+foxrps_usage(void)
+{
+  std::cout << foxrps_argv[0] << " usage:" << std::endl;
+  std::cout << " -D | --debug      # debug output" << std::endl;
+  std::cout << " --help          # this help" << std::endl;
+  std::cout << " --version       # version info" << std::endl;
+  std::cout << "*incomplete* on "
+            << __FILE__ << ":" << __LINE__ << std::endl;
+#warning incomplete foxrps_usage
+} // end foxrps_usage
+
+long
+foxrps_long_random(void)
+{
+  foxrps_random.next();
+  return foxrps_random.randLong();
+} // end foxrps_long_random
+
+double
+foxrps_double_random(void)
+{
+  foxrps_random.next();
+  return foxrps_random.randDouble();
+} // end foxrps_double_random
+
+static void
+foxrps_show_version(void)
+{
+  std::cout << foxrps_argv[0] << " git " << foxrps_shortgitid
+            << " compiled by " << rps_cxx_compiler_realpath
+            << ": " << rps_cxx_compiler_version << std::endl
+            << " … using FOX toolkit "
+            << FOX_MAJOR << "." << FOX_MINOR
+            << "." << FOX_LEVEL << "-"
+            << FXApp::copyright << std::endl;
+  std::cout << "see "
+            << "tools/" __FILE__
+            << " under github.com/RefPerSys/RefPerSys" << std::endl;
+  std::cout << "*NO WARRANTY* since GPLv3+ licensed, see "
+            << "www.gnu.org/licenses/gpl-3.0.html" << std::endl;
+} // end foxrps_show_version
+
+static void
+foxrps_prog_args(void)
+{
+  // should parse foxrps_argc & foxrps_argv
+  assert (foxrps_argc>0);
+  assert (foxrps_argv!=nullptr);
+  for (int argix=1; argix<foxrps_argc; argix++)
+    {
+      const char*curarg = foxrps_argv[argix];
+      if (!curarg)
+        break;
+      if (!strcmp(curarg, "--debug") || !strcmp(curarg, "-D"))
+        foxrps_with_debug = true;
+      else if (!strcmp(curarg, "--version"))
+        {
+          foxrps_show_version();
+        }
+      else if (!strcmp(curarg, "--help"))
+        {
+          foxrps_usage();
+        }
+    }
+#warning incomplete foxrps_prog_args
+} // end foxrps_prog_args
+
+
+int
+main(int argc, char**argv)
+{
+  int exitcode = 0;
+  foxrps_argc = argc;
+  foxrps_argv = argv;
+  foxrps_random.seed(getpid());
+  memset (foxrps_host_name, 0, sizeof(foxrps_host_name));
+  gethostname(foxrps_host_name, sizeof(foxrps_host_name)-1);
+  foxrps_dlh = dlopen(nullptr, RTLD_NOW);
+  if (!foxrps_dlh)
+    FOXRPS_FATALOUT(argv[0] << " failed to dlopen self "
+                    << dlerror());
+  FOXRPS_BREAKPOINT();
+  if (foxrps_argc>1)
+    {
+      if (!strcmp(foxrps_argv[1], "--version"))
+        {
+          foxrps_show_version();
+          return 0;
+        }
+      else if (!strcmp(foxrps_argv[1], "--help"))
+        {
+          foxrps_usage();
+          return 0;
+        }
+      else if (!strcmp(foxrps_argv[1], "--debug")
+               || !strcmp(foxrps_argv[1], "-D"))
+        foxrps_with_debug = true;
+    };
+  if (fxversion[0]!=FOX_MAJOR || fxversion[1]!=FOX_MINOR)
+    {
+      FOXRPS_FATALOUT(foxrps_argv[0]
+                      << " incompatibly linked to FOX toolkit "
+                      << fxversion[0] << "." << fxversion[1] << "."
+                      << fxversion[2] << " but built for "
+                      << FOX_MAJOR << "." << FOX_MINOR
+                      << "." << FOX_LEVEL);
+    };
+  if (fxversion[2] != FOX_LEVEL)
+    {
+      FOXRPS_WARNOUT(foxrps_argv[0] << " linked to FOX toolkit "
+                     << fxversion[0] << "." << fxversion[1] << "."
+                     << fxversion[2] << " but built for "
+                     << FOX_MAJOR << "." << FOX_MINOR
+                     << "." << FOX_LEVEL);
+    };
+  FOXRPS_DEBUGOUT("main before app fox " << fxversion[0]
+                  << "." << fxversion[1] << "." << fxversion[2]
+                  << " dlh=" << foxrps_dlh);
+  FoxrpsApp the_app("fox-refpersys", "refpersys.org");
+  foxrps_ptr_app.reset(&the_app);
+  the_app.init(argc, argv);
+  FOXRPS_DEBUGOUT("main the_app@" << (void*)&the_app);
+  foxrps_prog_args();
+  FOXRPS_DEBUGOUT("main create the_app@" << (void*)&the_app);
+  the_app.create();
+  FOXRPS_DEBUGOUT("main registry read the_app@" << (void*)&the_app);
+  the_app.reg().read();
+  FOXRPS_DEBUGOUT("main before run the_app@" << (void*)&the_app);
+  exitcode = the_app.run();
+  FOXRPS_DEBUGOUT("after run exitcode=" << exitcode);
+  foxrps_ptr_app.release();
+  FOXRPS_DEBUGOUT("main exit code=" << exitcode);
+  return exitcode;
+} // end of main
+
+void
+foxrps_abort_in(const char*fil, int lin, const char*func)
+{
+  FOXRPS_DEBUGOUT("**abort in " << fil << ":" << lin << ":" << func);
+  FOXRPS_BREAKPOINT();
+  abort();
+} // end foxrps_abort_in
+
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** compile-command: "cd $REFPERSYS_TOPDIR && make fox-refpersys" ;;
+ ** End: ;;
+ **
+ ****************/

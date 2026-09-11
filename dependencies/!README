@@ -1,0 +1,45 @@
+This dependencies/ subdirectory of the RefPerSys (REFlexive PERsistent
+SYStem) free software inference engine project (see
+http://refpersys.org/ and code on
+https://github.com/RefPerSys/RefPerSys/ ....) should contain small
+self-sufficient dependencies (in C++ or C) useful to it.
+
+A small dependency is an open source code of less than a dozen textual
+files and less than ten thousand lines in total.
+
+Before adding anything here, discuss the addition on
+<team@refpersys.org> and <forum@refpersys.org> or by whatsapp. Be sure
+to tell where do you found the source code and under what licence (it
+should be GPLv3+ compatible).
+
+When adding some files here, please use the following conventions
+
+If possible, contact their original authors and mention RefPerSys to
+them and get their explict permission to copy their source files (and
+mention their name and perhaps email).
+
+Make a single subdirectory, whose name is short and some C identifier.
+
+Copy in that single subdirectory the header files and the
+implementation files.
+
+Add SPDX licence comments in the first few lines if they are not
+there.
+
+Add a file named !README giving name of original authors, URL of
+original source code, and date (month, year) when you contacted the
+original authors.
+
+Edit the ChangeLog file if possible.
+
+Edit RefPerSys build code (GNUmakefile or other). Test that the build
+works and that redumping works.
+
+(February, 2024)
+
+-- 
+Basile Starynkevitch             <basile@starynkevitch.net>
+(only mine opinions / les opinions sont miennes uniquement)
+8 rue de la Faïencerie, 92340 Bourg-la-Reine, France
+web page: starynkevitch.net/Basile/
+See/voir:   https://github.com/RefPerSys/RefPerSys

@@ -1,0 +1,9 @@
+#pragma message "RefPerSys bisonc++ bisonc++polymorphic.code"
+$insert idoftag
+
+size_t const *s_nErrors_;
+
+Base::~Base()
+{}
+
+}   // namespace Meta_

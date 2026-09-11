@@ -1,0 +1,62 @@
+// file RefPerSys/bispprepl_rps.yyp input to bisonc++
+// SPDX-License-Identifier: GPL-3.0-or-later
+// see https://fbb-git.gitlab.io/bisoncpp/ and refpersys.org
+//      © Copyright 2025 The Reflective Persistent System Team
+//      team@refpersys.org
+//
+%default-actions warn
+%baseclass-preinclude "refpersys.hh"
+%error-verbose
+%no-lines
+%print-tokens
+// parser class
+%class-name RpsBisPpRepl_Parser
+%filenames _bispprepl_rps
+%debug
+%start repl_atom
+
+%token  TOK_INT                  // integral numbers
+%token  TOK_DOUBLE
+%token  TOK_OID
+%token  TOK_STRING
+%token  TOK_NAME
+
+%polymorphic TOK_INT: intptr_t;
+             TOK_DOUBLE: double;
+	     TOK_OID: Rps_Id;
+	     TOK_STRING: std::string;
+	     TOK_NAME: std::string;
+%%
+/// grammar rules below
+repl_atom: TOK_INT {
+#pragma message "repl_atom is TOK_INT"
+  $$ = Rps_Value::make_tagged_int($1);
+}
+
+         | TOK_DOUBLE {
+#pragma message "repl_atom is TOK_DOUBLE"
+  $$ = Rps_DoubleValue($1);
+}
+
+         | TOK_STRING {
+#pragma message "repl_atom is TOK_STRING"
+  $$ = Rps_StringValue($1);
+}
+
+         | TOK_OID {
+#pragma message "repl_atom is TOK_OID"
+  $$ = Rps_ObjectValue(Rps_ObjectRef::really_find_object_by_oid($1));
+}
+
+         | TOK_NAME {
+#pragma message "repl_atom is TOK_NAME"
+#warning Rps_ObjectRef::find_object_by_string needs a callframe for repl_atom as TOK_NAME
+	 }
+         ;
+
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** compile-command: "make _bispprepl_rps.o" ;;
+ ** End: ;;
+ ****************/

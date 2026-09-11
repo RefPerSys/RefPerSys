@@ -1,0 +1,24 @@
+#pragma message "RefPerSys bisonc++ debugfunctions1.in"
+std::ostringstream \@Base::s_out_;
+std::ostream &\@Base::dflush_(std::ostream &out)
+{
+    std::ostringstream &s_out_ = dynamic_cast<std::ostringstream &>(out);
+
+    std::cout << "    " << s_out_.str() << std::flush;
+    s_out_.clear();
+    s_out_.str("");
+    return out;
+}
+
+std::string \@Base::stype_(char const *pre, 
+                 STYPE_ const &semVal, char const *post) const
+{
+@insert-stype
+    using namespace std;
+    ostringstream ostr;
+    ostr << pre << semVal << post;
+    return ostr.str();
+@else
+    return "";
+@end
+}

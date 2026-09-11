@@ -1,0 +1,47 @@
+\" refpersys.configure.8
+.Dd November 1, 2022
+.Dt REFPERSYS.CONFIGURE 8
+\"
+.Sh NAME
+.Nm configure
+.Nd utility for configuring RefPerSys builds
+.Os Linux
+\"
+.Sh SYNOPSIS
+.Sy configure
+.Fl h | l | v
+\"
+.Sh DESCRIPTION
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl h
+Show help on usage; cannot be used with any other flags.
+.It Fl l
+Show license details; cannot be used with any other flags.
+.It Fl v
+Show version information; cannot be used with any other flags.
+.El
+\"
+.Sh FILES
+.Bl -tag -width -Ds
+.It Pa $SRCTREE/configure
+Configure script, where
+.Pa $SRCTREE
+is the path to the source code tree (the cloned Git repository).
+.It Pa doc/refpersys.configure.8
+Man page for refpersys.configure(8)
+.El
+\"
+.Sh EXIT STATUS
+.Ex -std configure
+\"
+.Sh SEE ALSO
+.Xr refpersys 7
+.Pp
+.Lk http://refpersys.org "RefPerSys project website" ,
+.Lk https://github.com/RefPerSys/RefPerSys "RefPerSys source tree repository"
+\"
+.Sh AUTHORS
+.An Basile Starynkevitch
+.Aq basile@starynkevitch.net
+and the RefPerSys team.
