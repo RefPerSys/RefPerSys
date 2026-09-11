@@ -1319,6 +1319,11 @@ test14:
 	./test_dir/014foxplug.bash
 	@printf '\n\n\n////test14 FINISHED¤\n'h
 
+## test15 is to understand the event loop
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/015evloopA.bash
+	@printf '\n\n\n////test15 FINISHED¤\n'
+
 ########### show the testing commands
 showtests:
 	@printf '\nRefPerSys has %d testing commands\n' $(shell /bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/wc -l)
