@@ -13,3 +13,4 @@ _*.hh
 do-build-refpersys-plugin
 do-scan-refpersys-pkgconfig
 tools/do-configure-refpersys
+.vscode
