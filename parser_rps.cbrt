@@ -41,11 +41,15 @@
 #error RPS_BASEID not defined by compilation command
 #endif
 
-extern "C" const char rps_rule_parser_gitid[];
-const char rps_rule_parser_gitid[] = RPS_GITID;
+//// The following constant strings are dlsym-ed (e.g. when you run
+//// ./refpersys --version).  By convention their name should be tied
+//// to the file name, so parser_rps.cbrt requires strings named
+//// rps_parser_gitid etc... ["parser_rps" basename ↦ "parser" infix]
+extern "C" const char rps_parser_gitid[];
+const char rps_parser_gitid[] = RPS_GITID;
 
-extern "C" const char rps_rule_parser_shortgitid[];
-const char rps_rule_parser_shortgitid[] = RPS_SHORTGITID;
+extern "C" const char rps_parser_shortgitid[];
+const char rps_parser_shortgitid[] = RPS_SHORTGITID;
 
 extern "C" const char rps_rule_parser_basename[];
 const char rps_rule_parser_basename[] = RPS_BASENAME;
