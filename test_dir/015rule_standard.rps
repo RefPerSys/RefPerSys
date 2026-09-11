@@ -1,0 +1,22 @@
+# file RefPerSys/test_dir/015rule_standard.rps
+# SPDX-License-Identifier: GPL-3.0-or-later
+#  © Copyright (C) 2026 The Reflective Persistent System Team
+#      team@refpersys.org & http://refpersys.org/
+
+// Example rule testing basic syntax, salience, LHS patterns and RHS actions
+rule detect_high_temperature salience 100:
+  when
+    ?sensor: TemperatureSensor(current_val > 75, status == active)
+    and not Alarm(level == critical)
+  then
+    assert Alarm(level: critical, origin: ?sensor);
+    send system -> log_event("Critical temperature threshold exceeded");
+    modify ?sensor { status: alert_raised };
+
+rule reset_alarm salience 50:
+  when
+    ?sensor: TemperatureSensor(current_val <= 60, status == alert_raised)
+    ?alarm: Alarm(origin == ?sensor)
+  then
+    retract ?alarm;
+    modify ?sensor { status: active };
