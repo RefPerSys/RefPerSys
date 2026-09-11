@@ -71,6 +71,7 @@ RPS_DEBARCH?=$(strip $(shell /usr/bin/dpkg-architecture -q DEB_HOST_MULTIARCH)) 
 
 .PHONY: all everything config objects showtests clean distclean \
         gitpush gitpush2 \
+	backup \
         show-vtable analysis \
         print-plugin-settings indent \
         redump altredump altdump clean-plugins plugins \
@@ -380,11 +381,19 @@ utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	$(SYNC)
 
 ### snapshot expect a GNU tar...
-snapshot: refpersys snapshot-exclude-patterns.txt
-	$(MAKE) __buildinfo.c _carbrepl_rps.cc _minicarb_rps.cc
+snapshot: refpersys snapshot-exclude-patterns.txt |GNUmakefile
+	$(MAKE) __buildinfo.c
+	$(MAKE) _carbrepl_rps.cc _minicarb_rps.cc _parser_rps.cc
 	/bin/tar -c -j --exclude-from=snapshot-exclude-patterns.txt \
 	   -f $$HOME/tmp/refpersys-snapshot.tar.bz2 -C .. RefPerSys
 
+backup:  snapshot-exclude-patterns.txt |GNUmakefile
+	$(MAKE) __buildinfo.c
+	$(MAKE) _carbrepl_rps.cc _minicarb_rps.cc _parser_rps.cc
+	/bin/tar -c -j --exclude-from=snapshot-exclude-patterns.txt \
+	   -f $$HOME/tmp/refpersys-backup.tar.bz2 -C .. \
+	   --exclude-vcs --exclude-vcs-ignore \
+	RefPerSys
 lto-refpersys:
 	$(MAKE) clean
 	$(MAKE) -j3 REFPERSYS_LTO=-flto lto-objects
