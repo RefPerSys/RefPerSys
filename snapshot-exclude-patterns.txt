@@ -1,7 +1,0 @@
-# file RefPerSys/snapshot-exclude-patterns.txt
-refpersys
-lto-refpersys
-*.o
-*.so
-*~
-tmp*
