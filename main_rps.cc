@@ -1367,7 +1367,7 @@ rps_small_quick_tests_after_load(void)
     s = rps_decimal_string(120);
     RPS_UNIQUE_BREAKPOINT();
     RPS_ASSERTPRINTF(!strcmp(s.c_str(), "120"),
-		     "s is %s not 120", s.c_str());
+                     "s is %s not 120", s.c_str());
     s = rps_decimal_string(0);
     RPS_UNIQUE_BREAKPOINT();
     RPS_ASSERT(!strcmp(s.c_str(), "0"));
@@ -1929,7 +1929,7 @@ main (int argc, char** argv)
                 << " is "
                 << (rps_batch?"batch":"interactive")
                 << " git " << rps_shortgitid
-                << " pid#" << getpid());
+                << " pid#" << rps_decimal_string(getpid()));
   if (!rps_batch)
     {
       RPS_INFORMOUT("interactive refpersys git " << rps_shortgitid
@@ -2027,7 +2027,7 @@ main (int argc, char** argv)
     else
       out << rps_progexe << " failing #" << ex
           <<" [" << __FILE__ ":"
-	  << rps_decimal_string(__LINE__) << "]";
+          << rps_decimal_string(__LINE__) << "]";
   })
       << std::flush
                );
