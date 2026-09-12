@@ -686,7 +686,7 @@ rps_string_version_handwritten_source_files(void)
                 << " of " << nbsourcefiles
                 << " handwritten C++ source files (git "
                 << rps_utilities_shortgitid
-                << " from " __FILE__ << ":" << __LINE__ << ")");
+                << " from " __FILE__ << ":" << rps_decimal_string(__LINE__) << ")");
   RPS_DEBUG_LOG(PROGARG, "starting " << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files/start"));
   //// show gitid of individual handwritten *cc files, using dlsym
@@ -851,7 +851,7 @@ rps_out_version_one_source_file(std::ostream&outs, const char*curfile, int curfi
       RPS_UNIQUE_BREAKPOINT();
       char lastc = strchr(symgit, '+')?'+':'_';
       if (snprintf(msgbuf, sizeof(msgbuf)-1,
-                   "  #¤ %-20s git %.11s%c",
+                   "  #¤ %-20s git %.12s%c",
                    curfile, symgit, lastc)>0)
         outs << msgbuf << std::flush;
     };
