@@ -729,18 +729,24 @@ static inline pid_t rps_thread_id(void)
 // see https://en.wikipedia.org/wiki/ANSI_escape_code
 extern "C" bool rps_without_terminal_escape;
 // adapted from https://github.com/bstarynk
+#define RPS_RAWTERM_NORMAL "\033[0m"
 #define RPS_TERMINAL_NORMAL_ESCAPE \
-  (rps_without_terminal_escape?"":"\033[0m")
+  (rps_without_terminal_escape?"":RPS_RAWTERM_NORMAL)
+#define RPS_RAWTERM_BOLD "\033[1m"
 #define RPS_TERMINAL_BOLD_ESCAPE \
-  (rps_without_terminal_escape?"":"\033[1m")
+  (rps_without_terminal_escape?"":RPS_RAWTERM_BOLD)
+#define RPS_RAWTERM_FAINT "\033[2m"
 #define RPS_TERMINAL_FAINT_ESCAPE \
-  (rps_without_terminal_escape?"":"\033[2m")
+  (rps_without_terminal_escape?"":RPS_RAWTERM_FAINT)
+#define RPS_RAWTERM_ITALICS "\033[3m"
 #define RPS_TERMINAL_ITALICS_ESCAPE \
-  (rps_without_terminal_escape?"":"\033[3m")
+  (rps_without_terminal_escape?"":RPS_RAWTERM_ITALICS)
+#define RPS_RAWTERM_UNDERLINE "\033[4m"
 #define RPS_TERMINAL_UNDERLINE_ESCAPE \
-  (rps_without_terminal_escape?"":"\033[4m")
+  (rps_without_terminal_escape?"":RPS_RAWTERM_UNDERLINE)
+#define RPS_RAWTERM_BLINK "\033[5m"
 #define RPS_TERMINAL_BLINK_ESCAPE \
-  (rps_without_terminal_escape?"":"\033[5m")
+  (rps_without_terminal_escape?"":RPS_RAWTERM_BLINK)
 
 
 ////// Our thread-safe exit related functions are implemented in
@@ -1032,22 +1038,24 @@ while (0)
 //////////////// inform
 
 #define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {                 \
-    bool ontty = rps_stdout_istty;                              \
+    const bool ontty##Lin = rps_stdout_istty;                   \
+    const std::string dlin##Lin = rps_decimal_string(Lin);      \
     if (rps_syslog_enabled) {                                   \
-      syslog(LOG_INFO, "RefPerSys INFORM %s:%d: %s " Fmt "\n",  \
-       Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);           \
-    } else {                                                    \
-      fprintf(stdout, "\n\n"                                    \
-            "%s*** RefPerSys INFORM:%s %s:%d: %s<%s>%s\n "      \
-            Fmt "\n\n",                                         \
-            ontty?RPS_TERMINAL_BOLD_ESCAPE:"",                  \
-            ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
-            Fil, Lin,                                           \
-            ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",               \
-            __FUNCTION__,                                \
-            ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
-            ##__VA_ARGS__);                                     \
-      fflush(stdout); };                                        \
+      syslog(LOG_INFO, "RefPerSys INFORM %s:%s: %s " Fmt "\n",  \
+             Fil, dlin##Lin.c_str(), __PRETTY_FUNCTION__,       \
+             ##__VA_ARGS__);          \
+    } else if (ontty##Lin) {          \
+      fprintf(stdout, "\n\n" RPS_RAWTERM_BOLD     \
+            "*** RefPerSys INFORM:" RPS_RAWTERM_NORMAL    \
+        " " RPS_RAWTERM_ITALICS " %s:%s: %s"    \
+        RPS_RAWTERM_NORMAL,       \
+        (Fil), (dlin##Lin.c_str()), __FUNCTION__);  \
+    } else /*no tty*/ {           \
+      fprintf(stdout, "\n\n*** RefPerSys INFORM: %s:%s: %s",  \
+        (Fil), (dlin##Lin.c_str()), __FUNCTION__);  \
+    };                \
+    fprintf(stdout, Fmt, ##__VA_ARGS__);      \
+    fflush(stdout);             \
 } while(0)
 
 #define RPS_INFORM_AT(Fil,Lin,Fmt,...) RPS_INFORM_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
@@ -1055,28 +1063,29 @@ while (0)
 // typical usage could be RPS_INFORM("something bad x=%d", x)
 #define RPS_INFORM(Fmt,...) RPS_INFORM_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
-#define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {          \
-    std::ostringstream outs_##Lin;                      \
-    if (rps_syslog_enabled) {                           \
-      outs_##Lin << __VA_ARGS__  << std::flush;         \
-      syslog(LOG_INFO, "%s:%d:%s %s\n",                 \
-       (Fil), (Lin), __PRETTY_FUNCTION__,               \
-       outs_##Lin.str().c_str());                       \
-    } else {                                            \
-    bool ontty = rps_stdout_istty;                      \
-    outs_##Lin                                          \
-      << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")            \
-      << "** RefPerSys INFORM!"                         \
-      <<  (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << " "  \
-      << (ontty?RPS_TERMINAL_ITALICS_ESCAPE:"")         \
-      << (Fil) << ":" << Lin << ": "                    \
-      <<  __FUNCTION__                           \
-      << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")          \
-      << ' ' << __VA_ARGS__  << std::flush;             \
-    fputs(outs_##Lin.str().c_str(), stdout);            \
-    fputc('\n', stdout);                                \
-    fflush(stdout);                                     \
-  }                                                     \
+#define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {                  \
+    std::ostringstream outs_##Lin;                              \
+    const std::string dlin##Lin = rps_decimal_string(Lin);      \
+    if (rps_syslog_enabled) {                                   \
+      outs_##Lin << __VA_ARGS__  << std::flush;                 \
+      syslog(LOG_INFO, "%s:%s:%s %s\n",                         \
+             (Fil), dlin##Lin.c_str(), __PRETTY_FUNCTION__,     \
+       outs_##Lin.str().c_str());                               \
+    } else {                                                    \
+    bool ontty = rps_stdout_istty;                              \
+    outs_##Lin                                                  \
+      << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")                    \
+      << "** RefPerSys INFORM!"                                 \
+      <<  (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << " "          \
+      << (ontty?RPS_TERMINAL_ITALICS_ESCAPE:"")                 \
+      << (Fil) << ":" << dlin##Lin << ": "                      \
+      <<  __FUNCTION__                                          \
+      << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")                  \
+      << ' ' << __VA_ARGS__  << std::flush;                     \
+    fputs(outs_##Lin.str().c_str(), stdout);                    \
+    fputc('\n', stdout);                                        \
+    fflush(stdout);                                             \
+  }                                                             \
 } while(0)
 
 #define RPS_INFORMOUT_AT(Fil,Lin,...) \
