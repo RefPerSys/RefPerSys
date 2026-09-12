@@ -1142,7 +1142,7 @@ Rps_Dumper::write_generated_roots_file(void)
     if (rootcnt % 10 == 0)
       {
         (*pouts) << std::endl
-		 << "///~#°" << rps_decimal_string(rootcnt) << std::endl;
+                 << "///~#°" << rps_decimal_string(rootcnt) << std::endl;
       };
     RPS_ASSERT(obr);
     (*pouts) << "RPS_INSTALL_ROOT_OB(" << obr->oid() << ") //";
@@ -1391,7 +1391,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_POSIX_ARG_MAX " << rps_decimal_string(sysconf(_SC_ARG_MAX)) << std::endl;
   *pouts << "#define RPS_POSIX_PAGE_SIZE " << rps_decimal_string(sysconf(_SC_PAGE_SIZE)) << std::endl;
   *pouts << "#define RPS_POSIX_PATH_MAX /*for $HOME°*/ "
-	 << rps_decimal_string(pathconf(getenv("HOME"),_PC_PATH_MAX)) << std::endl;
+         << rps_decimal_string(pathconf(getenv("HOME"),_PC_PATH_MAX)) << std::endl;
   RPS_POSSIBLE_BREAKPOINT();
   if (!strcmp(cwdbuf, rps_topdirectory))
     *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY rps_topdirectory" << std::endl;
@@ -1399,7 +1399,7 @@ Rps_Dumper::write_generated_data_file(void)
     *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY " << Rps_QuotedC_String(cwdbuf) << std::endl;
   /// all the below sizeof are very unlikely to exceed 100 so dont neeed rps_decimal_string
   *pouts << "/// common `sizeof' from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
-	 << " " << __FUNCTION__ << std::endl;
+         << " " << __FUNCTION__ << std::endl;
   *pouts << "#define RPS_SIZEOF_BOOL " << sizeof(bool) << std::endl;
   *pouts << "#define RPS_SIZEOF_SHORT " << sizeof(short) << std::endl;
   *pouts << "#define RPS_SIZEOF_INT " << sizeof(int) << std::endl;
@@ -1440,7 +1440,7 @@ Rps_Dumper::write_generated_data_file(void)
   ///
   *pouts << "///" << std::endl;
   *pouts << "/// common `alignof' from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
-	 << " " << __FUNCTION__ << std::endl;
+         << " " << __FUNCTION__ << std::endl;
   *pouts << "#define RPS_ALIGNOF_BOOL " << alignof(bool) << std::endl;
   *pouts << "#define RPS_ALIGNOF_SHORT " << alignof(short) << std::endl;
   *pouts << "#define RPS_ALIGNOF_INT " << alignof(int) << std::endl;
@@ -1494,8 +1494,8 @@ Rps_Dumper::write_generated_data_file(void)
   {
     *pouts << "/// GNU lightning code generation constants" << std::endl
            << "/// see www.gnu.org/software/lightning" << std::endl
-	   << "/// from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
-	   << " " << __FUNCTION__ << std::endl
+           << "/// from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
+           << " " << __FUNCTION__ << std::endl
            << "#define RPS_LIGHTNING_JIT_R_NUM " << JIT_R_NUM << std::endl
            << "#define RPS_LIGHTNING_JIT_V_NUM " << JIT_V_NUM << std::endl
            << "#define RPS_LIGHTNING_JIT_F_NUM " << JIT_F_NUM << std::endl;
@@ -1505,8 +1505,8 @@ Rps_Dumper::write_generated_data_file(void)
   {
     *pouts << "/// GCC libgccjit version constants at dump" << std::endl
            << "/// See gcc.gnu.org/onlinedocs/jit/" << std::endl
-	   << "/// from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
-	   << " " << __FUNCTION__ << std::endl
+           << "/// from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
+           << " " << __FUNCTION__ << std::endl
            << "#define RPS_LIBGCCJIT_MAJOR_VERSION " << rps_decimal_string(gcc_jit_version_major())
            << std::endl
            << "#define RPS_LIBGCCJIT_MINOR_VERSION " << rps_decimal_string(gcc_jit_version_minor())
@@ -1540,8 +1540,9 @@ Rps_Dumper::write_generated_data_file(void)
            << " on " << rps_hostname() << std::endl;
   }
   *pouts << std::endl << std::endl
-         << "//// end of generated " << datapathstr
-         << " by " << __FUNCTION__ << " at " << __FILE__ << ":" << rps_decimal_string(__LINE__) 
+         << "//// end of generated file " << datapathstr << std::endl
+         << "//// by " << __FUNCTION__ << " at "
+         << __FILE__ << ":" << rps_decimal_string(__LINE__)
          << " for shortgitid:" << rps_shortgitid << std::endl;
   (void) remove(gendatapathstr.c_str());
   /* FIXME: we need to add a symbolic link in the generated/
