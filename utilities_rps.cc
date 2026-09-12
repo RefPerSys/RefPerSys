@@ -721,6 +721,12 @@ rps_show_version_handwritten_source_files(void)
       // ignore markdown documentation
       if (strstr(curfile, ".md"))
         continue;
+      // ignore log files (LaTeX)
+      if (strstr(curfile, ".log"))
+        continue;
+      // ignore aux files (LaTeX)
+      if (strstr(curfile, ".aux"))
+        continue;
       // ignore BisonC++ file
       if (strstr(curfile, "yyp"))
         continue;
