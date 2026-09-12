@@ -874,6 +874,8 @@ rpsldpy_environment (Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, R
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(spacid);
+  RPS_ASSERT(lineno>0);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   auto paylenv = obz->put_new_plain_payload<Rps_PayloadEnvironment>();
