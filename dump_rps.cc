@@ -1143,7 +1143,8 @@ Rps_Dumper::write_generated_roots_file(void)
       {
         char cntbuf[32];
         memset (cntbuf, 0, sizeof(cntbuf));
-        snprintf(cntbuf, sizeof(cntbuf), "~#°%04d", rootcnt);
+        snprintf(cntbuf, sizeof(cntbuf), "~#°%s",
+		 rps_decimal_string(rootcnt));
         (*pouts) << std::endl << "///" << cntbuf << std::endl;
       };
     RPS_ASSERT(obr);
@@ -1186,7 +1187,7 @@ Rps_Dumper::write_generated_roots_file(void)
           (*pouts) << '"' << Rps_Cjson_String(nameval.to_cppstring()) << '"';
         (*pouts) << "∈" << claclapayl->class_name_str();
       };
-    (*pouts) << " h:" << obr->obhash() << std::endl;
+    (*pouts) << " h:" << rps_decimal_string(obr->obhash()) << std::endl;
   });
   /// output a 72 stars comment to ease GNU emacs rectangle facilities
   {
