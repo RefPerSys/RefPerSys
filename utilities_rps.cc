@@ -2980,7 +2980,7 @@ rps_decimal_string(intptr_t i)
   //RPS_UNIQUE_BREAKPOINT();
   if (neg)
     revbuf[p++] = '-';
-  RPS_ASSERT(p<rps_numlen-1 && p>=0);
+  RPS_ASSERT(p<(int)rps_numlen-1 && p>=0);
   //RPS_UNIQUE_BREAKPOINT();
   for (int j=p-1; j>=0; j--)
     buf[p-1-j] = revbuf[j];
@@ -3040,7 +3040,7 @@ rps_unsigned_dec_string(uintptr_t i)
   memset (revbuf, 0, sizeof(revbuf));
   while (i>0)
     {
-      RPS_ASSERT(p>=0 && p<rps_numlen);
+      RPS_ASSERT(p>=0 && p<(int)rps_numlen);
       revbuf[p++] = '0' + (i%10);
       i = i / 10;
     };
