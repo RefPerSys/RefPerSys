@@ -14,3 +14,4 @@ do-build-refpersys-plugin
 do-scan-refpersys-pkgconfig
 tools/do-configure-refpersys
 .vscode
+generated/rpsdata.h
