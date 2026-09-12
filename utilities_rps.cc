@@ -655,17 +655,18 @@ rps_print_types_info(void)
 
 
 ////////////////////////////////////////////////////////////////
-extern "C" void rps_show_version_handwritten_source_files(void);
+extern "C" std::string rps_string_version_handwritten_source_files(void);
 
 
 // Our rps_show_version_handwritten_source_file uses dlsym to query
 // some conventional constant strings in source files.
-static void rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int& nbshownfiles, bool&nl);
+static void rps_out_version_one_source_file(std::ostream& out, const char*curfile, int curfilno, char curbase[], char cursuffix[], int& nbshownfiles, bool&nl);
 
-void
-rps_show_version_handwritten_source_files(void)
+std::string
+rps_string_version_handwritten_source_files(void)
 {
   RPS_POSSIBLE_BREAKPOINT();
+  std::ostringstream outs;
   int nbsourcefiles =0;
   int nbshownfiles =0;
   bool nl= false;
@@ -673,6 +674,8 @@ rps_show_version_handwritten_source_files(void)
        curfileptr && *curfileptr; curfileptr++)
     {
       RPS_POSSIBLE_BREAKPOINT();
+      if ((*curfileptr)[0] == '_')
+        continue;
       if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
         {
           nbsourcefiles++;
@@ -736,18 +739,22 @@ rps_show_version_handwritten_source_files(void)
       if (!isalpha(curbase[0]))
         continue;
       RPS_UNIQUE_BREAKPOINT();
-      rps_show_version_one_source_file(curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
+      rps_out_version_one_source_file(outs, curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
       if (!nl)
-        std::cout << " ";
+        outs << " ";
     };        // end major loop of rps_show_version_handwritten_source_files
   ////
   ////
   if (!nl)
-    std::cout << std::endl;
-} // end rps_show_version_handwritten_source_files
+    outs << std::endl;
+  else
+    outs << std::flush;
+  return outs.str();
+} // end rps_string_version_handwritten_source_files
 
 void
-rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[], char cursuffix[], int &nbshownfiles, bool&nl)
+rps_out_version_one_source_file(std::ostream&outs, const char*curfile, int curfilno,
+                                char curbase[], char cursuffix[], int &nbshownfiles, bool&nl)
 {
   //// notice that RPS_FULL_BACKTRACE cannot be used here....
   RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno
@@ -825,7 +832,9 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
         RPS_WARNOUT("perhaps corrupted " << curfile
                     << " in topdir " << rps_topdirectory
                     << " with " << cursymgit << "=" << symgit
-                    << " and " << cursymshortgit << "=" << symshortgit);
+                    << " and " << cursymshortgit << "=" << symshortgit
+                    << std::endl
+                    << RPS_FULL_BACKTRACE(1,"rps_out_version_one_source_file"));
         RPS_POSSIBLE_BREAKPOINT();
       }
   };
@@ -835,17 +844,18 @@ rps_show_version_one_source_file(const char*curfile, int curfilno, char curbase[
       memset (msgbuf, 0, sizeof(msgbuf));
       if (nbshownfiles % 2 == 0)
         {
-          std::cout << std::endl;
+          outs << std::endl;
           nl= true;
         };
       nbshownfiles++;
       RPS_UNIQUE_BREAKPOINT();
+      char lastc = strchr(symgit, '+')?'+':'_';
       if (snprintf(msgbuf, sizeof(msgbuf)-1,
-                   "  #¤ %-20s git %.11s",
-                   curfile, symgit)>0)
-        std::cout << msgbuf << std::flush;
+                   "  #¤ %-20s git %.11s%c",
+                   curfile, symgit, lastc)>0)
+        outs << msgbuf << std::flush;
     };
-} // end  rps_show_version_one_source_file
+} // end  rps_out_version_one_source_file
 
 
 void
@@ -869,7 +879,7 @@ rps_show_version(void)
   }
   {
     char*rp= realpath(exepath, realexepath);
-    RPS_ASSERT(rp != nullptr);
+    RPS_ASSERT(rp != nullptr && rp == realexepath);
   }
   std::cout << "RefPerSys "<< rps_get_major_version() << "."
             << rps_get_minor_version() //
@@ -933,7 +943,8 @@ rps_show_version(void)
             << "with " << rps_cxx_compiler_flags
             << std::endl;
   /////
-  rps_show_version_handwritten_source_files();
+  std::string versallstr = rps_string_version_handwritten_source_files();
+  RPS_ASSERT(!versallstr.empty());
   /////
   {
     char cwdbuf[rps_path_byte_size+4];
@@ -953,8 +964,8 @@ rps_show_version(void)
             << "to the extent permitted by law ++++" << std::endl
             << "***** see also refpersys.org *****" << std::endl
             << "and github.com/RefPerSys/RefPerSys commit "
-            << rps_shortgitid
-            << std::endl << std::endl;
+            << rps_shortgitid << std::endl
+            << versallstr << std::endl;
 } // end rps_show_version
 
 /// In a format string passed to strftime, replace .__ with the
@@ -3033,7 +3044,7 @@ rps_unsigned_dec_string(uintptr_t i)
       revbuf[p++] = '0' + (i%10);
       i = i / 10;
     };
-  RPS_ASSERT(p<rps_numlen-1 && p>=0);
+  RPS_ASSERT(p<(int)rps_numlen-1 && p>=0);
   for (int j=p-1; j>=0; j--)
     buf[p-1-j] = revbuf[j];
   RPS_ASSERT(buf[0] != (char)0 && strlen(buf)<rps_numlen);
