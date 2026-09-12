@@ -900,9 +900,26 @@ rpsldpy_environment (Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, R
 ////////////////
 
 void
-Rps_CallFrame::interpret_repl_statement(Rps_ObjectRef stmtob,Rps_ObjectRef envob)
+Rps_CallFrame::interpret_repl_statement(Rps_ObjectRef stmtobarg,Rps_ObjectRef envobarg)
 {
-  RPS_FATALOUT("unimplemented Rps_CallFrame::interpret_repl_statement stmtob=" << stmtob << " envob=" << envob);
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 this,
+                 Rps_ObjectRef stmtob;
+                 Rps_ObjectRef envob;
+                 Rps_Value tmpmainv;
+                 Rps_Value tmpextrav;
+                 Rps_Value closv;
+                );
+  _f.stmtob = stmtobarg;
+  _f.envob = envobarg;
+  _f.closv = _.call_frame_closure();
+  RPS_ASSERT(_f.stmtob);
+  RPS_ASSERT(_f.envob);
+  std::lock_guard guenv(*_f.envob->objmtxptr());
+  std::lock_guard gustmt(*_f.stmtob->objmtxptr());
+  RPS_FATALOUT("unimplemented Rps_CallFrame::interpret_repl_statement stmtob="
+               << RPS_OBJECT_DISPLAY(_f.stmtob) << std::endl
+               << " envob=" << RPS_OBJECT_DISPLAY(_f.envob));
 #warning unimplemented Rps_CallFrame::interpret_repl_statement
 } // end Rps_CallFrame::interpret_repl_statement
 
