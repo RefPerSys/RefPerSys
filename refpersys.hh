@@ -6038,7 +6038,7 @@ extern "C" double rps_dump_start_monotonic_time(Rps_Dumper*);
 extern "C" Rps_ObjectRef rps_dump_data_object(Rps_Dumper*);
 extern "C" Rps_Value rps_dump_data_value(Rps_Dumper*);
 extern "C" const std::string rps_dump_data_source_file(Rps_Dumper*);
-extern "C" const int rps_dump_data_source_line(Rps_Dumper*);
+extern "C" int rps_dump_data_source_line(Rps_Dumper*);
 
 // scan a code address, e.g. a C function pointer whose address
 //... is inside some dlopen-ed plugin
