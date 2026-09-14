@@ -1,6 +1,7 @@
 ## refpersys.org file .gitignore
 ## SPDX-License-Identifier: GPL-3.0-or-later
 _*
+__*.c
 # utilities
 do-configure-refpersys
 do-scan-refpersys-pkgconfig
@@ -16,6 +17,7 @@ _nl-carbprep*
 *.orig
 *~
 *.BAK
+*.so
 do-build-plugin
 .ninja_deps
 .ninja_logs
