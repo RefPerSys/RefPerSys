@@ -223,7 +223,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 /* Code Chunk token */
 %token CODE_CHUNK
-%type CODE_CHUNK: std::string
+%type CODE_CHUNK: Rps_Value
 
 %mode IN_COMMENT
 %mode IN_STRING
@@ -258,6 +258,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 <IN_COMMENT>: [^\*\n]+ {
   /* Skip comment body */
 }
+
 
 <IN_COMMENT>: [\*] {
   /* Skip asterisk */

@@ -904,8 +904,10 @@ rps_event_loop(void)
 #warning TODO: consider using rps_timer ...?
   /*** give output
    ***/
-  RPS_INFORMOUT("starting rps_event_loop in pid " << (long)getpid() << std::endl
-                << "… on " << rps_hostname() << " thread " << rps_current_pthread_name()
+  RPS_INFORMOUT("starting rps_event_loop in pid "
+		<< rps_decimal_string((long)getpid()) << std::endl
+                << "… on " << rps_hostname() << " thread "
+		<< rps_current_pthread_name()
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop")
                );
@@ -1750,9 +1752,6 @@ rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data)
   int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
   rps_exit_vecptr.push_back(pxitodo);
   RPS_POSSIBLE_BREAKPOINT();
-#warning review rps_do_at_exit_cpp
-  RPS_WARNOUT("incomplete rps_do_at_exit_cpp rank#" << rank
-              << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cpp"));
 } // end rps_do_at_exit_cpp
 
 void
@@ -1767,9 +1766,6 @@ rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun, void*data1, void*data2)
   int rank = pxitodo->_tdxit_rank = (int) rps_exit_vecptr.size();
   rps_exit_vecptr.push_back(pxitodo);
   RPS_POSSIBLE_BREAKPOINT();
-#warning review rps_do_at_exit_cfun
-  RPS_WARNOUT("incomplete rps_do_at_exit_cfun rank#" << rank
-              << RPS_FULL_BACKTRACE(1, "rps_do_at_exit_cfun"));
 #warning review rps_do_at_exit_cfun
 } // end rps_do_at_exit_cfun
 
