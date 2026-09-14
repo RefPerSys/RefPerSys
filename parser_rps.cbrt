@@ -117,6 +117,11 @@ struct rps_rule_parser_data_st {
     }
   }
 
+  bool valid_carbdata_magic(int li= __builtin_LINE()) const {
+    RPS_ASSERT(li>0);
+    return RPS_LIKELY(rule_magic == rps_magic_rule_parser_data);
+  }
+
   void check_carbdata_callframe(Rps_CallFrame* cf, int lin = __builtin_LINE()) const {
     check_carbdata_magic(lin);
     if (RPS_UNLIKELY(cf == nullptr)) {
@@ -268,13 +273,23 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 /* Code chunk start with alphanumeric prefix: #cpp{ ... }cpp# */
 : [#][a-zA-Z0-9_]+[\{] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->check_carbdata_callframe(fram_rp);
   memset(data_rp->rule_chunk_prefix, 0, sizeof(data_rp->rule_chunk_prefix));
   data_rp->rule_chunk_buf.clear();
   size_t tlen = strlen($text);
+  std::string srcname;
+  if (data_rp->rule_toksrc)
+    srcname = data_rp->rule_toksrc->position_str();
+  else
+    srcname = "???";
   if (tlen > 2 && tlen - 2 < sizeof(data_rp->rule_chunk_prefix)) {
     strncpy(data_rp->rule_chunk_prefix, $text + 1, tlen - 2);
   }
+  else
+    RPS_WARNOUT("in " << srcname
+		<< " invalid code chunk prefix "
+		<< Rps_QuotedC_String($text));
   $set_mode(IN_CODE_CHUNK);
 }
 
