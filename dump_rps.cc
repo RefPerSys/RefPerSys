@@ -110,7 +110,7 @@ class Rps_Dumper
   friend Rps_ObjectRef rps_dump_data_object(Rps_Dumper*);
   friend Rps_Value rps_dump_data_value(Rps_Dumper*);
   friend const std::string rps_dump_data_source_file(Rps_Dumper*);
-  friend const int rps_dump_data_source_line(Rps_Dumper*);
+  friend int rps_dump_data_source_line(Rps_Dumper*);
   std::string du_topdir;
   int du_fdtopdir;    // if >0 should be a file descriptor
   // for du_topdir and usedful for symlinkat
@@ -230,10 +230,10 @@ public:
 };        // end class Rps_Dumper
 
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe, 
-			       Rps_ObjectRef dumpobarg,
-			       Rps_Value dumpvalarg,
-			       const char* srcfil,
-			       const int srclin) :
+		       Rps_ObjectRef dumpobarg,
+		       Rps_Value dumpvalarg,
+		       const char* srcfil,
+		       const int srclin) :
   du_topdir(),
   du_fdtopdir(-1),
   du_curworkdir(), du_jsonwriterbuilder(), du_mtx(),
@@ -300,7 +300,7 @@ rps_dump_start_elapsed_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
-  std::guard<std::recursive_mutex> gu(du->du_mtx);
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startelapsedtime;
 } // end rps_dump_start_elapsed_time
 
@@ -310,7 +310,7 @@ rps_dump_start_process_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
-  std::guard<std::recursive_mutex> gu(du->du_mtx);
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startprocesstime;
 } // end  rps_dump_start_process_time
 
@@ -319,7 +319,7 @@ rps_dump_start_wallclock_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
-  std::guard<std::recursive_mutex> gu(du->du_mtx);
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startwallclockrealtime;
 } // end rps_dump_start_wallclock_time
 
@@ -328,7 +328,7 @@ rps_dump_start_monotonic_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
-  std::guard<std::recursive_mutex> gu(du->du_mtx);
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startmonotonictime;
 } // end  rps_dump_start_monotonic_time
 
@@ -354,9 +354,13 @@ rps_dump_data_object(Rps_Dumper*du)
   return du->du_dumpob;
 } // end rps_dump_data_object
 
- std::string(nullptr);
+const std::string
+rps_dump_data_source_file(Rps_Dumper*du)
+{
+  if (!du)
+    return std::string();
   std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
-  return du->du_srcfil;
+  return std::string(du->du_srcfil);
 } // end rps_dump_data_source_file
 
 int
