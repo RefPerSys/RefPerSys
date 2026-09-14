@@ -4,7 +4,8 @@ This [free software](https://en.wikipedia.org/wiki/Free_software)
 project has its source code on https://github.com/RefPerSys/RefPerSys
 with an obsolete variant on https://gitlab.com/bstarynk/refpersys/
 which might not be well maintained in 2024 - 2026. It has its own web
-site on [refpersys.org](http://refpersys.org/) where more details are given.
+site on [refpersys.org](http://refpersys.org/) where more details are given, and some backups of the source files, e.g.
+as [refpersys.org/refpersys-snapshot.tar.bz2](http://refpersys.org/refpersys-snapshot.tar.bz2).
 
 *RefPerSys* is aiming to become a free software symbolic artificial
 intelligence system or [inference
