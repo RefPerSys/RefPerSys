@@ -94,14 +94,23 @@ class Rps_Dumper
   friend bool rps_dump_is_scanned_object(Rps_Dumper*,Rps_ObjectRef obr);
   friend Rps_CallFrame* rps_dump_call_frame(Rps_Dumper*);
   friend std::string rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath);
-  friend void rps_dump_into (const std::string dirpath, Rps_CallFrame*,
-                             Rps_ObjectRef, Rps_Value, const char*, int);
+  friend void rps_dump_into (const std::string dirpath,
+			     Rps_CallFrame*callframe,
+			     Rps_ObjectRef dumpobarg,
+			     Rps_Value dumpvalarg,
+			     const char* srcfil,
+			     const int srclin);
   friend void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_space_component(Rps_Dumper*, Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
   friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
+  
+  friend Rps_ObjectRef rps_dump_data_object(Rps_Dumper*);
+  friend Rps_Value rps_dump_data_value(Rps_Dumper*);
+  friend const std::string rps_dump_data_source_file(Rps_Dumper*);
+  friend const int rps_dump_data_source_line(Rps_Dumper*);
   std::string du_topdir;
   int du_fdtopdir;    // if >0 should be a file descriptor
   // for du_topdir and usedful for symlinkat
@@ -127,11 +136,16 @@ class Rps_Dumper
   std::map<Rps_ObjectRef,std::shared_ptr<du_space_st>> du_spacemap; // map from spaces to objects inside
   std::set<Rps_ObjectRef> du_pluginobset;
   std::set<Rps_ObjectRef> du_constantobset;
-  std::set<std::string> du_openedpathset;
-  /// a (often) temporary object and a value passed (optionally) to
-  /// rps_dump_into...
-  Rps_ObjectRef du_dumpobj;
+  Rps_ObjectRef du_dumpob;
   Rps_Value du_dumpval;
+  std::string du_srcfil;
+  int du_srclin;
+  // actually, we better want ao pointer or reference to that object
+  // see rps_dump_is_scanned_object and Rps_ObjectZone::dump_json_content
+  // we maintain the set of opened file paths, since they are opened
+  // with the temporary suffix above, and renamed by
+  // rename_opened_files below.
+  std::set<std::string> du_openedpathset;
   // a random temporary suffix for written files
   static std::string make_temporary_suffix(void)
   {
@@ -184,7 +198,9 @@ public:
   {
     return du_topdir;
   };
-  Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe);
+  Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe,
+	     Rps_ObjectRef dumpob, Rps_Value dumpval,
+	     const char*dumpsrcfil, int dumpsrclin);
   ~Rps_Dumper();
   Rps_CallFrame* dumper_call_frame(void) const
   {
@@ -213,7 +229,11 @@ public:
 #warning perhaps keep some temporary dump object inside Rps_Dumper? see rps_dump_into
 };        // end class Rps_Dumper
 
-Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
+Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe, 
+			       Rps_ObjectRef dumpobarg,
+			       Rps_Value dumpvalarg,
+			       const char* srcfil,
+			       const int srclin) :
   du_topdir(),
   du_fdtopdir(-1),
   du_curworkdir(), du_jsonwriterbuilder(), du_mtx(),
@@ -226,7 +246,10 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_startwallclockrealtime(rps_wallclock_real_time()),
   du_startmonotonictime(rps_monotonic_real_time()),
   du_callframe(callframe), du_openedpathset(),
-  du_dumpobj(nullptr), du_dumpval(nullptr)
+  du_dumpob(dumpobarg),
+  du_dumpval(dumpvalarg),
+  du_srcfil(srcfil),
+  du_srclin(srclin)
 {
   {
     char topdirpath[PATH_MAX];
@@ -270,8 +293,6 @@ Rps_Dumper::~Rps_Dumper()
                 << RPS_FULL_BACKTRACE(1, "Rps_Dumper destr"));
   RPS_ASSERT(rps_is_main_thread());
   du_callframe = nullptr;
-  du_dumpobj = nullptr;
-  du_dumpval = nullptr;
 } // end Rps_Dumper::~Rps_Dumper
 
 double
@@ -279,6 +300,7 @@ rps_dump_start_elapsed_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
+  std::guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startelapsedtime;
 } // end rps_dump_start_elapsed_time
 
@@ -288,6 +310,7 @@ rps_dump_start_process_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
+  std::guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startprocesstime;
 } // end  rps_dump_start_process_time
 
@@ -296,6 +319,7 @@ rps_dump_start_wallclock_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
+  std::guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startwallclockrealtime;
 } // end rps_dump_start_wallclock_time
 
@@ -304,6 +328,7 @@ rps_dump_start_monotonic_time(Rps_Dumper*du)
 {
   if (!du)
     return NAN;
+  std::guard<std::recursive_mutex> gu(du->du_mtx);
   return du->du_startmonotonictime;
 } // end  rps_dump_start_monotonic_time
 
@@ -319,6 +344,30 @@ rps_dump_call_frame(Rps_Dumper*du)
   RPS_ASSERT_CALLFRAME(cf);
   return cf;
 } // end rps_dumper_call_frame
+
+Rps_ObjectRef
+rps_dump_data_object(Rps_Dumper*du)
+{
+  if (!du)
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
+  return du->du_dumpob;
+} // end rps_dump_data_object
+
+ std::string(nullptr);
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
+  return du->du_srcfil;
+} // end rps_dump_data_source_file
+
+int
+rps_dump_data_source_line(Rps_Dumper*du)
+{
+  if (!du)
+    return 0;
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
+  return du->du_srclin;
+} // end rps_dump_data_source_line
+
 
 std::string
 rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
@@ -372,10 +421,6 @@ rps_dump_is_scanned_object(Rps_Dumper*du, Rps_ObjectRef obr)
   if (!obr)
     return false;
   std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
-  if (du->du_dumpobj == obr)
-    return obr->get_space() != Rps_ObjectRef(nullptr);
-  if (du->du_dumpval && Rps_Value(obr) == du->du_dumpval)
-    return obr->get_space() != Rps_ObjectRef(nullptr);
   return (du->du_mapobjects.find(obr->oid()) != du->du_mapobjects.end());
 } // end rps_dump_is_scanned_object
 
@@ -386,11 +431,6 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
     return;
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   if (du_mapobjects.find(obr->oid()) != du_mapobjects.end())
-    return;
-  if (du_dumpobj == obr &&  obr->get_space()== Rps_ObjectRef(nullptr))
-    return;
-  if (du_dumpval && du_dumpval.is_object()
-      && du_dumpval.as_object().get_space() == Rps_ObjectRef(nullptr))
     return;
   if (!obr->get_space()) // transient
     return;
@@ -1659,8 +1699,7 @@ Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef
    /*prefix:*/ "//§", /*suffix:*/"",
    /*owner:*/"",
    /*reason:*/"generated °parser declaration");
-  *pouts << "/// generated by write_generated_parser_decl_file from "
-         << __FILE__ << ":" << rps_decimal_string(__LINE__) << std::endl;
+  *pouts << "/// generated by write_generated_parser_decl_file from " << __FILE__ << ":" << __LINE__ << std::endl;
   /// should use rpskob_4Doq8xpQ0zi001mbBX !generate_cpp_parser_declaration∈named_selector
 #if 0 && TODO
   {
@@ -1668,7 +1707,7 @@ Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   }
 #endif // 0 && TODO */
   *pouts << "#warning empty parser declaration file " << rootpathstr
-         << " from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
+         << " from " << __FILE__ << ":" << __LINE__
          << std::endl;
   *pouts << "/// generator object " << _f.genob << std::endl;
   *pouts << "/// git " << RPS_SHORTGITID << std::endl;
@@ -1683,8 +1722,6 @@ Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef
                  callfr,
                  Rps_ObjectRef genob;
                  Rps_Value closv;
-                 Rps_Value mainv;
-                 Rps_Value xtrav;
                 );
   _f.genob = genobarg;
   auto rootpathstr = std::string{"generated/rps-parser-impl.cc"};
@@ -1696,9 +1733,7 @@ Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef
    /*prefix:*/ "//°", /*suffix:*/"",
    /*owner:*/"",
    /*reason:*/"generated parser implementation");
-  *pouts << "/// generated by write_generated_parser_impl_file from "
-         << __FILE__ << ":" << rps_decimal_string(__LINE__) << std::endl;
-  *pouts << "/// using generator object " << _f.genob << std::endl;
+  *pouts << "/// generated by write_generated_parser_impl_file from " << __FILE__ << ":" << __LINE__ << std::endl;
   /// should use rpskob_0sggcz6Pq110236mRm !generate_cpp_parser_definition∈named_selector
 #if 0 && TODO
   {
@@ -1706,7 +1741,7 @@ Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   }
 #endif // 0 && TODO */
   *pouts << "#warning empty parser implementation file " << rootpathstr
-         << " from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
+         << " from " << __FILE__ << ":" << __LINE__
          << std::endl;
   *pouts << "/// generator object " << _f.genob << std::endl;
   *pouts << "/// git " << RPS_SHORTGITID << std::endl;
@@ -2072,23 +2107,22 @@ Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 
 ////////////////////////////////////////////////////////////////
 void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe,
-                    Rps_ObjectRef obdumparg,
-                    Rps_Value valdumparg,
-                    const char*dumpfil,
-                    int dumplin)
+			       Rps_ObjectRef dumpobarg,
+			       Rps_Value dumpvalarg,
+			       const char* srcfil,
+			       const int srclin)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
                  /*callerframe:*/callframe, //
                  Rps_ObjectRef obdumper;
-                 Rps_Value valdump;
+		 Rps_Value valdumper;
                 );
-  _f.obdumper = obdumparg;
-  _f.valdump = valdumparg;
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
   RPS_UNIQUE_BREAKPOINT();
-  RPS_ASSERT(dumpfil != nullptr);
-  RPS_ASSERT(dumplin > 0);
+  _f.obdumper = dumpobarg;
+  _f.valdumper = dumpvalarg;
+  // keep the adress of _f.obdumper in the Rps_Dumper class
   std::string cwdpath;
   {
     // not very good, but in practice good enough before bootstrapping
@@ -2150,7 +2184,8 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe,
   {
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
   }
-  Rps_Dumper dumper(realdirpath, &_);
+  Rps_Dumper dumper(realdirpath, &_, _f.obdumper, _f.valdumper,
+		    srcfil, srclin);
   RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
                 << std::endl
                 << "… "

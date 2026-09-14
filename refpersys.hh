@@ -6027,14 +6027,18 @@ extern "C" std::string rps_load_json_to_string(const Json::Value&jv);
 
 extern "C" void rps_dump_into (std::string dirpath = ".",
                                Rps_CallFrame* callframe = nullptr,
-			       Rps_ObjectRef obdump = nullptr,
-			       Rps_Value valdump = nullptr,
+			       Rps_ObjectRef dumpobarg = nullptr,
+			       Rps_Value dumpvalarg = nullptr,
 			       const char* srcfil = __builtin_FILE(),
-			       int srclin = __builtin_LINE()); // in dump_rps.cc
+			       const int srclin = __builtin_LINE()); // in dump_rps.cc
 extern "C" double rps_dump_start_elapsed_time(Rps_Dumper*);
 extern "C" double rps_dump_start_process_time(Rps_Dumper*);
 extern "C" double rps_dump_start_wallclock_time(Rps_Dumper*);
 extern "C" double rps_dump_start_monotonic_time(Rps_Dumper*);
+extern "C" Rps_ObjectRef rps_dump_data_object(Rps_Dumper*);
+extern "C" Rps_Value rps_dump_data_value(Rps_Dumper*);
+extern "C" const std::string rps_dump_data_source_file(Rps_Dumper*);
+extern "C" const int rps_dump_data_source_line(Rps_Dumper*);
 
 // scan a code address, e.g. a C function pointer whose address
 //... is inside some dlopen-ed plugin
