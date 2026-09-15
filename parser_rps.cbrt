@@ -236,6 +236,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 }
 
 : [\n] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
 }
 
@@ -252,6 +253,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 }
 
 <IN_COMMENT>: [\n] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
 }
 
@@ -266,6 +268,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 /* Code chunk start without prefix: #{ ... }# */
 : [#][\{] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->check_carbdata_callframe(fram_rp);
   memset(data_rp->rule_chunk_prefix, 0, sizeof(data_rp->rule_chunk_prefix));
   data_rp->rule_chunk_buf.clear();
@@ -296,6 +299,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 /* Code chunk end: standard }# */
 <IN_CODE_CHUNK> CODE_CHUNK: [\}][#] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   if (!data_rp->rule_chunk_prefix[0]) {
     $set_mode(DEFAULT);
     $$ = data_rp->rule_chunk_buf;
@@ -306,6 +310,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 /* Code chunk end: prefixed }prefix# */
 <IN_CODE_CHUNK> CODE_CHUNK: [\}][a-zA-Z0-9_]+[#] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   size_t tlen = strlen($text);
   if (data_rp->rule_chunk_prefix[0] &&
       tlen - 2 == strlen(data_rp->rule_chunk_prefix) &&
@@ -319,65 +324,79 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 /* Literal dollar in code chunk */
 <IN_CODE_CHUNK>: [\$][\$] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.push_back('$');
 }
 
 /* Metavariable in code chunk: $identifier */
 <IN_CODE_CHUNK>: [\$][a-zA-Z_][a-zA-Z0-9_]* {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.append($text);
 }
 
 /* Count newlines in code chunk */
 <IN_CODE_CHUNK>: [\n] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
   data_rp->rule_chunk_buf.push_back('\n');
 }
 
 /* Non-control content inside code chunk */
 <IN_CODE_CHUNK>: [^\}\$\n]+ {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.append($text);
 }
 
 /* Single closing brace inside code chunk not followed by # */
 <IN_CODE_CHUNK>: [\}] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.push_back('}');
 }
 
 : \" {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.erase();
   $set_mode(IN_STRING);
 }
 
 <IN_STRING> STRING_LITERAL: \" {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   $set_mode(DEFAULT);
   $$ = data_rp->rule_str;
 }
 
 <IN_STRING>: \\n {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\n');
 }
 
 <IN_STRING>: \\t {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\t');
 }
 
 <IN_STRING>: \\r {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\r');
 }
 
 <IN_STRING>: \\\" {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\"');
 }
 
 <IN_STRING>: \\\\ {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\\');
 }
 
 <IN_STRING>: \P{Control} {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.append($text);
 }
 
 <IN_STRING>: [\n] {
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
   data_rp->rule_str.push_back('\n');
 }
@@ -395,15 +414,25 @@ FLOAT_LITERAL: [\+\-]?([0-9]+\.)|([0-9]*\.[0-9]+)([eE][\+\-]?[0-9]+)? {
   $$ = strtod($text, nullptr);
 }
 
-INT_LITERAL: [\+\-]?0[xX][0-9a-fA-F]+ {
+INT_LITERAL: [\+\-]?0[xX][0-9a-fA-F]+ { // hex int literal
   $$ = (std::intptr_t)strtol($text, nullptr, 16);
 }
 
-INT_LITERAL: [\+\-]?[0-9]+ {
+INT_LITERAL: [\+\-]?0[bB][01]+ { // binary int literal
+  $$ = (std::intptr_t)strtol($text, nullptr, 2);
+}
+
+INT_LITERAL: [\+\-]?0[0-7]+ { // octal int literal
+  $$ = (std::intptr_t)strtol($text, nullptr, 8);
+}
+
+
+INT_LITERAL: [\+\-]?[0-9]+ { // decimal int literal
   $$ = (std::intptr_t)strtoll($text, nullptr, 10);
 }
 
 LOGIC_VAR: [\?][a-zA-Z_][a-zA-Z0-9_]* {
+  /// should give some RefPerSys instance or object
   $$ = std::string($text);
 }
 
