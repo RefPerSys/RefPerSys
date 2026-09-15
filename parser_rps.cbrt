@@ -61,6 +61,7 @@ extern "C" struct rpsruleparser_stack;
 
 enum rps_rule_parser_keyw_enum {
   rpsrule_kw__None,
+  rpsrule_kw_do,
   rpsrule_kw_rule,
   rpsrule_kw_when,
   rpsrule_kw_then,
@@ -192,6 +193,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 /* Keyword tokens */
 %token KEYW_RULE KEYW_WHEN KEYW_THEN KEYW_SALIENCE KEYW_ACTION
 %token KEYW_ASSERT KEYW_RETRACT KEYW_MODIFY
+%token KEYW_DISPLAY KEYW_DO
 
 /* Logical and relational operators */
 %token AND OR NOT
@@ -204,6 +206,8 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 /* Delimiters and punctuation */
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token COMMA SEMICOLON COLON DOT
+
+ /* TODO: use @! for fresh identifiers and to pass keywords as names */
 
 /* Variable and literal tokens, they probably should give some
    RefPerSys instance... */
@@ -403,14 +407,17 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
   data_rp->rule_str.push_back('\n');
 }
 
-KEYW_RULE: [r][u][l][e] { }
-KEYW_WHEN: [w][h][e][n] { }
-KEYW_THEN: [t][h][e][n] { }
-KEYW_SALIENCE: [s][a][l][i][e][n][c][e] { }
-KEYW_ACTION: [a][c][t][i][o][n] { }
-KEYW_ASSERT: [a][s][s][e][r][t] { }
-KEYW_RETRACT: [r][e][t][r][a][c][t] { }
-KEYW_MODIFY: [m][o][d][i][f][y] { }
+/// carburetta/examples/tilly/directives.cbrt allow keywords like:::
+KEYW_DO: do { }
+KEYW_DISPLAY: display { }
+KEYW_RULE: rule { }
+KEYW_WHEN: when { }
+KEYW_THEN: then { }
+KEYW_SALIENCE: salience { }
+KEYW_ACTION: action { }
+KEYW_ASSERT: assert { }
+KEYW_RETRACT: retract { }
+KEYW_MODIFY: modify { }
 
 FLOAT_LITERAL: [\+\-]?([0-9]+\.)|([0-9]*\.[0-9]+)([eE][\+\-]?[0-9]+)? {
   $$ = strtod($text, nullptr);
@@ -435,11 +442,11 @@ INT_LITERAL: [\+\-]?[0-9]+ { // decimal int literal
 
 LOGIC_VAR: [\?][a-zA-Z_][a-zA-Z0-9_]* {
   /// should give some RefPerSys instance or object
-  $$ = std::string($text);
+  std::string logvarname = std::string($text);
 }
 
 IDENT: [a-zA-Z_][a-zA-Z0-9_]* {
-  $$ = std::string($text);
+  std::string identname = std::string($text);
 }
 
 ARROW: [\-][>] { }
@@ -482,7 +489,7 @@ DOT: "." { }
 %nt pattern_binding object_pattern attr_constraint_list attr_constraint
 %nt rel_op expr term factor primary_expr
 %nt action_block action_list action_stmt
-%nt assert_stmt retract_stmt modify_stmt put_stmt send_stmt
+%nt assert_stmt retract_stmt modify_stmt put_stmt send_stmt display_stmt
 %nt attr_assignment_list attr_assignment arg_list
 
 toplevel_file:
@@ -670,6 +677,9 @@ action_stmt:
 
 action_stmt:
   send_stmt SEMICOLON { }
+
+action_stmt: display_stmt SEMICOLON {
+  }
 
 assert_stmt:
   KEYW_ASSERT IDENT LPAREN attr_assignment_list RPAREN { }
