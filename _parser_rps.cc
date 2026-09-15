@@ -188,21 +188,22 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 /* Delimiters and punctuation */
 #line 207 "parser_rps.cbrt"
 
-/* Variable and literal tokens */
-#line 211 "parser_rps.cbrt"
+/* Variable and literal tokens, they probably should give some
+   RefPerSys instance... */
+#line 212 "parser_rps.cbrt"
 
-#line 214 "parser_rps.cbrt"
+#line 216 "parser_rps.cbrt"
 
-#line 217 "parser_rps.cbrt"
+#line 219 "parser_rps.cbrt"
 
-#line 220 "parser_rps.cbrt"
+#line 222 "parser_rps.cbrt"
 
-#line 223 "parser_rps.cbrt"
+#line 225 "parser_rps.cbrt"
 
 /* Code Chunk token */
-#line 227 "parser_rps.cbrt"
+#line 229 "parser_rps.cbrt"
 
-#line 231 "parser_rps.cbrt"
+#line 233 "parser_rps.cbrt"
 
 /* --------- START OF GENERATED CODE ------------ */
 #if defined(__clang__)
@@ -1776,11 +1777,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 1;
               {
-#line 234 "parser_rps.cbrt"
+#line 236 "parser_rps.cbrt"
                 
   /* Ignore whitespace */
 
-#line 1784 "_parser_rps.cc"
+#line 1785 "_parser_rps.cc"
               }
               C1:;
             }
@@ -1792,12 +1793,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 2;
               {
-#line 238 "parser_rps.cbrt"
+#line 240 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
 
-#line 1801 "_parser_rps.cc"
+#line 1802 "_parser_rps.cc"
               }
               C2:;
             }
@@ -1809,11 +1810,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 3;
               {
-#line 243 "parser_rps.cbrt"
+#line 245 "parser_rps.cbrt"
                 
   /* Single-line comment */
 
-#line 1817 "_parser_rps.cc"
+#line 1818 "_parser_rps.cc"
               }
               C3:;
             }
@@ -1825,11 +1826,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 4;
               {
-#line 247 "parser_rps.cbrt"
+#line 249 "parser_rps.cbrt"
                 
                   rpsruleparser_set_mode(stack, M_RPSRULEPARSER_IN_COMMENT);
 
-#line 1833 "_parser_rps.cc"
+#line 1834 "_parser_rps.cc"
               }
               C4:;
             }
@@ -1841,11 +1842,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 5;
               {
-#line 251 "parser_rps.cbrt"
+#line 253 "parser_rps.cbrt"
                 
                   rpsruleparser_set_mode(stack, M_RPSRULEPARSER_DEFAULT);
 
-#line 1849 "_parser_rps.cc"
+#line 1850 "_parser_rps.cc"
               }
               C5:;
             }
@@ -1857,12 +1858,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 6;
               {
-#line 255 "parser_rps.cbrt"
+#line 257 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
 
-#line 1866 "_parser_rps.cc"
+#line 1867 "_parser_rps.cc"
               }
               C6:;
             }
@@ -1874,11 +1875,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 7;
               {
-#line 260 "parser_rps.cbrt"
+#line 262 "parser_rps.cbrt"
                 
   /* Skip comment body */
 
-#line 1882 "_parser_rps.cc"
+#line 1883 "_parser_rps.cc"
               }
               C7:;
             }
@@ -1890,11 +1891,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 8;
               {
-#line 265 "parser_rps.cbrt"
+#line 267 "parser_rps.cbrt"
                 
   /* Skip asterisk */
 
-#line 1898 "_parser_rps.cc"
+#line 1899 "_parser_rps.cc"
               }
               C8:;
             }
@@ -1906,7 +1907,7 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 9;
               {
-#line 270 "parser_rps.cbrt"
+#line 272 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->check_carbdata_callframe(fram_rp);
@@ -1914,7 +1915,7 @@ for (;;) {
   data_rp->rule_chunk_buf.clear();
                   rpsruleparser_set_mode(stack, M_RPSRULEPARSER_IN_CODE_CHUNK);
 
-#line 1918 "_parser_rps.cc"
+#line 1919 "_parser_rps.cc"
               }
               C9:;
             }
@@ -1926,7 +1927,7 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 10;
               {
-#line 279 "parser_rps.cbrt"
+#line 281 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->check_carbdata_callframe(fram_rp);
@@ -1947,7 +1948,7 @@ for (;;) {
 		<< Rps_QuotedC_String((stack->match_buffer_)));
                   rpsruleparser_set_mode(stack, M_RPSRULEPARSER_IN_CODE_CHUNK);
 
-#line 1951 "_parser_rps.cc"
+#line 1952 "_parser_rps.cc"
               }
               C10:;
             }
@@ -1958,7 +1959,7 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 11;
               {
-#line 301 "parser_rps.cbrt"
+#line 303 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   if (!data_rp->rule_chunk_prefix[0]) {
@@ -1968,7 +1969,7 @@ for (;;) {
     data_rp->rule_chunk_buf.append((stack->match_buffer_), strlen((stack->match_buffer_)));
   }
 
-#line 1972 "_parser_rps.cc"
+#line 1973 "_parser_rps.cc"
               }
               C11:;
             }
@@ -1979,7 +1980,7 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 12;
               {
-#line 312 "parser_rps.cbrt"
+#line 314 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   size_t tlen = strlen((stack->match_buffer_));
@@ -1992,7 +1993,7 @@ for (;;) {
     data_rp->rule_chunk_buf.append((stack->match_buffer_), tlen);
   }
 
-#line 1996 "_parser_rps.cc"
+#line 1997 "_parser_rps.cc"
               }
               C12:;
             }
@@ -2004,12 +2005,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 13;
               {
-#line 326 "parser_rps.cbrt"
+#line 328 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.push_back('$');
 
-#line 2013 "_parser_rps.cc"
+#line 2014 "_parser_rps.cc"
               }
               C13:;
             }
@@ -2021,12 +2022,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 14;
               {
-#line 332 "parser_rps.cbrt"
+#line 334 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.append((stack->match_buffer_));
 
-#line 2030 "_parser_rps.cc"
+#line 2031 "_parser_rps.cc"
               }
               C14:;
             }
@@ -2038,13 +2039,13 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 15;
               {
-#line 338 "parser_rps.cbrt"
+#line 340 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
   data_rp->rule_chunk_buf.push_back('\n');
 
-#line 2048 "_parser_rps.cc"
+#line 2049 "_parser_rps.cc"
               }
               C15:;
             }
@@ -2056,12 +2057,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 16;
               {
-#line 345 "parser_rps.cbrt"
+#line 347 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.append((stack->match_buffer_));
 
-#line 2065 "_parser_rps.cc"
+#line 2066 "_parser_rps.cc"
               }
               C16:;
             }
@@ -2073,12 +2074,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 17;
               {
-#line 351 "parser_rps.cbrt"
+#line 353 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_chunk_buf.push_back('}');
 
-#line 2082 "_parser_rps.cc"
+#line 2083 "_parser_rps.cc"
               }
               C17:;
             }
@@ -2090,13 +2091,13 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 18;
               {
-#line 356 "parser_rps.cbrt"
+#line 358 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.erase();
                   rpsruleparser_set_mode(stack, M_RPSRULEPARSER_IN_STRING);
 
-#line 2100 "_parser_rps.cc"
+#line 2101 "_parser_rps.cc"
               }
               C18:;
             }
@@ -2107,13 +2108,13 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 19;
               {
-#line 362 "parser_rps.cbrt"
+#line 364 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
                   rpsruleparser_set_mode(stack, M_RPSRULEPARSER_DEFAULT);
   (stack->stack_[0].v_.uv4_) = data_rp->rule_str;
 
-#line 2117 "_parser_rps.cc"
+#line 2118 "_parser_rps.cc"
               }
               C19:;
             }
@@ -2125,12 +2126,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 20;
               {
-#line 368 "parser_rps.cbrt"
+#line 370 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\n');
 
-#line 2134 "_parser_rps.cc"
+#line 2135 "_parser_rps.cc"
               }
               C20:;
             }
@@ -2142,12 +2143,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 21;
               {
-#line 373 "parser_rps.cbrt"
+#line 375 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\t');
 
-#line 2151 "_parser_rps.cc"
+#line 2152 "_parser_rps.cc"
               }
               C21:;
             }
@@ -2159,12 +2160,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 22;
               {
-#line 378 "parser_rps.cbrt"
+#line 380 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\r');
 
-#line 2168 "_parser_rps.cc"
+#line 2169 "_parser_rps.cc"
               }
               C22:;
             }
@@ -2176,12 +2177,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 23;
               {
-#line 383 "parser_rps.cbrt"
+#line 385 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\"');
 
-#line 2185 "_parser_rps.cc"
+#line 2186 "_parser_rps.cc"
               }
               C23:;
             }
@@ -2193,12 +2194,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 24;
               {
-#line 388 "parser_rps.cbrt"
+#line 390 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.push_back('\\');
 
-#line 2202 "_parser_rps.cc"
+#line 2203 "_parser_rps.cc"
               }
               C24:;
             }
@@ -2210,12 +2211,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 25;
               {
-#line 393 "parser_rps.cbrt"
+#line 395 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->rule_str.append((stack->match_buffer_));
 
-#line 2219 "_parser_rps.cc"
+#line 2220 "_parser_rps.cc"
               }
               C25:;
             }
@@ -2227,13 +2228,13 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 26;
               {
-#line 398 "parser_rps.cbrt"
+#line 400 "parser_rps.cbrt"
                 
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->incr_carbdata_line_number();
   data_rp->rule_str.push_back('\n');
 
-#line 2237 "_parser_rps.cc"
+#line 2238 "_parser_rps.cc"
               }
               C26:;
             }
@@ -2243,9 +2244,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 27;
               {
-#line 404 "parser_rps.cbrt"
+#line 406 "parser_rps.cbrt"
                  
-#line 2249 "_parser_rps.cc"
+#line 2250 "_parser_rps.cc"
               }
               C27:;
             }
@@ -2255,9 +2256,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 28;
               {
-#line 405 "parser_rps.cbrt"
+#line 407 "parser_rps.cbrt"
                  
-#line 2261 "_parser_rps.cc"
+#line 2262 "_parser_rps.cc"
               }
               C28:;
             }
@@ -2267,9 +2268,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 29;
               {
-#line 406 "parser_rps.cbrt"
+#line 408 "parser_rps.cbrt"
                  
-#line 2273 "_parser_rps.cc"
+#line 2274 "_parser_rps.cc"
               }
               C29:;
             }
@@ -2279,9 +2280,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 30;
               {
-#line 407 "parser_rps.cbrt"
+#line 409 "parser_rps.cbrt"
                  
-#line 2285 "_parser_rps.cc"
+#line 2286 "_parser_rps.cc"
               }
               C30:;
             }
@@ -2291,9 +2292,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 31;
               {
-#line 408 "parser_rps.cbrt"
+#line 410 "parser_rps.cbrt"
                  
-#line 2297 "_parser_rps.cc"
+#line 2298 "_parser_rps.cc"
               }
               C31:;
             }
@@ -2303,9 +2304,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 32;
               {
-#line 409 "parser_rps.cbrt"
+#line 411 "parser_rps.cbrt"
                  
-#line 2309 "_parser_rps.cc"
+#line 2310 "_parser_rps.cc"
               }
               C32:;
             }
@@ -2315,9 +2316,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 33;
               {
-#line 410 "parser_rps.cbrt"
+#line 412 "parser_rps.cbrt"
                  
-#line 2321 "_parser_rps.cc"
+#line 2322 "_parser_rps.cc"
               }
               C33:;
             }
@@ -2327,9 +2328,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 34;
               {
-#line 411 "parser_rps.cbrt"
+#line 413 "parser_rps.cbrt"
                  
-#line 2333 "_parser_rps.cc"
+#line 2334 "_parser_rps.cc"
               }
               C34:;
             }
@@ -2340,11 +2341,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 35;
               {
-#line 413 "parser_rps.cbrt"
+#line 415 "parser_rps.cbrt"
                 
   (stack->stack_[0].v_.uv3_) = strtod((stack->match_buffer_), nullptr);
 
-#line 2348 "_parser_rps.cc"
+#line 2349 "_parser_rps.cc"
               }
               C35:;
             }
@@ -2355,11 +2356,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 36;
               {
-#line 417 "parser_rps.cbrt"
+#line 419 "parser_rps.cbrt"
                  // hex int literal
   (stack->stack_[0].v_.uv2_) = (std::intptr_t)strtol((stack->match_buffer_), nullptr, 16);
 
-#line 2363 "_parser_rps.cc"
+#line 2364 "_parser_rps.cc"
               }
               C36:;
             }
@@ -2370,11 +2371,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 37;
               {
-#line 421 "parser_rps.cbrt"
+#line 423 "parser_rps.cbrt"
                  // binary int literal
   (stack->stack_[0].v_.uv2_) = (std::intptr_t)strtol((stack->match_buffer_), nullptr, 2);
 
-#line 2378 "_parser_rps.cc"
+#line 2379 "_parser_rps.cc"
               }
               C37:;
             }
@@ -2385,11 +2386,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 38;
               {
-#line 425 "parser_rps.cbrt"
+#line 427 "parser_rps.cbrt"
                  // octal int literal
   (stack->stack_[0].v_.uv2_) = (std::intptr_t)strtol((stack->match_buffer_), nullptr, 8);
 
-#line 2393 "_parser_rps.cc"
+#line 2394 "_parser_rps.cc"
               }
               C38:;
             }
@@ -2400,11 +2401,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 39;
               {
-#line 430 "parser_rps.cbrt"
+#line 432 "parser_rps.cbrt"
                  // decimal int literal
   (stack->stack_[0].v_.uv2_) = (std::intptr_t)strtoll((stack->match_buffer_), nullptr, 10);
 
-#line 2408 "_parser_rps.cc"
+#line 2409 "_parser_rps.cc"
               }
               C39:;
             }
@@ -2415,12 +2416,12 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 40;
               {
-#line 434 "parser_rps.cbrt"
+#line 436 "parser_rps.cbrt"
                 
   /// should give some RefPerSys instance or object
   (stack->stack_[0].v_.uv0_) = std::string((stack->match_buffer_));
 
-#line 2424 "_parser_rps.cc"
+#line 2425 "_parser_rps.cc"
               }
               C40:;
             }
@@ -2431,11 +2432,11 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 41;
               {
-#line 439 "parser_rps.cbrt"
+#line 441 "parser_rps.cbrt"
                 
   (stack->stack_[0].v_.uv1_) = std::string((stack->match_buffer_));
 
-#line 2439 "_parser_rps.cc"
+#line 2440 "_parser_rps.cc"
               }
               C41:;
             }
@@ -2445,9 +2446,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 42;
               {
-#line 443 "parser_rps.cbrt"
+#line 445 "parser_rps.cbrt"
                  
-#line 2451 "_parser_rps.cc"
+#line 2452 "_parser_rps.cc"
               }
               C42:;
             }
@@ -2457,9 +2458,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 43;
               {
-#line 444 "parser_rps.cbrt"
+#line 446 "parser_rps.cbrt"
                  
-#line 2463 "_parser_rps.cc"
+#line 2464 "_parser_rps.cc"
               }
               C43:;
             }
@@ -2469,9 +2470,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 44;
               {
-#line 445 "parser_rps.cbrt"
+#line 447 "parser_rps.cbrt"
                  
-#line 2475 "_parser_rps.cc"
+#line 2476 "_parser_rps.cc"
               }
               C44:;
             }
@@ -2481,9 +2482,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 45;
               {
-#line 446 "parser_rps.cbrt"
+#line 448 "parser_rps.cbrt"
                  
-#line 2487 "_parser_rps.cc"
+#line 2488 "_parser_rps.cc"
               }
               C45:;
             }
@@ -2493,9 +2494,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 46;
               {
-#line 447 "parser_rps.cbrt"
+#line 449 "parser_rps.cbrt"
                  
-#line 2499 "_parser_rps.cc"
+#line 2500 "_parser_rps.cc"
               }
               C46:;
             }
@@ -2505,9 +2506,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 47;
               {
-#line 448 "parser_rps.cbrt"
+#line 450 "parser_rps.cbrt"
                  
-#line 2511 "_parser_rps.cc"
+#line 2512 "_parser_rps.cc"
               }
               C47:;
             }
@@ -2517,9 +2518,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 48;
               {
-#line 449 "parser_rps.cbrt"
+#line 451 "parser_rps.cbrt"
                  
-#line 2523 "_parser_rps.cc"
+#line 2524 "_parser_rps.cc"
               }
               C48:;
             }
@@ -2529,9 +2530,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 49;
               {
-#line 450 "parser_rps.cbrt"
+#line 452 "parser_rps.cbrt"
                  
-#line 2535 "_parser_rps.cc"
+#line 2536 "_parser_rps.cc"
               }
               C49:;
             }
@@ -2541,9 +2542,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 50;
               {
-#line 451 "parser_rps.cbrt"
+#line 453 "parser_rps.cbrt"
                  
-#line 2547 "_parser_rps.cc"
+#line 2548 "_parser_rps.cc"
               }
               C50:;
             }
@@ -2553,9 +2554,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 51;
               {
-#line 452 "parser_rps.cbrt"
+#line 454 "parser_rps.cbrt"
                  
-#line 2559 "_parser_rps.cc"
+#line 2560 "_parser_rps.cc"
               }
               C51:;
             }
@@ -2565,9 +2566,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 52;
               {
-#line 453 "parser_rps.cbrt"
+#line 455 "parser_rps.cbrt"
                  
-#line 2571 "_parser_rps.cc"
+#line 2572 "_parser_rps.cc"
               }
               C52:;
             }
@@ -2577,9 +2578,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 53;
               {
-#line 454 "parser_rps.cbrt"
+#line 456 "parser_rps.cbrt"
                  
-#line 2583 "_parser_rps.cc"
+#line 2584 "_parser_rps.cc"
               }
               C53:;
             }
@@ -2589,9 +2590,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 54;
               {
-#line 455 "parser_rps.cbrt"
+#line 457 "parser_rps.cbrt"
                  
-#line 2595 "_parser_rps.cc"
+#line 2596 "_parser_rps.cc"
               }
               C54:;
             }
@@ -2601,9 +2602,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 55;
               {
-#line 456 "parser_rps.cbrt"
+#line 458 "parser_rps.cbrt"
                  
-#line 2607 "_parser_rps.cc"
+#line 2608 "_parser_rps.cc"
               }
               C55:;
             }
@@ -2613,9 +2614,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 56;
               {
-#line 457 "parser_rps.cbrt"
+#line 459 "parser_rps.cbrt"
                  
-#line 2619 "_parser_rps.cc"
+#line 2620 "_parser_rps.cc"
               }
               C56:;
             }
@@ -2625,9 +2626,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 57;
               {
-#line 458 "parser_rps.cbrt"
+#line 460 "parser_rps.cbrt"
                  
-#line 2631 "_parser_rps.cc"
+#line 2632 "_parser_rps.cc"
               }
               C57:;
             }
@@ -2637,9 +2638,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 58;
               {
-#line 460 "parser_rps.cbrt"
+#line 462 "parser_rps.cbrt"
                  
-#line 2643 "_parser_rps.cc"
+#line 2644 "_parser_rps.cc"
               }
               C58:;
             }
@@ -2649,9 +2650,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 59;
               {
-#line 461 "parser_rps.cbrt"
+#line 463 "parser_rps.cbrt"
                  
-#line 2655 "_parser_rps.cc"
+#line 2656 "_parser_rps.cc"
               }
               C59:;
             }
@@ -2661,9 +2662,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 60;
               {
-#line 462 "parser_rps.cbrt"
+#line 464 "parser_rps.cbrt"
                  
-#line 2667 "_parser_rps.cc"
+#line 2668 "_parser_rps.cc"
               }
               C60:;
             }
@@ -2673,9 +2674,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 61;
               {
-#line 463 "parser_rps.cbrt"
+#line 465 "parser_rps.cbrt"
                  
-#line 2679 "_parser_rps.cc"
+#line 2680 "_parser_rps.cc"
               }
               C61:;
             }
@@ -2685,9 +2686,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 62;
               {
-#line 465 "parser_rps.cbrt"
+#line 467 "parser_rps.cbrt"
                  
-#line 2691 "_parser_rps.cc"
+#line 2692 "_parser_rps.cc"
               }
               C62:;
             }
@@ -2697,9 +2698,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 63;
               {
-#line 466 "parser_rps.cbrt"
+#line 468 "parser_rps.cbrt"
                  
-#line 2703 "_parser_rps.cc"
+#line 2704 "_parser_rps.cc"
               }
               C63:;
             }
@@ -2709,9 +2710,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 64;
               {
-#line 467 "parser_rps.cbrt"
+#line 469 "parser_rps.cbrt"
                  
-#line 2715 "_parser_rps.cc"
+#line 2716 "_parser_rps.cc"
               }
               C64:;
             }
@@ -2721,9 +2722,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 65;
               {
-#line 468 "parser_rps.cbrt"
+#line 470 "parser_rps.cbrt"
                  
-#line 2727 "_parser_rps.cc"
+#line 2728 "_parser_rps.cc"
               }
               C65:;
             }
@@ -2733,9 +2734,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 66;
               {
-#line 469 "parser_rps.cbrt"
+#line 471 "parser_rps.cbrt"
                  
-#line 2739 "_parser_rps.cc"
+#line 2740 "_parser_rps.cc"
               }
               C66:;
             }
@@ -2745,9 +2746,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 67;
               {
-#line 470 "parser_rps.cbrt"
+#line 472 "parser_rps.cbrt"
                  
-#line 2751 "_parser_rps.cc"
+#line 2752 "_parser_rps.cc"
               }
               C67:;
             }
@@ -2757,9 +2758,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 68;
               {
-#line 471 "parser_rps.cbrt"
+#line 473 "parser_rps.cbrt"
                  
-#line 2763 "_parser_rps.cc"
+#line 2764 "_parser_rps.cc"
               }
               C68:;
             }
@@ -2769,9 +2770,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 69;
               {
-#line 472 "parser_rps.cbrt"
+#line 474 "parser_rps.cbrt"
                  
-#line 2775 "_parser_rps.cc"
+#line 2776 "_parser_rps.cc"
               }
               C69:;
             }
@@ -2781,9 +2782,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 70;
               {
-#line 473 "parser_rps.cbrt"
+#line 475 "parser_rps.cbrt"
                  
-#line 2787 "_parser_rps.cc"
+#line 2788 "_parser_rps.cc"
               }
               C70:;
             }
@@ -2793,9 +2794,9 @@ for (;;) {
             if (!stack->discard_remaining_actions_) {
               stack->continue_at_ = 71;
               {
-#line 474 "parser_rps.cbrt"
+#line 476 "parser_rps.cbrt"
                  
-#line 2799 "_parser_rps.cc"
+#line 2800 "_parser_rps.cc"
               }
               C71:;
             }
@@ -2893,11 +2894,11 @@ for (;;) {
               case 1: {
                 stack->continue_at_ = 72;
                 {
-#line 487 "parser_rps.cbrt"
+#line 489 "parser_rps.cbrt"
                   {
     RPS_DEBUG_LOG(REPL, "parsed rule_file successfully");
   }
-#line 2901 "_parser_rps.cc"
+#line 2902 "_parser_rps.cc"
                 }
                 C72:;
               }
@@ -2906,9 +2907,9 @@ for (;;) {
               case 2: {
                 stack->continue_at_ = 73;
                 {
-#line 492 "parser_rps.cbrt"
+#line 494 "parser_rps.cbrt"
                   { }
-#line 2912 "_parser_rps.cc"
+#line 2913 "_parser_rps.cc"
                 }
                 C73:;
               }
@@ -2917,9 +2918,9 @@ for (;;) {
               case 3: {
                 stack->continue_at_ = 74;
                 {
-#line 495 "parser_rps.cbrt"
+#line 497 "parser_rps.cbrt"
                   { }
-#line 2923 "_parser_rps.cc"
+#line 2924 "_parser_rps.cc"
                 }
                 C74:;
               }
@@ -2928,12 +2929,12 @@ for (;;) {
               case 4: {
                 stack->continue_at_ = 75;
                 {
-#line 498 "parser_rps.cbrt"
+#line 500 "parser_rps.cbrt"
                   {
     data_rp->rule_count++;
     RPS_DEBUG_LOG(REPL, "parsed rule_decl " << (stack->sym_data_[1].v_.uv1_));
   }
-#line 2937 "_parser_rps.cc"
+#line 2938 "_parser_rps.cc"
                 }
                 C75:;
               }
@@ -2942,9 +2943,9 @@ for (;;) {
               case 5: {
                 stack->continue_at_ = 76;
                 {
-#line 504 "parser_rps.cbrt"
+#line 506 "parser_rps.cbrt"
                   { }
-#line 2948 "_parser_rps.cc"
+#line 2949 "_parser_rps.cc"
                 }
                 C76:;
               }
@@ -2953,11 +2954,11 @@ for (;;) {
               case 6: {
                 stack->continue_at_ = 77;
                 {
-#line 507 "parser_rps.cbrt"
+#line 509 "parser_rps.cbrt"
                   {
     data_rp->rule_i = (stack->sym_data_[1].v_.uv2_);
   }
-#line 2961 "_parser_rps.cc"
+#line 2962 "_parser_rps.cc"
                 }
                 C77:;
               }
@@ -2966,11 +2967,11 @@ for (;;) {
               case 7: {
                 stack->continue_at_ = 78;
                 {
-#line 512 "parser_rps.cbrt"
+#line 514 "parser_rps.cbrt"
                   {
     data_rp->rule_i = -(stack->sym_data_[2].v_.uv2_);
   }
-#line 2974 "_parser_rps.cc"
+#line 2975 "_parser_rps.cc"
                 }
                 C78:;
               }
@@ -2979,9 +2980,9 @@ for (;;) {
               case 8: {
                 stack->continue_at_ = 79;
                 {
-#line 517 "parser_rps.cbrt"
+#line 519 "parser_rps.cbrt"
                   { }
-#line 2985 "_parser_rps.cc"
+#line 2986 "_parser_rps.cc"
                 }
                 C79:;
               }
@@ -2990,9 +2991,9 @@ for (;;) {
               case 9: {
                 stack->continue_at_ = 80;
                 {
-#line 520 "parser_rps.cbrt"
+#line 522 "parser_rps.cbrt"
                   { }
-#line 2996 "_parser_rps.cc"
+#line 2997 "_parser_rps.cc"
                 }
                 C80:;
               }
@@ -3001,9 +3002,9 @@ for (;;) {
               case 10: {
                 stack->continue_at_ = 81;
                 {
-#line 523 "parser_rps.cbrt"
+#line 525 "parser_rps.cbrt"
                   { }
-#line 3007 "_parser_rps.cc"
+#line 3008 "_parser_rps.cc"
                 }
                 C81:;
               }
@@ -3012,9 +3013,9 @@ for (;;) {
               case 11: {
                 stack->continue_at_ = 82;
                 {
-#line 526 "parser_rps.cbrt"
+#line 528 "parser_rps.cbrt"
                   { }
-#line 3018 "_parser_rps.cc"
+#line 3019 "_parser_rps.cc"
                 }
                 C82:;
               }
@@ -3023,9 +3024,9 @@ for (;;) {
               case 12: {
                 stack->continue_at_ = 83;
                 {
-#line 529 "parser_rps.cbrt"
+#line 531 "parser_rps.cbrt"
                   { }
-#line 3029 "_parser_rps.cc"
+#line 3030 "_parser_rps.cc"
                 }
                 C83:;
               }
@@ -3034,9 +3035,9 @@ for (;;) {
               case 13: {
                 stack->continue_at_ = 84;
                 {
-#line 532 "parser_rps.cbrt"
+#line 534 "parser_rps.cbrt"
                   { }
-#line 3040 "_parser_rps.cc"
+#line 3041 "_parser_rps.cc"
                 }
                 C84:;
               }
@@ -3045,9 +3046,9 @@ for (;;) {
               case 14: {
                 stack->continue_at_ = 85;
                 {
-#line 535 "parser_rps.cbrt"
+#line 537 "parser_rps.cbrt"
                   { }
-#line 3051 "_parser_rps.cc"
+#line 3052 "_parser_rps.cc"
                 }
                 C85:;
               }
@@ -3056,9 +3057,9 @@ for (;;) {
               case 15: {
                 stack->continue_at_ = 86;
                 {
-#line 538 "parser_rps.cbrt"
+#line 540 "parser_rps.cbrt"
                   { }
-#line 3062 "_parser_rps.cc"
+#line 3063 "_parser_rps.cc"
                 }
                 C86:;
               }
@@ -3067,9 +3068,9 @@ for (;;) {
               case 16: {
                 stack->continue_at_ = 87;
                 {
-#line 541 "parser_rps.cbrt"
+#line 543 "parser_rps.cbrt"
                   { }
-#line 3073 "_parser_rps.cc"
+#line 3074 "_parser_rps.cc"
                 }
                 C87:;
               }
@@ -3078,9 +3079,9 @@ for (;;) {
               case 17: {
                 stack->continue_at_ = 88;
                 {
-#line 544 "parser_rps.cbrt"
+#line 546 "parser_rps.cbrt"
                   { }
-#line 3084 "_parser_rps.cc"
+#line 3085 "_parser_rps.cc"
                 }
                 C88:;
               }
@@ -3089,9 +3090,9 @@ for (;;) {
               case 18: {
                 stack->continue_at_ = 89;
                 {
-#line 547 "parser_rps.cbrt"
+#line 549 "parser_rps.cbrt"
                   { }
-#line 3095 "_parser_rps.cc"
+#line 3096 "_parser_rps.cc"
                 }
                 C89:;
               }
@@ -3100,9 +3101,9 @@ for (;;) {
               case 19: {
                 stack->continue_at_ = 90;
                 {
-#line 550 "parser_rps.cbrt"
+#line 552 "parser_rps.cbrt"
                   { }
-#line 3106 "_parser_rps.cc"
+#line 3107 "_parser_rps.cc"
                 }
                 C90:;
               }
@@ -3111,9 +3112,9 @@ for (;;) {
               case 20: {
                 stack->continue_at_ = 91;
                 {
-#line 553 "parser_rps.cbrt"
+#line 555 "parser_rps.cbrt"
                   { }
-#line 3117 "_parser_rps.cc"
+#line 3118 "_parser_rps.cc"
                 }
                 C91:;
               }
@@ -3122,9 +3123,9 @@ for (;;) {
               case 21: {
                 stack->continue_at_ = 92;
                 {
-#line 556 "parser_rps.cbrt"
+#line 558 "parser_rps.cbrt"
                   { }
-#line 3128 "_parser_rps.cc"
+#line 3129 "_parser_rps.cc"
                 }
                 C92:;
               }
@@ -3133,9 +3134,9 @@ for (;;) {
               case 22: {
                 stack->continue_at_ = 93;
                 {
-#line 559 "parser_rps.cbrt"
+#line 561 "parser_rps.cbrt"
                   { }
-#line 3139 "_parser_rps.cc"
+#line 3140 "_parser_rps.cc"
                 }
                 C93:;
               }
@@ -3144,9 +3145,9 @@ for (;;) {
               case 23: {
                 stack->continue_at_ = 94;
                 {
-#line 562 "parser_rps.cbrt"
+#line 564 "parser_rps.cbrt"
                   { }
-#line 3150 "_parser_rps.cc"
+#line 3151 "_parser_rps.cc"
                 }
                 C94:;
               }
@@ -3155,9 +3156,9 @@ for (;;) {
               case 24: {
                 stack->continue_at_ = 95;
                 {
-#line 565 "parser_rps.cbrt"
+#line 567 "parser_rps.cbrt"
                   { }
-#line 3161 "_parser_rps.cc"
+#line 3162 "_parser_rps.cc"
                 }
                 C95:;
               }
@@ -3166,9 +3167,9 @@ for (;;) {
               case 25: {
                 stack->continue_at_ = 96;
                 {
-#line 568 "parser_rps.cbrt"
+#line 570 "parser_rps.cbrt"
                   { }
-#line 3172 "_parser_rps.cc"
+#line 3173 "_parser_rps.cc"
                 }
                 C96:;
               }
@@ -3177,9 +3178,9 @@ for (;;) {
               case 26: {
                 stack->continue_at_ = 97;
                 {
-#line 571 "parser_rps.cbrt"
+#line 573 "parser_rps.cbrt"
                   { }
-#line 3183 "_parser_rps.cc"
+#line 3184 "_parser_rps.cc"
                 }
                 C97:;
               }
@@ -3188,9 +3189,9 @@ for (;;) {
               case 27: {
                 stack->continue_at_ = 98;
                 {
-#line 574 "parser_rps.cbrt"
+#line 576 "parser_rps.cbrt"
                   { }
-#line 3194 "_parser_rps.cc"
+#line 3195 "_parser_rps.cc"
                 }
                 C98:;
               }
@@ -3199,9 +3200,9 @@ for (;;) {
               case 28: {
                 stack->continue_at_ = 99;
                 {
-#line 577 "parser_rps.cbrt"
+#line 579 "parser_rps.cbrt"
                   { }
-#line 3205 "_parser_rps.cc"
+#line 3206 "_parser_rps.cc"
                 }
                 C99:;
               }
@@ -3210,9 +3211,9 @@ for (;;) {
               case 29: {
                 stack->continue_at_ = 100;
                 {
-#line 580 "parser_rps.cbrt"
+#line 582 "parser_rps.cbrt"
                   { }
-#line 3216 "_parser_rps.cc"
+#line 3217 "_parser_rps.cc"
                 }
                 C100:;
               }
@@ -3221,9 +3222,9 @@ for (;;) {
               case 30: {
                 stack->continue_at_ = 101;
                 {
-#line 583 "parser_rps.cbrt"
+#line 585 "parser_rps.cbrt"
                   { }
-#line 3227 "_parser_rps.cc"
+#line 3228 "_parser_rps.cc"
                 }
                 C101:;
               }
@@ -3232,9 +3233,9 @@ for (;;) {
               case 31: {
                 stack->continue_at_ = 102;
                 {
-#line 586 "parser_rps.cbrt"
+#line 588 "parser_rps.cbrt"
                   { }
-#line 3238 "_parser_rps.cc"
+#line 3239 "_parser_rps.cc"
                 }
                 C102:;
               }
@@ -3243,9 +3244,9 @@ for (;;) {
               case 32: {
                 stack->continue_at_ = 103;
                 {
-#line 589 "parser_rps.cbrt"
+#line 591 "parser_rps.cbrt"
                   { }
-#line 3249 "_parser_rps.cc"
+#line 3250 "_parser_rps.cc"
                 }
                 C103:;
               }
@@ -3254,9 +3255,9 @@ for (;;) {
               case 33: {
                 stack->continue_at_ = 104;
                 {
-#line 592 "parser_rps.cbrt"
+#line 594 "parser_rps.cbrt"
                   { }
-#line 3260 "_parser_rps.cc"
+#line 3261 "_parser_rps.cc"
                 }
                 C104:;
               }
@@ -3265,9 +3266,9 @@ for (;;) {
               case 34: {
                 stack->continue_at_ = 105;
                 {
-#line 595 "parser_rps.cbrt"
+#line 597 "parser_rps.cbrt"
                   { }
-#line 3271 "_parser_rps.cc"
+#line 3272 "_parser_rps.cc"
                 }
                 C105:;
               }
@@ -3276,9 +3277,9 @@ for (;;) {
               case 35: {
                 stack->continue_at_ = 106;
                 {
-#line 598 "parser_rps.cbrt"
+#line 600 "parser_rps.cbrt"
                   { }
-#line 3282 "_parser_rps.cc"
+#line 3283 "_parser_rps.cc"
                 }
                 C106:;
               }
@@ -3287,9 +3288,9 @@ for (;;) {
               case 36: {
                 stack->continue_at_ = 107;
                 {
-#line 601 "parser_rps.cbrt"
+#line 603 "parser_rps.cbrt"
                   { }
-#line 3293 "_parser_rps.cc"
+#line 3294 "_parser_rps.cc"
                 }
                 C107:;
               }
@@ -3298,9 +3299,9 @@ for (;;) {
               case 37: {
                 stack->continue_at_ = 108;
                 {
-#line 604 "parser_rps.cbrt"
+#line 606 "parser_rps.cbrt"
                   { }
-#line 3304 "_parser_rps.cc"
+#line 3305 "_parser_rps.cc"
                 }
                 C108:;
               }
@@ -3309,9 +3310,9 @@ for (;;) {
               case 38: {
                 stack->continue_at_ = 109;
                 {
-#line 607 "parser_rps.cbrt"
+#line 609 "parser_rps.cbrt"
                   { }
-#line 3315 "_parser_rps.cc"
+#line 3316 "_parser_rps.cc"
                 }
                 C109:;
               }
@@ -3320,9 +3321,9 @@ for (;;) {
               case 39: {
                 stack->continue_at_ = 110;
                 {
-#line 610 "parser_rps.cbrt"
+#line 612 "parser_rps.cbrt"
                   { }
-#line 3326 "_parser_rps.cc"
+#line 3327 "_parser_rps.cc"
                 }
                 C110:;
               }
@@ -3331,9 +3332,9 @@ for (;;) {
               case 40: {
                 stack->continue_at_ = 111;
                 {
-#line 613 "parser_rps.cbrt"
+#line 615 "parser_rps.cbrt"
                   { }
-#line 3337 "_parser_rps.cc"
+#line 3338 "_parser_rps.cc"
                 }
                 C111:;
               }
@@ -3342,9 +3343,9 @@ for (;;) {
               case 41: {
                 stack->continue_at_ = 112;
                 {
-#line 616 "parser_rps.cbrt"
+#line 618 "parser_rps.cbrt"
                   { }
-#line 3348 "_parser_rps.cc"
+#line 3349 "_parser_rps.cc"
                 }
                 C112:;
               }
@@ -3353,9 +3354,9 @@ for (;;) {
               case 42: {
                 stack->continue_at_ = 113;
                 {
-#line 619 "parser_rps.cbrt"
+#line 621 "parser_rps.cbrt"
                   { }
-#line 3359 "_parser_rps.cc"
+#line 3360 "_parser_rps.cc"
                 }
                 C113:;
               }
@@ -3364,9 +3365,9 @@ for (;;) {
               case 43: {
                 stack->continue_at_ = 114;
                 {
-#line 622 "parser_rps.cbrt"
+#line 624 "parser_rps.cbrt"
                   { }
-#line 3370 "_parser_rps.cc"
+#line 3371 "_parser_rps.cc"
                 }
                 C114:;
               }
@@ -3375,9 +3376,9 @@ for (;;) {
               case 44: {
                 stack->continue_at_ = 115;
                 {
-#line 625 "parser_rps.cbrt"
+#line 627 "parser_rps.cbrt"
                   { }
-#line 3381 "_parser_rps.cc"
+#line 3382 "_parser_rps.cc"
                 }
                 C115:;
               }
@@ -3386,9 +3387,9 @@ for (;;) {
               case 45: {
                 stack->continue_at_ = 116;
                 {
-#line 628 "parser_rps.cbrt"
+#line 630 "parser_rps.cbrt"
                   { }
-#line 3392 "_parser_rps.cc"
+#line 3393 "_parser_rps.cc"
                 }
                 C116:;
               }
@@ -3397,9 +3398,9 @@ for (;;) {
               case 46: {
                 stack->continue_at_ = 117;
                 {
-#line 631 "parser_rps.cbrt"
+#line 633 "parser_rps.cbrt"
                   { }
-#line 3403 "_parser_rps.cc"
+#line 3404 "_parser_rps.cc"
                 }
                 C117:;
               }
@@ -3408,9 +3409,9 @@ for (;;) {
               case 47: {
                 stack->continue_at_ = 118;
                 {
-#line 634 "parser_rps.cbrt"
+#line 636 "parser_rps.cbrt"
                   { }
-#line 3414 "_parser_rps.cc"
+#line 3415 "_parser_rps.cc"
                 }
                 C118:;
               }
@@ -3419,9 +3420,9 @@ for (;;) {
               case 48: {
                 stack->continue_at_ = 119;
                 {
-#line 637 "parser_rps.cbrt"
+#line 639 "parser_rps.cbrt"
                   { }
-#line 3425 "_parser_rps.cc"
+#line 3426 "_parser_rps.cc"
                 }
                 C119:;
               }
@@ -3430,9 +3431,9 @@ for (;;) {
               case 49: {
                 stack->continue_at_ = 120;
                 {
-#line 640 "parser_rps.cbrt"
+#line 642 "parser_rps.cbrt"
                   { }
-#line 3436 "_parser_rps.cc"
+#line 3437 "_parser_rps.cc"
                 }
                 C120:;
               }
@@ -3441,9 +3442,9 @@ for (;;) {
               case 50: {
                 stack->continue_at_ = 121;
                 {
-#line 643 "parser_rps.cbrt"
+#line 645 "parser_rps.cbrt"
                   { }
-#line 3447 "_parser_rps.cc"
+#line 3448 "_parser_rps.cc"
                 }
                 C121:;
               }
@@ -3452,9 +3453,9 @@ for (;;) {
               case 51: {
                 stack->continue_at_ = 122;
                 {
-#line 646 "parser_rps.cbrt"
+#line 648 "parser_rps.cbrt"
                   { }
-#line 3458 "_parser_rps.cc"
+#line 3459 "_parser_rps.cc"
                 }
                 C122:;
               }
@@ -3463,9 +3464,9 @@ for (;;) {
               case 52: {
                 stack->continue_at_ = 123;
                 {
-#line 649 "parser_rps.cbrt"
+#line 651 "parser_rps.cbrt"
                   { }
-#line 3469 "_parser_rps.cc"
+#line 3470 "_parser_rps.cc"
                 }
                 C123:;
               }
@@ -3474,9 +3475,9 @@ for (;;) {
               case 53: {
                 stack->continue_at_ = 124;
                 {
-#line 652 "parser_rps.cbrt"
+#line 654 "parser_rps.cbrt"
                   { }
-#line 3480 "_parser_rps.cc"
+#line 3481 "_parser_rps.cc"
                 }
                 C124:;
               }
@@ -3485,9 +3486,9 @@ for (;;) {
               case 54: {
                 stack->continue_at_ = 125;
                 {
-#line 655 "parser_rps.cbrt"
+#line 657 "parser_rps.cbrt"
                   { }
-#line 3491 "_parser_rps.cc"
+#line 3492 "_parser_rps.cc"
                 }
                 C125:;
               }
@@ -3496,9 +3497,9 @@ for (;;) {
               case 55: {
                 stack->continue_at_ = 126;
                 {
-#line 658 "parser_rps.cbrt"
+#line 660 "parser_rps.cbrt"
                   { }
-#line 3502 "_parser_rps.cc"
+#line 3503 "_parser_rps.cc"
                 }
                 C126:;
               }
@@ -3507,9 +3508,9 @@ for (;;) {
               case 56: {
                 stack->continue_at_ = 127;
                 {
-#line 661 "parser_rps.cbrt"
+#line 663 "parser_rps.cbrt"
                   { }
-#line 3513 "_parser_rps.cc"
+#line 3514 "_parser_rps.cc"
                 }
                 C127:;
               }
@@ -3518,9 +3519,9 @@ for (;;) {
               case 57: {
                 stack->continue_at_ = 128;
                 {
-#line 664 "parser_rps.cbrt"
+#line 666 "parser_rps.cbrt"
                   { }
-#line 3524 "_parser_rps.cc"
+#line 3525 "_parser_rps.cc"
                 }
                 C128:;
               }
@@ -3529,9 +3530,9 @@ for (;;) {
               case 58: {
                 stack->continue_at_ = 129;
                 {
-#line 667 "parser_rps.cbrt"
+#line 669 "parser_rps.cbrt"
                   { }
-#line 3535 "_parser_rps.cc"
+#line 3536 "_parser_rps.cc"
                 }
                 C129:;
               }
@@ -3540,9 +3541,9 @@ for (;;) {
               case 59: {
                 stack->continue_at_ = 130;
                 {
-#line 670 "parser_rps.cbrt"
+#line 672 "parser_rps.cbrt"
                   { }
-#line 3546 "_parser_rps.cc"
+#line 3547 "_parser_rps.cc"
                 }
                 C130:;
               }
@@ -3551,9 +3552,9 @@ for (;;) {
               case 60: {
                 stack->continue_at_ = 131;
                 {
-#line 673 "parser_rps.cbrt"
+#line 675 "parser_rps.cbrt"
                   { }
-#line 3557 "_parser_rps.cc"
+#line 3558 "_parser_rps.cc"
                 }
                 C131:;
               }
@@ -3562,9 +3563,9 @@ for (;;) {
               case 61: {
                 stack->continue_at_ = 132;
                 {
-#line 676 "parser_rps.cbrt"
+#line 678 "parser_rps.cbrt"
                   { }
-#line 3568 "_parser_rps.cc"
+#line 3569 "_parser_rps.cc"
                 }
                 C132:;
               }
@@ -3573,9 +3574,9 @@ for (;;) {
               case 62: {
                 stack->continue_at_ = 133;
                 {
-#line 679 "parser_rps.cbrt"
+#line 681 "parser_rps.cbrt"
                   { }
-#line 3579 "_parser_rps.cc"
+#line 3580 "_parser_rps.cc"
                 }
                 C133:;
               }
@@ -3584,9 +3585,9 @@ for (;;) {
               case 63: {
                 stack->continue_at_ = 134;
                 {
-#line 682 "parser_rps.cbrt"
+#line 684 "parser_rps.cbrt"
                   { }
-#line 3590 "_parser_rps.cc"
+#line 3591 "_parser_rps.cc"
                 }
                 C134:;
               }
@@ -3595,9 +3596,9 @@ for (;;) {
               case 64: {
                 stack->continue_at_ = 135;
                 {
-#line 685 "parser_rps.cbrt"
+#line 687 "parser_rps.cbrt"
                   { }
-#line 3601 "_parser_rps.cc"
+#line 3602 "_parser_rps.cc"
                 }
                 C135:;
               }
@@ -3606,9 +3607,9 @@ for (;;) {
               case 65: {
                 stack->continue_at_ = 136;
                 {
-#line 688 "parser_rps.cbrt"
+#line 690 "parser_rps.cbrt"
                   { }
-#line 3612 "_parser_rps.cc"
+#line 3613 "_parser_rps.cc"
                 }
                 C136:;
               }
@@ -3617,9 +3618,9 @@ for (;;) {
               case 66: {
                 stack->continue_at_ = 137;
                 {
-#line 691 "parser_rps.cbrt"
+#line 693 "parser_rps.cbrt"
                   { }
-#line 3623 "_parser_rps.cc"
+#line 3624 "_parser_rps.cc"
                 }
                 C137:;
               }
@@ -3628,9 +3629,9 @@ for (;;) {
               case 67: {
                 stack->continue_at_ = 138;
                 {
-#line 694 "parser_rps.cbrt"
+#line 696 "parser_rps.cbrt"
                   { }
-#line 3634 "_parser_rps.cc"
+#line 3635 "_parser_rps.cc"
                 }
                 C138:;
               }
@@ -3639,9 +3640,9 @@ for (;;) {
               case 68: {
                 stack->continue_at_ = 139;
                 {
-#line 697 "parser_rps.cbrt"
+#line 699 "parser_rps.cbrt"
                   { }
-#line 3645 "_parser_rps.cc"
+#line 3646 "_parser_rps.cc"
                 }
                 C139:;
               }
@@ -3650,9 +3651,9 @@ for (;;) {
               case 69: {
                 stack->continue_at_ = 140;
                 {
-#line 700 "parser_rps.cbrt"
+#line 702 "parser_rps.cbrt"
                   { }
-#line 3656 "_parser_rps.cc"
+#line 3657 "_parser_rps.cc"
                 }
                 C140:;
               }
@@ -3661,9 +3662,9 @@ for (;;) {
               case 70: {
                 stack->continue_at_ = 141;
                 {
-#line 703 "parser_rps.cbrt"
+#line 705 "parser_rps.cbrt"
                   { }
-#line 3667 "_parser_rps.cc"
+#line 3668 "_parser_rps.cc"
                 }
                 C141:;
               }
@@ -3672,9 +3673,9 @@ for (;;) {
               case 71: {
                 stack->continue_at_ = 142;
                 {
-#line 706 "parser_rps.cbrt"
+#line 708 "parser_rps.cbrt"
                   { }
-#line 3678 "_parser_rps.cc"
+#line 3679 "_parser_rps.cc"
                 }
                 C142:;
               }
@@ -3683,9 +3684,9 @@ for (;;) {
               case 72: {
                 stack->continue_at_ = 143;
                 {
-#line 709 "parser_rps.cbrt"
+#line 711 "parser_rps.cbrt"
                   { }
-#line 3689 "_parser_rps.cc"
+#line 3690 "_parser_rps.cc"
                 }
                 C143:;
               }
@@ -3694,9 +3695,9 @@ for (;;) {
               case 73: {
                 stack->continue_at_ = 144;
                 {
-#line 712 "parser_rps.cbrt"
+#line 714 "parser_rps.cbrt"
                   { }
-#line 3700 "_parser_rps.cc"
+#line 3701 "_parser_rps.cc"
                 }
                 C144:;
               }
@@ -3705,9 +3706,9 @@ for (;;) {
               case 74: {
                 stack->continue_at_ = 145;
                 {
-#line 715 "parser_rps.cbrt"
+#line 717 "parser_rps.cbrt"
                   { }
-#line 3711 "_parser_rps.cc"
+#line 3712 "_parser_rps.cc"
                 }
                 C145:;
               }
@@ -3716,9 +3717,9 @@ for (;;) {
               case 75: {
                 stack->continue_at_ = 146;
                 {
-#line 718 "parser_rps.cbrt"
+#line 720 "parser_rps.cbrt"
                   { }
-#line 3722 "_parser_rps.cc"
+#line 3723 "_parser_rps.cc"
                 }
                 C146:;
               }
@@ -3993,684 +3994,684 @@ if (stack->mute_error_turns_) stack->mute_error_turns_--;
             /* rule_file: rule_list */
             case 1: {
               {
-#line 487 "parser_rps.cbrt"
+#line 489 "parser_rps.cbrt"
                 {
     RPS_DEBUG_LOG(REPL, "parsed rule_file successfully");
   }
-#line 4001 "_parser_rps.cc"
+#line 4002 "_parser_rps.cc"
               }
             }
             break;
             /* rule_list: */
             case 2: {
               {
-#line 492 "parser_rps.cbrt"
+#line 494 "parser_rps.cbrt"
                 { }
-#line 4010 "_parser_rps.cc"
+#line 4011 "_parser_rps.cc"
               }
             }
             break;
             /* rule_list: rule_list rule_decl */
             case 3: {
               {
-#line 495 "parser_rps.cbrt"
+#line 497 "parser_rps.cbrt"
                 { }
-#line 4019 "_parser_rps.cc"
+#line 4020 "_parser_rps.cc"
               }
             }
             break;
             /* rule_decl: KEYW_RULE IDENT salience_opt KEYW_WHEN condition_block KEYW_THEN action_block */
             case 4: {
               {
-#line 498 "parser_rps.cbrt"
+#line 500 "parser_rps.cbrt"
                 {
     data_rp->rule_count++;
     RPS_DEBUG_LOG(REPL, "parsed rule_decl " << (stack->sym_data_[1].v_.uv1_));
   }
-#line 4031 "_parser_rps.cc"
+#line 4032 "_parser_rps.cc"
               }
             }
             break;
             /* salience_opt: */
             case 5: {
               {
-#line 504 "parser_rps.cbrt"
+#line 506 "parser_rps.cbrt"
                 { }
-#line 4040 "_parser_rps.cc"
+#line 4041 "_parser_rps.cc"
               }
             }
             break;
             /* salience_opt: KEYW_SALIENCE INT_LITERAL */
             case 6: {
               {
-#line 507 "parser_rps.cbrt"
+#line 509 "parser_rps.cbrt"
                 {
     data_rp->rule_i = (stack->sym_data_[1].v_.uv2_);
   }
-#line 4051 "_parser_rps.cc"
+#line 4052 "_parser_rps.cc"
               }
             }
             break;
             /* salience_opt: KEYW_SALIENCE MINUS INT_LITERAL */
             case 7: {
               {
-#line 512 "parser_rps.cbrt"
+#line 514 "parser_rps.cbrt"
                 {
     data_rp->rule_i = -(stack->sym_data_[2].v_.uv2_);
   }
-#line 4062 "_parser_rps.cc"
+#line 4063 "_parser_rps.cc"
               }
             }
             break;
             /* condition_block: condition_list */
             case 8: {
               {
-#line 517 "parser_rps.cbrt"
+#line 519 "parser_rps.cbrt"
                 { }
-#line 4071 "_parser_rps.cc"
+#line 4072 "_parser_rps.cc"
               }
             }
             break;
             /* condition_list: condition_expr */
             case 9: {
               {
-#line 520 "parser_rps.cbrt"
+#line 522 "parser_rps.cbrt"
                 { }
-#line 4080 "_parser_rps.cc"
+#line 4081 "_parser_rps.cc"
               }
             }
             break;
             /* condition_list: condition_list SEMICOLON condition_expr */
             case 10: {
               {
-#line 523 "parser_rps.cbrt"
+#line 525 "parser_rps.cbrt"
                 { }
-#line 4089 "_parser_rps.cc"
+#line 4090 "_parser_rps.cc"
               }
             }
             break;
             /* condition_list: condition_list condition_expr */
             case 11: {
               {
-#line 526 "parser_rps.cbrt"
+#line 528 "parser_rps.cbrt"
                 { }
-#line 4098 "_parser_rps.cc"
+#line 4099 "_parser_rps.cc"
               }
             }
             break;
             /* condition_expr: condition_term */
             case 12: {
               {
-#line 529 "parser_rps.cbrt"
+#line 531 "parser_rps.cbrt"
                 { }
-#line 4107 "_parser_rps.cc"
+#line 4108 "_parser_rps.cc"
               }
             }
             break;
             /* condition_expr: condition_expr OR condition_term */
             case 13: {
               {
-#line 532 "parser_rps.cbrt"
+#line 534 "parser_rps.cbrt"
                 { }
-#line 4116 "_parser_rps.cc"
+#line 4117 "_parser_rps.cc"
               }
             }
             break;
             /* condition_term: condition_factor */
             case 14: {
               {
-#line 535 "parser_rps.cbrt"
+#line 537 "parser_rps.cbrt"
                 { }
-#line 4125 "_parser_rps.cc"
+#line 4126 "_parser_rps.cc"
               }
             }
             break;
             /* condition_term: condition_term AND condition_factor */
             case 15: {
               {
-#line 538 "parser_rps.cbrt"
+#line 540 "parser_rps.cbrt"
                 { }
-#line 4134 "_parser_rps.cc"
+#line 4135 "_parser_rps.cc"
               }
             }
             break;
             /* condition_factor: pattern_binding */
             case 16: {
               {
-#line 541 "parser_rps.cbrt"
+#line 543 "parser_rps.cbrt"
                 { }
-#line 4143 "_parser_rps.cc"
+#line 4144 "_parser_rps.cc"
               }
             }
             break;
             /* condition_factor: NOT condition_factor */
             case 17: {
               {
-#line 544 "parser_rps.cbrt"
+#line 546 "parser_rps.cbrt"
                 { }
-#line 4152 "_parser_rps.cc"
+#line 4153 "_parser_rps.cc"
               }
             }
             break;
             /* condition_factor: LPAREN condition_expr RPAREN */
             case 18: {
               {
-#line 547 "parser_rps.cbrt"
+#line 549 "parser_rps.cbrt"
                 { }
-#line 4161 "_parser_rps.cc"
+#line 4162 "_parser_rps.cc"
               }
             }
             break;
             /* pattern_binding: object_pattern */
             case 19: {
               {
-#line 550 "parser_rps.cbrt"
+#line 552 "parser_rps.cbrt"
                 { }
-#line 4170 "_parser_rps.cc"
+#line 4171 "_parser_rps.cc"
               }
             }
             break;
             /* pattern_binding: LOGIC_VAR COLON object_pattern */
             case 20: {
               {
-#line 553 "parser_rps.cbrt"
+#line 555 "parser_rps.cbrt"
                 { }
-#line 4179 "_parser_rps.cc"
+#line 4180 "_parser_rps.cc"
               }
             }
             break;
             /* object_pattern: IDENT LPAREN attr_constraint_list RPAREN */
             case 21: {
               {
-#line 556 "parser_rps.cbrt"
+#line 558 "parser_rps.cbrt"
                 { }
-#line 4188 "_parser_rps.cc"
+#line 4189 "_parser_rps.cc"
               }
             }
             break;
             /* object_pattern: IDENT LPAREN RPAREN */
             case 22: {
               {
-#line 559 "parser_rps.cbrt"
+#line 561 "parser_rps.cbrt"
                 { }
-#line 4197 "_parser_rps.cc"
+#line 4198 "_parser_rps.cc"
               }
             }
             break;
             /* attr_constraint_list: attr_constraint */
             case 23: {
               {
-#line 562 "parser_rps.cbrt"
+#line 564 "parser_rps.cbrt"
                 { }
-#line 4206 "_parser_rps.cc"
+#line 4207 "_parser_rps.cc"
               }
             }
             break;
             /* attr_constraint_list: attr_constraint_list COMMA attr_constraint */
             case 24: {
               {
-#line 565 "parser_rps.cbrt"
+#line 567 "parser_rps.cbrt"
                 { }
-#line 4215 "_parser_rps.cc"
+#line 4216 "_parser_rps.cc"
               }
             }
             break;
             /* attr_constraint: IDENT rel_op expr */
             case 25: {
               {
-#line 568 "parser_rps.cbrt"
+#line 570 "parser_rps.cbrt"
                 { }
-#line 4224 "_parser_rps.cc"
+#line 4225 "_parser_rps.cc"
               }
             }
             break;
             /* attr_constraint: expr */
             case 26: {
               {
-#line 571 "parser_rps.cbrt"
+#line 573 "parser_rps.cbrt"
                 { }
-#line 4233 "_parser_rps.cc"
+#line 4234 "_parser_rps.cc"
               }
             }
             break;
             /* rel_op: EQUAL */
             case 27: {
               {
-#line 574 "parser_rps.cbrt"
+#line 576 "parser_rps.cbrt"
                 { }
-#line 4242 "_parser_rps.cc"
+#line 4243 "_parser_rps.cc"
               }
             }
             break;
             /* rel_op: NOT_EQUAL */
             case 28: {
               {
-#line 577 "parser_rps.cbrt"
+#line 579 "parser_rps.cbrt"
                 { }
-#line 4251 "_parser_rps.cc"
+#line 4252 "_parser_rps.cc"
               }
             }
             break;
             /* rel_op: LESS */
             case 29: {
               {
-#line 580 "parser_rps.cbrt"
+#line 582 "parser_rps.cbrt"
                 { }
-#line 4260 "_parser_rps.cc"
+#line 4261 "_parser_rps.cc"
               }
             }
             break;
             /* rel_op: LESS_EQUAL */
             case 30: {
               {
-#line 583 "parser_rps.cbrt"
+#line 585 "parser_rps.cbrt"
                 { }
-#line 4269 "_parser_rps.cc"
+#line 4270 "_parser_rps.cc"
               }
             }
             break;
             /* rel_op: GREATER */
             case 31: {
               {
-#line 586 "parser_rps.cbrt"
+#line 588 "parser_rps.cbrt"
                 { }
-#line 4278 "_parser_rps.cc"
+#line 4279 "_parser_rps.cc"
               }
             }
             break;
             /* rel_op: GREATER_EQUAL */
             case 32: {
               {
-#line 589 "parser_rps.cbrt"
+#line 591 "parser_rps.cbrt"
                 { }
-#line 4287 "_parser_rps.cc"
+#line 4288 "_parser_rps.cc"
               }
             }
             break;
             /* expr: term */
             case 33: {
               {
-#line 592 "parser_rps.cbrt"
+#line 594 "parser_rps.cbrt"
                 { }
-#line 4296 "_parser_rps.cc"
+#line 4297 "_parser_rps.cc"
               }
             }
             break;
             /* expr: expr PLUS term */
             case 34: {
               {
-#line 595 "parser_rps.cbrt"
+#line 597 "parser_rps.cbrt"
                 { }
-#line 4305 "_parser_rps.cc"
+#line 4306 "_parser_rps.cc"
               }
             }
             break;
             /* expr: expr MINUS term */
             case 35: {
               {
-#line 598 "parser_rps.cbrt"
+#line 600 "parser_rps.cbrt"
                 { }
-#line 4314 "_parser_rps.cc"
+#line 4315 "_parser_rps.cc"
               }
             }
             break;
             /* term: factor */
             case 36: {
               {
-#line 601 "parser_rps.cbrt"
+#line 603 "parser_rps.cbrt"
                 { }
-#line 4323 "_parser_rps.cc"
+#line 4324 "_parser_rps.cc"
               }
             }
             break;
             /* term: term ASTERISK factor */
             case 37: {
               {
-#line 604 "parser_rps.cbrt"
+#line 606 "parser_rps.cbrt"
                 { }
-#line 4332 "_parser_rps.cc"
+#line 4333 "_parser_rps.cc"
               }
             }
             break;
             /* term: term SLASH factor */
             case 38: {
               {
-#line 607 "parser_rps.cbrt"
+#line 609 "parser_rps.cbrt"
                 { }
-#line 4341 "_parser_rps.cc"
+#line 4342 "_parser_rps.cc"
               }
             }
             break;
             /* factor: primary_expr */
             case 39: {
               {
-#line 610 "parser_rps.cbrt"
+#line 612 "parser_rps.cbrt"
                 { }
-#line 4350 "_parser_rps.cc"
+#line 4351 "_parser_rps.cc"
               }
             }
             break;
             /* factor: MINUS factor */
             case 40: {
               {
-#line 613 "parser_rps.cbrt"
+#line 615 "parser_rps.cbrt"
                 { }
-#line 4359 "_parser_rps.cc"
+#line 4360 "_parser_rps.cc"
               }
             }
             break;
             /* factor: NOT factor */
             case 41: {
               {
-#line 616 "parser_rps.cbrt"
+#line 618 "parser_rps.cbrt"
                 { }
-#line 4368 "_parser_rps.cc"
+#line 4369 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: INT_LITERAL */
             case 42: {
               {
-#line 619 "parser_rps.cbrt"
+#line 621 "parser_rps.cbrt"
                 { }
-#line 4377 "_parser_rps.cc"
+#line 4378 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: FLOAT_LITERAL */
             case 43: {
               {
-#line 622 "parser_rps.cbrt"
+#line 624 "parser_rps.cbrt"
                 { }
-#line 4386 "_parser_rps.cc"
+#line 4387 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: STRING_LITERAL */
             case 44: {
               {
-#line 625 "parser_rps.cbrt"
+#line 627 "parser_rps.cbrt"
                 { }
-#line 4395 "_parser_rps.cc"
+#line 4396 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: CODE_CHUNK */
             case 45: {
               {
-#line 628 "parser_rps.cbrt"
+#line 630 "parser_rps.cbrt"
                 { }
-#line 4404 "_parser_rps.cc"
+#line 4405 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: LOGIC_VAR */
             case 46: {
               {
-#line 631 "parser_rps.cbrt"
+#line 633 "parser_rps.cbrt"
                 { }
-#line 4413 "_parser_rps.cc"
+#line 4414 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: IDENT */
             case 47: {
               {
-#line 634 "parser_rps.cbrt"
+#line 636 "parser_rps.cbrt"
                 { }
-#line 4422 "_parser_rps.cc"
+#line 4423 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: LOGIC_VAR DOT IDENT */
             case 48: {
               {
-#line 637 "parser_rps.cbrt"
+#line 639 "parser_rps.cbrt"
                 { }
-#line 4431 "_parser_rps.cc"
+#line 4432 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: IDENT DOT IDENT */
             case 49: {
               {
-#line 640 "parser_rps.cbrt"
+#line 642 "parser_rps.cbrt"
                 { }
-#line 4440 "_parser_rps.cc"
+#line 4441 "_parser_rps.cc"
               }
             }
             break;
             /* primary_expr: LPAREN expr RPAREN */
             case 50: {
               {
-#line 643 "parser_rps.cbrt"
+#line 645 "parser_rps.cbrt"
                 { }
-#line 4449 "_parser_rps.cc"
+#line 4450 "_parser_rps.cc"
               }
             }
             break;
             /* action_block: action_list */
             case 51: {
               {
-#line 646 "parser_rps.cbrt"
+#line 648 "parser_rps.cbrt"
                 { }
-#line 4458 "_parser_rps.cc"
+#line 4459 "_parser_rps.cc"
               }
             }
             break;
             /* action_list: */
             case 52: {
               {
-#line 649 "parser_rps.cbrt"
+#line 651 "parser_rps.cbrt"
                 { }
-#line 4467 "_parser_rps.cc"
+#line 4468 "_parser_rps.cc"
               }
             }
             break;
             /* action_list: action_list action_stmt */
             case 53: {
               {
-#line 652 "parser_rps.cbrt"
+#line 654 "parser_rps.cbrt"
                 { }
-#line 4476 "_parser_rps.cc"
+#line 4477 "_parser_rps.cc"
               }
             }
             break;
             /* action_stmt: assert_stmt SEMICOLON */
             case 54: {
               {
-#line 655 "parser_rps.cbrt"
+#line 657 "parser_rps.cbrt"
                 { }
-#line 4485 "_parser_rps.cc"
+#line 4486 "_parser_rps.cc"
               }
             }
             break;
             /* action_stmt: retract_stmt SEMICOLON */
             case 55: {
               {
-#line 658 "parser_rps.cbrt"
+#line 660 "parser_rps.cbrt"
                 { }
-#line 4494 "_parser_rps.cc"
+#line 4495 "_parser_rps.cc"
               }
             }
             break;
             /* action_stmt: modify_stmt SEMICOLON */
             case 56: {
               {
-#line 661 "parser_rps.cbrt"
+#line 663 "parser_rps.cbrt"
                 { }
-#line 4503 "_parser_rps.cc"
+#line 4504 "_parser_rps.cc"
               }
             }
             break;
             /* action_stmt: put_stmt SEMICOLON */
             case 57: {
               {
-#line 664 "parser_rps.cbrt"
+#line 666 "parser_rps.cbrt"
                 { }
-#line 4512 "_parser_rps.cc"
+#line 4513 "_parser_rps.cc"
               }
             }
             break;
             /* action_stmt: send_stmt SEMICOLON */
             case 58: {
               {
-#line 667 "parser_rps.cbrt"
+#line 669 "parser_rps.cbrt"
                 { }
-#line 4521 "_parser_rps.cc"
+#line 4522 "_parser_rps.cc"
               }
             }
             break;
             /* assert_stmt: KEYW_ASSERT IDENT LPAREN attr_assignment_list RPAREN */
             case 59: {
               {
-#line 670 "parser_rps.cbrt"
+#line 672 "parser_rps.cbrt"
                 { }
-#line 4530 "_parser_rps.cc"
+#line 4531 "_parser_rps.cc"
               }
             }
             break;
             /* assert_stmt: KEYW_ASSERT IDENT LPAREN RPAREN */
             case 60: {
               {
-#line 673 "parser_rps.cbrt"
+#line 675 "parser_rps.cbrt"
                 { }
-#line 4539 "_parser_rps.cc"
+#line 4540 "_parser_rps.cc"
               }
             }
             break;
             /* retract_stmt: KEYW_RETRACT LOGIC_VAR */
             case 61: {
               {
-#line 676 "parser_rps.cbrt"
+#line 678 "parser_rps.cbrt"
                 { }
-#line 4548 "_parser_rps.cc"
+#line 4549 "_parser_rps.cc"
               }
             }
             break;
             /* retract_stmt: KEYW_RETRACT IDENT */
             case 62: {
               {
-#line 679 "parser_rps.cbrt"
+#line 681 "parser_rps.cbrt"
                 { }
-#line 4557 "_parser_rps.cc"
+#line 4558 "_parser_rps.cc"
               }
             }
             break;
             /* modify_stmt: KEYW_MODIFY LOGIC_VAR LBRACE attr_assignment_list RBRACE */
             case 63: {
               {
-#line 682 "parser_rps.cbrt"
+#line 684 "parser_rps.cbrt"
                 { }
-#line 4566 "_parser_rps.cc"
+#line 4567 "_parser_rps.cc"
               }
             }
             break;
             /* put_stmt: IDENT primary_expr PLUS_EQUAL expr */
             case 64: {
               {
-#line 685 "parser_rps.cbrt"
+#line 687 "parser_rps.cbrt"
                 { }
-#line 4575 "_parser_rps.cc"
+#line 4576 "_parser_rps.cc"
               }
             }
             break;
             /* put_stmt: primary_expr PLUS_EQUAL expr */
             case 65: {
               {
-#line 688 "parser_rps.cbrt"
+#line 690 "parser_rps.cbrt"
                 { }
-#line 4584 "_parser_rps.cc"
+#line 4585 "_parser_rps.cc"
               }
             }
             break;
             /* put_stmt: IDENT primary_expr EQUAL expr */
             case 66: {
               {
-#line 691 "parser_rps.cbrt"
+#line 693 "parser_rps.cbrt"
                 { }
-#line 4593 "_parser_rps.cc"
+#line 4594 "_parser_rps.cc"
               }
             }
             break;
             /* put_stmt: primary_expr EQUAL expr */
             case 67: {
               {
-#line 694 "parser_rps.cbrt"
+#line 696 "parser_rps.cbrt"
                 { }
-#line 4602 "_parser_rps.cc"
+#line 4603 "_parser_rps.cc"
               }
             }
             break;
             /* send_stmt: IDENT primary_expr ARROW IDENT LPAREN arg_list RPAREN */
             case 68: {
               {
-#line 697 "parser_rps.cbrt"
+#line 699 "parser_rps.cbrt"
                 { }
-#line 4611 "_parser_rps.cc"
+#line 4612 "_parser_rps.cc"
               }
             }
             break;
             /* send_stmt: IDENT primary_expr ARROW IDENT LPAREN RPAREN */
             case 69: {
               {
-#line 700 "parser_rps.cbrt"
+#line 702 "parser_rps.cbrt"
                 { }
-#line 4620 "_parser_rps.cc"
+#line 4621 "_parser_rps.cc"
               }
             }
             break;
             /* attr_assignment_list: attr_assignment */
             case 70: {
               {
-#line 703 "parser_rps.cbrt"
+#line 705 "parser_rps.cbrt"
                 { }
-#line 4629 "_parser_rps.cc"
+#line 4630 "_parser_rps.cc"
               }
             }
             break;
             /* attr_assignment_list: attr_assignment_list COMMA attr_assignment */
             case 71: {
               {
-#line 706 "parser_rps.cbrt"
+#line 708 "parser_rps.cbrt"
                 { }
-#line 4638 "_parser_rps.cc"
+#line 4639 "_parser_rps.cc"
               }
             }
             break;
             /* attr_assignment: IDENT COLON expr */
             case 72: {
               {
-#line 709 "parser_rps.cbrt"
+#line 711 "parser_rps.cbrt"
                 { }
-#line 4647 "_parser_rps.cc"
+#line 4648 "_parser_rps.cc"
               }
             }
             break;
             /* attr_assignment: IDENT EQUAL expr */
             case 73: {
               {
-#line 712 "parser_rps.cbrt"
+#line 714 "parser_rps.cbrt"
                 { }
-#line 4656 "_parser_rps.cc"
+#line 4657 "_parser_rps.cc"
               }
             }
             break;
             /* arg_list: expr */
             case 74: {
               {
-#line 715 "parser_rps.cbrt"
+#line 717 "parser_rps.cbrt"
                 { }
-#line 4665 "_parser_rps.cc"
+#line 4666 "_parser_rps.cc"
               }
             }
             break;
             /* arg_list: arg_list COMMA expr */
             case 75: {
               {
-#line 718 "parser_rps.cbrt"
+#line 720 "parser_rps.cbrt"
                 { }
-#line 4674 "_parser_rps.cc"
+#line 4675 "_parser_rps.cc"
               }
             }
             break;
@@ -4820,7 +4821,7 @@ if (stack->mute_error_turns_) stack->mute_error_turns_--;
   } /* for (;;) */
 }
 /* --------- END OF GENERATED CODE ------------ */
-#line 721 "parser_rps.cbrt"
+#line 723 "parser_rps.cbrt"
 void
 rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 			   Rps_CallFrame* frame,

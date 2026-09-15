@@ -205,12 +205,14 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token COMMA SEMICOLON COLON DOT
 
-/* Variable and literal tokens */
+/* Variable and literal tokens, they probably should give some
+   RefPerSys instance... */
 %token LOGIC_VAR
-%type LOGIC_VAR: std::string
+%type LOGIC_VAR: std::string 
 
 %token IDENT
-%type IDENT: std::string
+%type IDENT: std::string /* probably wrong, should be some object or
+			    instance */
 
 %token INT_LITERAL
 %type INT_LITERAL: std::intptr_t
