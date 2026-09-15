@@ -212,7 +212,7 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
 
 %token IDENT
 %type IDENT: std::string /* probably wrong, should be some object or
-			    instance */
+                            instance */
 
 %token INT_LITERAL
 %type INT_LITERAL: std::intptr_t
@@ -294,8 +294,8 @@ extern "C" void rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
   }
   else
     RPS_WARNOUT("in " << srcname
-		<< " invalid code chunk prefix "
-		<< Rps_QuotedC_String($text));
+                << " invalid code chunk prefix "
+                << Rps_QuotedC_String($text));
   $set_mode(IN_CODE_CHUNK);
 }
 
@@ -476,7 +476,7 @@ COLON: \: { }
 DOT: "." { }
 
 %grammar%
-%nt rule_file rule_list rule_decl
+%nt toplevel_file toplevel_list toplevel_elem rule_decl
 %nt salience_opt
 %nt condition_block condition_list condition_expr condition_term condition_factor
 %nt pattern_binding object_pattern attr_constraint_list attr_constraint
@@ -485,16 +485,19 @@ DOT: "." { }
 %nt assert_stmt retract_stmt modify_stmt put_stmt send_stmt
 %nt attr_assignment_list attr_assignment arg_list
 
-rule_file:
-  rule_list {
-    RPS_DEBUG_LOG(REPL, "parsed rule_file successfully");
+toplevel_file:
+  toplevel_list {
+    RPS_DEBUG_LOG(REPL, "parsed toplevel_file successfully");
   }
 
-rule_list:
+toplevel_list:
   /* empty */ { }
 
-rule_list:
-  rule_list rule_decl { }
+toplevel_list:
+  toplevel_list toplevel_elem { }
+
+toplevel_elem: rule_decl {
+  }
 
 rule_decl:
   KEYW_RULE IDENT salience_opt KEYW_WHEN condition_block KEYW_THEN action_block {
@@ -722,7 +725,7 @@ arg_list:
 %%
 void
 rps_rule_parser_on_feed_me(rps_rule_parser_data_st* data,
-			   Rps_CallFrame* frame,
+                           Rps_CallFrame* frame,
                            void* extra,
                            int lin)
 {
