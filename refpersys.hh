@@ -235,6 +235,8 @@ enum Rps_Debug
   RPS_DEBUG__EVERYTHING=0xffff,
 };
 
+extern "C" const std::string rps_cwd_string(void); // in utilities_rps.cc
+
 extern "C" const char* rps_debug_level_cstr(Rps_Debug dbgopt);
 
 // forward declaration

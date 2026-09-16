@@ -1154,15 +1154,28 @@ rps_check_mtime_files(void)
 static double rps_start_monotonic_time;
 static double rps_start_wallclock_real_time;
 
-
+std::string
+rps_cwd_string(void)
+{
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    strcpy(cwdbuf, "./");
+  /* TODO in principle: the buffer in theory could have more bytes
+     (4096 per PATH_MAX or sysconf(SC_PATH_MAX).  In practice I
+     (Basile Starynkevitch) dont care in sept. 2026, the
+     rps_path_byte_size is in refpersys.hh and a few hundred bytes. */
+  return std::string(cwdbuf);
+} // end rps_cwd_string
+  
 
 /// rps_early_initialization is called by rps_parse_program_arguments
-/// which is called early from main.
+/// which is called early from main (before loading of the heap)
 static void
 rps_early_initialization(int argc, char** argv)
 {
   char*inside_emacs =
-    getenv("INSIDE_EMACS"); /// GNU emacs is setting this
+    getenv("INSIDE_EMACS"); /// GNU emacs is supposed to set this (.emacs)
   rps_argc = argc;
   rps_argv = argv;
   rps_progname = argv[0];
@@ -1351,10 +1364,21 @@ rps_early_initialization(int argc, char** argv)
   if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
     rps_add_debug_cstr((argv[1]+strlen("-d")));
   ///
-  if (rps_syslog_enabled && rps_debug_flags != 0)
+  if (rps_syslog_enabled) {
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+    if (rps_debug_flags != 0)
+    syslog(LOG_USER|LOG_INFO,
+	   "start of refpersys inference engine git %s (on %s) debug %s",
+	   rps_shortgitid, rps_hostname(),
+	   rps_debug_level_cstr(rps_debug_flags.load()));
+    else
+      syslog(LOG_USER|LOG_INFO,
+	     "start of refpersys inference engine git %s (on %s) without debug",
+	     rps_shortgitid, rps_hostname());
+  };
   RPS_INFORMOUT("done early initialization of RefPerSys process "
-                << (int)getpid() << " on host " << rps_hostname()
+                << rps_decimal_string((int)getpid())
+		<< " on host " << rps_hostname()
                 << " git " << rps_shortgitid);
 } // end rps_early_initialization
 
@@ -2973,7 +2997,7 @@ rps_decimal_string(intptr_t i)
   //RPS_UNIQUE_BREAKPOINT();
   while (i>0)
     {
-      RPS_ASSERT(p>=0 && p<rps_numlen);
+      RPS_ASSERT(p>=0 && p<(int)rps_numlen);
       revbuf[p++] = '0' + (i%10);
       i = i / 10;
     };
