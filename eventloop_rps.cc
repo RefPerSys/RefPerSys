@@ -904,7 +904,8 @@ rps_event_loop(void)
 #warning TODO: consider using rps_timer ...?
   /*** give output
    ***/
-  RPS_INFORMOUT("starting rps_event_loop in pid " << (long)getpid() << std::endl
+  RPS_INFORMOUT("starting rps_event_loop in pid "
+		<< rps_decimal_string((long)getpid()) << std::endl
                 << "… on " << rps_hostname() << " thread " << rps_current_pthread_name()
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop")
