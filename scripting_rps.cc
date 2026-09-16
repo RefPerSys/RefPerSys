@@ -111,6 +111,9 @@ initial lines could contain some shell script, etc.  That
 REFPERSYS_SCRIPT word should be followed by a short C-like identifier
 identifying the mode.  That mode defines how is the script parsed and
 usable.
+
+Run ./refpersys --script=help to get help and a list of possible known
+modes.
 )help"
   ;
 #warning more text needed inside rps_scripting_help_english_text
@@ -138,7 +141,7 @@ rps_scripting_help(void)
       RPS_ASSERT(d->moda_run != (rps_script_runner_sig_t*)nullptr);
       RPS_ASSERT(strlen(d->moda_name) < 20);
       snprintf(curmodbuf, sizeof(curmodbuf)-1, "%20s:", d->moda_name);
-      os << curmodbuf << " " << d->moda_expl << std::flush;
+      os << curmodbuf << " " << d->moda_expl << std::endl;
     };
   // run ./refpersys --script=help to get this called
   RPS_INFORMOUT("rps_scripting_help" << std::endl
@@ -146,6 +149,7 @@ rps_scripting_help(void)
                 << os.str() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_scripting_help"));
   RPS_UNIQUE_BREAKPOINT();
+  exit(0);
 } // end rps_scripting_help
 
 
