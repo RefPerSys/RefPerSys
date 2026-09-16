@@ -127,9 +127,25 @@ const char rps_scripting_magic_string[] = RPS_SCRIPT_MAGIC_STR;
 void
 rps_scripting_help(void)
 {
-  RPS_FATALOUT("unimplemented rps_scripting_help" << std::endl
-               << rps_scripting_help_english_text);
-#warning rps_scripting_help unimplemented should use rps_mode_data_arr
+  /// run the program refpersys with argument --script=help to get this
+  std::ostringstream os;
+  for (struct rps_mode_data_st* d = rps_mode_data_arr;
+       d && d->moda_name != (const char*)nullptr
+       && d->moda_expl != (const char*)nullptr;
+       d++) {
+      char curmodbuf[32];
+      memset (curmodbuf, 0, sizeof(curmodbuf));
+      RPS_ASSERT(d->moda_run != (rps_script_runner_sig_t*)nullptr);
+      RPS_ASSERT(strlen(d->moda_name) < 20);
+      snprintf(curmodbuf, sizeof(curmodbuf)-1, "%20s:", d->moda_name);
+      os << curmodbuf << " " << d->moda_expl << std::flush;
+    };
+  // run ./refpersys --script=help to get this called
+  RPS_INFORMOUT("rps_scripting_help" << std::endl
+                << rps_scripting_help_english_text << std::endl
+                << os.str() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_scripting_help"));
+  RPS_UNIQUE_BREAKPOINT();
 } // end rps_scripting_help
 
 
@@ -216,9 +232,9 @@ rps_scripting_add_script(const char*path)
   if (rps_scripts_vector.empty()) {
       /////
       /****
-                                           ** Only the main thread can call rps_scripting_add_script, so
-                                           ** no more synchronization or mutex is needed to :
-                                           *****/
+                                                       ** Only the main thread can call rps_scripting_add_script, so
+                                                       ** no more synchronization or mutex is needed to :
+                                                       *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
@@ -742,7 +758,7 @@ rps_make_string_token_source(const char*a)
 
 
 struct rps_mode_data_st
-  rps_mode_data_arr[] = {
+rps_mode_data_arr[] = {
 #warning the explanation of scripting modes need to be improved
   {.moda_name= "carbon",
      .moda_expl= "incomplete `carbon' script mode explanation",
@@ -757,7 +773,7 @@ struct rps_mode_data_st
               .moda_expl= "incomplete `minicarb' script mode explanation",
               .moda_run=rps_run_script_parse_mode},
              {.moda_name= "haviltz",
-              .moda_expl= "incomplete `havilz' script mode explanation",
+              .moda_expl= "unimplemented `havilz' script mode explanation",
               .moda_run=rps_run_script_haviltz_mode},
              {}
 };
