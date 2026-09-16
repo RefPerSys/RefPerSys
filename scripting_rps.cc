@@ -76,7 +76,9 @@ extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
     int ix, int loopcnt);
 
 
-
+typedef void rps_script_runner_sig_t(Rps_CallFrame*,
+				     Rps_TokenSource&,
+				     int ix, int loopcnt);
 
 extern "C" const int rps_script_maxnum = 1024;
 
@@ -106,15 +108,6 @@ extern "C" const char  rps_scripting_magic_string[];
 
 #define RPS_SCRIPT_MAGIC_STR "REFPERSYS_SCRIPT"
 const char rps_scripting_magic_string[] = RPS_SCRIPT_MAGIC_STR;
-
-extern "C" Rps_TokenSource*rps_make_cin_token_source(const char*);
-extern "C" Rps_TokenSource*rps_make_readline_token_source(const char*);
-extern "C" Rps_TokenSource*rps_make_file_token_source(const char*);
-
-extern "C" Rps_TokenSource*rps_make_memory_file_token_source(const char*);
-extern "C" Rps_TokenSource*rps_make_pipe_token_source(const char*);
-
-extern "C" Rps_TokenSource*rps_make_string_token_source(const char*);
 
 void
 rps_scripting_help(void)

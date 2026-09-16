@@ -3345,6 +3345,16 @@ private:
                                       const char*curp);
 };                              // end Rps_TokenSource
 
+/// Various routines to make a token source, the C string is usually a
+/// file path or a pipe command, should be _ for the readline, and a
+/// parsable string for the string one.
+extern "C" Rps_TokenSource*rps_make_cin_token_source(const char*);
+extern "C" Rps_TokenSource*rps_make_readline_token_source(const char*);
+extern "C" Rps_TokenSource*rps_make_file_token_source(const char*);
+extern "C" Rps_TokenSource*rps_make_memory_file_token_source(const char*);
+extern "C" Rps_TokenSource*rps_make_pipe_token_source(const char*);
+extern "C" Rps_TokenSource*rps_make_string_token_source(const char*);
+
 #define _RPS_DISPTOKSRCCURLIN_COUNTED(Tksrc, Cnt)  \
   Rps_Do_Output([&](std::ostream&out##Cnt) {     \
     (Tksrc)->display_current_line_with_cursor(out##Cnt); \
