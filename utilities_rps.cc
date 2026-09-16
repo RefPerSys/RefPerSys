@@ -1154,7 +1154,7 @@ rps_check_mtime_files(void)
 static double rps_start_monotonic_time;
 static double rps_start_wallclock_real_time;
 
-std::string
+const std::string
 rps_cwd_string(void)
 {
   char cwdbuf[rps_path_byte_size];
@@ -1370,7 +1370,7 @@ rps_early_initialization(int argc, char** argv)
     syslog(LOG_USER|LOG_INFO,
 	   "start of refpersys inference engine git %s (on %s) debug %s",
 	   rps_shortgitid, rps_hostname(),
-	   rps_debug_level_cstr(rps_debug_flags.load()));
+	   rps_debug_level_string(rps_debug_flags.load()).c_str());
     else
       syslog(LOG_USER|LOG_INFO,
 	     "start of refpersys inference engine git %s (on %s) without debug",

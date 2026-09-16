@@ -1394,24 +1394,20 @@ rps_small_quick_tests_after_load(void)
 
 static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-const char*rps_debug_level_cstr(Rps_Debug dbgopt)
+const std::string
+rps_debug_level_string(unsigned level)
 {
-  static thread_local char levbuf[32];
-  switch(dbgopt)
-    {
-#define DEBUG_LEVEL_CSTR_MACRO(dbgopt,_Help) \
-      case RPS_DEBUG_##dbgopt: return #dbgopt;
-      RPS_DEBUG_OPTIONS(DEBUG_LEVEL_CSTR_MACRO);
-#undef DEBUG_LEVEL_CSTR_MACRO
-    case RPS_DEBUG__EVERYTHING:
-      return "|EveryDbg|";
-    default:
-      memset(levbuf, 0, sizeof(levbuf));
-      snprintf(levbuf, sizeof(levbuf), "?Dbg?%d",
-               static_cast<int>(dbgopt));
-      return levbuf;
-    }
-} // end rps_debug_level_cstr
+  std::ostringstream os;
+#define rps_DEBUG_LEVEL_MACRO(dbgopt,_Help)	\
+  else if (level & RPS_DEBUG_##dbgopt) {	\
+    if (os.str().empty()) os << #dbgopt;	\
+    else os << "," << #dbgopt;			\
+  }
+  if (false) {}
+  RPS_DEBUG_OPTIONS(rps_DEBUG_LEVEL_MACRO);
+#undef rps_DEBUG_LEVEL_MACRO
+  return os.str();
+} //end rps_debug_level_string
 
 
 static void rps_close_debug_file(void)
@@ -1541,9 +1537,7 @@ rps_debug_printf_at(const char *filnam, int fline,
       snprintf(debugcntstr, sizeof(debugcntstr), "%ld", ndbg);
     char datebfr[48];
     memset(datebfr, 0, sizeof (datebfr));
-    char debugcstr[24];
-    memset (debugcstr, 0, sizeof(debugcstr));
-    strncpy(debugcstr, rps_debug_level_cstr(dbgopt), sizeof(debugcstr)-1);
+    std::string debugstr = rps_debug_level_string(dbgopt);
     RPS_POSSIBLE_BREAKPOINT();
     //
 #define RPS_DEBUG_DATE_PERIOD 64
@@ -1558,14 +1552,14 @@ rps_debug_printf_at(const char *filnam, int fline,
         syslog(RPS_DEBUG_LOG_LEVEL,
                "RPS-Debug#%s %7s %s @%s:%d <%s> %s %s",
                debugcntstr,
-               debugcstr, threadbfr, filnam, fline, funcnam, tmbfr, msg);
+               debugstr.c_str(), threadbfr, filnam, fline, funcnam, tmbfr, msg);
       }
     else if (rps_debug_file)
       {
         fprintf(rps_debug_file,
                 "° RPS Debug#%s %7s %s", ///U+00B0 DEGREE SIGN
                 debugcntstr,
-                debugcstr, threadbfr);
+                debugstr.c_str(), threadbfr);
         fprintf(rps_debug_file, " %s:%d <%s> %s %s\n",
                 filnam, (fline>0)?fline:(-fline),
                 funcnam,
@@ -1591,7 +1585,7 @@ rps_debug_printf_at(const char *filnam, int fline,
           fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);
         RPS_POSSIBLE_BREAKPOINT();
         fprintf(stderr, "※ RPS Debug#%s %7s %s", //U+203B REFERENCE MARK
-                debugcntstr, debugcstr, threadbfr);
+                debugcntstr, debugstr.c_str(), threadbfr);
         if (ontty)
           fputs(RPS_TERMINAL_ITALICS_ESCAPE, stderr);
         fprintf(stderr, "@%s:%d", filnam, (fline>0)?fline:(-fline));

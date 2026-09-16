@@ -215,7 +215,6 @@ extern "C" void rps_readline_initialize(void); // for GNU readline
   Dbgmacro(TMP2, "*temporary 2*")   \
   /*end RPS_DEBUG_OPTIONS*/
 
-#define RPS_DEBUG_OPTION_DEFINE(Dbgopt,Help) RPS_DEBUG_##Dbgopt,
 
 constexpr int RPS_INFORM_MSG_LEVEL= -1;
 constexpr int RPS_WARNING_MSG_LEVEL= -2;
@@ -223,6 +222,7 @@ constexpr int RPS_FATAL_MSG_LEVEL= -3;
 
 
 
+#define RPS_DEBUG_OPTION_DEFINE(Dbgopt,Help) RPS_DEBUG_##Dbgopt,
 enum Rps_Debug
 {
   RPS_DEBUG__FATAL_MSG_LEVEL=  RPS_FATAL_MSG_LEVEL /*ie -3*/,
@@ -234,10 +234,11 @@ enum Rps_Debug
   RPS_DEBUG__LAST,
   RPS_DEBUG__EVERYTHING=0xffff,
 };
+#undef RPS_DEBUG_OPTION_DEFINE
 
 extern "C" const std::string rps_cwd_string(void); // in utilities_rps.cc
 
-extern "C" const char* rps_debug_level_cstr(Rps_Debug dbgopt);
+extern "C" const std::string rps_debug_level_string(unsigned); //in main_rps.cc
 
 // forward declaration
 class Rps_ProtoCallFrame;
