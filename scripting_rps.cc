@@ -74,14 +74,25 @@ extern "C" void rps_run_script_echo_mode(Rps_CallFrame*,
 extern "C" void rps_run_script_minicarb_mode(Rps_CallFrame*,
     Rps_TokenSource&,
     int ix, int loopcnt);
-
+extern "C" void rps_run_script_haviltz_mode(Rps_CallFrame*,
+    Rps_TokenSource&,
+    int ix, int loopcnt);
 
 typedef void rps_script_runner_sig_t(Rps_CallFrame*,
-				     Rps_TokenSource&,
-				     int ix, int loopcnt);
+                                     Rps_TokenSource&,
+                                     int ix, int loopcnt);
+
+
+struct rps_mode_data_st
+{
+  const char*moda_name;
+  const char*moda_expl;
+  rps_script_runner_sig_t*moda_run;
+};
 
 extern "C" const int rps_script_maxnum = 1024;
 
+extern "C" struct rps_mode_data_st rps_mode_data_arr[];
 
 struct rps_script_st
 {
@@ -114,7 +125,7 @@ rps_scripting_help(void)
 {
   RPS_FATALOUT("unimplemented rps_scripting_help" << std::endl
                << rps_scripting_help_english_text);
-#warning rps_scripting_help unimplemented
+#warning rps_scripting_help unimplemented should use rps_mode_data_arr
 } // end rps_scripting_help
 
 
@@ -134,7 +145,7 @@ rps_scripting_add_script(const char*path)
   RPS_UNIQUE_BREAKPOINT();
   if (!strcmp(path, "-")) {
       RPS_UNIQUE_BREAKPOINT();
-      maker = rps_make_cin_token_source;		// use cin
+      maker = rps_make_cin_token_source;                // use cin
       dupath = strdup("-");
       RPS_ASSERT(dupath);
     }
@@ -144,7 +155,7 @@ rps_scripting_add_script(const char*path)
         RPS_FATALOUT("cannot use readline with non tty stdin");
       if (!isatty(STDOUT_FILENO))
         RPS_FATALOUT("cannot use readline with non tty stdout");
-      maker = rps_make_readline_token_source;		// use readline
+      maker = rps_make_readline_token_source;           // use readline
       dupath = strdup("_");
       RPS_ASSERT(dupath);
       RPS_UNIQUE_BREAKPOINT();
@@ -153,7 +164,7 @@ rps_scripting_add_script(const char*path)
     }
   else if (path[0]=='|' || path[0]=='!') {
       RPS_UNIQUE_BREAKPOINT();
-      maker = rps_make_pipe_token_source;		// use pipe
+      maker = rps_make_pipe_token_source;               // use pipe
       dupath = strdup(path);
       RPS_ASSERT(dupath);
     }
@@ -165,7 +176,7 @@ rps_scripting_add_script(const char*path)
   if (!dupath)
     dupath = realpath(path, nullptr);
   if (dupath == path) /* Same pointer, we want it to be malloc-ed in all
-		     cases! */
+                     cases! */
     dupath = strdup(path);
   if (!dupath)
     RPS_FATALOUT("realpath(3) or strdup(3) of "
@@ -201,9 +212,9 @@ rps_scripting_add_script(const char*path)
   if (rps_scripts_vector.empty()) {
       /////
       /****
-                                     ** Only the main thread can call rps_scripting_add_script, so
-                                     ** no more synchronization or mutex is needed to :
-                                     *****/
+                                           ** Only the main thread can call rps_scripting_add_script, so
+                                           ** no more synchronization or mutex is needed to :
+                                           *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
@@ -665,6 +676,20 @@ rps_run_script_minicarb_mode(Rps_CallFrame*callfr,
                 << Rps_QuotedC_String(clp) << " obenv=" << _f.obenv);
 } // end rps_run_script_minicarb_mode
 
+void
+rps_run_script_haviltz_mode(Rps_CallFrame*callfr,
+                            Rps_TokenSource&tsrc,
+                            int ix, int loopcnt)
+{
+  const char*clp = tsrc.curcptr();
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callfr,
+                 Rps_ObjectRef obenv;);
+#warning rps_run_script_haviltz_mode should use parser_rps.cbrt
+  RPS_FATALOUT("unimplemented rps_run_script_haviltz_mode tsrc=" << tsrc
+               << " clp=" << clp
+               << " ix=" << ix << " loopcnt=" << loopcnt
+               << " (see parser_rps.cbrt)");
+} // end rps_run_script_haviltz_mode
 
 Rps_TokenSource*
 rps_make_cin_token_source(const char*a)
@@ -711,4 +736,25 @@ rps_make_string_token_source(const char*a)
                                    std::string(Rps_QuotedC_String(a)));
 } // end rps_make_memory_token_source
 
+
+struct rps_mode_data_st
+  rps_mode_data_arr[] = {
+#warning the explanation of scripting modes need to be improved
+  {.moda_name= "carbon",
+     .moda_expl= "incomplete `carbon' script mode explanation",
+     .moda_run=rps_run_script_carbon_mode},
+             {.moda_name= "parse",
+              .moda_expl= "incomplete `parse' script mode explanation",
+              .moda_run=rps_run_script_parse_mode},
+             {.moda_name= "echo",
+              .moda_expl= "incomplete `echo' script mode explanation",
+              .moda_run=rps_run_script_parse_mode},
+             {.moda_name= "minicarb",
+              .moda_expl= "incomplete `minicarb' script mode explanation",
+              .moda_run=rps_run_script_parse_mode},
+             {.moda_name= "haviltz",
+              .moda_expl= "incomplete `havilz' script mode explanation",
+              .moda_run=rps_run_script_haviltz_mode},
+             {}
+};
 //// end of file scripting_rps.cc
