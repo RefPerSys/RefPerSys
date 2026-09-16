@@ -3,6 +3,8 @@
 #  © Copyright (C) 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 
+# we could even have some shell commands before the magic string.
+## magic string REFPERSYS<_>SCRIPT followed by mode name
 REFPERSYS_SCRIPT minicarb
 ## etc
 

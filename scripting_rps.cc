@@ -117,6 +117,10 @@ usable.
 
 extern "C" const char  rps_scripting_magic_string[];
 
+/// this magic string is expected in script files.  Everything before
+/// it is ignored, and could be a shell or Python (etc) script.  The file
+/// RefPerSys/test_dir/011sepminscript.minrps is one example of such a
+/// script file.
 #define RPS_SCRIPT_MAGIC_STR "REFPERSYS_SCRIPT"
 const char rps_scripting_magic_string[] = RPS_SCRIPT_MAGIC_STR;
 
