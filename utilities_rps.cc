@@ -669,6 +669,7 @@ rps_string_version_handwritten_source_files(void)
   std::ostringstream outs;
   int nbsourcefiles =0;
   int nbshownfiles =0;
+  int nbpluginfiles =0;
   bool nl= false;
   for (const char*const*curfileptr = rps_files;
        curfileptr && *curfileptr; curfileptr++)
@@ -676,6 +677,10 @@ rps_string_version_handwritten_source_files(void)
       RPS_POSSIBLE_BREAKPOINT();
       if ((*curfileptr)[0] == '_')
         continue;
+      if ((*curfileptr)[0] == '.')
+	continue;
+      if (strstr(*curfileptr, "plugins"))
+	nbpluginfiles++;
       if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
         {
           nbsourcefiles++;
@@ -683,7 +688,9 @@ rps_string_version_handwritten_source_files(void)
         }
     };
   RPS_INFORMOUT("showing versions " << std::endl
-                << " of " << nbsourcefiles
+                << " of " << nbsourcefiles << " source "
+		<< " but not " << nbpluginfiles
+		<< " plugins"
                 << " handwritten C++ source files (git "
                 << rps_utilities_shortgitid
                 << " from " __FILE__ << ":" << __LINE__ << ")");
