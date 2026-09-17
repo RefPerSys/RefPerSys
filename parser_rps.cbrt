@@ -87,7 +87,7 @@ extern "C" struct rps_rule_parser_data_st;
 extern "C" enum rps_rule_parser_keyw_enum;
 %%
 
-%prefix rpsruleparser_
+%prefix rps_parser_
 %end_token LEX_END
 
 constexpr unsigned rps_magic_parser_data = 0x72707372; // 'rpsr'
@@ -193,7 +193,7 @@ extern "C" void rps_parser_on_feed_me(rps_parser_data_st* data,
 /* Keyword tokens */
 %token KEYW_RULE KEYW_WHEN KEYW_THEN KEYW_SALIENCE KEYW_ACTION
 %token KEYW_ASSERT KEYW_RETRACT KEYW_MODIFY
-%token KEYW_DISPLAY KEYW_DO
+%token KEYW_DISPLAY KEYW_DO KEYW_NAME
 
 /* Logical and relational operators */
 %token AND OR NOT
@@ -417,6 +417,7 @@ KEYW_ACTION: action { }
 KEYW_ASSERT: assert { }
 KEYW_RETRACT: retract { }
 KEYW_MODIFY: modify { }
+KEYW_NAME: name[s]? { }
 
 FLOAT_LITERAL: [\+\-]?([0-9]+\.)|([0-9]*\.[0-9]+)([eE][\+\-]?[0-9]+)? {
   $$ = strtod($text, nullptr);
@@ -490,6 +491,7 @@ DOT: "." { }
 %nt action_block action_list action_stmt
 %nt assert_stmt retract_stmt modify_stmt put_stmt send_stmt display_stmt
 %nt attr_assignment_list attr_assignment arg_list
+%nt name_list name_decl
 
 toplevel_file:
   toplevel_list {
@@ -507,11 +509,21 @@ toplevel_list:
 toplevel_elem: parser_decl {
   }
 
+toplevel_elem: name_decl {
+  }
+
 parser_decl:
   KEYW_RULE IDENT salience_opt KEYW_WHEN condition_block KEYW_THEN action_block {
     data_rp->parser_count++;
     RPS_DEBUG_LOG(REPL, "parsed parser_decl " << $1);
   }
+name_decl:
+KEYW_NAME name_list {
+}
+name_list: /*empty*/ {
+}
+name_list: IDENT name_list {
+}
 
 salience_opt:
   /* empty */ { }
