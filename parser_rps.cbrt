@@ -99,7 +99,7 @@ struct rps_parser_data_st {
   intptr_t parser_i;
   double parser_d;
   std::string parser_str;
-  char parser_chunk_prefix[16];
+  char parser_chunk_prefix[Rps_Id::buflen+4]; //// the 4 extra bytes are 0
   std::string parser_chunk_buf;
   void* parser_ptr;
   int parser_lineno;
@@ -276,20 +276,23 @@ extern "C" void rps_parser_on_feed_me(rps_parser_data_st* data,
 : [#][\{] {
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->check_carbdata_callframe(fram_rp);
-  memset(data_rp->parser_chunk_prefix, 0, sizeof(data_rp->parser_chunk_prefix));
+  memset(data_rp->parser_chunk_prefix, 0,
+	 sizeof(data_rp->parser_chunk_prefix));
   data_rp->parser_chunk_buf.clear();
   $set_mode(IN_CODE_CHUNK);
 }
 
 /* Code chunk start with alphanumeric prefix: #cpp{ ... }cpp# */
-: [#][a-zA-Z0-9_]+[\{] {
+: [#][a-zA-Z_][a-zA-Z0-9_]*[\{] {
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
   data_rp->check_carbdata_callframe(fram_rp);
-  memset(data_rp->parser_chunk_prefix, 0, sizeof(data_rp->parser_chunk_prefix));
+  memset(data_rp->parser_chunk_prefix, 0,
+	 sizeof(data_rp->parser_chunk_prefix));
   data_rp->parser_chunk_buf.clear();
   size_t tlen = strlen($text);
   std::string srcname = data_rp->parser_name;
-  if (tlen > 2 && tlen - 2 < sizeof(data_rp->parser_chunk_prefix)) {
+  if (tlen > 2 && tlen - 2 < sizeof(data_rp->parser_chunk_prefix)
+      && tlen - 2 <= Rps_Id::buflen) {
     strncpy(data_rp->parser_chunk_prefix, $text + 1, tlen - 2);
   }
   else
