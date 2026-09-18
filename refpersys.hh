@@ -1162,31 +1162,31 @@ while (0)
 
 // To debug the below macro, we temporarily use in it %.201s %.202s etc...
 #define RPS_ASSERT_LOG_AT_BIS(Fil,Lin,Func,Cond,...) do {       \
-  if (RPS_UNLIKELY(!(Cond))) {          \
-    /* Rps_Assert_Log */          \
+  if (RPS_UNLIKELY(!(Cond))) {                                  \
+    /* Rps_Assert_Log */                                        \
     const char* cond_##Lin = #Cond;                             \
-    std::ostringstream asslogouts_##Lin;      \
-    asslogouts_##Lin << __VA_ARGS__  << std::flush;   \
-    const std::string str_##Lin = asslogouts_##Lin.str(); \
-    const char*chst_##Lin = str_##Lin.c_str();      \
-    if (rps_syslog_enabled)         \
-      syslog(LOG_CRIT,            \
-       "*** RefPerSys ASSERT_LOG failed:"     \
-       " %.201s *** [%.202s:%d:%.203s] *** %.304s", \
-       cond_##Lin, Fil, Lin, Func, chst_##Lin);   \
-    else {              \
-      fputs("\n\n", stderr);          \
-      if (rps_stderr_istty)         \
-  fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);    \
-      fputs("*** RefPerSys ASSERT_LOG failed:", stderr);  \
-      fprintf(stderr, "%.207s:%d: {%.208s} [%.209s]\n",   \
-        Fil,Lin,Func,cond_##Lin);       \
-      if (rps_stderr_istty)         \
-  fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);    \
-      fputs(chst_##Lin, stderr);        \
-      fputs("\n", stderr); fflush(stderr);      \
-    };                \
-    rps_fatal_stop_at(Fil, Lin); }        \
+    std::ostringstream asslogouts_##Lin;                        \
+    asslogouts_##Lin << __VA_ARGS__  << std::flush;             \
+    const std::string str_##Lin = asslogouts_##Lin.str();       \
+    const char*chst_##Lin = str_##Lin.c_str();                  \
+    if (rps_syslog_enabled)                                     \
+      syslog(LOG_CRIT,                                          \
+       "*** RefPerSys ASSERT_LOG failed:"                       \
+       " %.201s *** [%.202s:%d:%.203s] *** %.304s",             \
+       cond_##Lin, Fil, Lin, Func, chst_##Lin);                 \
+    else {                                                      \
+      fputs("\n\n", stderr);                                    \
+      if (rps_stderr_istty)                                     \
+  fputs(RPS_TERMINAL_BOLD_ESCAPE, stderr);                      \
+      fputs("*** RefPerSys ASSERT_LOG failed:", stderr);        \
+      fprintf(stderr, "%.207s:%d: {%.208s} [%.209s]\n",         \
+        Fil,Lin,Func,cond_##Lin);                               \
+      if (rps_stderr_istty)                                     \
+  fputs(RPS_TERMINAL_NORMAL_ESCAPE, stderr);                    \
+      fputs(chst_##Lin, stderr);                                \
+      fputs("\n", stderr); fflush(stderr);                      \
+    };                                                          \
+    rps_fatal_stop_at(Fil, Lin); }                              \
   } while(0)
 //
 #define RPS_ASSERT_LOG_AT(Fil,Lin,Func,Cond,...) \
@@ -6040,10 +6040,10 @@ extern "C" std::string rps_load_json_to_string(const Json::Value&jv);
 
 extern "C" void rps_dump_into (std::string dirpath = ".",
                                Rps_CallFrame* callframe = nullptr,
-			       Rps_ObjectRef dumpobarg = nullptr,
-			       Rps_Value dumpvalarg = nullptr,
-			       const char* srcfil = __builtin_FILE(),
-			       const int srclin = __builtin_LINE()); // in dump_rps.cc
+                               Rps_ObjectRef dumpobarg = nullptr,
+                               Rps_Value dumpvalarg = nullptr,
+                               const char* srcfil = __builtin_FILE(),
+                               const int srclin = __builtin_LINE()); // in dump_rps.cc
 extern "C" double rps_dump_start_elapsed_time(Rps_Dumper*);
 extern "C" double rps_dump_start_process_time(Rps_Dumper*);
 extern "C" double rps_dump_start_wallclock_time(Rps_Dumper*);
