@@ -4735,6 +4735,7 @@ public:
   inline Rps_InstanceValue() : Rps_Value() {};
   inline Rps_InstanceValue(std::nullptr_t) : Rps_Value(nullptr) {};
   // related to Rps_InstanceZone::make
+  // the connob below is actually a RefPerSys class...
   inline Rps_InstanceValue(const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
   inline Rps_InstanceValue(const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
   // "dynamic" casting
