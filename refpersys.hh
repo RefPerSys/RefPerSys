@@ -185,6 +185,12 @@ extern "C" const char*rps_strchr(const char*haystack, const char *needle);
 #include "generated/rpsdata.h"
 #endif //RPS_WITH_DATA
 
+extern "C" struct rps_type_info_st {
+  unsigned typinf_size;		// sizeof
+  unsigned typinf_align;	// alignof
+  std::string typinf_name;	// C++ name
+};
+
 extern "C" const char* rps_locale(void);
 
 extern "C" void rps_readline_initialize(void); // for GNU readline
@@ -5998,6 +6004,7 @@ extern "C" void rps_repl_create_command(Rps_CallFrame*callframe,
 extern "C" std::istream*rps_repl_input;
 extern "C" bool rps_repl_stopped;
 
+//// Query size and align of struct rps_parser_data_st in parser_rps.cbrt
 
 
 
