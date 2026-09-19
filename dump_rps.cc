@@ -245,11 +245,12 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe,
   du_startprocesstime(rps_process_cpu_time()),
   du_startwallclockrealtime(rps_wallclock_real_time()),
   du_startmonotonictime(rps_monotonic_real_time()),
-  du_callframe(callframe), du_openedpathset(),
+  du_callframe(callframe),
   du_dumpob(dumpobarg),
   du_dumpval(dumpvalarg),
   du_srcfil(srcfil),
-  du_srclin(srclin)
+  du_srclin(srclin),
+  du_openedpathset()
 {
   {
     char topdirpath[PATH_MAX];
