@@ -209,14 +209,14 @@ Rps_Agenda::run_agenda_worker(int ix)
   rps_curthread_callframe = nullptr;
   agenda_work_gc_current_callframe_ptr[ix].store(&rps_curthread_callframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_1aGtWm38Vw701jDhZn), //the_agenda,
-                 RPS_NULL_CALL_FRAME, // no caller frame
+                 RPS_NULL_CALL_FRAME, // no caller parent frame
                  Rps_ObjectRef obtasklet;
                  Rps_InstanceValue descrval;
                  Rps_ClosureValue clostodo;
                 );
   /// the descriptive value of our call frame
   _f.descrval =
-    Rps_InstanceValue(RPS_ROOT_OB(_3s7ztCCoJsj04puTdQ),//agenda
+    Rps_InstanceValue(RPS_ROOT_OB(_3s7ztCCoJsj04puTdQ),//agenda∈class
   {Rps_Value((intptr_t)ix)});
   _.set_state_value(_f.descrval);
   long count = 0;
