@@ -58,9 +58,10 @@ const char rps_parser_basename[] = RPS_BASENAME;
 extern "C" const char rps_parser_baseid[];
 const char rps_parser_baseid[] = RPS_BASEID;
 
-extern "C" struct rpsruleparser_stack;
+extern "C" struct rps_parser_stack_st;
+extern "C" struct rps_parser_data_st;
 
-enum rps_rule_parser_keyw_enum {
+enum rps_parser_keyw_enum {
   rpsrule_kw__None,
   rpsrule_kw_do,
   rpsrule_kw_rule,
@@ -83,8 +84,8 @@ extern "C" const char rps_parser_gitid[];
 extern "C" const char rps_parser_shortgitid[];
 extern "C" const char rps_parser_basename[];
 extern "C" const char rps_parser_baseid[];
-extern "C" struct rps_rule_parser_data_st;
-extern "C" enum rps_rule_parser_keyw_enum;
+extern "C" struct rps_parser_data_st;
+extern "C" enum rps_parser_keyw_enum;
 %%
 
 %prefix rps_parser_
@@ -127,7 +128,8 @@ struct rps_parser_data_st {
   void check_carbdata_callframe(Rps_CallFrame* cf, int lin = __builtin_LINE()) const {
     check_carbdata_magic(lin);
     if (RPS_UNLIKELY(cf == nullptr)) {
-      RPS_WARNOUT("no callframe from line #" << lin << " of parser_rps.cbrt");
+      RPS_WARNOUT("no callframe from line #" << lin
+		  << " of parser_rps.cbrt (see also _parser_rps.cc)");
     }
   }
 
@@ -172,7 +174,7 @@ struct rps_parser_data_st {
   }
 };
 
-extern "C" void rpsruleparser_garbage_collect_visit_stack(struct rpsruleparser_stack*,
+extern "C" void rps_parser_garbage_collect_visit_stack(struct rps_parser_stack_st*,
                                                          Rps_GarbageCollector*);
 %visit_params Rps_GarbageCollector* visitgc, rps_parser_data_st* carbdata
 
@@ -183,11 +185,11 @@ extern "C" void rps_parser_on_feed_me(rps_parser_data_st* data,
 
 %params rps_parser_data_st* data_rp, Rps_CallFrame* fram_rp, void* xtra_rp
 
-%on_feed_me {                                                   \
-  RPS_ASSERT(data_rp != nullptr);                               \
-  _Pragma("message \"on_feed_me parser_rps\"");                 \
-  data_rp->check_carbdata_callframe(fram_rp);                   \
-  rps_parser_on_feed_me(data_rp, fram_rp, xtra_rp);        \
+%on_feed_me {						\
+  RPS_ASSERT(data_rp != nullptr);			\
+  _Pragma("message \"on_feed_me parser_rps\"");		\
+  data_rp->check_carbdata_callframe(fram_rp);		\
+  rps_parser_on_feed_me(data_rp, fram_rp, xtra_rp);	\
 }
 
 /* Keyword tokens */
@@ -210,7 +212,7 @@ extern "C" void rps_parser_on_feed_me(rps_parser_data_st* data,
  /* TODO: use @! for fresh identifiers and to pass keywords as names */
 
 /* Variable and literal tokens, they probably should give some
-   RefPerSys instance... */
+   RefPerSys instance... See rps_parser_instance_named below */
 %token LOGIC_VAR
 %type LOGIC_VAR: std::string 
 
@@ -741,17 +743,64 @@ arg_list:
   arg_list COMMA expr { }
 
 %%
-void
-rps_parser_on_feed_me(rps_parser_data_st* data,
-                           Rps_CallFrame* frame,
-                           void* extra,
-                           int lin)
-{
-#warning unimplemented rps_parser_on_feed_me
-  
-}
 
 #pragma message "epilogue part of parser_rps.cbrt"
+
+void
+rps_parser_on_feed_me(rps_parser_data_st* data_rp,
+		      Rps_CallFrame* frame,
+		      void* extra,
+		      int lin)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
+#warning unimplemented rps_parser_on_feed_me
+  RPS_WARNOUT("unimplemented rps_parser_on_feed_me lin=" << lin
+	      << " extra=" << extra
+	      << " in " << data_rp->parser_name
+	      << " at " << data_rp->parser_path
+	      << ":" << data_rp->parser_lineno
+	      << std::endl
+	      << RPS_FULL_BACKTRACE(1,"rps_parser_on_feed_me"));
+} // end rps_parser_on_feed_me
+
+
+/// parse some existing name into a Rps_InstanceValue
+Rps_Value
+rps_parser_instance_named(rps_parser_data_st* data_rp,
+			  Rps_CallFrame* callframe,
+			  Rps_ObjectRef classarg,
+			  const std::string name)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 callframe,
+		 Rps_ObjectRef obclass;
+		 Rps_Value resv;
+		);
+  _f.obclass = classarg;
+  if (!_f.obclass
+      || !_f.obclass->is_instance_of(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) //class∈class
+				    )) {
+    RPS_WARNOUT("bad class " << _f.obclass
+		<< " for name " << Rps_QuotedC_String(name)
+		<< " in " << data_rp->parser_name
+		<< " at " << data_rp->parser_path
+		<< ":" << data_rp->parser_lineno);
+    return nullptr;
+  }
+  //TODO: return a fresh Rps_InstanceValue
+  RPS_FATALOUT("unimplemented rps_parser_instance_named class=" << _f.obclass
+		<< " for name " << Rps_QuotedC_String(name)
+		<< " in " << data_rp->parser_name
+		<< " at " << data_rp->parser_path
+		<< ":" << data_rp->parser_lineno);
+} // end rps_parser_instance_named
+
+
+//// we need here a routine to parse a new name into some instance...
 
 /****************
  **                           for Emacs...
