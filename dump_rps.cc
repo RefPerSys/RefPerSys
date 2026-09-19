@@ -1533,7 +1533,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_CALLFRAME " << alignof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD " << alignof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
-  *pouts << "#define RPS_ALIGNOF_RPS_PARSER_DATA " << parser_typinf.typinf_size << std::endl;
+  *pouts << "#define RPS_ALIGNOF_RPS_PARSER_DATA " << parser_typinf.typinf_align << std::endl;
   *pouts << "\n\n//// Generated from " << __FILE__ << ":" << __LINE__ << " shortgit " << rps_shortgitid << std::endl;
   *pouts << std::endl;
   if (sizeof(Rps_Value) == sizeof(void*)
