@@ -191,6 +191,8 @@ extern "C" struct rps_type_info_st {
   std::string typinf_name;	// C++ name
 };
 
+extern "C" struct rps_type_info_st rps_parser_query_type_info(void);
+
 extern "C" const char* rps_locale(void);
 
 extern "C" void rps_readline_initialize(void); // for GNU readline

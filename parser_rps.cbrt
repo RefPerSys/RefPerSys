@@ -802,6 +802,15 @@ rps_parser_instance_named(rps_parser_data_st* data_rp,
 
 //// we need here a routine to parse a new name into some instance...
 
+
+
+
+struct rps_type_info_st
+rps_parser_query_type_info(void) {
+  return rps_type_info_st{.typinf_size= sizeof(rps_parser_data_st),
+      .typinf_align= alignof(rps_parser_data_st),
+      .typinf_name="rps_parser_data_st"};
+} // end rps_parser_query_type_info
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
