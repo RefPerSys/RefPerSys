@@ -1464,7 +1464,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_SIZEOF_FLOAT " << sizeof(float) << std::endl;
   *pouts << "#define RPS_SIZEOF_DOUBLE " << sizeof(double) << std::endl;
   *pouts << "#define RPS_SIZEOF_PTR " << sizeof(void*) << std::endl;
-  *pouts << "#define RPS_SIZEOF_INT " << sizeof(int) << std::endl;
+  *pouts << "#define RPS_SIZEOF_INTPTR_T " << sizeof(intptr_t) << std::endl;
   *pouts << "#define RPS_SIZEOF_LONG " << sizeof(long) << std::endl;
   *pouts << "#define RPS_SIZEOF_PTR " << sizeof(void*) << std::endl;
   *pouts << "/// c++ size std::mutex & std::recursive_mtx & std::string" << std::endl;
@@ -1506,7 +1506,6 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_FLOAT " << alignof(float) << std::endl;
   *pouts << "#define RPS_ALIGNOF_DOUBLE " << alignof(double) << std::endl;
   *pouts << "#define RPS_ALIGNOF_PTR " << alignof(void*) << std::endl;
-  *pouts << "#define RPS_ALIGNOF_INT " << alignof(int) << std::endl;
   *pouts << "#define RPS_ALIGNOF_LONG " << alignof(long) << std::endl;
   *pouts << "#define RPS_ALIGNOF_INTPTR_T " << alignof(std::intptr_t) << std::endl;
   *pouts << "#define RPS_ALIGNOF_STDMUTEX " << alignof(std::mutex) << std::endl;
