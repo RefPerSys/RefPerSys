@@ -92,7 +92,7 @@ rps_do_interactive_plugin(const char*arg)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd $REFPERSYS_TOPDIR && make plugins_dir/rpsiplug_fox.so" ;;
+ ** compile-command: "make -C $REFPERSYS_TOPDIR refpersys plugins_dir/rpsiplug_fox.so" ;;
  ** End: ;;
  ****************/
 
