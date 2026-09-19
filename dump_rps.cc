@@ -95,18 +95,18 @@ class Rps_Dumper
   friend Rps_CallFrame* rps_dump_call_frame(Rps_Dumper*);
   friend std::string rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath);
   friend void rps_dump_into (const std::string dirpath,
-			     Rps_CallFrame*callframe,
-			     Rps_ObjectRef dumpobarg,
-			     Rps_Value dumpvalarg,
-			     const char* srcfil,
-			     const int srclin);
+                             Rps_CallFrame*callframe,
+                             Rps_ObjectRef dumpobarg,
+                             Rps_Value dumpvalarg,
+                             const char* srcfil,
+                             const int srclin);
   friend void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_space_component(Rps_Dumper*, Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
   friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
-  
+
   friend Rps_ObjectRef rps_dump_data_object(Rps_Dumper*);
   friend Rps_Value rps_dump_data_value(Rps_Dumper*);
   friend const std::string rps_dump_data_source_file(Rps_Dumper*);
@@ -199,8 +199,8 @@ public:
     return du_topdir;
   };
   Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe,
-	     Rps_ObjectRef dumpob, Rps_Value dumpval,
-	     const char*dumpsrcfil, int dumpsrclin);
+             Rps_ObjectRef dumpob, Rps_Value dumpval,
+             const char*dumpsrcfil, int dumpsrclin);
   ~Rps_Dumper();
   Rps_CallFrame* dumper_call_frame(void) const
   {
@@ -229,11 +229,11 @@ public:
 #warning perhaps keep some temporary dump object inside Rps_Dumper? see rps_dump_into
 };        // end class Rps_Dumper
 
-Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe, 
-		       Rps_ObjectRef dumpobarg,
-		       Rps_Value dumpvalarg,
-		       const char* srcfil,
-		       const int srclin) :
+Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe,
+                       Rps_ObjectRef dumpobarg,
+                       Rps_Value dumpvalarg,
+                       const char* srcfil,
+                       const int srclin) :
   du_topdir(),
   du_fdtopdir(-1),
   du_curworkdir(), du_jsonwriterbuilder(), du_mtx(),
@@ -1395,6 +1395,7 @@ Rps_Dumper::write_generated_data_file(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   char osbuf[64];
+  struct rps_type_info_st parser_typinf = rps_parser_query_type_info();
   memset (osbuf, 0, sizeof(osbuf));
   char cwdbuf[rps_path_byte_size+4];
   memset (cwdbuf, 0, sizeof(cwdbuf));
@@ -1492,6 +1493,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_SIZEOF_RPS_CALLFRAME " << sizeof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_PAYLOAD " << sizeof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_TOKENSOURCE " << sizeof(Rps_TokenSource) << std::endl;
+  *pouts << "#define RPS_SIZEOF_RPS_PARSER_DATA " << parser_typinf.typinf_size << std::endl;
   ///
   *pouts << "///" << std::endl;
   *pouts << "/// common `alignof' from " << __FILE__ << ":" << rps_decimal_string(__LINE__)
@@ -1531,6 +1533,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_CALLFRAME " << alignof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD " << alignof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_RPS_PARSER_DATA " << parser_typinf.typinf_size << std::endl;
   *pouts << "\n\n//// Generated from " << __FILE__ << ":" << __LINE__ << " shortgit " << rps_shortgitid << std::endl;
   *pouts << std::endl;
   if (sizeof(Rps_Value) == sizeof(void*)
@@ -2111,15 +2114,15 @@ Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 
 ////////////////////////////////////////////////////////////////
 void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe,
-			       Rps_ObjectRef dumpobarg,
-			       Rps_Value dumpvalarg,
-			       const char* srcfil,
-			       const int srclin)
+                    Rps_ObjectRef dumpobarg,
+                    Rps_Value dumpvalarg,
+                    const char* srcfil,
+                    const int srclin)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
                  /*callerframe:*/callframe, //
                  Rps_ObjectRef obdumper;
-		 Rps_Value valdumper;
+                 Rps_Value valdumper;
                 );
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
@@ -2189,7 +2192,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe,
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
   }
   Rps_Dumper dumper(realdirpath, &_, _f.obdumper, _f.valdumper,
-		    srcfil, srclin);
+                    srcfil, srclin);
   RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
                 << std::endl
                 << "… "
