@@ -376,6 +376,12 @@ rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
                 << " elapsed: "
                 << std::setw(3) << rps_elapsed_real_time()
                 << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
+  if (!RPS_DEBUG_ENABLED(REPL))
+    RPS_DEBUG_LOG(EVLOOP, "rps_self_pipe_read_handler thread:"
+		  <<  rps_current_pthread_name() << " fd=" << fd
+		  << " buf=" << buf << " elapsed: "
+		  << std::setw(3) << rps_elapsed_real_time()
+		  << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
   if (nbr > 0)
     {
       std::function<void(Rps_GarbageCollector*)> gcmarker
