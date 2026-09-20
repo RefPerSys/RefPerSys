@@ -1,0 +1,27 @@
+# file RefPerSys/test_dir/016rule_chunks.rps
+# SPDX-License-Identifier: GPL-3.0-or-later
+#  © Copyright (C) 2026 The Reflective Persistent System Team
+#      team@refpersys.org & http://refpersys.org/
+
+// Example rule testing C++ code chunk emission and accumulation via +=
+rule generate_sensor_handler salience 10:
+  when
+    ?handler: CodeEmitter(target == cplusplus)
+    ?device: DeviceConfig(dev_id == 42, enabled == 1)
+  then
+    outbuf += #{
+      void handle_device_$dev_id(int input_val) {
+        if (input_val > 0) {
+          emit_signal($dev_id, input_val);
+        }
+      }
+    }#;
+    send ?handler -> notify_generation_done();
+
+rule generate_custom_prefix_chunk salience 5:
+  when
+    ?emitter: CodeEmitter(mode == specialized)
+  then
+    outbuf += #prefix{
+      static const char* prefix_name = "specialized_$emitter";
+    }prefix#;

@@ -175,7 +175,186 @@ struct rps_parser_data_st {
 };
 
 extern "C" void rps_parser_garbage_collect_visit_stack(struct rps_parser_stack_st*,
-                                                         Rps_GarbageCollector*);
+						       Rps_GarbageCollector*);
+
+enum rps_relop_en {
+  RPS_RELOP_EQ = 1,
+  RPS_RELOP_NE,
+  RPS_RELOP_LT,
+  RPS_RELOP_LE,
+  RPS_RELOP_GT,
+  RPS_RELOP_GE
+};
+
+static inline Rps_ObjectRef
+rps_rule_symbol(Rps_CallFrame* cf, const std::string& name)
+{
+  return Rps_ObjectRef::make_new_strong_symbol(cf, name);
+}
+
+static inline Rps_Value
+rps_rule_make_expr_op(Rps_CallFrame* cf, const char* op, Rps_Value left, Rps_Value right)
+{
+  std::vector<Rps_Value> v = { Rps_Value(rps_rule_symbol(cf, op)), left, right };
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_unary_op(Rps_CallFrame* cf, const char* op, Rps_Value operand)
+{
+  std::vector<Rps_Value> v = { Rps_Value(rps_rule_symbol(cf, op)), operand };
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_constraint(Rps_CallFrame* cf, const std::string& attr, int op, Rps_Value exprval)
+{
+  const char* op_str = "==";
+  switch (op) {
+    case RPS_RELOP_EQ: op_str = "=="; break;
+    case RPS_RELOP_NE: op_str = "!="; break;
+    case RPS_RELOP_LT: op_str = "<"; break;
+    case RPS_RELOP_LE: op_str = "<="; break;
+    case RPS_RELOP_GT: op_str = ">"; break;
+    case RPS_RELOP_GE: op_str = ">="; break;
+    default: op_str = "=="; break;
+  }
+  std::vector<Rps_Value> v = {
+    Rps_Value(rps_rule_symbol(cf, "constraint")),
+    Rps_Value(rps_rule_symbol(cf, attr)),
+    Rps_Value(rps_rule_symbol(cf, op_str)),
+    exprval
+  };
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_object_pattern(Rps_CallFrame* cf,
+                             const std::string& type_name,
+                             const std::string& var_name,
+                             const std::vector<Rps_Value>& constraints)
+{
+  std::vector<Rps_Value> v;
+  v.reserve(3 + constraints.size());
+  v.push_back(Rps_Value(rps_rule_symbol(cf, "pattern")));
+  v.push_back(Rps_Value(rps_rule_symbol(cf, type_name)));
+  v.push_back(var_name.empty() ? Rps_Value() : Rps_Value(var_name));
+  for (const auto& c : constraints) {
+    v.push_back(c);
+  }
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_assert_action(Rps_CallFrame* cf,
+                            const std::string& fact_type,
+                            const std::vector<std::pair<Rps_ObjectRef, Rps_Value>>& attrs)
+{
+  std::vector<Rps_Value> v;
+  v.reserve(2 + attrs.size() * 2);
+  v.push_back(Rps_Value(rps_rule_symbol(cf, "assert")));
+  v.push_back(Rps_Value(rps_rule_symbol(cf, fact_type)));
+  for (const auto& p : attrs) {
+    v.push_back(Rps_Value(p.first));
+    v.push_back(p.second);
+  }
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_retract_action(Rps_CallFrame* cf, const std::string& target)
+{
+  std::vector<Rps_Value> v = {
+    Rps_Value(rps_rule_symbol(cf, "retract")),
+    Rps_Value(target)
+  };
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_modify_action(Rps_CallFrame* cf,
+                            const std::string& target,
+                            const std::vector<std::pair<Rps_ObjectRef, Rps_Value>>& attrs)
+{
+  std::vector<Rps_Value> v;
+  v.reserve(2 + attrs.size() * 2);
+  v.push_back(Rps_Value(rps_rule_symbol(cf, "modify")));
+  v.push_back(Rps_Value(target));
+  for (const auto& p : attrs) {
+    v.push_back(Rps_Value(p.first));
+    v.push_back(p.second);
+  }
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_put_action(Rps_CallFrame* cf,
+                         const std::string& target,
+                         Rps_Value dest,
+                         bool is_append,
+                         Rps_Value val)
+{
+  std::vector<Rps_Value> v = {
+    Rps_Value(rps_rule_symbol(cf, is_append ? "+=" : "=")),
+    target.empty() ? Rps_Value() : Rps_Value(rps_rule_symbol(cf, target)),
+    dest,
+    val
+  };
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_send_action(Rps_CallFrame* cf,
+                          const std::string& target,
+                          Rps_Value receiver,
+                          const std::string& msg,
+                          const std::vector<Rps_Value>& args)
+{
+  std::vector<Rps_Value> v;
+  v.reserve(4 + args.size());
+  v.push_back(Rps_Value(rps_rule_symbol(cf, "send")));
+  v.push_back(target.empty() ? Rps_Value() : Rps_Value(rps_rule_symbol(cf, target)));
+  v.push_back(receiver);
+  v.push_back(Rps_Value(rps_rule_symbol(cf, msg)));
+  for (const auto& a : args) {
+    v.push_back(a);
+  }
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_Value
+rps_rule_make_display_action(Rps_CallFrame* cf, const std::vector<Rps_Value>& args)
+{
+  std::vector<Rps_Value> v;
+  v.reserve(1 + args.size());
+  v.push_back(Rps_Value(rps_rule_symbol(cf, "display")));
+  for (const auto& a : args) {
+    v.push_back(a);
+  }
+  return Rps_Value(Rps_TupleOb::collect(v));
+}
+
+static inline Rps_ObjectRef
+rps_rule_make_rule_object(Rps_CallFrame* cf,
+                          const std::string& name,
+                          std::intptr_t salience,
+                          const std::vector<Rps_Value>& lhs,
+                          const std::vector<Rps_Value>& rhs)
+{
+  Rps_ObjectRef rule_ob = Rps_ObjectRef::make_object(cf, Rps_ObjectRef::the_object_class());
+  Rps_ObjectRef sym_name = Rps_ObjectRef::the_name_object();
+  Rps_ObjectRef sym_salience = rps_rule_symbol(cf, "salience");
+  Rps_ObjectRef sym_when = rps_rule_symbol(cf, "when");
+  Rps_ObjectRef sym_then = rps_rule_symbol(cf, "then");
+
+  rule_ob->put_attr(sym_name, Rps_Value(name));
+  rule_ob->put_attr(sym_salience, Rps_Value(salience));
+  rule_ob->put_attr(sym_when, Rps_Value(Rps_TupleOb::collect(lhs)));
+  rule_ob->put_attr(sym_then, Rps_Value(Rps_TupleOb::collect(rhs)));
+
+  return rule_ob;
+}
+
 %visit_params Rps_GarbageCollector* visitgc, rps_parser_data_st* carbdata
 
 extern "C" void rps_parser_on_feed_me(rps_parser_data_st* data,
@@ -495,252 +674,466 @@ DOT: "." { }
 %nt attr_assignment_list attr_assignment arg_list
 %nt name_list name_decl
 
+%type toplevel_file: int
+%type toplevel_list: std::vector<Rps_ObjectRef>
+%type toplevel_elem: Rps_ObjectRef
+%type parser_decl: Rps_ObjectRef
+%type name_decl: Rps_ObjectRef
+%type salience_opt: std::intptr_t
+%type primary_expr: Rps_Value
+%type factor: Rps_Value
+%type term: Rps_Value
+%type expr: Rps_Value
+%type rel_op: int
+%type attr_constraint: Rps_Value
+%type attr_constraint_list: std::vector<Rps_Value>
+%type object_pattern: Rps_Value
+%type pattern_binding: Rps_Value
+%type condition_factor: Rps_Value
+%type condition_term: Rps_Value
+%type condition_expr: Rps_Value
+%type condition_list: std::vector<Rps_Value>
+%type condition_block: std::vector<Rps_Value>
+%type attr_assignment: std::pair<Rps_ObjectRef, Rps_Value>
+%type attr_assignment_list: std::vector<std::pair<Rps_ObjectRef, Rps_Value>>
+%type arg_list: std::vector<Rps_Value>
+%type assert_stmt: Rps_Value
+%type retract_stmt: Rps_Value
+%type modify_stmt: Rps_Value
+%type put_stmt: Rps_Value
+%type send_stmt: Rps_Value
+%type display_stmt: Rps_Value
+%type action_stmt: Rps_Value
+%type action_list: std::vector<Rps_Value>
+%type action_block: std::vector<Rps_Value>
+
 toplevel_file:
   toplevel_list {
-  RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
-  RPS_DEBUG_LOG(REPL, "parsed toplevel "
-		<< " successfully");
+    RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
+    $$ = (int)$0.size();
+    data_rp->parser_count = $$;
+    RPS_DEBUG_LOG(REPL, "parsed toplevel_file successfully with " << $$ << " elements");
   }
 
 toplevel_list:
-  /* empty */ { }
-
-toplevel_list:
-  toplevel_list toplevel_elem { }
-
-toplevel_elem: parser_decl {
+  /* empty */ {
+    $$ = std::vector<Rps_ObjectRef>();
   }
 
-toplevel_elem: name_decl {
+toplevel_list:
+  toplevel_list toplevel_elem {
+    $$ = std::move($0);
+    $$.push_back($1);
+  }
+
+toplevel_elem:
+  parser_decl {
+    $$ = $0;
+  }
+
+toplevel_elem:
+  name_decl {
+    $$ = nullptr;
   }
 
 parser_decl:
   KEYW_RULE IDENT salience_opt KEYW_WHEN condition_block KEYW_THEN action_block {
+    data_rp->check_carbdata_callframe(fram_rp);
+    $$ = rps_rule_make_rule_object(fram_rp, $1, $2, $4, $6);
+    data_rp->parser_ob1 = $$;
     data_rp->parser_count++;
-    RPS_DEBUG_LOG(REPL, "parsed parser_decl " << $1);
+    RPS_DEBUG_LOG(REPL, "parsed parser_decl " << $1 << " salience=" << $2);
   }
+
 name_decl:
-KEYW_NAME name_list {
-}
+  KEYW_NAME name_list {
+    $$ = nullptr;
+  }
+
 name_list: /*empty*/ {
-}
-name_list: IDENT name_list {
-}
+  }
+
+name_list:
+  IDENT name_list {
+  }
 
 salience_opt:
-  /* empty */ { }
+  /* empty */ {
+    $$ = 0;
+  }
 
 salience_opt:
   KEYW_SALIENCE INT_LITERAL {
+    $$ = $1;
     data_rp->parser_i = $1;
   }
 
+salience_opt:
+  KEYW_SALIENCE MINUS INT_LITERAL {
+    $$ = -$2;
+    data_rp->parser_i = -$2;
+  }
+
 condition_block:
-  condition_list { }
+  condition_list {
+    $$ = std::move($0);
+  }
 
 condition_list:
-  condition_expr { }
+  condition_expr {
+    $$ = std::vector<Rps_Value>{ $0 };
+  }
 
 condition_list:
-  condition_list SEMICOLON condition_expr { }
+  condition_list SEMICOLON condition_expr {
+    $$ = std::move($0);
+    $$.push_back($2);
+  }
 
 condition_list:
-  condition_list condition_expr { }
+  condition_list condition_expr {
+    $$ = std::move($0);
+    $$.push_back($1);
+  }
 
 condition_expr:
-  condition_term { }
+  condition_term {
+    $$ = $0;
+  }
 
 condition_expr:
-  condition_expr OR condition_term { }
+  condition_expr OR condition_term {
+    $$ = rps_rule_make_expr_op(fram_rp, "or", $0, $2);
+  }
 
 condition_term:
-  condition_factor { }
+  condition_factor {
+    $$ = $0;
+  }
 
 condition_term:
-  condition_term AND condition_factor { }
+  condition_term AND condition_factor {
+    $$ = rps_rule_make_expr_op(fram_rp, "and", $0, $2);
+  }
 
 condition_factor:
-  pattern_binding { }
+  pattern_binding {
+    $$ = $0;
+  }
 
 condition_factor:
-  NOT condition_factor { }
+  NOT condition_factor {
+    $$ = rps_rule_make_unary_op(fram_rp, "not", $1);
+  }
 
 condition_factor:
-  LPAREN condition_expr RPAREN { }
+  LPAREN condition_expr RPAREN {
+    $$ = $1;
+  }
 
 pattern_binding:
-  object_pattern { }
+  object_pattern {
+    $$ = $0;
+  }
 
 pattern_binding:
-  LOGIC_VAR COLON object_pattern { }
+  LOGIC_VAR COLON object_pattern {
+    $$ = rps_rule_make_expr_op(fram_rp, ":", Rps_Value($0), $2);
+  }
 
 object_pattern:
-  IDENT LPAREN attr_constraint_list RPAREN { }
+  IDENT LPAREN attr_constraint_list RPAREN {
+    $$ = rps_rule_make_object_pattern(fram_rp, $0, "", $2);
+  }
 
 object_pattern:
-  IDENT LPAREN RPAREN { }
+  IDENT LPAREN RPAREN {
+    $$ = rps_rule_make_object_pattern(fram_rp, $0, "", {});
+  }
 
 attr_constraint_list:
-  attr_constraint { }
+  attr_constraint {
+    $$ = std::vector<Rps_Value>{ $0 };
+  }
 
 attr_constraint_list:
-  attr_constraint_list COMMA attr_constraint { }
+  attr_constraint_list COMMA attr_constraint {
+    $$ = std::move($0);
+    $$.push_back($2);
+  }
 
 attr_constraint:
-  IDENT rel_op expr { }
+  IDENT rel_op expr {
+    $$ = rps_rule_make_constraint(fram_rp, $0, $1, $2);
+  }
 
 attr_constraint:
-  expr { }
+  expr {
+    $$ = $0;
+  }
 
 rel_op:
-  EQUAL { }
+  EQUAL {
+    $$ = RPS_RELOP_EQ;
+  }
 
 rel_op:
-  NOT_EQUAL { }
+  NOT_EQUAL {
+    $$ = RPS_RELOP_NE;
+  }
 
 rel_op:
-  LESS { }
+  LESS {
+    $$ = RPS_RELOP_LT;
+  }
 
 rel_op:
-  LESS_EQUAL { }
+  LESS_EQUAL {
+    $$ = RPS_RELOP_LE;
+  }
 
 rel_op:
-  GREATER { }
+  GREATER {
+    $$ = RPS_RELOP_GT;
+  }
 
 rel_op:
-  GREATER_EQUAL { }
+  GREATER_EQUAL {
+    $$ = RPS_RELOP_GE;
+  }
 
 expr:
-  term { }
+  term {
+    $$ = $0;
+  }
 
 expr:
-  expr PLUS term { }
+  expr PLUS term {
+    $$ = rps_rule_make_expr_op(fram_rp, "+", $0, $2);
+  }
 
 expr:
-  expr MINUS term { }
+  expr MINUS term {
+    $$ = rps_rule_make_expr_op(fram_rp, "-", $0, $2);
+  }
 
 term:
-  factor { }
+  factor {
+    $$ = $0;
+  }
 
 term:
-  term ASTERISK factor { }
+  term ASTERISK factor {
+    $$ = rps_rule_make_expr_op(fram_rp, "*", $0, $2);
+  }
 
 term:
-  term SLASH factor { }
+  term SLASH factor {
+    $$ = rps_rule_make_expr_op(fram_rp, "/", $0, $2);
+  }
 
 factor:
-  primary_expr { }
+  primary_expr {
+    $$ = $0;
+  }
 
 factor:
-  MINUS factor { }
+  MINUS factor {
+    $$ = rps_rule_make_unary_op(fram_rp, "-", $1);
+  }
 
 factor:
-  NOT factor { }
+  NOT factor {
+    $$ = rps_rule_make_unary_op(fram_rp, "not", $1);
+  }
 
 primary_expr:
-  INT_LITERAL { }
+  INT_LITERAL {
+    $$ = Rps_Value($0);
+  }
 
 primary_expr:
-  FLOAT_LITERAL { }
+  FLOAT_LITERAL {
+    $$ = Rps_Value($0);
+  }
 
 primary_expr:
-  STRING_LITERAL { }
+  STRING_LITERAL {
+    $$ = Rps_Value($0);
+  }
 
 primary_expr:
-  CODE_CHUNK { }
+  CODE_CHUNK {
+    $$ = Rps_Value($0);
+  }
 
 primary_expr:
-  LOGIC_VAR { }
+  LOGIC_VAR {
+    $$ = Rps_Value($0);
+  }
 
 primary_expr:
-  IDENT { }
+  IDENT {
+    $$ = Rps_Value(rps_rule_symbol(fram_rp, $0));
+  }
 
 primary_expr:
-  LOGIC_VAR DOT IDENT { }
+  LOGIC_VAR DOT IDENT {
+    $$ = rps_rule_make_expr_op(fram_rp, ".", Rps_Value($0), Rps_Value(rps_rule_symbol(fram_rp, $2)));
+  }
 
 primary_expr:
-  IDENT DOT IDENT { }
+  IDENT DOT IDENT {
+    $$ = rps_rule_make_expr_op(fram_rp, ".", Rps_Value(rps_rule_symbol(fram_rp, $0)), Rps_Value(rps_rule_symbol(fram_rp, $2)));
+  }
 
 primary_expr:
-  LPAREN expr RPAREN { }
+  LPAREN expr RPAREN {
+    $$ = $1;
+  }
 
 action_block:
-  action_list { }
+  action_list {
+    $$ = std::move($0);
+  }
 
 action_list:
-  /* empty */ { }
+  /* empty */ {
+    $$ = std::vector<Rps_Value>();
+  }
 
 action_list:
-  action_list action_stmt { }
+  action_list action_stmt {
+    $$ = std::move($0);
+    $$.push_back($1);
+  }
 
 action_stmt:
-  assert_stmt SEMICOLON { }
+  assert_stmt SEMICOLON {
+    $$ = $0;
+  }
 
 action_stmt:
-  retract_stmt SEMICOLON { }
+  retract_stmt SEMICOLON {
+    $$ = $0;
+  }
 
 action_stmt:
-  modify_stmt SEMICOLON { }
+  modify_stmt SEMICOLON {
+    $$ = $0;
+  }
 
 action_stmt:
-  put_stmt SEMICOLON { }
+  put_stmt SEMICOLON {
+    $$ = $0;
+  }
 
 action_stmt:
-  send_stmt SEMICOLON { }
+  send_stmt SEMICOLON {
+    $$ = $0;
+  }
 
-action_stmt: display_stmt SEMICOLON {
+action_stmt:
+  display_stmt SEMICOLON {
+    $$ = $0;
+  }
+
+display_stmt:
+  KEYW_DISPLAY LPAREN arg_list RPAREN {
+    $$ = rps_rule_make_display_action(fram_rp, $2);
+  }
+
+display_stmt:
+  KEYW_DISPLAY LPAREN RPAREN {
+    $$ = rps_rule_make_display_action(fram_rp, {});
   }
 
 assert_stmt:
-  KEYW_ASSERT IDENT LPAREN attr_assignment_list RPAREN { }
+  KEYW_ASSERT IDENT LPAREN attr_assignment_list RPAREN {
+    $$ = rps_rule_make_assert_action(fram_rp, $1, $3);
+  }
 
 assert_stmt:
-  KEYW_ASSERT IDENT LPAREN RPAREN { }
+  KEYW_ASSERT IDENT LPAREN RPAREN {
+    $$ = rps_rule_make_assert_action(fram_rp, $1, {});
+  }
 
 retract_stmt:
-  KEYW_RETRACT LOGIC_VAR { }
+  KEYW_RETRACT LOGIC_VAR {
+    $$ = rps_rule_make_retract_action(fram_rp, $1);
+  }
 
 retract_stmt:
-  KEYW_RETRACT IDENT { }
+  KEYW_RETRACT IDENT {
+    $$ = rps_rule_make_retract_action(fram_rp, $1);
+  }
 
 modify_stmt:
-  KEYW_MODIFY LOGIC_VAR LBRACE attr_assignment_list RBRACE { }
+  KEYW_MODIFY LOGIC_VAR LBRACE attr_assignment_list RBRACE {
+    $$ = rps_rule_make_modify_action(fram_rp, $1, $3);
+  }
 
 put_stmt:
-  IDENT primary_expr PLUS_EQUAL expr { }
+  IDENT primary_expr PLUS_EQUAL expr {
+    $$ = rps_rule_make_put_action(fram_rp, $0, $1, true, $3);
+  }
 
 put_stmt:
-  primary_expr PLUS_EQUAL expr { }
+  primary_expr PLUS_EQUAL expr {
+    $$ = rps_rule_make_put_action(fram_rp, "", $0, true, $2);
+  }
 
 put_stmt:
-  IDENT primary_expr EQUAL expr { }
+  IDENT primary_expr EQUAL expr {
+    $$ = rps_rule_make_put_action(fram_rp, $0, $1, false, $3);
+  }
 
 put_stmt:
-  primary_expr EQUAL expr { }
+  primary_expr EQUAL expr {
+    $$ = rps_rule_make_put_action(fram_rp, "", $0, false, $2);
+  }
 
 send_stmt:
-  IDENT primary_expr ARROW IDENT LPAREN arg_list RPAREN { }
+  IDENT primary_expr ARROW IDENT LPAREN arg_list RPAREN {
+    $$ = rps_rule_make_send_action(fram_rp, $0, $1, $3, $5);
+  }
 
 send_stmt:
-  IDENT primary_expr ARROW IDENT LPAREN RPAREN { }
+  IDENT primary_expr ARROW IDENT LPAREN RPAREN {
+    $$ = rps_rule_make_send_action(fram_rp, $0, $1, $3, {});
+  }
 
 attr_assignment_list:
-  attr_assignment { }
+  attr_assignment {
+    $$ = std::vector<std::pair<Rps_ObjectRef, Rps_Value>>{ $0 };
+  }
 
 attr_assignment_list:
-  attr_assignment_list COMMA attr_assignment { }
+  attr_assignment_list COMMA attr_assignment {
+    $$ = std::move($0);
+    $$.push_back($2);
+  }
 
 attr_assignment:
-  IDENT COLON expr { }
+  IDENT COLON expr {
+    $$ = std::make_pair(rps_rule_symbol(fram_rp, $0), $2);
+  }
 
 attr_assignment:
-  IDENT EQUAL expr { }
+  IDENT EQUAL expr {
+    $$ = std::make_pair(rps_rule_symbol(fram_rp, $0), $2);
+  }
 
 arg_list:
-  expr { }
+  expr {
+    $$ = std::vector<Rps_Value>{ $0 };
+  }
 
 arg_list:
-  arg_list COMMA expr { }
+  arg_list COMMA expr {
+    $$ = std::move($0);
+    $$.push_back($2);
+  }
 
 %%
 
@@ -752,16 +1145,16 @@ rps_parser_on_feed_me(rps_parser_data_st* data_rp,
 		      void* extra,
 		      int lin)
 {
-  RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(data_rp && data_rp->valid_carbdata_magic());
-#warning unimplemented rps_parser_on_feed_me
-  RPS_WARNOUT("unimplemented rps_parser_on_feed_me lin=" << lin
-	      << " extra=" << extra
-	      << " in " << data_rp->parser_name
-	      << " at " << data_rp->parser_path
-	      << ":" << data_rp->parser_lineno
-	      << std::endl
-	      << RPS_FULL_BACKTRACE(1,"rps_parser_on_feed_me"));
+  (void)frame;
+  (void)extra;
+  (void)lin;
+  if (data_rp->parser_ptr != nullptr) {
+    Rps_TokenSource* toksrc = static_cast<Rps_TokenSource*>(data_rp->parser_ptr);
+    if (!toksrc->reached_end()) {
+      toksrc->fill_current_line_buffer();
+    }
+  }
 } // end rps_parser_on_feed_me
 
 
