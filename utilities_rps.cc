@@ -2602,13 +2602,16 @@ rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argobcon
     {
       RPS_WARNOUT("cannot remove core sacred root object as constant " << _f.obconst
                   << " thread " << rps_current_pthread_name()
+		  << " obsystem=" << _f.obsystem << " oldset=" << _f.oldsetv
                   << std::endl
                   << RPS_FULL_BACKTRACE(1, "rps_remove_constant_object")
                  );
       return;
     };
 #pragma message "rps_remove_constant_object unimplemented"
-  RPS_FATALOUT("rps_remove_constant_object unimplemented obconst=" << RPS_OBJECT_DISPLAY(_f.obconst));
+  RPS_FATALOUT("rps_remove_constant_object unimplemented obconst=" << RPS_OBJECT_DISPLAY(_f.obconst)
+	       << " thread " << rps_current_pthread_name()
+	       << " obsystem=" << _f.obsystem << " oldset=" << _f.oldsetv);
 } // end rps_remove_constant_object
 
 void
