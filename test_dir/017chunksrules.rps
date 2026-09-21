@@ -1,7 +1,13 @@
-# file RefPerSys/test_dir/016rule_chunks.rps
+# file RefPerSys/test_dir/017chunkrules.rps
 # SPDX-License-Identifier: GPL-3.0-or-later
 #  © Copyright (C) 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
+# and (written by) Havilz Lating, Indonesia <havilzlating05@gmail.com>
+## see also test_dir/017chunkrules.bash script
+
+## magic string REFPERSYS<_>SCRIPT followed by mode name
+REFPERSYS_SCRIPT halvitz
+## etc
 
 // Example rule testing C++ code chunk emission and accumulation via +=
 rule generate_sensor_handler salience 10:
@@ -22,6 +28,6 @@ rule generate_custom_prefix_chunk salience 5:
   when
     ?emitter: CodeEmitter(mode == specialized)
   then
-    outbuf += #prefix{
+    outbuf += #foo{
       static const char* prefix_name = "specialized_$emitter";
-    }prefix#;
+    }foo#;

@@ -1,7 +1,14 @@
-# file RefPerSys/test_dir/015rule_standard.rps
+# file RefPerSys/test_dir/016rule_standard.rps
 # SPDX-License-Identifier: GPL-3.0-or-later
 #  © Copyright (C) 2026 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
+# and (written by) Havilz Lating, Indonesia <havilzlating05@gmail.com>
+
+## see also test_dir/016rule_standard.bash script
+
+## magic string REFPERSYS<_>SCRIPT followed by mode name
+REFPERSYS_SCRIPT halvitz
+## etc
 
 // Example rule testing basic syntax, salience, LHS patterns and RHS actions
 rule detect_high_temperature salience 100:

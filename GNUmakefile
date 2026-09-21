@@ -1323,7 +1323,20 @@ test14: refpersys |GNUmakefile
 test15: refpersys |GNUmakefile
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./test_dir/015evloopA.bash
-	@printf '\n\n\n////test14 FINISHED¤\n'h
+	@printf '\n\n\n////test15 FINISHED¤\n'h
+
+## test16 to parse an example of rule
+test16: refpersys |GNUmakefile
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/016rule_standard.bash
+	@printf '\n\n\n////test16 FINISHED¤\n'h
+
+## test17 to parse an example of rule with code chunks
+test17: refpersys |GNUmakefile
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./test_dir/017chunkrules.bash
+	@printf '\n\n\n////test17 FINISHED¤\n'h
+
 ########### show the testing commands
 showtests:
 	@printf '\nRefPerSys has %d testing commands\n' $(shell /bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/wc -l)
