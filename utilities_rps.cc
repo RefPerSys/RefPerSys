@@ -262,6 +262,8 @@ rps_homedir(void)
 const std::string&
 rps_get_loaddir(void)
 {
+  static std::mutex loaddirmtx;
+  std::lock_guard<std::mutex> gu(loaddirmtx);
   return rps_my_load_dir;
 } // end rps_get_loaddir
 
@@ -270,6 +272,8 @@ const char*
 rps_hostname(void)
 {
   static char hnambuf[80];
+  static std::mutex hostnmtx;
+  std::lock_guard<std::mutex> gu(hostnmtx);
   if (RPS_UNLIKELY(!hnambuf[0]))
     gethostname(hnambuf, sizeof(hnambuf)-1);
   return hnambuf;
@@ -285,6 +289,8 @@ rps_get_extra_arg(const char*name)
     is_good_name = isalnum(*pc) || *pc == '_';
   if (RPS_UNLIKELY(!is_good_name))
     return nullptr;
+  static std::mutex xargmtx;
+  std::lock_guard<std::mutex> gu(xargmtx);
   std::string goodstr{name};
   auto it = rps_dict_extra_arg.find(goodstr);
   if (it == rps_dict_extra_arg.end())
@@ -331,7 +337,9 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
          << rps_decimal_string(RPS_INITIAL_COPYRIGHT_YEAR)
          << " - "
          << rps_decimal_string(nowtm.tm_year + 1900) << " "
-         << ((owner.empty()) ? "The Reflective Persistent Team" : owner.c_str())
+         << ((owner.empty())
+             ? "The Reflective Persistent Team"
+             : owner.c_str())
          << linsuffix << std::endl;
     outs << linprefix
          << " see refpersys.org and contact team@refpersys.org for more."
