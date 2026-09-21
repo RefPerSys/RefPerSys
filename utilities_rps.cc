@@ -678,9 +678,9 @@ rps_string_version_handwritten_source_files(void)
       if ((*curfileptr)[0] == '_')
         continue;
       if ((*curfileptr)[0] == '.')
-	continue;
+        continue;
       if (strstr(*curfileptr, "plugins"))
-	nbpluginfiles++;
+        nbpluginfiles++;
       if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
         {
           nbsourcefiles++;
@@ -689,8 +689,8 @@ rps_string_version_handwritten_source_files(void)
     };
   RPS_INFORMOUT("showing versions " << std::endl
                 << " of " << nbsourcefiles << " source "
-		<< " but not " << nbpluginfiles
-		<< " plugins"
+                << " but not " << nbpluginfiles
+                << " plugins"
                 << " handwritten C++ source files (git "
                 << rps_utilities_shortgitid
                 << " from " __FILE__ << ":" << __LINE__ << ")");
@@ -1174,7 +1174,7 @@ rps_cwd_string(void)
      rps_path_byte_size is in refpersys.hh and a few hundred bytes. */
   return std::string(cwdbuf);
 } // end rps_cwd_string
-  
+
 
 /// rps_early_initialization is called by rps_parse_program_arguments
 /// which is called early from main (before loading of the heap)
@@ -1371,21 +1371,22 @@ rps_early_initialization(int argc, char** argv)
   if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
     rps_add_debug_cstr((argv[1]+strlen("-d")));
   ///
-  if (rps_syslog_enabled) {
-    openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
-    if (rps_debug_flags != 0)
-    syslog(LOG_USER|LOG_INFO,
-	   "start of refpersys inference engine git %s (on %s) debug %s",
-	   rps_shortgitid, rps_hostname(),
-	   rps_debug_level_string(rps_debug_flags.load()).c_str());
-    else
-      syslog(LOG_USER|LOG_INFO,
-	     "start of refpersys inference engine git %s (on %s) without debug",
-	     rps_shortgitid, rps_hostname());
-  };
+  if (rps_syslog_enabled)
+    {
+      openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+      if (rps_debug_flags != 0)
+        syslog(LOG_USER|LOG_INFO,
+               "start of refpersys inference engine git %s (on %s) debug %s",
+               rps_shortgitid, rps_hostname(),
+               rps_debug_level_string(rps_debug_flags.load()).c_str());
+      else
+        syslog(LOG_USER|LOG_INFO,
+               "start of refpersys inference engine git %s (on %s) without debug",
+               rps_shortgitid, rps_hostname());
+    };
   RPS_INFORMOUT("done early initialization of RefPerSys process "
                 << rps_decimal_string((int)getpid())
-		<< " on host " << rps_hostname()
+                << " on host " << rps_hostname()
                 << " git " << rps_shortgitid);
 } // end rps_early_initialization
 
@@ -2749,15 +2750,15 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
       out << "no-debug-⓪"; // U+24EA CIRCLED DIGIT ZERO;
       return;
     }
-  out << flags << "=" ;
+  out << rps_decimal_string(flags) << "=" ;
   int nbf = 0;
   //
 #define SHOW_DBGFLAG(Lev,Hlp)                   \
   do {                                          \
     if (flags & (1<< RPS_DEBUG_##Lev)) {        \
       if (nbf > 0)                              \
-  out << ',';                                   \
-      out << #Lev << "//" << Hlp << std::endl;  \
+        out << ", ";                            \
+      out << #Lev << "[" << Hlp << "]";         \
       nbf++;                                    \
     }                                           \
   } while(0);
