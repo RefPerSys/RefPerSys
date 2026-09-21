@@ -654,7 +654,7 @@ rps_print_types_info(void)
             << Rps_Value::make_tagged_int(100)
             << std::endl
             << "… and the tagged integer minus one billion is "
-            <<  Rps_Value::make_tagged_int(-1000000000)
+            <<  rps_decimal_string(Rps_Value::make_tagged_int(-1000000000))
             << " !!! " << std::endl;
 } // end rps_print_types_info
 
@@ -2560,6 +2560,12 @@ rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argobcon
                            Rps_Value newsetv;
                 );
   _f.obconst = argobconst;
+  _f.obsystem = RPS_ROOT_OB(_1Io89yIORqn02SXx4p); //RefPerSys_system∈the_system_class
+  std::lock_guard<std::recursive_mutex> gu(*_f.obsystem->objmtxptr());
+  _f.oldsetv
+    = _f.obsystem->get_physical_attr (RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
+  RPS_ASSERT(_f.oldsetv.is_set());
+  RPS_DEBUG_LOG(REPL, "rps_remove_constant_object obconst="  << _f.obconst << " oldset=" << _f.oldsetv);
   if (false
       || _f.obconst == RPS_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
       || _f.obconst == RPS_ROOT_OB(_10YXWeY7lYc01RpQTA) //the_system_class∈class
