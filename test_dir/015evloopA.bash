@@ -39,7 +39,8 @@ ulimit -H -t 38
 ulimit -S -m $[3 * 1024]
 ## file size limits (in half kilobytes blocks)
 ulimit -S -f 32768
-
+/usr/bin/printenv
+printf "\n\n\n"
 ./refpersys --run-name=015evloopA -AREPL -dEVLOOP --run-delay=6s $*
 
 ##
