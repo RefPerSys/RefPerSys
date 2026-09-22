@@ -1255,7 +1255,8 @@ rps_early_initialization(int argc, char** argv)
       rps_stdin_istty = false;  // INSIDE_EMACS
       rps_stderr_istty = false; // INSIDE_EMACS
       rps_stdout_istty = false; // INSIDE_EMACS
-      std::cout << "since INSIDE_EMACS is " << inside_emacs
+      std::cout << "since INSIDE_EMACS is "
+		<< Rps_QuotedC_String(inside_emacs)
                 << " at " __FILE__ ":" << __LINE__ << std::endl
                 << " disabling ANSI escapes from " << __FUNCTION__
                 << " git " << RPS_SHORTGITID << std::endl;
