@@ -1578,7 +1578,7 @@ rps_debug_printf_at(const char *filnam, int fline,
       }
     else // no syslog, no debug file
       {
-        bool ontty = isatty(STDERR_FILENO);
+        bool ontty = rps_stdin_istty && rps_stdout_istty;
         if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
         if (ontty)
