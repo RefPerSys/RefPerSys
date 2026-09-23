@@ -41,7 +41,7 @@ ulimit -S -m $[3 * 1024]
 ulimit -S -f 32768
 /usr/bin/printenv
 printf "\n\n\n"
-./refpersys --run-name=015evloopA -AREPL -dEVLOOP --run-delay=6s $*
+./refpersys --run-name=015evloopA -AREPL -dEVLOOP --run-delay=10s $*
 
 ##
 ##**************
