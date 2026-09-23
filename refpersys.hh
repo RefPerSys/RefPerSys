@@ -163,6 +163,8 @@ extern "C" void rps_atexit(typeof(void (void)) *function);
 extern "C" void rps_do_on_exit(std::function<void(void)>clos);
 
 
+extern "C" const int rps_maxpoll_fd; // can be dlsym-ed
+
 //// simple utility functions (locale independent) to convert an
 //// intptr_t to strings (coded in file utilities_rps.cc)
 extern "C" const std::string rps_decimal_string(intptr_t i); //locale neutral
