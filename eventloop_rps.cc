@@ -72,8 +72,7 @@ enum self_pipe_code_en
 
 
 
-#define RPS_MAXPOLL_FD 128
-extern "C" const int rps_maxpoll_fd; // can be dlsym-ed
+#define RPS_MAXPOLL_FD 256
 const int rps_maxpoll_fd = RPS_MAXPOLL_FD;
 
 //extern "C" std::atomic<bool> rps_stop_event_loop_flag;
@@ -1313,13 +1312,21 @@ rps_event_loop(void)
 
   double endelapsedtime=rps_elapsed_real_time();
   double endcputime=rps_process_cpu_time();
-  RPS_INFORMOUT("ended rps_event_loop " << event_nbloops.load() << " times in pid " << (int)getpid() << " on " << rps_hostname()
-                << " in " << (endelapsedtime-startelapsedtime) << " elapsed and "
+  long cntloop = event_nbloops.load();
+  RPS_INFORMOUT("ended rps_event_loop "
+		<< rps_decimal_string(event_nbloops.load())
+		<< " times in pid " << rps_decimal_string((int)getpid())
+		<< " on " << rps_hostname()
+                << " in "
+		<< (endelapsedtime-startelapsedtime) << " elapsed and "
                 << (endcputime-startcputime) << " cpu seconds"
+		<< " so " << ((endelapsedtime-startcputime)/cntloop)
+		<< " elapsed s/loop"
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop")
                );
-  RPS_DEBUG_LOG(REPL, "rps_event_loop ended elapsedtime=" << startelapsedtime
+  RPS_DEBUG_LOG(REPL, "rps_event_loop ended elapsedtime="
+		<< startelapsedtime
                 << " cputime=" << startcputime
                 << " thread:" << rps_current_pthread_name() << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop/ended"));
