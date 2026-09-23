@@ -219,9 +219,9 @@ rps_evl_unregister_event_loop_prepoller(int rank)
 
 bool
 rps_evl_get_entry(int ix,
-			     Rps_EventHandler_sigt**pfun,
-			     struct pollfd*po,
-			     const char**pexpl, void**pdata)
+                  Rps_EventHandler_sigt**pfun,
+                  struct pollfd*po,
+                  const char**pexpl, void**pdata)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_DEBUG_LOG(EVLOOP, "rps_evl_get_entry thread:"
@@ -252,9 +252,9 @@ rps_evl_get_entry(int ix,
 
 void
 rps_evl_add_input_fd_handler (int fd,
-                                     Rps_EventHandler_sigt*f,
-                                     const char* explanation,
-                                     void*data)
+                              Rps_EventHandler_sigt*f,
+                              const char* explanation,
+                              void*data)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
@@ -279,9 +279,9 @@ rps_evl_add_input_fd_handler (int fd,
 
 void
 rps_evl_add_output_fd_handler (int fd,
-                                      Rps_EventHandler_sigt*f,
-                                      const char* explanation,
-                                      void*data)
+                               Rps_EventHandler_sigt*f,
+                               const char* explanation,
+                               void*data)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
@@ -379,10 +379,10 @@ rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
                 << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
   if (!RPS_DEBUG_ENABLED(REPL))
     RPS_DEBUG_LOG(EVLOOP, "rps_self_pipe_read_handler thread:"
-		  <<  rps_current_pthread_name() << " fd=" << fd
-		  << " buf=" << buf << " elapsed: "
-		  << std::setw(3) << rps_elapsed_real_time()
-		  << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
+                  <<  rps_current_pthread_name() << " fd=" << fd
+                  << " buf=" << buf << " elapsed: "
+                  << std::setw(3) << rps_elapsed_real_time()
+                  << RPS_FULL_BACKTRACE(1, "rps_self_pipe_read_handler"));
   if (nbr > 0)
     {
       std::function<void(Rps_GarbageCollector*)> gcmarker
@@ -532,7 +532,7 @@ rps_initialize_pipe_to_self_in_event_loop(void)
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   RPS_DEBUG_LOG(EVLOOP, "rps_initialize_pipe_to_self_in_event_loop thread:"
                 <<  rps_current_pthread_name() << std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_initialize_pipe_to_self_in_event_loop"));
+                << RPS_FULL_BACKTRACE(1, "rps_initialize_pipe_to_self_in_event_loop"));
   RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop"
                 << " elapsed: "
                 << std::setw(3) << rps_elapsed_real_time());
@@ -550,13 +550,13 @@ rps_initialize_pipe_to_self_in_event_loop(void)
     rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
     RPS_ASSERT(rps_eventloopdata.eld_selfpipewritefd > 0);
     rps_evl_add_input_fd_handler(rps_eventloopdata.eld_selfpipereadfd,
-                                        rps_self_pipe_read_handler,
-                                        "selfpiperead",
-                                        nullptr);;
+                                 rps_self_pipe_read_handler,
+                                 "selfpiperead",
+                                 nullptr);;
     rps_evl_add_input_fd_handler(rps_eventloopdata.eld_selfpipewritefd,
-                                        rps_self_pipe_write_handler,
-                                        "selfpipewrite",
-                                        nullptr);
+                                 rps_self_pipe_write_handler,
+                                 "selfpipewrite",
+                                 nullptr);
     RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop"
                   << " elapsed: "
                   << std::setw(3) << rps_elapsed_real_time()
@@ -596,8 +596,8 @@ rps_initialize_signalfd_in_event_loop(void)
                 << RPS_FULL_BACKTRACE(1, "rps_initialize_signalfd_in_event_loop")
                );
   rps_evl_add_input_fd_handler(rps_eventloopdata.eld_sigfd,
-			       rps_evl_sigfd_read_handler,
-			       "signalfd", nullptr);
+                               rps_evl_sigfd_read_handler,
+                               "signalfd", nullptr);
 } // end rps_initialize_signalfd_in_event_loop
 
 void
@@ -617,8 +617,8 @@ rps_initialize_timerfd_in_event_loop(void)
                 << RPS_FULL_BACKTRACE(1, "rps_initialize_timerfd_in_event_loop")
                );
   rps_evl_add_input_fd_handler(rps_eventloopdata.eld_sigfd,
-			       rps_evl_timerfd_read_handler,
-			       "timerfd", nullptr);
+                               rps_evl_timerfd_read_handler,
+                               "timerfd", nullptr);
 } // end rps_initialize_timerfd_in_event_loop
 
 void
@@ -652,7 +652,7 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
   RPS_DEBUG_LOG(EVLOOP, "rps_initialize_event_loop thread:"
                 <<  rps_current_pthread_name() << std::endl
-		<< RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop"));
+                << RPS_FULL_BACKTRACE(1, "rps_initialize_event_loop"));
   rps_eventloopdata.eld_magic = RPS_EVENTLOOPDATA_MAGIC;
   rps_eventloopdata.eld_polldelaymillisec = (rps_debug_flags != 0)?666:111;
   rps_eventloopdata.eld_lastix = 0;
@@ -913,7 +913,7 @@ rps_event_loop(void)
   /*** give output
    ***/
   RPS_INFORMOUT("starting rps_event_loop in pid "
-		<< rps_decimal_string((long)getpid()) << std::endl
+                << rps_decimal_string((long)getpid()) << std::endl
                 << "… on " << rps_hostname() << " thread " << rps_current_pthread_name()
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop")
