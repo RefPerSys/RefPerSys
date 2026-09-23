@@ -1905,7 +1905,9 @@ main (int argc, char** argv)
   if (rps_chdir_path_after_load)
     {
       if (chdir(rps_chdir_path_after_load))
-        RPS_FATALOUT("failed to chdir to " << rps_chdir_path_after_load << " after loading :"
+        RPS_FATALOUT("failed to chdir to "
+		     << Rps_QuotedC_String(rps_chdir_path_after_load)
+		     << " after loading :"
                      << strerror(errno));
       char cwdbuf[rps_path_byte_size+4];
       memset (cwdbuf, 0, sizeof(cwdbuf));
@@ -1993,7 +1995,8 @@ main (int argc, char** argv)
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORMOUT("end of RefPerSys process "
-                << (int)getpid() << " on " << rps_hostname()
+                << rps_decimal_string((int)getpid())
+		<< " on " << rps_hostname()
                 << std::endl
                 << "… executable " << rps_progexe
                 << " git " << rps_shortgitid
