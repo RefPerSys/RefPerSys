@@ -12,6 +12,9 @@
  *      providing a graphical interface might be (using the Qt6
  *      toolkit) the tools/qt6refpersys.cc file
  *
+ *  The plugins_dir/rpsiplug_fox.cc is an optional plugin using
+ *  the fox-toolkit.org graphical interface library.
+ *
  * Author(s):
  *      Basile Starynkevitch, France     <basile@starynkevitch.net>
  *      Niklaus Rozencrantz, Sweden      <niklasr@protonmail.com>
