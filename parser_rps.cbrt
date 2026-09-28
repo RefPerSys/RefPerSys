@@ -588,12 +588,18 @@ extern "C" void rps_parser_on_feed_me(rps_parser_data_st* data,
 }
 
 /// carburetta/examples/tilly/directives.cbrt allow keywords like:::
-KEYW_DO: do { }
-KEYW_DISPLAY: display { }
-KEYW_RULE: rule { }
-KEYW_WHEN: when { }
-KEYW_THEN: then { }
-KEYW_SALIENCE: salience { }
+KEYW_DO: do { /// rpskob_9wxka7OAIaG00LS3Db do∈symbol
+}
+KEYW_DISPLAY: display { // rpskob__006mAbXTG4G00QR5HS display∈symbol
+}
+KEYW_RULE: rule {// rpskob_7f77USXcn7o00DMHm4) rule∈symbol
+}
+KEYW_WHEN: when {
+}
+KEYW_THEN: then {
+}
+KEYW_SALIENCE: salience {
+}
 KEYW_ACTION: action { }
 KEYW_ASSERT: assert { }
 KEYW_RETRACT: retract { }
