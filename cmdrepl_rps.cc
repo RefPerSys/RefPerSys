@@ -1161,7 +1161,7 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
         rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
                                   "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
         (*pout) << "** mtime: " << mtimbuf
-                << "   *hash:" << _f.shownob->val_hash()
+                << "   *hash:" << rps_decimal_string(_f.shownob->val_hash())
                 << std::endl;
       }
       unsigned nbat = _f.shownob->nb_attributes(&_);

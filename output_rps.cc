@@ -180,7 +180,7 @@ Rps_Object_Display::output_display(std::ostream&out) const
     rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
                               "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
     out   << BOLD_esc << "** mtime: " << mtimbuf
-          << "   *hash:" << _dispobref->val_hash()
+          << "   *hash:" << rps_decimal_string(_dispobref->val_hash())
           << NORM_esc
           << std::endl;
   };
