@@ -61,6 +61,7 @@ const char rps_parser_baseid[] = RPS_BASEID;
 extern "C" struct rps_parser_stack_st;
 extern "C" struct rps_parser_data_st;
 
+#warning the keywords have some objects related to them.
 enum rps_parser_keyw_enum {
   rpsrule_kw__None,
   rpsrule_kw_do,
