@@ -593,7 +593,7 @@ KEYW_DO: do { /// rpskob_9wxka7OAIaG00LS3Db do∈symbol
 KEYW_DISPLAY: display { // rpskob_006mAbXTG4G00QR5HS display∈symbol
 }
 
-/// Basile S. uses plugins_dir/rpsplug_createsymbol.cc to add the constants
+/// Basile S. uses plugins_dir/rpsplug_createsymbol.cc to add the constants for keywords
 KEYW_RULE: rule {// rpskob_7f77USXcn7o00DMHm4) rule∈symbol
 }
 KEYW_WHEN: when {
