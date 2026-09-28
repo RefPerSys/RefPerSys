@@ -28,7 +28,7 @@
 ##    engine free software project on refpersys.org.  It should be
 ##    invoked by GNU make only.
 ##
-##    The generated file used to be called __ timestamp.c
+##    The generated file (now __buildinfo.c) used to be called __timestamp.c
 ##    
 
 if [ -z $GPP ]; then
