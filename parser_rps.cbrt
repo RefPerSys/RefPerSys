@@ -614,8 +614,15 @@ KEYW_ASSERT: assert { // rpskob_15dWspxEfXj02eUXh4 assert∈symbol
 KEYW_RETRACT: retract { // rpskob_0HXt7c2Q1XK02eA3RY retract∈symbol
 }
 
-KEYW_MODIFY: modify { }
-KEYW_NAME: name[s]? { }
+KEYW_MODIFY: modify { // rpskob_1IlP2djj7Z702QHA0T) modify∈symbol
+}
+
+KEYW_NAME: name {// RPS_ROOT_OB(_1EBVGSfW2m200z18rx) name∈named_attribute
+}
+
+KEYW_NAME: names { // rpskob_4i8rVKj2PCN046yEvt) names∈symbol
+}
+
 
 FLOAT_LITERAL: [\+\-]?([0-9]+\.)|([0-9]*\.[0-9]+)([eE][\+\-]?[0-9]+)? {
   $$ = strtod($text, nullptr);
