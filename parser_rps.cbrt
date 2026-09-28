@@ -596,9 +596,9 @@ KEYW_DISPLAY: display { // rpskob_006mAbXTG4G00QR5HS display∈symbol
 /// Basile S. uses plugins_dir/rpsplug_createsymbol.cc to add the constants for keywords
 KEYW_RULE: rule {// rpskob_7f77USXcn7o00DMHm4 rule∈symbol
 }
-KEYW_WHEN: when {// rpskob_7f77USXcn7o00DMHm4 when∈symbol
+KEYW_WHEN: when {// rpskob_8NVSRgMU6FF01wF6Wa when∈symbol
 }
-KEYW_THEN: then {
+KEYW_THEN: then {// rpskob_1vb9gf46mDj0163vbQ then∈symbol
 }
 KEYW_SALIENCE: salience {
 }
