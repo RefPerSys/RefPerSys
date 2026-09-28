@@ -256,8 +256,8 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe,
   du_openedpathset()
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,callframe,
-		 Rps_ObjectRef dumpob;
-		 Rps_Value dumpval;);
+                 Rps_ObjectRef dumpob;
+                 Rps_Value dumpval;);
   _f.dumpob = dumpobarg;
   _f.dumpval = dumpvalarg;
   {
@@ -294,14 +294,14 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe,
   memset(tmbfr, 0, sizeof (tmbfr));
   rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
   du_explout << "creating dumper cwd=" << Rps_QuotedC_String(du_curworkdir)
-	     << " topdir=" << Rps_QuotedC_String(du_topdir)
-	     << " git=" << rps_dump_shortgitid
-	     << " pid=" << rps_decimal_string((intptr_t)getpid())
-	     << " host=" << rps_hostname()
-	     << std::endl <<  RPS_FULL_BACKTRACE(1, "Rps_Dumper")
-	     << std::endl
-	     << "dumpdate=" << tmbfr << std::endl
-	     << "source " << du_srcfil << ":" << du_srclin << std::endl;
+             << " topdir=" << Rps_QuotedC_String(du_topdir)
+             << " git=" << rps_dump_shortgitid
+             << " pid=" << rps_decimal_string((intptr_t)getpid())
+             << " host=" << rps_hostname()
+             << std::endl <<  RPS_FULL_BACKTRACE(1, "Rps_Dumper")
+             << std::endl
+             << "dumpdate=" << tmbfr << std::endl
+             << "source " << du_srcfil << ":" << du_srclin << std::endl;
 } // end Rps_Dumper::Rps_Dumper
 
 
@@ -1956,10 +1956,10 @@ Rps_Dumper::write_manifest_file(void)
   jsonwriter->write(jmanifest, pouts.get());
   *pouts << std::endl <<  std::endl << "//// end of RefPerSys manifest file" << std::endl;
   du_explout << "Wrote manifest file for " << rps_decimal_string(namecnt)
-	     << " names, "<< rps_decimal_string(nbroots) << " roots,"
-	     <<  " " << rps_decimal_string(nbconst)
-	     << " constants, " << rps_decimal_string(nbplugins) << " plugins."
-	     << std::endl;
+             << " names, "<< rps_decimal_string(nbroots) << " roots,"
+             <<  " " << rps_decimal_string(nbconst)
+             << " constants, " << rps_decimal_string(nbplugins) << " plugins."
+             << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file ending ... " << rps_gitid << std::endl);
 } // end Rps_Dumper::write_manifest_file
 
@@ -1977,6 +1977,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   std::set<Rps_ObjectRef> curspaset;
   Rps_Id spacid;
   std::unique_ptr<std::ofstream> pouts;
+  RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(du_jsonwriterbuilder["indentation"] == std::string{" "});
   std::unique_ptr<Json::StreamWriter> jsonwriter(du_jsonwriterbuilder.newStreamWriter());
   {
@@ -1986,6 +1987,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     pouts = open_output_file(curelpath);
     curspaset = curspa->sp_setob;
   }
+  std::lock_guard<std::recursive_mutex> guspacob(*(spacobr->objmtxptr()));
   RPS_ASSERT(pouts);
   rps_emit_gplv3_copyright_notice(*pouts, curelpath,
                                   /*prefix:*/ "///.", /*suffix:*/"",
@@ -1997,7 +1999,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
            << "///!!! prologue of RefPerSys space "
            <<  spacid.to_string()
            << " file:" << std::endl;
-
+    RPS_UNIQUE_BREAKPOINT();
     Json::Value jprologue(Json::objectValue);
     time_t dtim = time(nullptr);
     struct tm dtm = {};
@@ -2136,8 +2138,13 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   ////
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;
-  du_explout << "Wrote space file " << curelpath << " with " << rps_decimal_string(count) << " objects." << std::endl;
-  RPS_DEBUG_LOG(DUMP, "dumper write_space_file end " << curelpath << " with " << count << " objects." << std::endl);
+  du_explout << "Wrote space file " << curelpath
+	     << " for space " << spacobr
+	     << " with "
+             << rps_decimal_string(count) << " objects." << std::endl
+             << RPS_FULL_BACKTRACE(1,"dumper/write_space_file") << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_space_file end " << curelpath
+                << " with " << rps_decimal_string(count) << " objects." << std::endl);
 } // end Rps_Dumper::write_space_file
 
 
@@ -2311,24 +2318,24 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe,
       RPS_UNIQUE_BREAKPOINT();
       dumper.write_manifest_file();
       {
-      dumper.du_explout << "Dumped "
-			<< dumper.du_newobcount << " objects"
-			<< " in " <<  (rps_elapsed_real_time() - startelapsed)
-			<< " elapsed, "
-			<< (rps_process_cpu_time() - startcputime)
-			<< " cpu seconds into " << Rps_QuotedC_String(realdirpath)
-			<< " program " << Rps_QuotedC_String(rps_program_invocation)
-			<< std::endl;
-      auto pexplout = dumper.open_output_file(RPS_EXPLAIN_DUMP);      
-      rps_emit_gplv3_copyright_notice(*pexplout, RPS_EXPLAIN_DUMP,
-			  /*prefix:*/ "##", /*suffix:*/"",
-			    /*owner:*/"", /*reason:*/"(explanation of dump)");
-      *pexplout << dumper.du_explout.str() << std::endl;
+        dumper.du_explout << "Dumped "
+                          << dumper.du_newobcount << " objects"
+                          << " in " <<  (rps_elapsed_real_time() - startelapsed)
+                          << " elapsed, "
+                          << (rps_process_cpu_time() - startcputime)
+                          << " cpu seconds into " << Rps_QuotedC_String(realdirpath)
+                          << " program " << Rps_QuotedC_String(rps_program_invocation)
+                          << std::endl;
+        auto pexplout = dumper.open_output_file(RPS_EXPLAIN_DUMP);
+        rps_emit_gplv3_copyright_notice(*pexplout, RPS_EXPLAIN_DUMP,
+                                        /*prefix:*/ "##", /*suffix:*/"",
+                                        /*owner:*/"", /*reason:*/"(explanation of dump)");
+        *pexplout << dumper.du_explout.str() << std::endl;
       };
       RPS_UNIQUE_BREAKPOINT();
       dumper.rename_opened_files();
       sync();
-      
+
       RPS_UNIQUE_BREAKPOINT();
       double endelapsed = rps_elapsed_real_time();
       double endcputime = rps_process_cpu_time();
@@ -2412,7 +2419,7 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe, /// "generate_code°the_s
               << " from " << (rps_is_main_thread()?"main":"other")
               << " thread"
               << std::endl
-              << RPS_FULL_BACKTRACE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
+              << RPS_FULL_BACKTRACE(1, "generate_code°the_system_class"));
   // arg1 is the dumped directory string, e.g. ~/RefPerSys
   RPS_ASSERT(_f.dumpstrv.is_string());
   // arg2 is a temporary suffix like "_3MPAZx-p1084952%"
