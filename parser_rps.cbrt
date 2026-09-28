@@ -596,15 +596,24 @@ KEYW_DISPLAY: display { // rpskob_006mAbXTG4G00QR5HS display∈symbol
 /// Basile S. uses plugins_dir/rpsplug_createsymbol.cc to add the constants for keywords
 KEYW_RULE: rule {// rpskob_7f77USXcn7o00DMHm4 rule∈symbol
 }
+
 KEYW_WHEN: when {// rpskob_8NVSRgMU6FF01wF6Wa when∈symbol
 }
+
 KEYW_THEN: then {// rpskob_1vb9gf46mDj0163vbQ then∈symbol
 }
 KEYW_SALIENCE: salience {// rpskob_43a5F4HmVIi03DrehV salience∈symbol
 }
-KEYW_ACTION: action { }
-KEYW_ASSERT: assert { }
-KEYW_RETRACT: retract { }
+
+KEYW_ACTION: action { // rpskob_98rJxSS69pV00WFTKk action∈symbol
+}
+
+KEYW_ASSERT: assert { // rpskob_15dWspxEfXj02eUXh4 assert∈symbol
+}
+
+KEYW_RETRACT: retract { // rpskob_0HXt7c2Q1XK02eA3RY retract∈symbol
+}
+
 KEYW_MODIFY: modify { }
 KEYW_NAME: name[s]? { }
 
