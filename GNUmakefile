@@ -148,22 +148,29 @@ REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, obj/%.o, $(REFPERSYS_GENERATED_
 ### Dumped C++ sources which are written at dump time and needs to be git managed
 REFPERSYS_DUMPED_CPP_SOURCES := $(wildcard generated/*.cc)
 
+REFPERSYS_DUMPED_CPP_BASES := $(patsubst generated/%.cc, %, $(wildcard generated/*.cc))
+
 ### in commit cdce494874af (end of March 2026) FLTK is not used
+
+REFPERSYS_NONDUMPED_SOURCES := $(REFPERSYS_HUMAN_CPP_SOURCES) \
+            $(REFPERSYS_GENERATED_CPP_SOURCES)
 
 REFPERSYS_RAW_SOURCES := $(REFPERSYS_HUMAN_CPP_SOURCES) \
             $(REFPERSYS_GENERATED_CPP_SOURCES) \
             $(REFPERSYS_DUMPED_CPP_SOURCES)
 
-REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, obj/%.raw.o, $(REFPERSYS_RAW_SOURCES))
+REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, obj/%.raw.o, $(REFPERSYS_NONDUMPED_SOURCES)) \
+	    $(patsubst %, obj/%.raw.o, $(REFPERSYS_DUMPED_CPP_BASES))
 
-REFPERSYS_ANA_OBJECTS := $(patsubst %.cc, obj/%.ana.o, $(REFPERSYS_RAW_SOURCES))
+REFPERSYS_ANA_OBJECTS := $(patsubst %.cc, obj/%.ana.o, $(REFPERSYS_NONDUMPED_SOURCES)) \
+	    $(patsubst %, obj/%.raw.o, $(REFPERSYS_DUMPED_CPP_BASES))
 
 
 ### corresponding object files
-REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, obj/%.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %, obj/%.o, $(REFPERSYS_DUMPED_CPP_BASES))
 
 ### corresponding analyzed object files
-REFPERSYS_DUMPED_ANA_OBJECTS=$(patsubst %.cc, obj/%.ana.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+REFPERSYS_DUMPED_ANA_OBJECTS=$(patsubst %, obj/%.ana.o, $(REFPERSYS_DUMPED_BASES))
 
 
 
@@ -951,7 +958,7 @@ obj/%_rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	       -c -o $@ $<
 	$(SYNC)
 
-%_rps.lto.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/%_rps.lto.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -974,7 +981,7 @@ obj/%_rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	$(SYNC)
 
 ## only useful to debug the carburetta carbrepl_rps.cbrt input file
-_nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/_nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -995,7 +1002,7 @@ _nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-refpe
 	$(SYNC)
 
 ## only useful to debug the carburetta minicarb_rps.cbrt input file
-_nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/_nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
