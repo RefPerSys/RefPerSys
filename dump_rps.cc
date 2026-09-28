@@ -111,6 +111,7 @@ class Rps_Dumper
   friend Rps_Value rps_dump_data_value(Rps_Dumper*);
   friend const std::string rps_dump_data_source_file(Rps_Dumper*);
   friend int rps_dump_data_source_line(Rps_Dumper*);
+  friend const std::string rps_dump_explanation_string(Rps_Dumper*);
   std::string du_topdir;
   int du_fdtopdir;    // if >0 should be a file descriptor
   // for du_topdir and usedful for symlinkat
@@ -138,6 +139,7 @@ class Rps_Dumper
   std::set<Rps_ObjectRef> du_constantobset;
   Rps_ObjectRef du_dumpob;
   Rps_Value du_dumpval;
+  std::ostringstream du_explout;
   std::string du_srcfil;
   int du_srclin;
   // actually, we better want ao pointer or reference to that object
@@ -248,6 +250,7 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe,
   du_callframe(callframe),
   du_dumpob(dumpobarg),
   du_dumpval(dumpvalarg),
+  du_explout(),
   du_srcfil(srcfil),
   du_srclin(srclin),
   du_openedpathset()
@@ -373,6 +376,15 @@ rps_dump_data_source_line(Rps_Dumper*du)
   return du->du_srclin;
 } // end rps_dump_data_source_line
 
+
+const std::string
+rps_dump_explanation_string(Rps_Dumper*du)
+{
+  if (!du)
+    return std::string("");
+  std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
+  return du->du_explout.str();
+} // end rps_dump_explanation_string
 
 std::string
 rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
