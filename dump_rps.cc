@@ -1069,6 +1069,10 @@ Rps_Dumper::scan_loop_pass(void)
       //              << " curobr=" << curobr->oid());
       scan_object_contents(curobr);
     };
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  du_explout << "Scanned " << rps_decimal_string (count) << " objects"
+	     << " (" << __FILE__ << ":" << rps_decimal_string(__LINE__) << ")"
+	     << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper: scan_loop_pass end count#" << count);
 } // end Rps_Dumper::scan_loop_pass
 
