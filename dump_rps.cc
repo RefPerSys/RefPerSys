@@ -2430,6 +2430,15 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe, /// "generate_code°the_s
   RPS_ASSERT(_f.suffixstrv.is_string());
   // arg3 is a temporary dump object
   RPS_ASSERT(_f.dumpob);
+  /*** in commit e5f25652be89 on Sept, 28, 2026 running
+ ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
+ --plugin-arg=rpsplug_createsymbol:new_symbol_name \
+ --extra=comment='some comment' \
+ --extra=rooted=0 \
+ --extra=constant=1 \
+ --batch --dump=.
+ is triggering this warning above.
+  ***/
 #warning unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ "generate_code°the_system_class"
   //// for inspiration read https://en.wikipedia.org/wiki/Quine_(computing)
   return {arg0,nullptr};
