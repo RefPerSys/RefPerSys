@@ -1330,7 +1330,7 @@ Rps_Dumper::write_generated_names_file(void)
     (*pouts) << "RPS_INSTALL_NAMED_ROOT_OB(" << obr->oid()
              << "," << (cursym->symbol_name()) << ")"
              << " //∈" << obr->get_class()
-             << " h:" << obr->obhash()
+             << " h:" << rps_decimal_string(obr->obhash())
              << std::endl;
     namecnt++;
   });
@@ -1414,7 +1414,7 @@ Rps_Dumper::write_generated_constants_file(void)
       else if (!klassname.empty())
         *pouts << " //-∈" // U+2208 ELEMENT OF
                << klassname;
-      *pouts << " h:" << constobr->obhash() << std::endl;
+      *pouts << " h:" << rps_decimal_string(constobr->obhash()) << std::endl;
       constcnt ++;
     }
   *pouts << std::endl << "#undef RPS_INSTALL_CONSTANT_OB" << std::endl << std::endl;
