@@ -134,16 +134,16 @@ CFLAGS += $(shell pkg-config --cflags $(PACKAGES_REFPERSYS))
 REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard [a-z]*_rps.cc)
 
 ### corresponding object files
-REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
+REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, obj/%.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
 ### corresponding analyzed object files
-REFPERSYS_HUMAN_CPPANAL_OBJECTS=$(patsubst %.cc, %.ana.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
+REFPERSYS_HUMAN_CPPANAL_OBJECTS=$(patsubst %.cc, obj/%.ana.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
 ### Generated C++ sources
 REFPERSYS_GENERATED_CPP_SOURCES= _carbrepl_rps.cc _minicarb_rps.cc _parser_rps.cc
 
 ### corresponding C++ objects
-REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
+REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, obj/%.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
 
 ### Dumped C++ sources which are written at dump time and needs to be git managed
 REFPERSYS_DUMPED_CPP_SOURCES := $(wildcard generated/*.cc)
@@ -154,16 +154,16 @@ REFPERSYS_RAW_SOURCES := $(REFPERSYS_HUMAN_CPP_SOURCES) \
             $(REFPERSYS_GENERATED_CPP_SOURCES) \
             $(REFPERSYS_DUMPED_CPP_SOURCES)
 
-REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, %.raw.o, $(REFPERSYS_RAW_SOURCES))
+REFPERSYS_RAW_OBJECTS := $(patsubst %.cc, obj/%.raw.o, $(REFPERSYS_RAW_SOURCES))
 
-REFPERSYS_ANA_OBJECTS := $(patsubst %.cc, %.ana.o, $(REFPERSYS_RAW_SOURCES))
+REFPERSYS_ANA_OBJECTS := $(patsubst %.cc, obj/%.ana.o, $(REFPERSYS_RAW_SOURCES))
 
 
 ### corresponding object files
-REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+REFPERSYS_DUMPED_CPP_OBJECTS=$(patsubst %.cc, obj/%.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
 
 ### corresponding analyzed object files
-REFPERSYS_DUMPED_ANA_OBJECTS=$(patsubst %.cc, %.ana.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
+REFPERSYS_DUMPED_ANA_OBJECTS=$(patsubst %.cc, obj/%.ana.o, $(REFPERSYS_DUMPED_CPP_SOURCES))
 
 
 
@@ -242,14 +242,14 @@ everything: all
 	$(MAKE) fltk-refpersys
 
 
-fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
+fox-refpersys: tools/fox-refpersys.cc obj/obj/__buildinfo.o | GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O -Wall -Wextra $(CXXFLAGS) \
 	-U_Rps_FoX_RefPerSys \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	__buildinfo.o \
+	obj/__buildinfo.o \
 	-U_Rps_FoxPack $(shell pkg-config --cflags $(FOXREFPERSYS_PACKAGES)) \
 	-U_Rps_FoxCflags $(shell fox-config --cflags) \
         $< \
@@ -258,14 +258,14 @@ fox-refpersys: tools/fox-refpersys.cc __buildinfo.o | GNUmakefile
         -o $@
 
 
-fltk-refpersys: tools/fltk-refpersys.cc __buildinfo.o | GNUmakefile
+fltk-refpersys: tools/fltk-refpersys.cc obj/__buildinfo.o | GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O -Wall -Wextra $(CXXFLAGS) \
 	-U_Rps_Fltk_RefPerSys \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	__buildinfo.o \
+	obj/__buildinfo.o \
 	-U_Rps_FltkPack $(shell pkg-config --cflags $(FLTKREFPERSYS_PACKAGES)) \
 	-U_Rps_FltkCflags $(shell fltk-config --cflags) \
         $< \
@@ -273,7 +273,7 @@ fltk-refpersys: tools/fltk-refpersys.cc __buildinfo.o | GNUmakefile
 	-U_Rps_FltkLibsB $(shell fltk-config --libs -g) \
         -o $@
 
-objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  __buildinfo.o _carbrepl_rps.o
+objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  obj/__buildinfo.o obj/_carbrepl_rps.o
 
 
 _config-refpersys.mk: GNUmakefile tools/do-configure-refpersys.c
@@ -548,7 +548,7 @@ __buildinfo.c: rps-generate-buildinfo.sh GNUmakefile $(wildcard *.cc *.hh genera
 	@echo REFPERSYS_GPP is "$(REFPERSYS_GPP)" and GPP is "$(GPP)"
 	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./rps-generate-buildinfo.sh $@ > $@
 
-__buildinfo.o: __buildinfo.c |GNUmakefile
+obj/__buildinfo.o: __buildinfo.c |GNUmakefile
 	$(CC) -std=gnu2x -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./rps-generate-gitid.sh -s)\" $^ -o $@
 
 
@@ -558,7 +558,7 @@ __buildinfo.o: __buildinfo.c |GNUmakefile
 #               $(REFPERSYS_DUMPED_CPP_OBJECTS) \
 #                   __buildinfo.c |  GNUmakefile
 refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-refpersys.mk
-	$(MAKE) __buildinfo.o
+	$(MAKE) obj/__buildinfo.o
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	/bin/sleep 0.001
 	$(MAKE) objects $(REFPERSYS_GENERATED_CPP_OBJECTS)
@@ -575,7 +575,7 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
 	@echo REFPERSYS_HUMAN_CPP_OBJECTS is $(REFPERSYS_HUMAN_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	@echo REFPERSYS_DUMPED_CPP_OBJECTS is $(REFPERSYS_DUMPED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
-	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) __buildinfo.o
+	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS) obj/__buildinfo.o
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@echo $@ PACKAGES_LIST is $(PACKAGES_LIST)
 	@echo $@ PACKAGES_REFPERSYS is $(PACKAGES_REFPERSYS)
@@ -587,7 +587,7 @@ refpersys: objects $(REFPERSYS_GENERATED_CPP_SOURCES) |  GNUmakefile _config-ref
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_DUMPED_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) \
-             __buildinfo.o \
+             obj/__buildinfo.o \
              $(RPS_LIBBACKTRACE) \
              -U_Rps_LinkOptA -Wl,--export-dynamic -Wl,--rpath='$$ORIGIN:/lib/$(strip $(RPS_DEBARCH)):$(RPS_LIBOPCODES_DIR)' \
              -L/usr/local/lib -URps_LinkOptB -L$(RPS_LIBOPCODES_DIR) $(REFPERSYS_NEEDED_LIBRARIES) \
@@ -855,7 +855,7 @@ endif
 
 
 ################################################################
-load_rps.o: load_rps.cc refpersys.hh \
+obj/load_rps.o: load_rps.cc refpersys.hh \
             generated/rps-constants.hh  generated/rps-names.hh generated/rps-roots.hh |GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -884,7 +884,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 #-                      --output=$@ $^ --no-lines
 #-   
 
-%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -907,7 +907,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	       -c -o $@ $<
 	$(SYNC)
 
-raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -929,7 +929,7 @@ raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	       -c -o $@ $<
 	$(SYNC)
 
-%_rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/%_rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -1043,14 +1043,14 @@ _nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-refpe
                          -c $(REFPERSYS_COMPILER_FLAGS) $< -o $@
 
 
-q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc __buildinfo.o |GNUmakefile
+q6refpersys: tools/q6refpersys.cc _q6refpersys-moc.cc obj/__buildinfo.o |GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O $(CXXFLAGS) \
 	-U_Rps_Compilq6r \
 	-DSELF_FILE='"$(realpath $<)"' \
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	__buildinfo.o \
+	obj/__buildinfo.o \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
 	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
 
@@ -1060,7 +1060,7 @@ _q6refpersys.ii:  tools/q6refpersys.cc _q6refpersys-moc.cc  |GNUmakefile
 	-DSELF_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	-DSELF_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
        -DGITID='"$(RPS_GIT_ID)"' -DSHORT_GITID='"$(RPS_SHORTGIT_ID)"' \
-	__buildinfo.o \
+	obj/__buildinfo.o \
 	$(shell pkg-config --cflags $(Q6REFPERSYS_PACKAGES)) $< \
 	$(shell pkg-config --libs $(Q6REFPERSYS_PACKAGES)) -o $@
 
