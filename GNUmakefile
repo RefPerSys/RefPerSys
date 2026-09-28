@@ -280,7 +280,13 @@ fltk-refpersys: tools/fltk-refpersys.cc obj/__buildinfo.o | GNUmakefile
 	-U_Rps_FltkLibsB $(shell fltk-config --libs -g) \
         -o $@
 
-objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_DUMPED_CPP_OBJECTS)  obj/__buildinfo.o obj/_carbrepl_rps.o
+objects:
+	@printf "\nfor %s REFPERSYS_HUMAN_CPP_OBJECTS=%s\n" $@ "$(REFPERSYS_HUMAN_CPP_OBJECTS)"
+	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS)
+	@printf "\nfor %s REFPERSYS_DUMPED_CPP_OBJECTS=%s\n" $@ "$(REFPERSYS_DUMPED_CPP_OBJECTS)"
+	$(MAKE) $(REFPERSYS_DUMPED_CPP_OBJECTS)
+	@printf "\nfor %s building obj/__buildinfo.o and obj/__carbrepl_rps.o\n" $@
+	$(MAKE) obj/__buildinfo.o obj/_carbrepl_rps.o
 
 
 _config-refpersys.mk: GNUmakefile tools/do-configure-refpersys.c
@@ -343,7 +349,7 @@ utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	       -c -o utilities_rps.o utilities_rps.cc
 
 #### TODO:fix it, so that make raw-objects work
-%rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/%rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo at-F is $(@F)
 	echo basename-dollar-less-F is $(basename $(<F))
@@ -366,10 +372,30 @@ utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	$(SYNC)
 
 #### TODO:fix it, so that make ana-objects work
-%rps.ana.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
+obj/%rps.ana.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
               -DRPS_WITH_FLTK=0 -DRPS_IS_ANALYZED=1  \
               -U_Rps_Is_Ana \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+
+#### temporary explicit rule
+obj/rps-parser-impl.o: generated/rps-parser-impl.cc refpersys.hh  | GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_ANALYZED=0  \
+              -U_Rps_for_parser_impl \
               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
@@ -913,6 +939,29 @@ obj/%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       -c -o $@ $<
 	$(SYNC)
+
+obj/rps-%.o: generated/rps-%.cc refpersys.hh | | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo at-F is $(@F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+               $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
+               -U_Rps_CompilGeneratedRaw \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
 
 obj/raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
