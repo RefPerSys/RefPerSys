@@ -646,8 +646,8 @@ Rps_Dumper::scan_source_file_for_constants(const std::string&relfilename)
     RPS_INFORMOUT("found " << nbconst
                   << " constant[s] prefixed by "
                   << RPS_CONSTANTOBJ_PREFIX
-                  << " in file " << fullpath
-                  << " of " << lincnt << " lines.");
+                  << " in file " << rps_real_shell_file_path(fullpath)
+                  << " of " << rps_decimal_string(lincnt) << " lines.");
   else
     RPS_DEBUG_LOG(DUMP, "scan_source_file_for_constants no constants in " << fullpath);
   return nbconst;
