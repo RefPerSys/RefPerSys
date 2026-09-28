@@ -600,7 +600,7 @@ KEYW_WHEN: when {// rpskob_8NVSRgMU6FF01wF6Wa when∈symbol
 }
 KEYW_THEN: then {// rpskob_1vb9gf46mDj0163vbQ then∈symbol
 }
-KEYW_SALIENCE: salience {
+KEYW_SALIENCE: salience {// rpskob_43a5F4HmVIi03DrehV salience∈symbol
 }
 KEYW_ACTION: action { }
 KEYW_ASSERT: assert { }

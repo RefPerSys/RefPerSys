@@ -58,8 +58,9 @@ RPS_INSTALL_CONSTANT_OB(_3zFAzRIb8BK03FqLbT) //!code_double∈cplusplus_primitiv
 RPS_INSTALL_CONSTANT_OB(_3NYlqvmSuTm024LDuD) //!code_long∈cplusplus_primitive_type h:3058390322
 RPS_INSTALL_CONSTANT_OB(_3QBHZTFGVwD03fbgOY) //!declare_cplusplus∈named_selector h:958685116
 RPS_INSTALL_CONSTANT_OB(_41OFI3r0S1t03qdB2E) //!class∈class h:1898462183
-RPS_INSTALL_CONSTANT_OB(_43NEOkhFOI602pgEn9) //!code_uint64_type∈cplusplus_primitive_type h:2982147220
+RPS_INSTALL_CONSTANT_OB(_43a5F4HmVIi03DrehV) //!salience∈symbol h:1094176805
 
+RPS_INSTALL_CONSTANT_OB(_43NEOkhFOI602pgEn9) //!code_uint64_type∈cplusplus_primitive_type h:2982147220
 RPS_INSTALL_CONSTANT_OB(_4nZ0jIKUbGr01OixPV) //!code_int∈cplusplus_primitive_type h:3061379779
 RPS_INSTALL_CONSTANT_OB(_4pI1uwdcVBJ01qlUth) //!lightning_code_object∈class h:1605576158
 RPS_INSTALL_CONSTANT_OB(_4Doq8xpQ0zi001mbBX) //!generate_cpp_parser_declaration∈named_selector h:1885522781
@@ -69,8 +70,8 @@ RPS_INSTALL_CONSTANT_OB(_4YM7mv0GrSp03OkF8T) //!leftparen!delim∈repl_delimiter
 RPS_INSTALL_CONSTANT_OB(_5oS6nYn6Z8A01hSF44) //!code_uint8_type∈cplusplus_primitive_type h:3734356368
 RPS_INSTALL_CONSTANT_OB(_5I2x56iYTBy03DHyxO) //!parenthesis_oper∈repl_unary_operator h:2684746108
 RPS_INSTALL_CONSTANT_OB(_67REK2JYbAV04jPmf2) //!code_bool∈cplusplus_primitive_type h:4230034974
-RPS_INSTALL_CONSTANT_OB(_68wsAiJhJj1025DIs1) //!rightbrace!delim∈repl_delimiter h:865506071
 
+RPS_INSTALL_CONSTANT_OB(_68wsAiJhJj1025DIs1) //!rightbrace!delim∈repl_delimiter h:865506071
 RPS_INSTALL_CONSTANT_OB(_6kHcxtGAtWW03dZ14O) //!leftbrace!delim∈repl_delimiter h:444923927
 RPS_INSTALL_CONSTANT_OB(_6EsfxShTuwH02waeLE) //!byte_alignment∈named_attribute h:2611255654
 RPS_INSTALL_CONSTANT_OB(_6EHFY6bC8PU01OfVRZ) //!code_int8_type∈cplusplus_primitive_type h:3758262250
@@ -80,8 +81,8 @@ RPS_INSTALL_CONSTANT_OB(_74qVHPNZj2201OVIfI) //!code_float∈cplusplus_primitive
 RPS_INSTALL_CONSTANT_OB(_78wsBiJhJj1025DIs1) //!dot!delim∈repl_delimiter h:978046233
 RPS_INSTALL_CONSTANT_OB(_7f77USXcn7o00DMHm4) //!rule∈symbol h:2123407642
 RPS_INSTALL_CONSTANT_OB(_7oLVM0fd4a5020iEEM) //!put∈symbol h:2103424257
-RPS_INSTALL_CONSTANT_OB(_7CG9m1NXpMo01edTUl) //!rightparen!delim∈repl_delimiter h:1793223902
 
+RPS_INSTALL_CONSTANT_OB(_7CG9m1NXpMo01edTUl) //!rightparen!delim∈repl_delimiter h:1793223902
 RPS_INSTALL_CONSTANT_OB(_7LMYzEqjeDH00ZI1CO) //!at_sign∈repl_delimiter h:150658742
 RPS_INSTALL_CONSTANT_OB(_7X9eGs8601M021nMue) //!object∈symbol h:277142528
 RPS_INSTALL_CONSTANT_OB(_8Fphnj5nJGe006qeEy) //!code_int32_type∈cplusplus_primitive_type h:2124757181
@@ -91,14 +92,14 @@ RPS_INSTALL_CONSTANT_OB(_8Z5o3cF6CsP02Iy81d) //!define∈symbol h:3813415143
 RPS_INSTALL_CONSTANT_OB(_9iNXvyeEY9r03Znyaj) //!end∈symbol h:836368046
 RPS_INSTALL_CONSTANT_OB(_9kO7yLMH7NY00asRHK) //!code_int16_type∈cplusplus_primitive_type h:4170459979
 RPS_INSTALL_CONSTANT_OB(_9uwZtDshW4401x6MsY) //€space∈symbol h:1372246104
-RPS_INSTALL_CONSTANT_OB(_9vf47NnQHMx029N0uv) //!negate∈repl_unary_operator h:4011852744
 
+RPS_INSTALL_CONSTANT_OB(_9vf47NnQHMx029N0uv) //!negate∈repl_unary_operator h:4011852744
 RPS_INSTALL_CONSTANT_OB(_9wxka7OAIaG00LS3Db) //!do∈symbol h:2996501575
 
 #undef RPS_INSTALL_CONSTANT_OB
 
 
 #undef  RPS_NB_CONSTANT_OB
-#define RPS_NB_CONSTANT_OB 51
+#define RPS_NB_CONSTANT_OB 52
 
 /// end of RefPerSys constants file generated/rps-constants.hh
