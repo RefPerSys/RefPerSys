@@ -1071,8 +1071,8 @@ Rps_Dumper::scan_loop_pass(void)
     };
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   du_explout << "Scanned " << rps_decimal_string (count) << " objects"
-	     << " (" << __FILE__ << ":" << rps_decimal_string(__LINE__) << ")"
-	     << std::endl;
+             << " (" << __FILE__ << ":" << rps_decimal_string(__LINE__) << ")"
+             << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper: scan_loop_pass end count#" << count);
 } // end Rps_Dumper::scan_loop_pass
 
@@ -2143,8 +2143,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;
   du_explout << "Wrote space file " << curelpath
-	     << " for space " << spacobr
-	     << " with "
+             << " for space " << spacobr
+             << " with "
              << rps_decimal_string(count) << " objects." << std::endl
              << RPS_FULL_BACKTRACE(1,"dumper/write_space_file") << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper write_space_file end " << curelpath
@@ -2431,13 +2431,13 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe, /// "generate_code°the_s
   // arg3 is a temporary dump object
   RPS_ASSERT(_f.dumpob);
   /*** in commit e5f25652be89 on Sept, 28, 2026 running
- ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
- --plugin-arg=rpsplug_createsymbol:new_symbol_name \
- --extra=comment='some comment' \
- --extra=rooted=0 \
- --extra=constant=1 \
- --batch --dump=.
- is triggering this warning above.
+  ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
+  --plugin-arg=rpsplug_createsymbol:new_symbol_name \
+  --extra=comment='some comment' \
+  --extra=rooted=0 \
+  --extra=constant=1 \
+  --batch --dump=.
+  is triggering this warning above.
   ***/
 #warning unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ "generate_code°the_system_class"
   //// for inspiration read https://en.wikipedia.org/wiki/Quine_(computing)

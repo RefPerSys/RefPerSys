@@ -236,9 +236,9 @@ rps_scripting_add_script(const char*path)
   if (rps_scripts_vector.empty()) {
       /////
       /****
-                                                       ** Only the main thread can call rps_scripting_add_script, so
-                                                       ** no more synchronization or mutex is needed to :
-                                                       *****/
+                                                             ** Only the main thread can call rps_scripting_add_script, so
+                                                             ** no more synchronization or mutex is needed to :
+                                                             *****/
       /////
       rps_do_on_exit([=](void){
         rps_scripts_vector.clear();
@@ -762,7 +762,7 @@ rps_make_string_token_source(const char*a)
 
 
 struct rps_mode_data_st
-rps_mode_data_arr[] = {
+  rps_mode_data_arr[] = {
 #warning the explanation of scripting modes need to be improved
   {.moda_name= "carbon",
      .moda_expl= "incomplete `carbon' script mode explanation",

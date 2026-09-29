@@ -1398,10 +1398,10 @@ const std::string
 rps_debug_level_string(unsigned level)
 {
   std::ostringstream os;
-#define rps_DEBUG_LEVEL_MACRO(dbgopt,_Help)	\
-  else if (level & RPS_DEBUG_##dbgopt) {	\
-    if (os.str().empty()) os << #dbgopt;	\
-    else os << "," << #dbgopt;			\
+#define rps_DEBUG_LEVEL_MACRO(dbgopt,_Help) \
+  else if (level & RPS_DEBUG_##dbgopt) {  \
+    if (os.str().empty()) os << #dbgopt;  \
+    else os << "," << #dbgopt;      \
   }
   if (false) {}
   RPS_DEBUG_OPTIONS(rps_DEBUG_LEVEL_MACRO);
@@ -1906,8 +1906,8 @@ main (int argc, char** argv)
     {
       if (chdir(rps_chdir_path_after_load))
         RPS_FATALOUT("failed to chdir to "
-		     << Rps_QuotedC_String(rps_chdir_path_after_load)
-		     << " after loading :"
+                     << Rps_QuotedC_String(rps_chdir_path_after_load)
+                     << " after loading :"
                      << strerror(errno));
       char cwdbuf[rps_path_byte_size+4];
       memset (cwdbuf, 0, sizeof(cwdbuf));
@@ -1996,7 +1996,7 @@ main (int argc, char** argv)
   RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORMOUT("end of RefPerSys process "
                 << rps_decimal_string((int)getpid())
-		<< " on " << rps_hostname()
+                << " on " << rps_hostname()
                 << std::endl
                 << "… executable " << rps_progexe
                 << " git " << rps_shortgitid

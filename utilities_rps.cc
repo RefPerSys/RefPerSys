@@ -1256,7 +1256,7 @@ rps_early_initialization(int argc, char** argv)
       rps_stderr_istty = false; // INSIDE_EMACS
       rps_stdout_istty = false; // INSIDE_EMACS
       std::cout << "since INSIDE_EMACS is "
-		<< Rps_QuotedC_String(inside_emacs)
+                << Rps_QuotedC_String(inside_emacs)
                 << " at " __FILE__ ":" << __LINE__ << std::endl
                 << " disabling ANSI escapes from " << __FUNCTION__
                 << " git " << RPS_SHORTGITID << std::endl;
@@ -1538,7 +1538,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                       rhomrp, arg);
           strncpy(rps_bufpath_homedir, rhomrp, rps_path_byte_size -1);
           free (rhomrp), rhomrp = nullptr;
-          RPS_INFORMOUT("set RefPerSys home directory to " << rps_bufpath_homedir);
+          RPS_INFORMOUT("set RefPerSys home directory to "
+                        << rps_bufpath_homedir);
         };
     }
     return 0;
@@ -1546,7 +1547,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
 
       if (!rps_run_name.empty())
-        RPS_FATALOUT("duplicate RefPerSys run name " << rps_run_name << " and " << std::string(arg));
+        RPS_FATALOUT("duplicate RefPerSys run name "
+                     << rps_run_name << " and " << std::string(arg));
       rps_run_name.assign(std::string(arg));
       RPS_INFORMOUT("set RefPerSys run name to " <<  Rps_QuotedC_String(rps_run_name));
     }
@@ -1939,6 +1941,14 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         }
     }
     return 0;
+    default:
+      RPS_FATALOUT("unexpected program option key#"
+                   << rps_decimal_string(key)
+                   << "=0x" << rps_hex_string(key)
+                   << " arg=" << Rps_QuotedC_String(arg)
+                   << std::endl
+                   << "program arguments: "
+                   << RPS_OUT_PROGARGS(rps_main_argc, rps_main_argv));
     };        // end switch key
   return ARGP_ERR_UNKNOWN;
 } // end rps_parse1opt
@@ -1999,8 +2009,13 @@ rps_parse_program_arguments(int &argc, char**argv)
 /// most of the time this function is used thru RPS_OUT_PROGARGS macro
 void
 rps_output_program_arguments(std::ostream& out, int argc,
-                             const char*const*argv)
+                             char*const*argv)
 {
+  if (argc<0)
+    {
+      argc = rps_main_argc;
+      argv = rps_main_argv;
+    };
   for (int i=0; i<argc; i++)
     {
       if (i>0) out << ' ';
@@ -2603,7 +2618,7 @@ rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argobcon
     {
       RPS_WARNOUT("cannot remove core sacred root object as constant " << _f.obconst
                   << " thread " << rps_current_pthread_name()
-		  << " obsystem=" << _f.obsystem << " oldset=" << _f.oldsetv
+                  << " obsystem=" << _f.obsystem << " oldset=" << _f.oldsetv
                   << std::endl
                   << RPS_FULL_BACKTRACE(1, "rps_remove_constant_object")
                  );
@@ -2611,8 +2626,8 @@ rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argobcon
     };
 #pragma message "rps_remove_constant_object unimplemented"
   RPS_FATALOUT("rps_remove_constant_object unimplemented obconst=" << RPS_OBJECT_DISPLAY(_f.obconst)
-	       << " thread " << rps_current_pthread_name()
-	       << " obsystem=" << _f.obsystem << " oldset=" << _f.oldsetv);
+               << " thread " << rps_current_pthread_name()
+               << " obsystem=" << _f.obsystem << " oldset=" << _f.oldsetv);
 } // end rps_remove_constant_object
 
 void

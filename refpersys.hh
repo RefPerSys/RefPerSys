@@ -187,10 +187,11 @@ extern "C" const char*rps_strchr(const char*haystack, const char *needle);
 #include "generated/rpsdata.h"
 #endif //RPS_WITH_DATA
 
-extern "C" struct rps_type_info_st {
-  unsigned typinf_size;		// sizeof
-  unsigned typinf_align;	// alignof
-  std::string typinf_name;	// C++ name
+extern "C" struct rps_type_info_st
+{
+  unsigned typinf_size;   // sizeof
+  unsigned typinf_align;  // alignof
+  std::string typinf_name;  // C++ name
 };
 
 extern "C" struct rps_type_info_st rps_parser_query_type_info(void);
@@ -203,27 +204,27 @@ extern "C" void rps_readline_initialize(void); // for GNU readline
 ///
 /// Keep the debug options in alphabetical order in the list below
 ///
-#define RPS_DEBUG_OPTIONS(Dbgmacro)		\
-  Dbgmacro(AGENDA, "agenda machinery")		\
-  Dbgmacro(CMD, "command")			\
-  Dbgmacro(CODEGEN, "code generation")		\
-  Dbgmacro(COMPL, "completion")			\
-  Dbgmacro(DUMP, "dump")			\
-  Dbgmacro(EVLOOP, "event loop")		\
-  Dbgmacro(GARBCOLL, "garbage collection")	\
-  Dbgmacro(GUI, "graphical user interface")	\
-  Dbgmacro(LOAD, "load")			\
+#define RPS_DEBUG_OPTIONS(Dbgmacro)   \
+  Dbgmacro(AGENDA, "agenda machinery")    \
+  Dbgmacro(CMD, "command")      \
+  Dbgmacro(CODEGEN, "code generation")    \
+  Dbgmacro(COMPL, "completion")     \
+  Dbgmacro(DUMP, "dump")      \
+  Dbgmacro(EVLOOP, "event loop")    \
+  Dbgmacro(GARBCOLL, "garbage collection")  \
+  Dbgmacro(GUI, "graphical user interface") \
+  Dbgmacro(LOAD, "load")      \
   Dbgmacro(LOWREP, "low level representation")  \
-  Dbgmacro(MISC, "miscellanous")		\
-  Dbgmacro(MSGSEND, "message sending")		\
-  Dbgmacro(PARSE, "parsing")			\
-  Dbgmacro(PARSTR, "parse of string")		\
-  Dbgmacro(PROGARG, "program arguments")	\
-  Dbgmacro(REPL, "read eval print loop")	\
-  Dbgmacro(EXIT, "exit code")			\
-  Dbgmacro(TMP1, "*temporary 1*")		\
+  Dbgmacro(MISC, "miscellanous")    \
+  Dbgmacro(MSGSEND, "message sending")    \
+  Dbgmacro(PARSE, "parsing")      \
+  Dbgmacro(PARSTR, "parse of string")   \
+  Dbgmacro(PROGARG, "program arguments")  \
+  Dbgmacro(REPL, "read eval print loop")  \
+  Dbgmacro(EXIT, "exit code")     \
+  Dbgmacro(TMP1, "*temporary 1*")   \
   Dbgmacro(TMP2, "*temporary 2*")
-  /*end RPS_DEBUG_OPTIONS*/
+/*end RPS_DEBUG_OPTIONS*/
 
 
 constexpr int RPS_INFORM_MSG_LEVEL= -1;

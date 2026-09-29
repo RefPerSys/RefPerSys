@@ -1317,19 +1317,19 @@ rps_event_loop(void)
   double endcputime=rps_process_cpu_time();
   long cntloop = event_nbloops.load();
   RPS_INFORMOUT("ended rps_event_loop "
-		<< rps_decimal_string(event_nbloops.load())
-		<< " times in pid " << rps_decimal_string((int)getpid())
-		<< " on " << rps_hostname()
+                << rps_decimal_string(event_nbloops.load())
+                << " times in pid " << rps_decimal_string((int)getpid())
+                << " on " << rps_hostname()
                 << " in "
-		<< (endelapsedtime-startelapsedtime) << " elapsed and "
+                << (endelapsedtime-startelapsedtime) << " elapsed and "
                 << (endcputime-startcputime) << " cpu seconds"
-		<< " so " << ((endelapsedtime-startcputime)/cntloop)
-		<< " elapsed s/loop"
+                << " so " << ((endelapsedtime-startcputime)/cntloop)
+                << " elapsed s/loop"
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop")
                );
   RPS_DEBUG_LOG(REPL, "rps_event_loop ended elapsedtime="
-		<< startelapsedtime
+                << startelapsedtime
                 << " cputime=" << startcputime
                 << " thread:" << rps_current_pthread_name() << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_event_loop/ended"));

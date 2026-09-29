@@ -209,8 +209,8 @@ void rpsconf_should_remove_file (const char *path, int lineno);
 
 
 /// return a malloced path to a temporary textual file
-     char *rpsconf_temporary_textual_file (const char *prefix,
-                                           const char *suffix, int lineno)
+char *rpsconf_temporary_textual_file (const char *prefix,
+                                      const char *suffix, int lineno)
 {
   char buf[256];
   memset (buf, 0, sizeof (buf));
@@ -352,7 +352,7 @@ rpsconf_readline (const char *prompt)
         };
     }
   while again;
-  return res;
+return res;
 #endif // RPSCONF_WITHOUT_READLINE
 }                               // end rpsconf_readline
 
@@ -436,7 +436,7 @@ rpsconf_defaulted_readline (const char *prompt, const char *defstr)
         };
     }
   while again;
-  return res;
+return res;
 #endif // RPSCONF_WITHOUT_READLINE
 }                               // end rpsconf_readline
 
@@ -547,7 +547,7 @@ rpsconf_test_cxx_compiler (const char *cxx)
     fprintf (mnf, "#include <vector>\n");
     fprintf (mnf, "#include <cassert>\n");
     fprintf (mnf, "extern\n"
-             " void show_str_vect(const std::vector<std::string>&);\n");
+                  " void show_str_vect(const std::vector<std::string>&);\n");
     fprintf (mnf, "\n\n");
     fprintf (mnf, "int main(int argc,char**argv) {\n");
     fprintf (mnf, "  std::vector<std::string> v;\n");
@@ -1004,8 +1004,8 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
               if (!newtarr)
                 {
                   fprintf (stderr, "%s: calloc [%s:%d] "
-                           "for %d pointers failed"
-                           " for test-dir %s (%s)\n",
+                                   "for %d pointers failed"
+                                   " for test-dir %s (%s)\n",
                            rpsconf_prog_name, __FILE__, __LINE__ - 1,
                            newsiz, testdir, strerror (errno));
                   rpsconf_failed = true;
@@ -1020,7 +1020,7 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
           if (!dupname)
             {
               fprintf (stderr, "%s: strdup(%s) [%s:%d] failed"
-                       " for test-dir %s (%s)\n",
+                               " for test-dir %s (%s)\n",
                        rpsconf_prog_name, dent->d_name, __FILE__,
                        __LINE__ - 2, testdir, strerror (errno));
               rpsconf_failed = true;
@@ -1050,7 +1050,7 @@ rpsconf_emit_from_testdir (FILE *fconf, const char *testdir)
           if (fputs (" \\\n", fconf) < 0)
             {
               fprintf (stderr, "%s: fputs [%s:%d] failed"
-                       " for test-dir %s i=%d (%s)\n",
+                               " for test-dir %s i=%d (%s)\n",
                        rpsconf_prog_name, __FILE__,
                        __LINE__ - 2, testdir, i, strerror (errno));
               rpsconf_failed = true;
@@ -1118,7 +1118,7 @@ void
 rpsconf_check_gnu_make_with_guile (void)
 {
   const char *cmd = "make --no-print-directory -C / "
-    "--eval='all:;@echo ${.FEATURES}'";
+                    "--eval='all:;@echo ${.FEATURES}'";
   // we run the above command, and make should be a GNU make with Guile
   char linbuf[512];
   memset (linbuf, 0, sizeof (linbuf));
@@ -1224,7 +1224,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_preprocessor_argcount)
     {
       fprintf (f, "\n\n"
-               "# the given %d preprocessor flags for RefPerSys:\n",
+                  "# the given %d preprocessor flags for RefPerSys:\n",
                rpsconf_preprocessor_argcount);
       fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
       for (int i = 0; i < rpsconf_preprocessor_argcount; i++)
@@ -1237,7 +1237,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   else
     {
       fprintf (f, "\n\n"
-               "# the preprocessor flags for RefPerSys [%s:%d]:\n",
+                  "# the preprocessor flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
       fprintf (f, "REFPERSYS_PREPRO_FLAGS= -I/usr/local/include\n");
     };
@@ -1246,7 +1246,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_compiler_argcount > 0)
     {
       fprintf (f, "\n\n"
-               "# the given %d compiler flags for RefPerSys:\n",
+                  "# the given %d compiler flags for RefPerSys:\n",
                rpsconf_compiler_argcount);
       fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
       for (int i = 0; i < rpsconf_compiler_argcount; i++)
@@ -1260,7 +1260,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   else
     {
       fprintf (f, "\n\n"
-               "# default compiler flags for RefPerSys [%s:%d]:\n",
+                  "# default compiler flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
       /// most Linux compilers accept -Wall (but intel proprietary
       /// compiler might reject -Wextra)
@@ -1305,7 +1305,7 @@ rpsconf_emit_configure_refpersys_mk (void)
   if (rpsconf_linker_argcount > 0)
     {
       fprintf (f, "\n\n"
-               "# the given %d linker flags for RefPerSys:\n",
+                  "# the given %d linker flags for RefPerSys:\n",
                rpsconf_linker_argcount);
       fputs ("REFPERSYS_LINKER_FLAGS=", f);
       for (int i = 0; i < rpsconf_linker_argcount; i++)
@@ -1321,8 +1321,8 @@ rpsconf_emit_configure_refpersys_mk (void)
       fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
       fputs
-        ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
-         " $(REFPERSYS_LTO)\n", f);
+      ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
+       " $(REFPERSYS_LTO)\n", f);
     }
 
   fflush (f);
@@ -1729,7 +1729,7 @@ rpsconf_ask_carburetta (void)
       /*€ carburetta n'a pas été trouvé ou n'est pas conforme. */
       // carburetta is missing, bad or unexepected. cf carburetta.com
       fprintf (stderr, "%s [git %s] ran %s with disappointing output.\n"
-               "See the comment near %s:%d (and carburetta.com)\n",
+                       "See the comment near %s:%d (and carburetta.com)\n",
                rpsconf_prog_name, RPSCONF_GIT_ID, pcmdbuf,
                __FILE__, commline);
       exit (EXIT_FAILURE);
@@ -1786,10 +1786,10 @@ main (int argc, char **argv)
   printf ("\t une entrée commançant par ! est une commande shell\n"
           "\t qui est executée et la question est alors répétée\n");
   printf
-    ("\t When asked for file paths, you are expected to\n"
-     "\t enter an absolute path, like /etc/passwd\n"
-     "\t if you enter something starting with ! it is a shell command\n"
-     "\t which is run and the question is repeated.\n");
+  ("\t When asked for file paths, you are expected to\n"
+   "\t enter an absolute path, like /etc/passwd\n"
+   "\t if you enter something starting with ! it is a shell command\n"
+   "\t which is run and the question is repeated.\n");
   fflush (NULL);
   if (argc > RPSCONF_MAX_PROG_ARGS)
     {
@@ -1801,8 +1801,8 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     };
   printf
-    ("\nThe C and C++ compilers (maybe $CC and $CXX) should be preferably\n"
-     "from gcc.gnu.org (or at least compatible)\n");
+  ("\nThe C and C++ compilers (maybe $CC and $CXX) should be preferably\n"
+   "from gcc.gnu.org (or at least compatible)\n");
   fflush (NULL);
   char *cc = getenv ("CC");
   if (!cc)
@@ -1859,7 +1859,7 @@ main (int argc, char **argv)
   if (!optimflags)
     {
       printf
-        ("## optimization flags should contain -fPIC and usually -g !\n");
+      ("## optimization flags should contain -fPIC and usually -g !\n");
       fflush (NULL);
       optimflags =
         rpsconf_defaulted_readline
@@ -1956,9 +1956,9 @@ main (int argc, char **argv)
       if (!rpsconf_builder_email)
         rpsconf_builder_email =
           rpsconf_readline ("email of person building "
-                            "(e.g. alan.turing@princeton.edu):");
+                          "(e.g. alan.turing@princeton.edu):");
       bool goodemail = rpsconf_builder_email != NULL
-        && isalnum (rpsconf_builder_email[0]);
+                       && isalnum (rpsconf_builder_email[0]);
       const char *pc = rpsconf_builder_email;
       for (pc = rpsconf_builder_email; *pc && goodemail && *pc != '@'; pc++)
         {
