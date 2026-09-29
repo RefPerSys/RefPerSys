@@ -1653,7 +1653,7 @@ rps_kill_wait_gui_process(void)
 
 
 int rps_main_argc;
-const char** rps_main_argv;
+char*const* rps_main_argv;
 
 static char*rps_stored_locale;
 
@@ -1698,7 +1698,7 @@ main (int argc, char** argv)
 {
   rps_progname = argv[0];
   rps_main_argc = argc;
-  rps_main_argv = const_cast<const char**>(argv);
+  rps_main_argv = const_cast<char*const*>(argv);
   //// the double dash in the main thread name rps--main is temporary
   //// since rps_early_initialization is later setting it to rps-main
   pthread_setname_np(pthread_self(), "rps--main");
