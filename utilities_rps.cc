@@ -2155,7 +2155,9 @@ rps_fatal_stop_at (const char *filnam, int lin)
          (rps_program_invocation?:""),
          (rps_run_name.empty()?"":" run "),
          rps_run_name.c_str());
-  bool ontty = isatty(STDERR_FILENO);
+  bool ontty = rps_stdin_istty && rps_stdout_istty && rps_stderr_istty;
+  if (getenv("INSIDE_EMACS"))
+    ontty = false;
   if (rps_debug_file)
     {
       fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d %s*§*§*\n", filnam, lin, rps_run_name.c_str());
