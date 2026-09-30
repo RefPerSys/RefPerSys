@@ -1771,9 +1771,9 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, bool*pokparse)
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
       &&  _f.lextokv.to_lextoken()->lxval().is_object())
     {
-      if (_f.lextokv.to_lextoken()->lxval().to_object() ==  _f.plusdelimob)
+      if (_f.lextokv.to_lextoken()->lxval().to_object() == _f.plusdelimob.obptr())
         _f.binoperob = _f.plusbinopob;
-      else if (_f.lextokv.to_lextoken()->lxval().to_object() == _f.minusdelimob)
+      else if (_f.lextokv.to_lextoken()->lxval().to_object() == _f.minusdelimob.obptr())
         _f.binoperob = _f.minusbinopob;
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor¤" << callnum << " lextokv=" << _f.lextokv
