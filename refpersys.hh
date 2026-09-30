@@ -584,7 +584,14 @@ extern "C" char** rps_argv;
 /// the program invocation
 extern "C" char* rps_program_invocation;
 
-extern "C" void rps_compute_program_invocation(void);
+extern "C" std::map<std::string,std::string> rps_dict_extra_arg; // in utilities_rps.cc
+
+extern "C" pthread_t rps_main_thread_handle;
+
+extern "C" char*rps_chdir_path_after_load;
+extern "C" char*rps_pidfile_path; // in utilities_rps.cc
+
+extern "C" void rps_compute_program_invocation(int argc, const char**argv);
 
 /// the load directory
 extern "C" std::string rps_my_load_dir;
@@ -769,6 +776,10 @@ extern "C" void rps_set_exit_code(std::uint8_t);
 extern "C" void rps_do_at_exit_cpp(const std::function<void(void*)>& fun, void* data=nullptr);
 typedef void rps_exit_cfun_sig_t(void*d1, void*d2);
 extern "C" void rps_do_at_exit_cfun(const rps_exit_cfun_sig_t*fun, void*data1=nullptr, void*data2=nullptr);
+
+
+extern "C" void rps_set_user_preferences(char*path);
+
 /////////////////////////////////////////////////////// PLUGINS AFTER LOAD
 
 struct Rps_Plugin
@@ -864,57 +875,10 @@ extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
 extern "C" void rps_add_debug_cstr(const char*);
 extern "C" void rps_remove_debug_cstr(const char*);
 
+extern "C" double rps_start_monotonic_time;
+extern "C" double rps_start_wallclock_real_time;
+
 ////////////////////////////////////////////////////////////////
-///// parsing program options
-enum rps_progoption_en
-{
-  RPSPROGOPT__NONE=0,
-  /// keep these options in numerical order!
-  RPSPROGOPT_DEBUG_AFTER_LOAD='A',
-  RPSPROGOPT_BATCH='B',
-  RPSPROGOPT_DUMP='D',
-  RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
-  RPSPROGOPT_LOADDIR='L',
-  RPSPROGOPT_COMMAND='c',
-  RPSPROGOPT_DEBUG='d',
-  RPSPROGOPT_INTERFACEFIFO='i',
-  /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
-  RPSPROGOPT_JOBS='j',
-  RPSPROGOPT_USER_PREFERENCES='U',
-  RPSPROGOPT_EXTRA_ARG='X',
-  RPSPROGOPT_HOMEDIR=1000,
-  RPSPROGOPT_CHDIR_BEFORE_LOAD,
-  RPSPROGOPT_CHDIR_AFTER_LOAD,
-  RPSPROGOPT_RANDOMOID,
-  RPSPROGOPT_TYPEINFO,
-  RPSPROGOPT_SYSLOG,
-  RPSPROGOPT_DAEMON,
-  RPSPROGOPT_FULL_GIT,
-  RPSPROGOPT_SHORT_GIT,
-  RPSPROGOPT_PID_FILE,
-  RPSPROGOPT_NO_TERMINAL,
-  RPSPROGOPT_NO_ASLR,
-  RPSPROGOPT_NO_QUICK_TESTS,
-  RPSPROGOPT_TEST_REPL_LEXER,
-  RPSPROGOPT_FILE_REPL_LEXER,
-  RPSPROGOPT_RUN_DELAY,
-  RPSPROGOPT_RUN_AFTER_LOAD,
-  RPSPROGOPT_PLUGIN_AFTER_LOAD,
-  RPSPROGOPT_PLUGIN_ARG,
-  RPSPROGOPT_LOCALE,
-  RPSPROGOPT_INTERACTIVE_PLUGIN_AFTER_LOAD,
-  RPSPROGOPT_INTERACTIVE_PLUGIN_ARG,
-  RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD,
-  RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD,
-  RPSPROGOPT_DEBUG_PATH,
-  RPSPROGOPT_RUN_NAME,
-  RPSPROGOPT_ECHO,
-  RPSPROGOPT_VERSION,
-  RPSPROGOPT_PREFERENCES_HELP,
-  RPSPROGOPT_SCRIPT,
-  RPSPROGOPT_DEBUG_EXIT,
-  RPSPROGOPT_PUBLISH_ME,
-};
 
 extern "C" std::string rps_user_preferences_path(void);
 extern "C" bool rps_want_user_preferences_help(void);
@@ -936,6 +900,8 @@ extern "C" unsigned int rps_run_delay; // in seconds (cf agenda_rps.cc)
 ////////////////////////////////////////////////////////////////
 
 extern "C" std::atomic<unsigned> rps_debug_flags;
+extern "C" void rps_scripting_add_script(const char*path);
+extern "C" void rps_scripting_help(void);
 
 void rps_set_debug_output_path(const char*filepath);
 
@@ -1442,7 +1408,7 @@ extern "C" std::string rps_json_to_string(const Json::Value&jv);
 extern "C" int rps_main_argc;
 extern "C" char*const* rps_main_argv;
 extern "C" void rps_output_program_arguments(std::ostream& out,
-    int argc, char*const*argv);
+    int argc, const char*const*argv);
 
 
 

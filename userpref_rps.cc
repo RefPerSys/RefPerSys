@@ -65,8 +65,6 @@ static std::atomic_bool rps_userpref_is_parsed;
 extern "C" const char*rps_userpref_path;
 const char* rps_userpref_path;
 
-extern "C" void rps_set_user_preferences(char*);
-
 extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts);
 
 #define RPS_USER_PREFERENCE_MAGIC "*REFPERSYS_USER_PREFERENCES"
