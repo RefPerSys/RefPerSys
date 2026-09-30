@@ -166,7 +166,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
   if (_f.lextokv.is_lextoken()
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
       &&  _f.lextokv.to_lextoken()->lxval().is_object()
-      &&  _f.lextokv.to_lextoken()->lxval().to_object() == bindelim)
+      &&  _f.lextokv.to_lextoken()->lxval().to_object() == bindelim.obptr())
     {
       (void) get_token(&_); // consume the operator
     }
@@ -340,7 +340,7 @@ Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
   if (_f.lextokv.is_lextoken()
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
       &&  _f.lextokv.to_lextoken()->lxval().is_object()
-      &&  _f.lextokv.to_lextoken()->lxval().to_object() == bindelim)
+      &&  _f.lextokv.to_lextoken()->lxval().to_object() == bindelim.obptr())
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_asymmetrical_binop¤" << callnum << " " << opername << " beforeA rightop "
                     << " token_deq:" << toksrc_token_deq
@@ -481,7 +481,7 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
   while (_f.lextokv.is_lextoken()
          && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
          &&  _f.lextokv.to_lextoken()->lxval().is_object()
-         &&  _f.lextokv.to_lextoken()->lxval().to_object() == polydelim)
+         &&  _f.lextokv.to_lextoken()->lxval().to_object() == polydelim.obptr())
     {
       bool okarg = false;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop¤" << callnum << " " << opername << " loop polydelim:" << polydelim  << " curpos:" << position_str()

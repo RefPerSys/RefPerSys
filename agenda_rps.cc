@@ -273,7 +273,7 @@ Rps_Agenda::run_agenda_worker(int ix)
                 if (_f.obtasklet)
                   {
                     taskpayl = _f.obtasklet->get_dynamic_payload<Rps_PayloadTasklet>();
-                    if (taskpayl && taskpayl->owner() == _f.obtasklet)
+                    if (taskpayl && taskpayl->owner() == _f.obtasklet.obptr())
                       _f.clostodo = taskpayl->todo_closure();
                     if (_f.clostodo)
                       {
@@ -485,7 +485,7 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_ASSERT(spacid);
   RPS_ASSERT(lineno>0);
-  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn))   // the_agenda
+  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn).obptr())   // the_agenda
     {
       RPS_POSSIBLE_BREAKPOINT();
       RPS_FATALOUT("in space " << spacid << " line " << lineno
@@ -524,20 +524,20 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
 
 Rps_PayloadAgenda::~Rps_PayloadAgenda()
 {
-  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda().obptr());
 } // end Rps_PayloadAgenda::~Rps_PayloadAgenda
 
 void
 Rps_PayloadAgenda::gc_mark(Rps_GarbageCollector&gc) const
 {
-  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda().obptr());
   Rps_Agenda::gc_mark(gc);
 } // end Rps_PayloadAgenda::gc_mark
 
 void
 Rps_PayloadAgenda::dump_scan(Rps_Dumper*du) const
 {
-  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda().obptr());
   RPS_ASSERT (du != nullptr);
   Rps_Agenda::dump_scan_agenda(du);
 } // end Rps_PayloadAgenda::dump_scan
@@ -545,7 +545,7 @@ Rps_PayloadAgenda::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadAgenda::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
-  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda().obptr());
   RPS_ASSERT (du != nullptr);
   Rps_Agenda::dump_json_agenda(du,jv);
 } // end Rps_PayloadAgenda::dump_json_content
@@ -554,7 +554,7 @@ Rps_PayloadAgenda::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 bool
 Rps_PayloadAgenda::is_erasable() const
 {
-  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda().obptr());
   return false;
 } // end Rps_PayloadAgenda::is_erasable
 

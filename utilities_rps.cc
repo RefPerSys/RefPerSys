@@ -1429,6 +1429,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                   << RPS_FULL_BACKTRACE(1,"rps_parse1opt"));
   switch (key)
     {
+    case ARGP_KEY_INIT:
+      return 0;
+
     case RPSPROGOPT_DEBUG:
     {
       rps_add_debug_cstr(arg);

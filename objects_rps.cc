@@ -1651,7 +1651,7 @@ Rps_PayloadClassInfo::put_symbname(Rps_ObjectRef obr)
     return;
   std::lock_guard<std::recursive_mutex> gu(*(obr->objmtxptr()));
   auto symb = obr->get_dynamic_payload<Rps_PayloadSymbol>();
-  if (symb && symb->owner() == obr)
+  if (symb && symb->owner() == obr.obptr())
     {
       symb->symbol_put_value(owner());
       pclass_symbname = obr;
@@ -2146,7 +2146,7 @@ Rps_PayloadSpace::output_payload(std::ostream&out, unsigned depth, unsigned maxd
     ontty = false;
   const char* BOLD_esc = (ontty?RPS_TERMINAL_BOLD_ESCAPE:"");
   const char* NORM_esc = (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
-  if (owner() == Rps_ObjectRef::root_space())
+  if (owner() == Rps_ObjectRef::root_space().obptr())
     out << BOLD_esc << "** root space payload **" << NORM_esc << std::endl;
   else
     out << BOLD_esc << "** space payload **" << NORM_esc << std::endl;

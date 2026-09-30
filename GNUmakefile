@@ -116,7 +116,7 @@ REFPERSYS_CONFIG_MAKE ?=  _config-refpersys.mk
 -include $(REFPERSYS_CONFIG_MAKE)
 
 RPS_PKGCONFIG ?= $(shell /usr/bin/which pkg-config)
-REFPERSYS_CXX_STANDARD?= -std=gnu++2c
+REFPERSYS_CXX_STANDARD?= -std=gnu++20
 REFPERSYS_CLANGXX?= clang++
 
 ## packages in the pkg-config sense
