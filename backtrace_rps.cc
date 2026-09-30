@@ -107,10 +107,10 @@ Rps_Backtracer::output(std::ostream&outs)
     RPS_FASTABORT("corrupted Rps_Backtracer");
   if (&outs == &std::cerr || &outs == &std::clog)
     backtr_ontty = rps_without_terminal_escape
-                   ? false : isatty(STDERR_FILENO);
+      ? false : (rps_stdin_istty && rps_stderr_istty);
   else if (&outs == &std::cout)
     backtr_ontty = rps_without_terminal_escape
-                   ? false : isatty(STDOUT_FILENO);
+                   ? false : rps_stdout_istty;
   backtr_todo = Todo::Do_Output;
   backtr_depth = 0;
   auto bk = bkind();
