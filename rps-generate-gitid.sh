@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 #
-# © Copyright (C) 2020 - 2025, Basile Starynkevitch and the forum@refpersys.org
+# © Copyright (C) 2020 - 2026, Basile Starynkevitch and the forum@refpersys.org
 # mailing list contributors
 #
 # This file is part of the Reflexive Persistent System (aka RefPerSys);
@@ -23,6 +23,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+file=""
+
 license()
 {
 	cat ./COPYING-SHORT
@@ -31,11 +33,12 @@ license()
 
 usage()
 {
-	echo "usage: ./rps-generate-gitid.sh [-hlsv]"
+	echo "usage: ./rps-generate-gitid.sh [-hlsvF]"
 	echo "options:"
 	echo "  -h  show usage"
 	echo "  -l  show license" 
-	echo "  -s  print short git ID" 
+	echo "  -s  print short git ID"
+	echo "  -F<FILE> print short or full git-id of given FILE"
 	echo "  -v  show version" 
 }
 
@@ -57,11 +60,12 @@ opt()
 {
 	isshort=0
 
-	while getopts "hlsv" flag ; do
+	while getopts "hlsvF:" flag ; do
 		case ${flag} in
 			h) usage ; exit 0 ;;
 			l) license ;;
 			s) isshort=1 ;;
+			F) file=$OPTARG ;;
 			v) version ;;
 			*) usage ; exit 1 ;;
 		esac
@@ -70,18 +74,32 @@ opt()
 
 getid()
 {
+    if [ -f "$file" ]; then
+    	gitid="$(git log --format=oneline -q -1 $file \
+		| cut '-d ' -f 1 \
+		| tr -d '\n')"
+    else
     	gitid="$(git log --format=oneline -q -1 \
 		| cut '-d ' -f 1 \
 		| tr -d '\n')"
+    fi
 }
 
 isdirty()
 {
+    if [ -f "$file" ]; then
+	if git status $file | grep -q "nothing to commit" ; then
+    		dirty=""
+	else
+    		dirty="+"
+	fi
+    else
 	if git status | grep -q "nothing to commit" ; then
     		dirty=""
 	else
     		dirty="+"
 	fi
+    fi
 }
 
 output()

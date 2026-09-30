@@ -1,7 +1,7 @@
 // see http://refpersys.org/
 // passed to commits after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
-// © Copyright 2023 - 2025 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright (C) 2023 - 2026 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys named attribute
 /*****
 
@@ -24,7 +24,7 @@ extern "C" const char rpsplugcreatnamattr_shortgit[];
 extern "C" const char rpsplugcreatnamattr_date[];
 
 const char rpsplugcreatnamattr_gitid[]=RPS_GITID;
-const char rpsplugcreatnamattr_shortgit[]= RPS_SHORTGIT;
+const char rpsplugcreatnamattr_shortgit[]= RPS_SHORTGITID;
 const char rpsplugcreatnamattr_date[]=__DATE__;
 
 #pragma message "compiling refpersys plugin " __FILE__

@@ -339,11 +339,11 @@ utility-clang: utilities_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_utilities_rps)) \
             -DRPS_THIS_SOURCE=\"utilities_rps.cc\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	    -DRPS_BASENAME=\"utilities_rps\" \
 	    -DRPS_BASEID=\"utilities_rps\" \
-            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \-
+	    -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
 	       -c -o utilities_rps.o utilities_rps.cc
@@ -361,8 +361,9 @@ obj/%rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_THIS_SOURCE=\"$<\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -380,9 +381,10 @@ obj/%rps.ana.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_THIS_SOURCE=\"$<\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
@@ -400,8 +402,9 @@ obj/rps-parser-impl.o: generated/rps-parser-impl.cc refpersys.hh  | GNUmakefile 
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-            -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_THIS_SOURCE=\"$<\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -657,7 +660,9 @@ one-plugin: refpersys | GNUmakefile do-build-refpersys-plugin do-scan-refpersys-
 	$(guile rpsguilemk-compile-plugin $(REFPERSYS_PLUGIN_SOURCE) $(REFPERSYS_PLUGIN_SHARED_OBJECT))
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$(REFPERSYS_PLUGIN_SOURCE))\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$(REFPERSYS_PLUGIN_SOURCE))\" \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -U_Rps_OnePlugin \
@@ -676,8 +681,8 @@ plugins_dir/rpsiplug_fox.so: plugins_dir/rpsiplug_fox.cc refpersys.hh |GNUmakefi
 	     $(shell fox-config --cflags) \
 	     $(shell pkg-config --cflags jsoncpp \
              $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $<))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
@@ -695,8 +700,8 @@ plugins_dir/rpsplug_createclass.so:  plugins_dir/rpsplug_createclass.cc  refpers
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp \
              $(PACKAGES_REFPERSYS) $(PACKAGES_LIST)) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $<))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
@@ -709,10 +714,10 @@ plugins_dir/rpsplug_cplusplustypes.so:  plugins_dir/rpsplug_cplusplustypes.cc  r
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp $(PACKAGES_REFPERSYS) $(PACKAGES_LIST))) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS)  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -723,8 +728,8 @@ plugins_dir/rpsplug_createnamedselector.so:  plugins_dir/rpsplug_createnamedsele
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
@@ -737,8 +742,8 @@ plugins_dir/rpsplug_createnamedattribute.so:  plugins_dir/rpsplug_createnamedatt
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
@@ -751,8 +756,8 @@ plugins_dir/rpsplug_createsymbol.so:  plugins_dir/rpsplug_createsymbol.cc  refpe
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
@@ -768,9 +773,8 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
 	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
@@ -783,9 +787,8 @@ plugins_dir/rpsplug_create_cplusplus_primitive_type.so: \
 #- 	@printf "\n\nRefPerSys-gnumake building special plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 #- 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared $(REFPERSYS_CODEGEN_FLAGS) \
 #-              -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-#-             -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-#-             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-#-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+#-            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+#-            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
 #-             -DRPS_HOST=\"$(RPS_HOST)\" \
 #-	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 #-	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
@@ -803,9 +806,10 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 	/usr/bin/printenv
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) -fPIC -shared  $(REFPERSYS_CODEGEN_FLAGS) \
 	        -I generated/ -I .  $(shell pkg-config --cflags jsoncpp) \
-	    -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_SHORTGIT=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
             -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
             -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH) \
@@ -828,7 +832,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh |GNUmakefile do-build-refpersys-
 #plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 #	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 #	$(REFPERSYS_GPP) -x -I generated/ -I . \
-#            -DRPS_SHORTGIT=\"$(RPS_SHORTGIT_ID)\" \
+#            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 #            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
 #            -DRPS_HOST=\"$(RPS_HOST)\" \
 #            -DRPS_ARCH=\"$(RPS_ARCH)\"  -DRPS_HAS_ARCH_$(RPS_ARCH)  \
@@ -899,9 +903,10 @@ obj/load_rps.o: load_rps.cc refpersys.hh \
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	        $(shell pkg-config --cflags $(PKGLIST_refpersys) $(PACKAGES_REFPERSYS)) \
                 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_THIS_SOURCE=\"$<\" \
                -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
                -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
@@ -930,8 +935,9 @@ obj/%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 		-U_Rps_CompilP1 \
 	       -U_RpsCompilPkg $(shell pkg-config --cflags $(PKGLIST_refpersys) $(PACKAGES_REFPERSYS)) \
                -U_Rps_CompilP2 $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
+               -DRPS_THIS_SOURCE=\"$<\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -956,6 +962,8 @@ obj/rps-%.o: generated/rps-%.cc refpersys.hh | | GNUmakefile _config-refpersys.m
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
             -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
@@ -975,8 +983,9 @@ obj/raw_%_rps.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
                -U_Rps_CompilRaw \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_THIS_SOURCE=\"$<\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -997,8 +1006,9 @@ obj/%_rps.raw.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
                -U_Rps_CompilRawB \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_THIS_SOURCE=\"$<\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -1017,10 +1027,11 @@ obj/%_rps.lto.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
                $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
                -MD -MFMake-dependencies/__raw_$(basename $(@F)).mkdep \
                -U_Rps_CompilLtoB -flto \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_THIS_SOURCE=\"$<\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -1040,8 +1051,9 @@ obj/_nl_carbrepl_rps.o: _nl_carbrepl_rps.cc refpersys.hh | GNUmakefile _config-r
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+               -DRPS_THIS_SOURCE=\"$<\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -1061,8 +1073,8 @@ obj/_nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-r
                -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
             -DRPS_HOST=\"$(RPS_HOST)\" \
@@ -1080,8 +1092,9 @@ obj/_nl_minicarb_rps.o: _nl_minicarb_rps.cc refpersys.hh | GNUmakefile _config-r
                -MD -MFMake-dependencies/__$(basename $(@F)).ii.mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
-               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
-               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh  -s -F$<)\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\" \
+               -DRPS_THIS_SOURCE=\"$<\" \
 	       -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
 	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
                -DRPS_HOST=\"$(RPS_HOST)\" \
