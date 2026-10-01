@@ -52,10 +52,43 @@ extern "C" const char rps_progargs_baseid[];
 const char rps_progargs_baseid[]= RPS_BASEID;
 
 
+extern "C" rps_progarg_sig_t rpspa_set_debugging;
+////////////////////////////////////////////////////////////////
+struct rps_progarg_st rps_progarg_array[] =
+{
+  {
+    .prar_long=(const char*)"debug-after-load",
+    .prar_letter=(char)'A',
+    .prar_expl=(const char*)"comma separated options of debugging names",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging,
+    .prar_clos=nullptr
+  },
+  
+  {
+    .prar_long=(const char*)nullptr,
+    .prar_letter=(char)0,
+    .prar_expl=(const char*)nullptr,
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)nullptr,
+    .prar_clos=nullptr
+  }
+};
+ void
+ rpspa_set_debugging (const char*curarg, int& pix, struct rps_progarg_st*prag)
+ {
+#warning unimplemented rpspa_set_debugging
+   RPS_UNIQUE_BREAKPOINT();
+   // TODO: call rps_add_debug_cstr appropriately
+   RPS_FATALOUT("unimplemented rpspa_set_debugging curarg=" << curarg
+		<< " pix=" << pix);
+ } // end rpspa_set_debugging
 
 ////////////////////////////////////////////////////////////////
-
 bool rps_helpwanted;
+
+
+
 
 
 #warning parsing of program options dont work reliably in commit 28b152794d (end of Sept, 2026)
@@ -320,9 +353,9 @@ rps_early_initialization(int argc, char** argv)
                rps_shortgitid, rps_hostname());
     };
   RPS_FATALOUT("broken early initialization of RefPerSys process "
-                << rps_decimal_string((int)getpid())
-                << " on host " << rps_hostname()
-                << " git " << rps_shortgitid);
+               << rps_decimal_string((int)getpid())
+               << " on host " << rps_hostname()
+               << " git " << rps_shortgitid);
 } // end rps_early_initialization
 
 extern "C" struct argp_option rps_progoptions[];
@@ -337,7 +370,7 @@ rps_parse_program_arguments(int &argc, char**argv)
   errno = 0;
   struct argp_state argstate;
   memset (&argstate, 0, sizeof(argstate));
-  #if 0 && oldcode
+#if 0 && oldcode
   argparser_rps.options = rps_progoptions; // defined in main_rps.cc
   argparser_rps.parser = rps_parse1opt;
   argparser_rps.args_doc = " ; # ";
