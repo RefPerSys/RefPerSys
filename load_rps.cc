@@ -83,6 +83,40 @@ rps_load_string_to_json(const std::string&str, const char*filnam, int lineno)
 //////////////////////////////////////////////// loader
 class Rps_Loader
 {
+  ///// friend functions
+  friend Rps_Loader*rps_get_the_active_loader(void);
+  friend bool rps_loader_is_making(void);
+  friend bool rps_loader_is_filling(void);
+  friend bool rps_loading_complete(void);
+  friend void rps_load_add_todo(Rps_Loader*ld,const std::function<void(Rps_Loader*)>& todofun);
+  friend Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld);
+  friend Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld);
+  friend Rps_InstanceZone* Rps_InstanceZone::load_from_json(Rps_Loader*, const Json::Value&);
+  friend Rps_InstanceZone* Rps_InstanceZone::make_incomplete_loaded(Rps_Loader*, Rps_ObjectRef, unsigned);
+  friend void Rps_InstanceZone::fill_loaded_instance_from_json(Rps_Loader*, Rps_ObjectRef, const Json::Value&);
+  friend void rps_set_native_data_in_loader(Rps_Loader*);
+  friend void rps_set_cppname_for_primitive_type(Rps_Loader*, Rps_ObjectRef, const char*);
+  friend rpsldpysig_t rpsldpy_classinfo;
+  friend rpsldpysig_t rpsldpy_agenda;
+  friend rpsldpysig_t rpsldpy_tasklet;
+  friend rpsldpysig_t rpsldpy_setob;
+  friend rpsldpysig_t rpsldpy_environment;
+  friend rpsldpysig_t rpsldpy_space;
+  friend rpsldpysig_t rpsldpy_string_buffer;
+  friend rpsldpysig_t rpsldpy_string_dictionary;
+  friend rpsldpysig_t rpsldpy_symbol;
+  friend rpsldpysig_t rpsldpy_vectval;
+  friend rpsldpysig_t rpsldpy_vectob;
+  ////
+  static constexpr int ld_rps_magic_num = -542616395;
+  static std::atomic<Rps_Loader*> ld_atomic_rps_loader;
+  const int ld_magic;
+  enum ld_state_en {
+    ldsta__none,
+    ldsta_making,
+    ldsta_filling,
+    ldsta_completed,
+  } ld_state;
   std::string ld_topdir;
   double ld_startclock;
   /// dlsym and dlopen are not reentrant, so we need a mutex; is is
@@ -149,6 +183,8 @@ public:
 
 
 Rps_Loader::Rps_Loader(const std::string&topdir) :
+  ld_magic(ld_rps_magic_num),
+  ld_state(ldsta__none),
   ld_topdir(topdir),
   ld_startclock(rps_wallclock_real_time()),
   ld_mtx(),
@@ -160,24 +196,43 @@ Rps_Loader::Rps_Loader(const std::string&topdir) :
   ld_todocount(0),
   ld_payloadercache()
 {
+  RPS_ASSERT(ld_atomic_rps_loader.load() == nullptr);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader constr topdir=" << topdir
                 << " this@" << (void*)this
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "Rps_Loader constr"));
+  ld_atomic_rps_loader.store(this);
 } // end Rps_Loader::Rps_Loader
 
 Rps_Loader::~Rps_Loader()
 {
+  RPS_ASSERT(ld_atomic_rps_loader.load() == this);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader destr topdir=" << ld_topdir
                 << " this@" << (void*)this
                 << std::endl
                 << RPS_FULL_BACKTRACE(1, "Rps_Loader constr"));
+  ld_atomic_rps_loader.store(nullptr);
 } // end Rps_Loader::~Rps_Loader
 
+std::atomic<Rps_Loader*> Rps_Loader::ld_atomic_rps_loader;
+
+Rps_Loader*
+rps_get_the_active_loader(void)
+{
+  Rps_Loader*ld = Rps_Loader::ld_atomic_rps_loader.load();
+  if (!ld)
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
+#warning rps_get_the_active_loader should check ld->ld_state
+  return ld;
+} // end rps_get_the_active_loader
 
 std::string
 Rps_Loader::load_real_path(const std::string& path)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   if (path.size() > 2 && path[0] == '/')
     {
       if (access(path.c_str(), R_OK))
@@ -215,6 +270,8 @@ Rps_Loader::load_real_path(const std::string& path)
 std::string
 Rps_Loader::space_file_path(Rps_Id spacid)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   if (!spacid.valid())
     throw std::runtime_error("Rps_Loader::space_file_path invalid spacid");
   return std::string{"persistore/sp"} + spacid.to_string() + "-rps.json";
@@ -234,6 +291,8 @@ Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::s
   bool ok=false;
   char c = 0;
   int cix= -1;
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   memset (reasonbuf, 0, sizeof(reasonbuf));
   size_t linelen = linbuf.size();
   if (pobid)
@@ -315,6 +374,8 @@ bad:
 void
 Rps_Loader::first_pass_space(Rps_Id spacid)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   auto spacepath = load_real_path(space_file_path(spacid));
   std::ifstream ins(spacepath);
   std::string prologstr;
@@ -418,6 +479,7 @@ void
 Rps_Loader::add_todo(const std::function<void(Rps_Loader*)>& todofun)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   ld_todoque.push_back(todo_st{rps_elapsed_real_time(),todofun});
 } // end Rps_Loader::add_todo
 
@@ -435,6 +497,7 @@ Rps_Loader::run_some_todo_functions(void)
     todo_st td;
     {
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+      RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
       bool emptyq = ld_todoque.empty();
       if (emptyq)
         return 0;
@@ -452,6 +515,7 @@ Rps_Loader::run_some_todo_functions(void)
       todo_st td;
       {
         std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+	RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
         bool emptyq = ld_todoque.empty();
         if (emptyq)
           return 0;
@@ -468,6 +532,7 @@ Rps_Loader::run_some_todo_functions(void)
   /// finally
   {
     std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+    RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
     return ld_todoque.size();
   }
 } // end of Rps_Loader::run_some_todo_functions
@@ -479,6 +544,8 @@ rps_load_add_todo(Rps_Loader*ld,const std::function<void(Rps_Loader*)>& todofun)
 {
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(todofun);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   ld->add_todo(todofun);
 } // end rps_load_add_todo
 
@@ -486,12 +553,13 @@ void
 Rps_Loader::initialize_root_objects(void)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-#define RPS_INSTALL_ROOT_OB(Oid) do {   \
-    if (!RPS_ROOT_OB(Oid))      \
-      RPS_ROOT_OB(Oid)        \
-  = find_object_by_oid(Rps_Id(#Oid));   \
-    RPS_ASSERTPRINTF(RPS_ROOT_OB(Oid),    \
-         "missing %s root", #Oid);    \
+  RPS_ASSERT(ld_magic == ld_rps_magic_num);
+#define RPS_INSTALL_ROOT_OB(Oid) do {		\
+    if (!RPS_ROOT_OB(Oid))			\
+      RPS_ROOT_OB(Oid)				\
+  = find_object_by_oid(Rps_Id(#Oid));		\
+    RPS_ASSERTPRINTF(RPS_ROOT_OB(Oid),		\
+         "missing %s root", #Oid);		\
   } while(0);
 #include "generated/rps-roots.hh"
 } // end Rps_Loader::initialize_root_objects
@@ -503,6 +571,7 @@ void
 Rps_Loader::initialize_constant_objects(void)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == ld_rps_magic_num);
 #define RPS_INSTALL_CONSTANT_OB(Oid) \
   rpskob##Oid = fetch_one_constant_at(#Oid, __LINE__);
 #include "generated/rps-constants.hh"
@@ -515,6 +584,8 @@ Rps_Loader::fetch_one_constant_at(const char*oidstr, int lin)
   bool ok = false;
   Rps_Id id(oidstr, &end, &ok);
   RPS_ASSERT(end && *end==(char)0 && ok);
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == ld_rps_magic_num);
   auto it = ld_mapobjects.find(id);
   if (it == ld_mapobjects.end())
     {
@@ -533,6 +604,8 @@ void
 Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     Rps_Id objid, const std::string& objbuf, unsigned count)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == ld_rps_magic_num);
   RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass start spacid=" << spacid << " #" << count
                 << " lineno=" <<lineno
                 << " objid=" <<objid
@@ -935,7 +1008,8 @@ Rps_Loader::load_all_state_files(void)
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
 {
-
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == ld_rps_magic_num);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::string_of_loaded_file start this@" << (void*)this
                 << " relpath=" << relpath
                 << std::endl << RPS_FULL_BACKTRACE(0, "RpsLoader::string_of_loaded_file"));
@@ -970,6 +1044,8 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
   : Rps_Value(nullptr)
 {
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == ld->ld_rps_magic_num);
   std::int64_t i=0;
   std::string str = "";
   std::size_t siz=0;
@@ -1114,6 +1190,8 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
 {
   Rps_InstanceZone*res = nullptr;
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(jv.isObject());
   auto jclass = jv["iclass"];
   auto jsize = jv["isize"];
@@ -1173,6 +1251,8 @@ Rps_InstanceZone*
 Rps_InstanceZone::make_incomplete_loaded(Rps_Loader*ld, Rps_ObjectRef classob, unsigned siz)
 {
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(classob);
   Rps_InstanceZone*res = nullptr;
   res = rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>
@@ -1187,6 +1267,8 @@ void
 Rps_InstanceZone::fill_loaded_instance_from_json(Rps_Loader*ld,Rps_ObjectRef obclass, const Json::Value& jv)
 {
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT((int)cnt() == jv["isiz"].asInt());
   auto jattrs = jv["iattrs"];
   auto nbattrs = jattrs.size();
@@ -1264,6 +1346,8 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
   : Rps_ObjectRef(nullptr)
 {
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   std::string str = "";
   Rps_Id oid;
   if (jv.isString() && !((str=jv.asString()).empty()) && (oid = Rps_Id(str)).valid())
@@ -1288,6 +1372,8 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 void
 Rps_Loader::parse_manifest_file(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   std::string manifpath = ld_topdir + "/" + RPS_MANIFEST_JSON;
   if (access(manifpath.c_str(), R_OK))
     RPS_FATAL("Rps_Loader::parse_manifest_file cannot access %s - %m",
@@ -1456,6 +1542,8 @@ Rps_Loader::parse_manifest_file(void)
 void
 Rps_Loader::parse_user_manifest(const std::string&umpath)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::parse_user_manifest start umpath="
                 << umpath);
   Json::Value manifjson;
@@ -1528,9 +1616,10 @@ Rps_Loader::parse_user_manifest(const std::string&umpath)
 void Rps_Loader::load_install_roots(void)
 {
   RPS_DEBUG_LOG(LOAD, "loader load_install_roots start");
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   for (Rps_Id curootid: ld_globrootsidset)
     {
-      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       Rps_ObjectRef curootobr = find_object_by_oid(curootid);
       if (!curootobr)
         RPS_FATALOUT("load_install_roots: curootid " << curootid
@@ -1563,7 +1652,6 @@ void Rps_Loader::load_install_roots(void)
   /// install the hard coded symbols
   int nbsymb=0;
   {
-    std::lock_guard<std::recursive_mutex> gu(ld_mtx);
     //
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name)    {        \
       const char *end##Oid##Name = nullptr;             \
@@ -1677,6 +1765,8 @@ rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   if (!jv.isMember("class_super") || !jv.isMember("class_methodict"))
@@ -1763,6 +1853,8 @@ rpsldpy_vectob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(jv.type() == Json::objectValue);
   Json::Value jvectob = jv["vectob"];
   unsigned nbelem = 0;
@@ -1791,6 +1883,8 @@ rpsldpy_vectval(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(jv.type() == Json::objectValue);
   Json::Value jvectval = jv["vectval"];
   unsigned nbcomp = 0;
@@ -1818,6 +1912,8 @@ rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id s
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(jv.type() == Json::objectValue);
   Json::Value jsetob = jv["setob"];
   unsigned nbelem = 0;
@@ -1846,6 +1942,8 @@ rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id s
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_ASSERT(spacid);
   RPS_ASSERT(lineno>0);
@@ -1860,6 +1958,8 @@ rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_NOPRINTOUT("rpsldpy_symbol: obz=" << obz->oid().to_string()
                  << " jv=" << jv
@@ -1884,6 +1984,8 @@ void
 Rps_Loader::set_primitive_type_size_and_align(Rps_ObjectRef primtypob,
     unsigned sizeby, unsigned alignby)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(primtypob);
   RPS_ASSERT(primtypob->is_instance_of(RPS_ROOT_OB(_1XswYkom3Jm02YR3Vi))); //cplusplus_primitive_type∈class
   primtypob->loader_put_attr(this, rpskob_6EsfxShTuwH02waeLE, //!byte_alignment∈named_attribute
@@ -1892,12 +1994,14 @@ Rps_Loader::set_primitive_type_size_and_align(Rps_ObjectRef primtypob,
                              Rps_Value((intptr_t)alignby));
 } /* end Rps_Loader::set_primitive_type_size_and_align */
 
-static void
+void
 rps_set_cppname_for_primitive_type(Rps_Loader*ld,
                                    Rps_ObjectRef kobarg,
                                    const char*namarg)
 {
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_ASSERT(kobarg);
   RPS_ASSERT(namarg != nullptr);
   kobarg->put_attr
@@ -1909,6 +2013,8 @@ void
 rps_set_native_data_in_loader(Rps_Loader*ld)
 {
   RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_WARNOUT("incomplete rps_set_native_data_in_loader");
   /* Some loaded objects are representing machine types, and their
      attributes _6EsfxShTuwH02waeLE !byte_alignment∈named_attribute
@@ -1921,11 +2027,11 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   // In the below RPSDCL_PRIM_TYPE macro, the Kob argument has to be a
   // full "rpskob" prefixed constant since this source code is scanned
   // by Rps_Dumper::scan_source_file_for_constants ...
-#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {   \
-    ld->set_primitive_type_size_and_align   \
-      (Kob,           \
-       sizeof(Cpp),alignof(Cpp));     \
-    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);  \
+#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {		\
+    ld->set_primitive_type_size_and_align		\
+      (Kob,						\
+       sizeof(Cpp),alignof(Cpp));			\
+    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);	\
   } while(0)
 
   RPSDCL_PRIM_TYPE(rpskob_67REK2JYbAV04jPmf2,code_bool,bool);
