@@ -204,26 +204,26 @@ extern "C" void rps_readline_initialize(void); // for GNU readline
 ///
 /// Keep the debug options in alphabetical order in the list below
 ///
-#define RPS_DEBUG_OPTIONS(Dbgmacro)   \
-  Dbgmacro(AGENDA, "agenda machinery")    \
-  Dbgmacro(CMD, "command")      \
-  Dbgmacro(CODEGEN, "code generation")    \
-  Dbgmacro(COMPL, "completion")     \
-  Dbgmacro(DUMP, "dump")      \
-  Dbgmacro(EVLOOP, "event loop")    \
-  Dbgmacro(GARBCOLL, "garbage collection")  \
-  Dbgmacro(GUI, "graphical user interface") \
-  Dbgmacro(LOAD, "load")      \
+#define RPS_DEBUG_OPTIONS(Dbgmacro)		\
+  Dbgmacro(AGENDA, "agenda machinery")		\
+  Dbgmacro(CMD, "command")			\
+  Dbgmacro(CODEGEN, "code generation")		\
+  Dbgmacro(COMPL, "completion")			\
+  Dbgmacro(DUMP, "dump")			\
+  Dbgmacro(EVLOOP, "event loop")		\
+  Dbgmacro(GARBCOLL, "garbage collection")	\
+  Dbgmacro(GUI, "graphical user interface")	\
+  Dbgmacro(LOAD, "load")			\
   Dbgmacro(LOWREP, "low level representation")  \
-  Dbgmacro(MISC, "miscellanous")    \
-  Dbgmacro(MSGSEND, "message sending")    \
-  Dbgmacro(PARSE, "parsing")      \
-  Dbgmacro(PARSTR, "parse of string")   \
-  Dbgmacro(PROGARG, "program arguments")  \
-  Dbgmacro(REPL, "read eval print loop")  \
-  Dbgmacro(EXIT, "exit code")     \
-  Dbgmacro(TMP1, "*temporary 1*")   \
-  Dbgmacro(TMP2, "*temporary 2*")
+  Dbgmacro(MISC, "miscellanous")		\
+  Dbgmacro(MSGSEND, "message sending")		\
+  Dbgmacro(PARSE, "parsing")			\
+  Dbgmacro(PARSTR, "parse of string")		\
+  Dbgmacro(PROGARG, "program arguments")	\
+  Dbgmacro(REPL, "read eval print loop")	\
+  Dbgmacro(EXIT, "exit code")			\
+  Dbgmacro(TMP1, "*temporary 1*")		\
+  Dbgmacro(TMP2, "*temporary 2*")		\
 /*end RPS_DEBUG_OPTIONS*/
 
 
@@ -281,8 +281,7 @@ class Rps_PayloadTasklet;
 class Rps_PayloadUnixProcess;   // transient payload for forked processes
 class Rps_PayloadPopenedFile;   // transient payload for popened command
 class Rps_PayloadCppStream;     // transient payload for C++ streams
-class Rps_PayloadGccJit;  //  payload for libgccjit
-// code generation
+class Rps_PayloadGccJit;        //  payload for gccjit code generation
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_ProtoCallFrame;
@@ -3009,6 +3008,11 @@ extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef o
                                         const std::string&cmd,
                                         const char*title=nullptr);
 
+
+extern "C" Rps_Loader*rps_get_the_active_loader(void);
+extern "C" bool rps_loader_is_making(void);
+extern "C" bool rps_loader_is_filling(void);
+extern "C" bool rps_loading_complete(void);
 
 extern "C" void rps_initialize_carburetta_after_load(Rps_Loader*);
 

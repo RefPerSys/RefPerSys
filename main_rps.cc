@@ -396,7 +396,8 @@ rps_run_loaded_application(int &argc, char **argv)
               rps_plugin_init_sig_t* pluginit
                 = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
               (*pluginit)(&curplugin);
-              RPS_INFORMOUT("rps_run_loaded_application initialized plugin#" << pluginix << " " << curplugname);
+              RPS_INFORMOUT("rps_run_loaded_application initialized plugin#"
+			    << pluginix << " " << curplugname);
               curplugname.erase();
               pluginix ++;
             };

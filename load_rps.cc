@@ -88,6 +88,7 @@ class Rps_Loader
   friend bool rps_loader_is_making(void);
   friend bool rps_loader_is_filling(void);
   friend bool rps_loading_complete(void);
+  friend void rps_load_from(const std::string&);
   friend void rps_load_add_todo(Rps_Loader*ld,const std::function<void(Rps_Loader*)>& todofun);
   friend Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld);
   friend Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld);
@@ -110,6 +111,7 @@ class Rps_Loader
   ////
   static constexpr int ld_rps_magic_num = -542616395;
   static std::atomic<Rps_Loader*> ld_atomic_rps_loader;
+  static std::atomic<bool> ld_is_completed_rps;
   const int ld_magic;
   enum ld_state_en {
     ldsta__none,
@@ -215,6 +217,7 @@ Rps_Loader::~Rps_Loader()
 } // end Rps_Loader::~Rps_Loader
 
 std::atomic<Rps_Loader*> Rps_Loader::ld_atomic_rps_loader;
+std::atomic<bool> Rps_Loader::ld_is_completed_rps;
 
 Rps_Loader*
 rps_get_the_active_loader(void)
@@ -227,6 +230,41 @@ rps_get_the_active_loader(void)
 #warning rps_get_the_active_loader should check ld->ld_state
   return ld;
 } // end rps_get_the_active_loader
+
+bool
+rps_loader_is_making(void)
+{
+  Rps_Loader*ld = Rps_Loader::ld_atomic_rps_loader.load();
+  if (!ld)
+    return false;
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
+  return ld->ld_state == Rps_Loader::ldsta_making;
+} // end rps_loader_is_making
+
+bool
+rps_loader_is_filling(void)
+{
+  Rps_Loader*ld = Rps_Loader::ld_atomic_rps_loader.load();
+  if (!ld)
+    return false;
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
+  return ld->ld_state == Rps_Loader::ldsta_filling;
+} // end rps_loader_is_filling
+
+bool
+rps_loading_complete(void)
+{
+  Rps_Loader*ld = Rps_Loader::ld_atomic_rps_loader.load();
+  if (!ld)
+    return false;
+  std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
+  RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
+  RPS_WARNOUT("unimplemented rps_loading_complete "
+	      << RPS_FULL_BACKTRACE(1, "rps_loading_complete"));
+  return Rps_Loader::ld_is_completed_rps.load();
+} // end rps_loading_complete
 
 std::string
 Rps_Loader::load_real_path(const std::string& path)
@@ -1744,6 +1782,7 @@ void rps_load_from (const std::string& dirpath)
   snprintf(realmicrobuf, sizeof(realmicrobuf), "%.3f", (realt*1.0e6)/nbloaded);
   snprintf(cpumicrobuf, sizeof(cpumicrobuf), "%.3f", (cput*1.0e6)/nbloaded);
   strncpy(rps_loaded_directory, dirpath.c_str(), sizeof(rps_loaded_directory)-1);
+  Rps_Loader::ld_is_completed_rps.store(true);
   RPS_INFORMOUT("rps_load_from completed" << std::endl
                 << "… from directory " << dirpath
                 << " with RefPerSys shortgit " << rps_shortgitid << std::endl
@@ -2063,5 +2102,6 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
 #undef  RPSDCL_PRIM_TYPE
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
+
 
 //// end of file load_rps.cc
