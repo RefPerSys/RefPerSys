@@ -113,7 +113,8 @@ class Rps_Loader
   static std::atomic<Rps_Loader*> ld_atomic_rps_loader;
   static std::atomic<bool> ld_is_completed_rps;
   const int ld_magic;
-  enum ld_state_en {
+  enum ld_state_en
+  {
     ldsta__none,
     ldsta_making,
     ldsta_filling,
@@ -262,7 +263,7 @@ rps_loading_complete(void)
   std::lock_guard<std::recursive_mutex> gu(ld->ld_mtx);
   RPS_ASSERT(ld->ld_magic == Rps_Loader::ld_rps_magic_num);
   RPS_WARNOUT("unimplemented rps_loading_complete "
-	      << RPS_FULL_BACKTRACE(1, "rps_loading_complete"));
+              << RPS_FULL_BACKTRACE(1, "rps_loading_complete"));
   return Rps_Loader::ld_is_completed_rps.load();
 } // end rps_loading_complete
 
@@ -397,7 +398,7 @@ Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::s
   if (pobid)
     *pobid = oid;
   return true;
-bad:
+ bad:
   if (!reason)
     reason="???";
   RPS_WARNOUT("bad object starting line in space " << spacid << " line#" << lineno
@@ -414,6 +415,8 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
   RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
+  enum ld_state_en oldstate = ld_state;
+  ld_state = ldsta_making;
   auto spacepath = load_real_path(space_file_path(spacid));
   std::ifstream ins(spacepath);
   std::string prologstr;
@@ -431,6 +434,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                    lincnt, spacepath.c_str(), linbuf.c_str());
           char errbuf[40];
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
+          ld_state = oldstate;
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
       if (RPS_UNLIKELY(obcnt == 0))
@@ -494,6 +498,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
             {
               RPS_WARN("duplicate object of oid %s in  line#%d in %s",
                        curobjid.to_string().c_str(), lincnt, spacepath.c_str());
+              ld_state = oldstate;
               throw std::runtime_error(std::string("duplicate objid "
                                                    + curobjid.to_string() + " in " + spacepath));
             }
@@ -505,9 +510,11 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
     {
       RPS_WARN("got %d objects in loaded space %s but expected %d of them",
                obcnt,  spacepath.c_str(), expectedcnt);
+      ld_state = oldstate;
       throw std::runtime_error(std::string("unexpected object count in ")
                                + spacepath);
     }
+  ld_state = oldstate;
   RPS_DEBUG_LOG(LOAD, "first_pass_space end spacepath=" << spacepath << " obcnt="<< obcnt << std::endl
                 << "… read " << obcnt
                 << " objects while loading first pass of " << spacepath);
@@ -553,7 +560,7 @@ Rps_Loader::run_some_todo_functions(void)
       todo_st td;
       {
         std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-	RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
+        RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
         bool emptyq = ld_todoque.empty();
         if (emptyq)
           return 0;
@@ -592,12 +599,12 @@ Rps_Loader::initialize_root_objects(void)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
   RPS_ASSERT(ld_magic == ld_rps_magic_num);
-#define RPS_INSTALL_ROOT_OB(Oid) do {		\
-    if (!RPS_ROOT_OB(Oid))			\
-      RPS_ROOT_OB(Oid)				\
-  = find_object_by_oid(Rps_Id(#Oid));		\
-    RPS_ASSERTPRINTF(RPS_ROOT_OB(Oid),		\
-         "missing %s root", #Oid);		\
+#define RPS_INSTALL_ROOT_OB(Oid) do {           \
+    if (!RPS_ROOT_OB(Oid))                      \
+      RPS_ROOT_OB(Oid)                          \
+	= find_object_by_oid(Rps_Id(#Oid));	\
+    RPS_ASSERTPRINTF(RPS_ROOT_OB(Oid),          \
+		     "missing %s root", #Oid);	\
   } while(0);
 #include "generated/rps-roots.hh"
 } // end Rps_Loader::initialize_root_objects
@@ -610,7 +617,7 @@ Rps_Loader::initialize_constant_objects(void)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
   RPS_ASSERT(ld_magic == ld_rps_magic_num);
-#define RPS_INSTALL_CONSTANT_OB(Oid) \
+#define RPS_INSTALL_CONSTANT_OB(Oid)			\
   rpskob##Oid = fetch_one_constant_at(#Oid, __LINE__);
 #include "generated/rps-constants.hh"
 } // end of Rps_Loader::initialize_constant_objects
@@ -640,7 +647,7 @@ Rps_Loader::fetch_one_constant_at(const char*oidstr, int lin)
 ////////////////
 void
 Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
-    Rps_Id objid, const std::string& objbuf, unsigned count)
+					   Rps_Id objid, const std::string& objbuf, unsigned count)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
   RPS_ASSERT(ld_magic == ld_rps_magic_num);
@@ -746,9 +753,9 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
             }
         }
       else RPS_WARNOUT("parse_json_buffer_second_pass spacid=" << spacid
-                         << " lineno:" << lineno
-                         << " objid:" << objid
-                         << " bad attrjson:" << attrjson);
+		       << " lineno:" << lineno
+		       << " objid:" << objid
+		       << " bad attrjson:" << attrjson);
     }
   if (objjson.isMember("magicattr"))
     {
@@ -906,6 +913,10 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
 void
 Rps_Loader::second_pass_space(Rps_Id spacid)
 {
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  RPS_ASSERT(ld_magic == ld_rps_magic_num);
+  enum ld_state_en oldstate = ld_state;
+  ld_state = ldsta_filling;
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::second_pass_space start spacid:" << spacid
                 << std::endl << RPS_FULL_BACKTRACE(0, "RpsLoader::second_pass_space"));
   auto spacepath = load_real_path(space_file_path(spacid));
@@ -976,6 +987,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
         };
       prevoid = Rps_Id(nullptr);
     };
+  ld_state = oldstate;
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::second_pass_space end spacid:" << spacid);
 } // end of Rps_Loader::second_pass_space
 
@@ -986,6 +998,7 @@ Rps_Loader::load_all_state_files(void)
   const char*thisprog = (rps_progexe[0]?rps_progexe
                          :rps_progname?rps_progname:"*RefPerSys*");
   RPS_ASSERT(thisprog != nullptr);
+  RPS_ASSERT(ld_magic == ld_rps_magic_num);
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files start this@" << (void*)this
                 << std::endl << RPS_FULL_BACKTRACE(0, "RpsLoader::load_all_state_files"));
   int spacecnt1 = 0, spacecnt2 = 0;
@@ -1114,14 +1127,14 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
       if (str.size() == Rps_Id::nbchars && str[0] == '_' && isalnum(str[1])
           && std::all_of(str.begin()+1, str.end(),
                          [](char c)
-      {
-        return strchr(Rps_Id::b62digits, c) != nullptr;
-        }))
-      {
-        *this = Rps_ObjectValue(Rps_ObjectRef(jv, ld));
-        RPS_ASSERT(*this);
-        return;
-      }
+			 {
+			   return strchr(Rps_Id::b62digits, c) != nullptr;
+			 }))
+	{
+	  *this = Rps_ObjectValue(Rps_ObjectRef(jv, ld));
+	  RPS_ASSERT(*this);
+	  return;
+	}
       *this = Rps_StringValue(str);
       return;
     }
@@ -1294,8 +1307,8 @@ Rps_InstanceZone::make_incomplete_loaded(Rps_Loader*ld, Rps_ObjectRef classob, u
   RPS_ASSERT(classob);
   Rps_InstanceZone*res = nullptr;
   res = rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>
-        ((siz*sizeof(Rps_Value))/sizeof(void*),
-         siz, classob, Rps_InstanceTag{});
+    ((siz*sizeof(Rps_Value))/sizeof(void*),
+     siz, classob, Rps_InstanceTag{});
   return res;
 } // end Rps_InstanceZone::make_incomplete_loaded
 
@@ -1677,7 +1690,7 @@ void Rps_Loader::load_install_roots(void)
       RPS_ASSERT(id##Oid && id##Oid.valid());           \
       RPS_ROOT_OB(Oid) = find_object_by_oid(id##Oid);   \
       if (!RPS_ROOT_OB(Oid))                            \
-  RPS_WARN("failed to install root " #Oid);             \
+	RPS_WARN("failed to install root " #Oid);	\
       nbroots++;                                        \
     }
   };
@@ -1695,17 +1708,17 @@ void Rps_Loader::load_install_roots(void)
       const char *end##Oid##Name = nullptr;             \
       bool ok##Oid##Name = false;                       \
       auto id##Oid##Name = Rps_Id(#Oid,                 \
-          &end##Oid##Name,                              \
-          &ok##Oid##Name);                              \
+				  &end##Oid##Name,	\
+				  &ok##Oid##Name);	\
       RPS_ASSERT(end##Oid##Name                         \
-     && *end##Oid##Name == (char)0);                    \
+		 && *end##Oid##Name == (char)0);	\
       RPS_ASSERT(id##Oid##Name                          \
-     && id##Oid##Name.valid());                         \
+		 && id##Oid##Name.valid());		\
       RPS_SYMB_OB(Name) =                               \
-  find_object_by_oid(id##Oid##Name);                    \
+	find_object_by_oid(id##Oid##Name);		\
       if (!RPS_SYMB_OB(Name))                           \
-  RPS_WARN("failed to install symbol "                  \
-     #Oid " named " #Name);                             \
+	RPS_WARN("failed to install symbol "		\
+		 #Oid " named " #Name);			\
       nbsymb++;                                         \
     };
     //
@@ -2021,7 +2034,7 @@ rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
 
 void
 Rps_Loader::set_primitive_type_size_and_align(Rps_ObjectRef primtypob,
-    unsigned sizeby, unsigned alignby)
+					      unsigned sizeby, unsigned alignby)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
   RPS_ASSERT(ld_magic == Rps_Loader::ld_rps_magic_num);
@@ -2044,8 +2057,8 @@ rps_set_cppname_for_primitive_type(Rps_Loader*ld,
   RPS_ASSERT(kobarg);
   RPS_ASSERT(namarg != nullptr);
   kobarg->put_attr
-  (rpskob_0fx0GtCX90Z03VI9mo, //!cplusplus_name∈named_attribute)
-   Rps_StringValue(namarg));
+    (rpskob_0fx0GtCX90Z03VI9mo, //!cplusplus_name∈named_attribute)
+     Rps_StringValue(namarg));
 } // end rps_set_cppname_for_primitive_type
 
 void
@@ -2066,11 +2079,11 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
   // In the below RPSDCL_PRIM_TYPE macro, the Kob argument has to be a
   // full "rpskob" prefixed constant since this source code is scanned
   // by Rps_Dumper::scan_source_file_for_constants ...
-#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {		\
-    ld->set_primitive_type_size_and_align		\
-      (Kob,						\
-       sizeof(Cpp),alignof(Cpp));			\
-    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);	\
+#define RPSDCL_PRIM_TYPE(Kob,Name,Cpp) do {             \
+    ld->set_primitive_type_size_and_align               \
+      (Kob,                                             \
+       sizeof(Cpp),alignof(Cpp));                       \
+    rps_set_cppname_for_primitive_type(ld,Kob,#Cpp);    \
   } while(0)
 
   RPSDCL_PRIM_TYPE(rpskob_67REK2JYbAV04jPmf2,code_bool,bool);
