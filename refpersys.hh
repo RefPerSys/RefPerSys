@@ -162,10 +162,6 @@
 extern "C" void rps_atexit(typeof(void (void)) *function);
 extern "C" void rps_do_on_exit(std::function<void(void)>clos);
 
-// in load_rps.cc - probably clos should accept fil&lin&fun
-extern "C" void rps_do_after_load_at(const char*fil,int lin,const char*fun,std::function<void(void)>clos);
-
-#define RPS_DO_AFTER_LOAD(Fun) rps_do_after_load_at(__FILE__,__builtin_line(),__FUNCTION__,(Fun))
 
 extern "C" const int rps_maxpoll_fd; // can be dlsym-ed
 
@@ -599,6 +595,11 @@ extern "C" void rps_compute_program_invocation(int argc, const char**argv);
 /// the load directory
 extern "C" std::string rps_my_load_dir;
 
+typedef void rps_do_after_load_sig_t (const char*srcfil,int srclin, const char*funame, void*data);
+// in load_rps.cc - probably clos should accept fil&lin&fun
+extern "C" void rps_do_after_load_cfun_at(const char*fil,int lin,const char*fun,rps_do_after_load_sig_t*cfun,void*data);
+
+#define RPS_DO_AFTER_LOAD_CFUN(Fun,Data) rps_do_after_load_cfun_at(__FILE__,__builtin_line(),__FUNCTION__,(Fun),(Data))
 
 
 /// the initial copy-right year of RefPerSys

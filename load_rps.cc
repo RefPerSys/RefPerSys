@@ -2115,13 +2115,14 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
 #undef  RPSDCL_PRIM_TYPE
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
-/// probably clos should accept fil,lin and fun
+/// probably cfun should accept fil,lin and funam
 void
-rps_do_after_load_at(const char*fil,int lin,const char*fun,std::function<void(void)>clos)
+rps_do_after_load_cfun_at(const char*fil,int lin,const char*funam,rps_do_after_load_sig_t*cfun,void*data)
 {
-  RPS_ASSERT(clos);
-  RPS_FATALOUT("unimplemented rps_do_after_load_at fil=" << fil
-	       << " lin=" << lin << " fun=" << fun);
+  RPS_ASSERT(cfun);
+  RPS_FATALOUT("unimplemented rps_do_after_load_cfun_at fil=" << fil
+	       << " lin=" << lin << " funam=" << funam
+	       << " cfun@"<< (void*)cfun << " data@" << data);
   #warning unimplemented rps_do_after_load_at
-} // end rps_do_after_load_at
+} // end rps_do_after_cfun_load_at
 //// end of file load_rps.cc
