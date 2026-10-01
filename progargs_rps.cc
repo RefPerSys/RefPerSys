@@ -108,7 +108,7 @@ enum rps_progoption_en
 };
 
 /// rps_early_initialization is called by rps_parse_program_arguments
-/// which is called early from main (before loading of the heap)
+/// which is called early from main (before loading of the persistent heap)
 static void
 rps_early_initialization(int argc, char** argv)
 {
