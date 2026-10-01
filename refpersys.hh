@@ -163,12 +163,12 @@ extern "C" void rps_atexit(typeof(void (void)) *function);
 extern "C" void rps_do_on_exit(std::function<void(void)>clos);
 
 struct rps_progarg_st;
-typedef void rps_progarg_sig_t (const char*curarg, const char*nextarg, struct rps_progarg_st*prag);
+typedef void rps_progarg_sig_t (const char*curarg, int&progix, struct rps_progarg_st*prag);
 
 extern "C" struct rps_progarg_st rps_progarg_array[];
 
 struct rps_progarg_st {
-  char*prar_long;
+  const char*prar_long;
   char prar_letter;
   const char*prar_expl;
   void*prar_data;
