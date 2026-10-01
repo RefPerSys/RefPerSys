@@ -52,6 +52,9 @@ extern "C" const char rps_progargs_baseid[];
 const char rps_progargs_baseid[]= RPS_BASEID;
 
 
+
+////////////////////////////////////////////////////////////////
+
 bool rps_helpwanted;
 
 
@@ -322,19 +325,6 @@ rps_early_initialization(int argc, char** argv)
                 << " git " << rps_shortgitid);
 } // end rps_early_initialization
 
-
-////////////////////////////////////////////////////////////////
-struct rps_progarg_st;
-typedef void rps_progarg_sig_t (const char*curarg, const char*nextarg, struct rps_progarg_st*prag);
-
-struct rps_progarg_st {
-  char*prar_long;
-  char prar_letter;
-  const char*prar_expl;
-  void*prar_data;
-  rps_progarg_sig_t *prar_rout;
-  std::function<rps_progarg_sig_t> prar_clos;
-};
 extern "C" struct argp_option rps_progoptions[];
 // rps_parse_program_arguments is called very early from main...
 void
