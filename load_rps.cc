@@ -2115,6 +2115,7 @@ rps_set_native_data_in_loader(Rps_Loader*ld)
 #undef  RPSDCL_PRIM_TYPE
 #warning incomplete rps_set_native_data_in_loader
 } // end rps_set_native_data_in_loader
+
 /// probably cfun should accept fil,lin and funam
 void
 rps_do_after_load_cfun_at(const char*fil,int lin,const char*funam,rps_do_after_load_sig_t*cfun,void*data)
