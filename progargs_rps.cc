@@ -57,6 +57,7 @@ extern "C" rps_progarg_sig_t rpspa_set_debugging_at_start;
 extern "C" rps_progarg_sig_t rpspa_debugging_help;
 extern "C" rps_progarg_sig_t rpspa_help;
 extern "C" rps_progarg_sig_t rpspa_syslog;
+extern "C" rps_progarg_sig_t rpspa_version;
 ////////////////////////////////////////////////////////////////
 
 struct rps_progarg_st
@@ -105,6 +106,15 @@ struct rps_progarg_st
     .prar_expl=(const char*)"use syslog(3)",
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)rpspa_syslog
+  },
+
+  {
+    .prar_str=(const char*)"version",
+    .prar_letter=(char)'V',
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"give version information",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_version
   },
 
   {
@@ -163,6 +173,15 @@ rpspa_syslog (const char*curarg, int& pix, struct rps_progarg_st*prag)
   RPS_FATALOUT("unimplemented rpspa_syslog curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_syslog
+
+void
+rpspa_version (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+#warning unimplemented rpspa_version
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented rpspa_version curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_version
 
 ////////////////////////////////////////////////////////////////
 bool rps_helpwanted;
@@ -277,8 +296,7 @@ rps_early_initialization(int argc, char** argv)
   rps_compute_program_invocation(argc, (const char**)argv);
   rps_main_thread_handle = pthread_self();
   {
-    char cwdbuf[rps_path_byte_size];
-    memset (cwdbuf, 0, sizeof(cwdbuf));
+    RPS_ASSERTPRINTF(strlen(cwdbuf)>0, "empty cwdbuf");
     char tmbfr[64];   // the time buffer string
     memset(tmbfr, 0, sizeof (tmbfr));
     if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
@@ -324,19 +342,27 @@ rps_early_initialization(int argc, char** argv)
   {
     for (int ix=1; ix<argc; ix++)
       {
-        if (!strcmp(argv[ix], "--no-aslr"))
-          rps_disable_aslr = true;
-        else if (!strcmp(argv[ix], "-B") || !strcmp(argv[ix], "--batch"))
-          rps_batch = true;
-        else if (!strcmp(argv[ix], "--without-terminal"))
-          rps_without_terminal_escape = true;
-        else if (!strcmp(argv[ix], "--daemon"))
+        const char*curarg=argv[ix];
+        assert(curarg != nullptr);
+        if (curarg[0] != '-') break;
+        for (struct rps_progarg_st* pa = rps_progarg_array;
+             pa->prar_str || pa->prar_letter;
+             pa++)
           {
-            rps_daemonized = true;
-            rps_syslog_enabled = true;
-          }
-        else if (!strcmp(argv[ix], "--syslog"))
-          rps_syslog_enabled = true;
+#warning incomplete code related to rps_progarg_array and argv
+            int slen= pa->prar_str?strlen(pa->prar_str):0;
+            if ((curarg[0] == '-' && curarg[0] != pa->prar_letter)
+                || (curarg[0] == '-' && curarg[1] == '-'
+                    && slen>=1 && !strncmp(curarg+2, pa->prar_str, slen)))
+              {
+                if (pa->prar_argname)
+                  {
+                  }
+                else
+                  {
+                  };
+              };
+          };
       }
     if (rps_disable_aslr)
       {
