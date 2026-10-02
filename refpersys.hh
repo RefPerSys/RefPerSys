@@ -167,7 +167,8 @@ typedef void rps_progarg_sig_t (const char*curarg, int&progix, struct rps_progar
 
 extern "C" struct rps_progarg_st rps_progarg_array[];
 
-struct rps_progarg_st {
+struct rps_progarg_st
+{
   const char*prar_str;
   char prar_letter;
   const char*prar_argname;
