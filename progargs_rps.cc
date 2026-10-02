@@ -52,16 +52,16 @@ extern "C" const char rps_progargs_baseid[];
 const char rps_progargs_baseid[]= RPS_BASEID;
 
 
-extern "C" rps_progarg_sig_t rpspa_set_debugging;
+extern "C" rps_progarg_sig_t rpspa_set_debugging_after_load;
 ////////////////////////////////////////////////////////////////
 struct rps_progarg_st rps_progarg_array[] =
 {
   {
     .prar_long=(const char*)"debug-after-load",
     .prar_letter=(char)'A',
-    .prar_expl=(const char*)"comma separated options of debugging names",
+    .prar_expl=(const char*)"comma separated options of debugging names; list-them with --debug-help",
     .prar_data=nullptr,
-    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_after_load,
     .prar_clos=nullptr
   },
   
@@ -75,14 +75,14 @@ struct rps_progarg_st rps_progarg_array[] =
   }
 };
  void
- rpspa_set_debugging (const char*curarg, int& pix, struct rps_progarg_st*prag)
+ rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_st*prag)
  {
-#warning unimplemented rpspa_set_debugging
+#warning unimplemented rpspa_set_debugging_after_load
    RPS_UNIQUE_BREAKPOINT();
    // TODO: call rps_add_debug_cstr appropriately
-   RPS_FATALOUT("unimplemented rpspa_set_debugging curarg=" << curarg
+   RPS_FATALOUT("unimplemented rpspa_set_debugging_after_load curarg=" << curarg
 		<< " pix=" << pix);
- } // end rpspa_set_debugging
+ } // end rpspa_set_debugging_after_load
 
 ////////////////////////////////////////////////////////////////
 bool rps_helpwanted;
