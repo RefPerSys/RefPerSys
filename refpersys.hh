@@ -168,12 +168,12 @@ typedef void rps_progarg_sig_t (const char*curarg, int&progix, struct rps_progar
 extern "C" struct rps_progarg_st rps_progarg_array[];
 
 struct rps_progarg_st {
-  const char*prar_long;
+  const char*prar_str;
   char prar_letter;
+  const char*prar_argname;
   const char*prar_expl;
   void*prar_data;
   rps_progarg_sig_t *prar_rout;
-  std::function<rps_progarg_sig_t> prar_clos;
 };
 
 extern "C" const int rps_maxpoll_fd; // can be dlsym-ed
