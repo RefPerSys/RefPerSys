@@ -53,27 +53,60 @@ const char rps_progargs_baseid[]= RPS_BASEID;
 
 
 extern "C" rps_progarg_sig_t rpspa_set_debugging_after_load;
+extern "C" rps_progarg_sig_t rpspa_set_debugging_at_start;
+extern "C" rps_progarg_sig_t rpspa_debugging_help;
+extern "C" rps_progarg_sig_t rpspa_help;
 ////////////////////////////////////////////////////////////////
-struct rps_progarg_st rps_progarg_array[] =
+
+struct rps_progarg_st
+rps_progarg_array[] =
 {
   {
-    .prar_long=(const char*)"debug-after-load",
+    .prar_str=(const char*)"debug-after-load",
     .prar_letter=(char)'A',
-    .prar_expl=(const char*)"comma separated options of debugging names; list-them with --debug-help",
+    .prar_argname="DGBFLAGS",
+    .prar_expl=(const char*)"comma separated options of debugging names; list them with --debug-help",
     .prar_data=nullptr,
-    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_after_load,
-    .prar_clos=nullptr
+    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_after_load
   },
   
   {
-    .prar_long=(const char*)nullptr,
+    .prar_str=(const char*)"debug-at-start",
+    .prar_letter=(char)'D',
+    .prar_argname="DBGFLAGS",
+    .prar_expl=(const char*)"comma separated options of debugging names; list them with --debug-help",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_at_start
+  },
+  
+  {
+    .prar_str=(const char*)"help",
+    .prar_letter=(char)'H',
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"give help and usage message",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_help
+  },
+  
+  {
+    .prar_str=(const char*)"debug-help",
     .prar_letter=(char)0,
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"list possible debugging flags (DBGFLAGS)",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_debugging_help
+  },
+  
+  {
+    .prar_str=(const char*)nullptr,
+    .prar_letter=(char)0,
+    .prar_argname=nullptr,
     .prar_expl=(const char*)nullptr,
     .prar_data=nullptr,
-    .prar_rout=(rps_progarg_sig_t*)nullptr,
-    .prar_clos=nullptr
+    .prar_rout=(rps_progarg_sig_t*)nullptr
   }
-};
+};				// end rps_progarg_array
+////////////////////////////////////////////////////////////////
  void
  rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_st*prag)
  {
@@ -83,6 +116,34 @@ struct rps_progarg_st rps_progarg_array[] =
    RPS_FATALOUT("unimplemented rpspa_set_debugging_after_load curarg=" << curarg
 		<< " pix=" << pix);
  } // end rpspa_set_debugging_after_load
+
+ void
+ rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st*prag)
+ {
+#warning unimplemented rpspa_set_debugging_at_start
+   RPS_UNIQUE_BREAKPOINT();
+   // TODO: call rps_add_debug_cstr appropriately
+   RPS_FATALOUT("unimplemented rpspa_set_debugging_at_start curarg=" << curarg
+		<< " pix=" << pix);
+ } // end rpspa_set_debugging_at_start
+
+ void
+ rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
+ {
+#warning unimplemented rpspa_debugging_help
+   RPS_UNIQUE_BREAKPOINT();
+   RPS_FATALOUT("unimplemented rpspa_debugging_help curarg=" << curarg
+		<< " pix=" << pix);
+ } // end rpspa_debugging_help
+
+ void
+ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
+ {
+#warning unimplemented rpspa_help
+   RPS_UNIQUE_BREAKPOINT();
+   RPS_FATALOUT("unimplemented rpspa_help curarg=" << curarg
+		<< " pix=" << pix);
+ } // end rpspa_debugging_help
 
 ////////////////////////////////////////////////////////////////
 bool rps_helpwanted;
