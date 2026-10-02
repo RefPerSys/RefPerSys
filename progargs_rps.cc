@@ -56,10 +56,11 @@ extern "C" rps_progarg_sig_t rpspa_set_debugging_after_load;
 extern "C" rps_progarg_sig_t rpspa_set_debugging_at_start;
 extern "C" rps_progarg_sig_t rpspa_debugging_help;
 extern "C" rps_progarg_sig_t rpspa_help;
+extern "C" rps_progarg_sig_t rpspa_syslog;
 ////////////////////////////////////////////////////////////////
 
 struct rps_progarg_st
-rps_progarg_array[] =
+  rps_progarg_array[] =
 {
   {
     .prar_str=(const char*)"debug-after-load",
@@ -69,7 +70,7 @@ rps_progarg_array[] =
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_after_load
   },
-  
+
   {
     .prar_str=(const char*)"debug-at-start",
     .prar_letter=(char)'D',
@@ -78,7 +79,7 @@ rps_progarg_array[] =
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_at_start
   },
-  
+
   {
     .prar_str=(const char*)"help",
     .prar_letter=(char)'H',
@@ -87,7 +88,7 @@ rps_progarg_array[] =
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)rpspa_help
   },
-  
+
   {
     .prar_str=(const char*)"debug-help",
     .prar_letter=(char)0,
@@ -96,7 +97,16 @@ rps_progarg_array[] =
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)rpspa_debugging_help
   },
-  
+
+  {
+    .prar_str=(const char*)"syslog",
+    .prar_letter=(char)0,
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"use syslog(3)",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_syslog
+  },
+
   {
     .prar_str=(const char*)nullptr,
     .prar_letter=(char)0,
@@ -105,45 +115,54 @@ rps_progarg_array[] =
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)nullptr
   }
-};				// end rps_progarg_array
+};        // end rps_progarg_array
 ////////////////////////////////////////////////////////////////
- void
- rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_st*prag)
- {
+void
+rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
 #warning unimplemented rpspa_set_debugging_after_load
-   RPS_UNIQUE_BREAKPOINT();
-   // TODO: call rps_add_debug_cstr appropriately
-   RPS_FATALOUT("unimplemented rpspa_set_debugging_after_load curarg=" << curarg
-		<< " pix=" << pix);
- } // end rpspa_set_debugging_after_load
+  RPS_UNIQUE_BREAKPOINT();
+  // TODO: call rps_add_debug_cstr appropriately
+  RPS_FATALOUT("unimplemented rpspa_set_debugging_after_load curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_set_debugging_after_load
 
- void
- rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st*prag)
- {
+void
+rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
 #warning unimplemented rpspa_set_debugging_at_start
-   RPS_UNIQUE_BREAKPOINT();
-   // TODO: call rps_add_debug_cstr appropriately
-   RPS_FATALOUT("unimplemented rpspa_set_debugging_at_start curarg=" << curarg
-		<< " pix=" << pix);
- } // end rpspa_set_debugging_at_start
+  RPS_UNIQUE_BREAKPOINT();
+  // TODO: call rps_add_debug_cstr appropriately
+  RPS_FATALOUT("unimplemented rpspa_set_debugging_at_start curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_set_debugging_at_start
 
- void
- rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
- {
+void
+rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
 #warning unimplemented rpspa_debugging_help
-   RPS_UNIQUE_BREAKPOINT();
-   RPS_FATALOUT("unimplemented rpspa_debugging_help curarg=" << curarg
-		<< " pix=" << pix);
- } // end rpspa_debugging_help
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented rpspa_debugging_help curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_debugging_help
 
- void
- rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
- {
+void
+rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
 #warning unimplemented rpspa_help
-   RPS_UNIQUE_BREAKPOINT();
-   RPS_FATALOUT("unimplemented rpspa_help curarg=" << curarg
-		<< " pix=" << pix);
- } // end rpspa_debugging_help
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented rpspa_help curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_help
+
+void
+rpspa_syslog (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+#warning unimplemented rpspa_syslog
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_FATALOUT("unimplemented rpspa_syslog curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_syslog
 
 ////////////////////////////////////////////////////////////////
 bool rps_helpwanted;
@@ -151,58 +170,6 @@ bool rps_helpwanted;
 
 
 
-
-#warning parsing of program options dont work reliably in commit 28b152794d (end of Sept, 2026)
-///// parsing program options
-enum rps_progoption_en
-{
-  RPSPROGOPT__NONE=0,
-  /// keep these options in numerical order!
-  RPSPROGOPT_DEBUG_AFTER_LOAD='A',
-  RPSPROGOPT_BATCH='B',
-  RPSPROGOPT_DUMP='D',
-  RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
-  RPSPROGOPT_LOADDIR='L',
-  RPSPROGOPT_COMMAND='c',
-  RPSPROGOPT_DEBUG='d',
-  RPSPROGOPT_INTERFACEFIFO='i',
-  /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
-  RPSPROGOPT_JOBS='j',
-  RPSPROGOPT_USER_PREFERENCES='U',
-  RPSPROGOPT_EXTRA_ARG='X',
-  RPSPROGOPT_HOMEDIR=1000,
-  RPSPROGOPT_CHDIR_BEFORE_LOAD,
-  RPSPROGOPT_CHDIR_AFTER_LOAD,
-  RPSPROGOPT_RANDOMOID,
-  RPSPROGOPT_TYPEINFO,
-  RPSPROGOPT_SYSLOG,
-  RPSPROGOPT_DAEMON,
-  RPSPROGOPT_FULL_GIT,
-  RPSPROGOPT_SHORT_GIT,
-  RPSPROGOPT_PID_FILE,
-  RPSPROGOPT_NO_TERMINAL,
-  RPSPROGOPT_NO_ASLR,
-  RPSPROGOPT_NO_QUICK_TESTS,
-  RPSPROGOPT_TEST_REPL_LEXER,
-  RPSPROGOPT_FILE_REPL_LEXER,
-  RPSPROGOPT_RUN_DELAY,
-  RPSPROGOPT_RUN_AFTER_LOAD,
-  RPSPROGOPT_PLUGIN_AFTER_LOAD,
-  RPSPROGOPT_PLUGIN_ARG,
-  RPSPROGOPT_LOCALE,
-  RPSPROGOPT_INTERACTIVE_PLUGIN_AFTER_LOAD,
-  RPSPROGOPT_INTERACTIVE_PLUGIN_ARG,
-  RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD,
-  RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD,
-  RPSPROGOPT_DEBUG_PATH,
-  RPSPROGOPT_RUN_NAME,
-  RPSPROGOPT_ECHO,
-  RPSPROGOPT_VERSION,
-  RPSPROGOPT_PREFERENCES_HELP,
-  RPSPROGOPT_SCRIPT,
-  RPSPROGOPT_DEBUG_EXIT,
-  RPSPROGOPT_PUBLISH_ME,
-};
 
 /// rps_early_initialization is called by rps_parse_program_arguments
 /// which is called early from main (before loading of the persistent heap)
@@ -229,18 +196,29 @@ rps_early_initialization(int argc, char** argv)
       exit(EXIT_SUCCESS);
     }
   if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
-    strcpy(cwdbuf, "./");
+    {
+      fprintf(stderr, "%s: failed to getcwd: %s (%d bytes cwdbuf) [%s:%d git %s]\n",
+              rps_progname, strerror(errno), (int)sizeof(cwdbuf),
+              __FILE__, __LINE__-2, rps_progargs_shortgitid);
+      fflush(nullptr);
+      exit(EXIT_FAILURE);
+    }
+
   /// dlopen to self
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
     {
       char *err = dlerror();
-      fprintf(stderr, "%s failed to dlopen whole program (%s) in %s\n", rps_progname,
-              err, cwdbuf);
-      syslog(LOG_ERR, "%s failed to dlopen whole program (%s) in %s\n", rps_progname,
-             err, cwdbuf);
+      fprintf(stderr, "%s failed to dlopen whole program (%s) in %s [%s:%d git %s]\n",
+              rps_progname,
+              err, cwdbuf,
+              __FILE__, __LINE__-2, rps_progargs_shortgitid);
+      syslog(LOG_ERR, "%s failed to dlopen whole program (%s) in %s [%s:%d git %s]\n", rps_progname,
+             err, cwdbuf,
+             __FILE__, __LINE__-2, rps_progargs_shortgitid);
       exit(EXIT_FAILURE);
     };
+  ///
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   /// https://man.archlinux.org/man/elf_version.3.en
@@ -317,7 +295,7 @@ rps_early_initialization(int argc, char** argv)
     {
       rps_add_debug_cstr(argv[1]+strlen("--debug="));
     }
-  else if (argc > 1 && argv[1][0]=='-' && argv[1][1]==RPSPROGOPT_DEBUG)
+  else if (argc > 1 && argv[1][0]=='-' && argv[1][1]=='D')
     {
       rps_add_debug_cstr(argv[1]+2);
     };
