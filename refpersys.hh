@@ -177,6 +177,9 @@ struct rps_progarg_st
   rps_progarg_sig_t *prar_rout;
 };
 
+extern const int rps_prog_argcount(void);
+extern const char*rps_prog_nth_arg(int n);
+
 extern "C" const int rps_maxpoll_fd; // can be dlsym-ed
 
 //// simple utility functions (locale independent) to convert an
@@ -2290,7 +2293,7 @@ class Rps_Random
           {
             std::random_device randev;
             auto s1=randev(), s2=randev(), s3=randev(), s4=randev(),
-                                                        s5=randev(), s6=randev(), s7=randev();
+                 s5=randev(), s6=randev(), s7=randev();
             std::seed_seq seq {s1,s2,s3,s4,s5,s6,s7};
             _rand_generator.seed(seq);
           }
@@ -4224,7 +4227,7 @@ public:
   template <typename Datatype_t>
   void
   reverse_iterate_data(const std::function<bool(const Rps_ObjectRef,
-                       Datatype_t data)>& fun,
+      Datatype_t data)>& fun,
                        Datatype_t data)
   {
     const unsigned len = cnt();
@@ -6553,8 +6556,8 @@ public:
   void start_process(Rps_CallFrame*callframe);
   static void gc_mark_active_processes(Rps_GarbageCollector&);
   static void do_on_active_process_queue(std::function<void(Rps_ObjectRef,
-                                         Rps_CallFrame*,
-                                         void*)> fun,
+      Rps_CallFrame*,
+      void*)> fun,
                                          Rps_CallFrame*callframe,
                                          void*client_data=nullptr);
   /*** TODO:
