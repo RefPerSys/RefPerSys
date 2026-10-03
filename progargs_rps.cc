@@ -8,8 +8,10 @@
  *      It inmplements program argument handling
  *
  * Author(s):
- *      Basile Starynkevitch (France) <basile@starynkevitch.net>
- *      Niklas Rozencrantz (Sweden)   <niklasr@protonmail.com>
+ *      Basile STARYNKEVITCH (France) <basile@starynkevitch.net>
+ *      Niklas ROZENCRANTZ (Sweden)   <niklasr@protonmail.com>
+ *      Sanae DOURDOUR (Morocco)      <sunooujda@gmail.com>
+ * 
  *
  * past indian authors (no more interested after summer 2026)
  *      (Abhishek Chakravarti & Nimesh Neema)
@@ -55,6 +57,7 @@ const char rps_progargs_baseid[]= RPS_BASEID;
 extern "C" rps_progarg_sig_t rpspa_set_debugging_after_load;
 extern "C" rps_progarg_sig_t rpspa_set_debugging_at_start;
 extern "C" rps_progarg_sig_t rpspa_debugging_help;
+extern "C" rps_progarg_sig_t rpspa_dump;
 extern "C" rps_progarg_sig_t rpspa_help;
 extern "C" rps_progarg_sig_t rpspa_syslog;
 extern "C" rps_progarg_sig_t rpspa_version;
@@ -82,12 +85,21 @@ struct rps_progarg_st
   },
 
   {
-    .prar_str=(const char*)"help",
-    .prar_letter=(char)'H',
-    .prar_argname=nullptr,
-    .prar_expl=(const char*)"give help and usage message",
+    .prar_str=(const char*)"debug-at-start",
+    .prar_letter=(char)'D',
+    .prar_argname="DBGFLAGS",
+    .prar_expl=(const char*)"comma separated options of debugging names; list them with --debug-help",
     .prar_data=nullptr,
-    .prar_rout=(rps_progarg_sig_t*)rpspa_help
+    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_at_start
+  },
+
+  {
+    .prar_str=(const char*)"dump",
+    .prar_letter=(char)0,
+    .prar_argname="DUMPDIR",
+    .prar_expl=(const char*)"dump stateinto given directory",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_dump
   },
 
   {
@@ -165,6 +177,16 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
   RPS_FATALOUT("unimplemented rpspa_help curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_help
+
+void
+rpspa_dump (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+#warning unimplemented rpspa_help
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(prag && prag->prar_letter == 'H');
+  RPS_FATALOUT("unimplemented rpspa_dump curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_dump
 
 void
 rpspa_syslog (const char*curarg, int& pix, struct rps_progarg_st*prag)
