@@ -1632,4 +1632,22 @@ main (int argc, char** argv)
 } // end of main
 
 
+const int
+rps_prog_argcount(void)
+{
+  return rps_main_argc;
+}
+
+const char*
+rps_prog_nth_arg(int n)
+{
+  if (n<0)
+    n += rps_main_argc;
+  if (n<0)
+    return nullptr;
+  if (n>=rps_main_argc)
+    return nullptr;
+  return rps_main_argv[n];
+} // end rps_prog_nth_arg
+
 /////////////////// end of file main_rps.cc
