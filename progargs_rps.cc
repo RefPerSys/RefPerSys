@@ -161,6 +161,7 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
 #warning unimplemented rpspa_help
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(prag && prag->prar_letter == 'H');
   RPS_FATALOUT("unimplemented rpspa_help curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_help
@@ -177,10 +178,9 @@ rpspa_syslog (const char*curarg, int& pix, struct rps_progarg_st*prag)
 void
 rpspa_version (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_version
   RPS_UNIQUE_BREAKPOINT();
-  RPS_FATALOUT("unimplemented rpspa_version curarg=" << curarg
-               << " pix=" << pix);
+  RPS_ASSERT(prag && prag->prar_letter == 'V');
+  rps_show_version();
 } // end rpspa_version
 
 ////////////////////////////////////////////////////////////////
