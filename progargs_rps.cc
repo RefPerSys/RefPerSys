@@ -181,7 +181,7 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 void
 rpspa_dump (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_help
+#warning unimplemented rpspa_dump
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(prag && prag->prar_letter == 'H');
   RPS_FATALOUT("unimplemented rpspa_dump curarg=" << curarg
