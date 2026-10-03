@@ -350,18 +350,30 @@ rps_early_initialization(int argc, char** argv)
              pa++)
           {
 #warning incomplete code related to rps_progarg_array and argv
-            int slen= pa->prar_str?strlen(pa->prar_str):0;
-            if ((curarg[0] == '-' && curarg[0] != pa->prar_letter)
-                || (curarg[0] == '-' && curarg[1] == '-'
-                    && slen>=1 && !strncmp(curarg+2, pa->prar_str, slen)))
-              {
-                if (pa->prar_argname)
-                  {
-                  }
-                else
-                  {
-                  };
-              };
+int slen = pa->prar_str ? strlen(pa->prar_str) : 0;
+
+bool matched = false;
+
+if (pa->prar_letter != 0
+    && curarg[0] == '-'
+    && curarg[1] == pa->prar_letter
+    && curarg[2] == '\0')
+  matched = true;
+
+if (pa->prar_str != nullptr
+    && curarg[0] == '-'
+    && curarg[1] == '-'
+    && slen >= 1
+    && !strncmp(curarg + 2, pa->prar_str, slen)
+    && curarg[2 + slen] == '\0')
+  matched = true;
+
+if (matched)
+  {
+    RPS_ASSERT(pa->prar_rout != nullptr);
+    pa->prar_rout(curarg, ix, pa);
+    break;
+  }
           };
       }
     if (rps_disable_aslr)
@@ -417,10 +429,8 @@ rps_early_initialization(int argc, char** argv)
                "start of refpersys inference engine git %s (on %s) without debug",
                rps_shortgitid, rps_hostname());
     };
-  RPS_FATALOUT("broken early initialization of RefPerSys process "
-               << rps_decimal_string((int)getpid())
-               << " on host " << rps_hostname()
-               << " git " << rps_shortgitid);
+  // Early initialization completed.
+  // Program arguments are parsed by rps_parse_program_arguments().
 } // end rps_early_initialization
 
 extern "C" struct argp_option rps_progoptions[];

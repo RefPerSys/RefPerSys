@@ -1372,7 +1372,10 @@ main (int argc, char** argv)
   static_assert (sizeof(int) == 4 && alignof(int) == 4);
   static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
   if (versionwanted)
-    rps_show_version();
+    {
+      rps_show_version();
+      return EXIT_SUCCESS;
+    }
   RPS_POSSIBLE_BREAKPOINT();
   rps_parse_program_arguments(argc, argv);
   fflush(nullptr);
