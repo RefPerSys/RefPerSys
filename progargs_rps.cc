@@ -11,7 +11,7 @@
  *      Basile STARYNKEVITCH (France) <basile@starynkevitch.net>
  *      Niklas ROZENCRANTZ (Sweden)   <niklasr@protonmail.com>
  *      Sanae DOURDOUR (Morocco)      <sunooujda@gmail.com>
- * 
+ *
  *
  * past indian authors (no more interested after summer 2026)
  *      (Abhishek Chakravarti & Nimesh Neema)
@@ -61,6 +61,8 @@ extern "C" rps_progarg_sig_t rpspa_dump;
 extern "C" rps_progarg_sig_t rpspa_help;
 extern "C" rps_progarg_sig_t rpspa_syslog;
 extern "C" rps_progarg_sig_t rpspa_version;
+extern "C" const char*rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag);
+
 ////////////////////////////////////////////////////////////////
 
 struct rps_progarg_st
@@ -97,7 +99,7 @@ struct rps_progarg_st
     .prar_str=(const char*)"dump",
     .prar_letter=(char)0,
     .prar_argname="DUMPDIR",
-    .prar_expl=(const char*)"dump stateinto given directory",
+    .prar_expl=(const char*)"dump state into given directory",
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)rpspa_dump
   },
@@ -139,6 +141,28 @@ struct rps_progarg_st
   }
 };        // end rps_progarg_array
 ////////////////////////////////////////////////////////////////
+
+/// should compute the argument value (when prag->prar_argname exists)
+/// and in that case increment or update pix
+const char*
+rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+  RPS_ASSERT(prag);
+  RPS_ASSERT(curarg);
+  if (prag->prar_argname == nullptr)
+    return nullptr;
+  RPS_ASSERT(curarg);
+  if (isalpha(prag->prar_letter) && curarg[0]=='-'
+      && curarg[1] == prag->prar_letter) {
+    if (curarg[2] && curarg[2] == '=')
+      return curarg+2;
+  }
+#warning should use pix and rps_prog_argcount and rps_prog_nth_arg
+    RPS_FATALOUT("unimplemented rps_progarg_get_argval curarg=" << curarg
+		 << " pix=" << pix);
+  return nullptr;
+} // end rps_progarg_get_argval
+
 void
 rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
@@ -183,7 +207,7 @@ rpspa_dump (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
 #warning unimplemented rpspa_dump
   RPS_UNIQUE_BREAKPOINT();
-  RPS_ASSERT(prag && prag->prar_letter == 'H');
+  RPS_ASSERT(prag && prag->prar_letter == 'D');
   RPS_FATALOUT("unimplemented rpspa_dump curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_dump
@@ -372,30 +396,30 @@ rps_early_initialization(int argc, char** argv)
              pa++)
           {
 #warning incomplete code related to rps_progarg_array and argv
-int slen = pa->prar_str ? strlen(pa->prar_str) : 0;
+            int slen = pa->prar_str ? strlen(pa->prar_str) : 0;
 
-bool matched = false;
+            bool matched = false;
 
-if (pa->prar_letter != 0
-    && curarg[0] == '-'
-    && curarg[1] == pa->prar_letter
-    && curarg[2] == '\0')
-  matched = true;
+            if (pa->prar_letter != 0
+                && curarg[0] == '-'
+                && curarg[1] == pa->prar_letter
+                && curarg[2] == '\0')
+              matched = true;
 
-if (pa->prar_str != nullptr
-    && curarg[0] == '-'
-    && curarg[1] == '-'
-    && slen >= 1
-    && !strncmp(curarg + 2, pa->prar_str, slen)
-    && curarg[2 + slen] == '\0')
-  matched = true;
+            if (pa->prar_str != nullptr
+                && curarg[0] == '-'
+                && curarg[1] == '-'
+                && slen >= 1
+                && !strncmp(curarg + 2, pa->prar_str, slen)
+                && curarg[2 + slen] == '\0')
+              matched = true;
 
-if (matched)
-  {
-    RPS_ASSERT(pa->prar_rout != nullptr);
-    pa->prar_rout(curarg, ix, pa);
-    break;
-  }
+            if (matched)
+              {
+                RPS_ASSERT(pa->prar_rout != nullptr);
+                pa->prar_rout(curarg, ix, pa);
+                break;
+              }
           };
       }
     if (rps_disable_aslr)
