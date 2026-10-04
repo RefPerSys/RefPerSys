@@ -294,6 +294,7 @@ static void
 rps_very_early_init(char cwdbuf[], int lin)
 {
   assert (lin>0);
+  RPS_UNIQUE_BREAKPOINT();
   if (!getcwd(cwdbuf, rps_path_byte_size))
     {
       fprintf(stderr, "%s: failed to getcwd: %s (%d bytes cwdbuf, lin=%d) [%s:%d git %s]\n",
@@ -332,6 +333,7 @@ rps_early_initialization(int argc, char** argv)
   rps_argc = argc;
   rps_argv = argv;
   rps_progname = argv[0];
+  RPS_UNIQUE_BREAKPOINT();
   ///
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
