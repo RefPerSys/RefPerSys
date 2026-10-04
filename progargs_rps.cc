@@ -337,8 +337,6 @@ rps_early_initialization(int argc, char** argv)
       rps_stdin_istty = isatty(STDIN_FILENO);
       rps_stderr_istty = isatty(STDERR_FILENO);
       rps_stdout_istty = isatty(STDOUT_FILENO);
-      if (rps_stdin_istty && rps_stdout_istty)
-        rps_readline_initialize();
     }
   else   ////// called inside emacs
     {
@@ -438,6 +436,10 @@ rps_early_initialization(int argc, char** argv)
           RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
       }
   }
+  RPS_UNIQUE_BREAKPOINT();
+  if (rps_stdin_istty && rps_stdout_istty && !inside_emacs)
+    rps_readline_initialize();
+  RPS_UNIQUE_BREAKPOINT();
   Rps_Agenda::initialize();
   {
     char tmbfr[64];   // the time buffer string
@@ -482,6 +484,7 @@ rps_early_initialization(int argc, char** argv)
     rps_add_debug_cstr((argv[1]+strlen("--debug=")));
   if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
     rps_add_debug_cstr((argv[1]+strlen("-d")));
+  RPS_UNIQUE_BREAKPOINT();
   ///
   if (rps_syslog_enabled)
     {
