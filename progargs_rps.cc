@@ -272,12 +272,13 @@ bool rps_helpwanted;
 
 // fetch the working directory and dlopen to th self
 static void
-rps_very_early_init(char cwdbuf[])
+rps_very_early_init(char cwdbuf[], int lin)
 {
+  assert (lin>0);
   if (!getcwd(cwdbuf, rps_path_byte_size))
     {
-      fprintf(stderr, "%s: failed to getcwd: %s (%d bytes cwdbuf) [%s:%d git %s]\n",
-              rps_progname, strerror(errno), (int)rps_path_byte_size,
+      fprintf(stderr, "%s: failed to getcwd: %s (%d bytes cwdbuf, lin=%d) [%s:%d git %s]\n",
+              rps_progname, strerror(errno), (int)rps_path_byte_size, lin,
               __FILE__, __LINE__-2, rps_progargs_shortgitid);
       fflush(nullptr);
       exit(EXIT_FAILURE);
@@ -315,7 +316,7 @@ rps_early_initialization(int argc, char** argv)
   ///
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
-  rps_very_early_init (cwdbuf);
+  rps_very_early_init (cwdbuf, __LINE__);
   /// https://man.archlinux.org/man/elf_version.3.en
   {
     unsigned ev = elf_version(EV_CURRENT);
@@ -327,6 +328,7 @@ rps_early_initialization(int argc, char** argv)
                   << " failed to call elf_version in "
                   << __FILE__ << ":" << l
                   << " " << strerror(er) << std::endl;
+	exit(EXIT_FAILURE);
       }
   }
   errno = 0;
