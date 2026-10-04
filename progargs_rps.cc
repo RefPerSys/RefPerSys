@@ -181,6 +181,8 @@ rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_
 {
 #warning unimplemented rpspa_set_debugging_after_load
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
   // TODO: call rps_add_debug_cstr appropriately
   RPS_FATALOUT("unimplemented rpspa_set_debugging_after_load curarg=" << curarg
                << " pix=" << pix);
@@ -191,6 +193,8 @@ rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st
 {
 #warning unimplemented rpspa_set_debugging_at_start
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
   // TODO: call rps_add_debug_cstr appropriately
   RPS_FATALOUT("unimplemented rpspa_set_debugging_at_start curarg=" << curarg
                << " pix=" << pix);
@@ -201,6 +205,8 @@ rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
 #warning unimplemented rpspa_debugging_help
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
   RPS_FATALOUT("unimplemented rpspa_debugging_help curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_debugging_help
@@ -210,6 +216,8 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
 #warning unimplemented rpspa_help
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
   RPS_ASSERT(prag && prag->prar_letter == 'H');
   RPS_FATALOUT("unimplemented rpspa_help curarg=" << curarg
                << " pix=" << pix);
@@ -220,6 +228,8 @@ rpspa_dump (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
 #warning unimplemented rpspa_dump
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
   RPS_ASSERT(prag && prag->prar_letter == 'D');
   RPS_FATALOUT("unimplemented rpspa_dump curarg=" << curarg
                << " pix=" << pix);
@@ -230,6 +240,8 @@ rpspa_syslog (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
 #warning unimplemented rpspa_syslog
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
   RPS_FATALOUT("unimplemented rpspa_syslog curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_syslog
@@ -238,15 +250,20 @@ void
 rpspa_version (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
   RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
   RPS_ASSERT(prag && prag->prar_letter == 'V');
   rps_show_version();
+  exit(EXIT_SUCCESS);
 } // end rpspa_version
 
 void
 rpspa_print_full_git_exit (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
   RPS_UNIQUE_BREAKPOINT();
-  RPS_ASSERT(prag && !prag->prar_letter
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
+  RPS_ASSERT(!prag->prar_letter
              && !strcmp(prag->prar_str, "full-git"));
   if (puts(rps_gitid)<0)
     RPS_FATALOUT("puts failure pix=" << pix
@@ -258,7 +275,9 @@ void
 rpspa_print_short_git_exit (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
   RPS_UNIQUE_BREAKPOINT();
-  RPS_ASSERT(prag && !prag->prar_letter
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
+  RPS_ASSERT(!prag->prar_letter
              && !strcmp(prag->prar_str, "short-git"));
   if (puts(rps_shortgitid)<0)
     RPS_FATALOUT("puts failure pix=" << pix
@@ -270,7 +289,7 @@ rpspa_print_short_git_exit (const char*curarg, int& pix, struct rps_progarg_st*p
 ////////////////////////////////////////////////////////////////
 bool rps_helpwanted;
 
-// fetch the working directory and dlopen to th self
+// fetch the working directory and dlopen to  self process for future dlsym
 static void
 rps_very_early_init(char cwdbuf[], int lin)
 {
@@ -328,7 +347,7 @@ rps_early_initialization(int argc, char** argv)
                   << " failed to call elf_version in "
                   << __FILE__ << ":" << l
                   << " " << strerror(er) << std::endl;
-	exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
       }
   }
   errno = 0;
@@ -395,14 +414,14 @@ rps_early_initialization(int argc, char** argv)
         const char*curarg=argv[ix];
         assert(curarg != nullptr);
         if (curarg[0] != '-')
-	  break;
+          break;
         for (struct rps_progarg_st* pa = rps_progarg_array;
              pa->prar_str || pa->prar_letter;
              pa++)
           {
 #warning incomplete code related to rps_progarg_array and argv
             int slen = pa->prar_str ? strlen(pa->prar_str) : 0;
-	    RPS_UNIQUE_BREAKPOINT();
+            RPS_UNIQUE_BREAKPOINT();
             bool matched = false;
 
             if (pa->prar_letter != 0
@@ -421,7 +440,7 @@ rps_early_initialization(int argc, char** argv)
 
             if (matched)
               {
-		RPS_UNIQUE_BREAKPOINT();
+                RPS_UNIQUE_BREAKPOINT();
                 RPS_ASSERT(pa->prar_rout != nullptr);
                 pa->prar_rout(curarg, ix, pa);
                 break;
@@ -449,10 +468,10 @@ rps_early_initialization(int argc, char** argv)
               << rps_shortgitid << " on " << rps_hostname()
               << " pid#" << getpid() << std::endl
               << " in " << cwdbuf << " at " << tmbfr << std::endl
-	    << ", "<< (rps_stdin_istty?"tty stdin":"plain stdin")
-	    << ", "<< (rps_stderr_istty?"tty stderr":"plain stderr")
-	    << ", "<< (rps_stdout_istty?"tty stdout":"plain stdout")
-	    << ", " << __FILE__ << ":" << __LINE__ << std::endl;
+              << ", "<< (rps_stdin_istty?"tty stdin":"plain stdin")
+              << ", "<< (rps_stderr_istty?"tty stderr":"plain stderr")
+              << ", "<< (rps_stdout_istty?"tty stdout":"plain stdout")
+              << ", " << __FILE__ << ":" << __LINE__ << std::endl;
   }
   unsetenv("LANG");
   unsetenv("LC_ADDRESS");
