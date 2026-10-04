@@ -367,15 +367,6 @@ rps_early_initialization(int argc, char** argv)
   // compute the program invocation string
   rps_compute_program_invocation(argc, (const char**)argv);
   rps_main_thread_handle = pthread_self();
-  {
-    char tmbfr[64];   // the time buffer string
-    memset(tmbfr, 0, sizeof (tmbfr));
-    rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
-    std::cout << std::endl << "** STARTING RefPerSys git "
-              << rps_shortgitid << " on " << rps_hostname()
-              << " pid#" << getpid() << std::endl
-              << " in " << cwdbuf << " at " << tmbfr << std::endl;
-  }
   // also use REFPERSYS_DEBUG
   {
     const char*debugenv = getenv("REFPERSYS_DEBUG");
@@ -446,11 +437,19 @@ rps_early_initialization(int argc, char** argv)
       }
   }
   Rps_Agenda::initialize();
-  std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
+  {
+    char tmbfr[64];   // the time buffer string
+    memset(tmbfr, 0, sizeof (tmbfr));
+    rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
+    std::cout << std::endl << "** STARTING RefPerSys git "
+              << rps_shortgitid << " on " << rps_hostname()
+              << " pid#" << getpid() << std::endl
+              << " in " << cwdbuf << " at " << tmbfr << std::endl
 	    << ", "<< (rps_stdin_istty?"tty stdin":"plain stdin")
 	    << ", "<< (rps_stderr_istty?"tty stderr":"plain stderr")
 	    << ", "<< (rps_stdout_istty?"tty stdout":"plain stdout")
 	    << ", " << __FILE__ << ":" << __LINE__ << std::endl;
+  }
   unsetenv("LANG");
   unsetenv("LC_ADDRESS");
   unsetenv("LC_ALL");
@@ -499,7 +498,11 @@ rps_early_initialization(int argc, char** argv)
   // Program arguments are parsed by rps_parse_program_arguments().
 } // end rps_early_initialization
 
-extern "C" struct argp_option rps_progoptions[];
+
+
+
+extern "C" struct argp_option rps_progoptions[]; /// soon obsolete (Oct 04, 2026)
+
 // rps_parse_program_arguments is called very early from main...
 void
 rps_parse_program_arguments(int &argc, char**argv)
@@ -509,45 +512,45 @@ rps_parse_program_arguments(int &argc, char**argv)
   errno = 0;
   rps_early_initialization  (argc, argv);
   errno = 0;
-  struct argp_state argstate;
-  memset (&argstate, 0, sizeof(argstate));
 #if 0 && oldcode
-  argparser_rps.options = rps_progoptions; // defined in main_rps.cc
-  argparser_rps.parser = rps_parse1opt;
-  argparser_rps.args_doc = " ; # ";
-  argparser_rps.doc =
-    "RefPerSys - an opensource Artificial Intelligence inference engine project,\n"
-    " open science, for Linux/x86-64; see refpersys.org for more.\n"
-    " (REFlexive PERsystem SYStem is GPLv3+ licensed free software)\n"
-    " You should have received a copy of the GNU General Public License\n"
-    " along with this program.  If not, see www.gnu.org/licenses\n"
-    " *** NO WARRANTY, not even for FITNESS FOR A PARTICULAR PURPOSE ***\n"
-    " +++!!! use at your own risk !!!+++\n"
-    " (shortgitid " RPS_SHORTGITID ")\n"
-    "\n Accepted program options are:\n";
-  argparser_rps.children = nullptr;
-  argparser_rps.help_filter = nullptr;
-  argparser_rps.argp_domain = nullptr;
-  int aix= -1;
-  if (argp_parse(&argparser_rps, argc, argv, 0, &aix, nullptr))
-    RPS_FATALOUT("failed to parse program arguments to " << argv[0]
-                 << " at program argument index aix=" << aix);
-  if (rps_helpwanted)
-    {
-      RPS_UNIQUE_BREAKPOINT();
-      std::cout << "*** debug level flag in C++ code ***" << std::endl;
-      std::cout << "# levelname | explanation" << std::endl;
-      char levbuf[80];
-#define Rps_Explain_Level_Help(Level,Str) do {          \
-    memset(levbuf, 0, sizeof(levbuf));                  \
-    snprintf(levbuf, sizeof(levbuf), "\t %14s # %s",    \
-             #Level, Str);                              \
-    std::cout << levbuf << std::endl;                   \
-  } while(0);
-      RPS_DEBUG_OPTIONS(Rps_Explain_Level_Help);
-#undef Rps_Explain_Level_Help
-    } // end if rps_helpwanted
-  RPS_POSSIBLE_BREAKPOINT();
+//°-  struct argp_state argstate;
+//°-  memset (&argstate, 0, sizeof(argstate));
+//°- argparser_rps.options = rps_progoptions; // defined in main_rps.cc
+//°- argparser_rps.parser = rps_parse1opt;
+//°- argparser_rps.args_doc = " ; # ";
+//°- argparser_rps.doc =
+//°-   "RefPerSys - an opensource Artificial Intelligence inference engine project,\n"
+//°-   " open science, for Linux/x86-64; see refpersys.org for more.\n"
+//°-   " (REFlexive PERsystem SYStem is GPLv3+ licensed free software)\n"
+//°-   " You should have received a copy of the GNU General Public License\n"
+//°-   " along with this program.  If not, see www.gnu.org/licenses\n"
+//°-   " *** NO WARRANTY, not even for FITNESS FOR A PARTICULAR PURPOSE ***\n"
+//°-   " +++!!! use at your own risk !!!+++\n"
+//°-   " (shortgitid " RPS_SHORTGITID ")\n"
+//°-   "\n Accepted program options are:\n";
+//°- argparser_rps.children = nullptr;
+//°- argparser_rps.help_filter = nullptr;
+//°- argparser_rps.argp_domain = nullptr;
+//°- int aix= -1;
+//°- if (argp_parse(&argparser_rps, argc, argv, 0, &aix, nullptr))
+//°-   RPS_FATALOUT("failed to parse program arguments to " << argv[0]
+//°-                << " at program argument index aix=" << aix);
+//°- if (rps_helpwanted)
+//°-   {
+//°-     RPS_UNIQUE_BREAKPOINT();
+//°-     std::cout << "*** debug level flag in C++ code ***" << std::endl;
+//°-     std::cout << "# levelname | explanation" << std::endl;
+//°-     char levbuf[80];
+//°- #define Rps_Explain_Level_Help(Level,Str) do {          \
+//°-   memset(levbuf, 0, sizeof(levbuf));                  \
+//°-   snprintf(levbuf, sizeof(levbuf), "\t %14s # %s",    \
+//°-            #Level, Str);                              \
+//°-   std::cout << levbuf << std::endl;                   \
+//°- } while(0);
+//°-     RPS_DEBUG_OPTIONS(Rps_Explain_Level_Help);
+//°- #undef Rps_Explain_Level_Help
+//°-   } // end if rps_helpwanted
+//°- RPS_POSSIBLE_BREAKPOINT();
 #endif /* 0 && oldcode */
 } // end rps_parse_program_arguments
 
