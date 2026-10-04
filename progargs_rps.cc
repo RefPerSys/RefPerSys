@@ -61,6 +61,9 @@ extern "C" rps_progarg_sig_t rpspa_dump;
 extern "C" rps_progarg_sig_t rpspa_help;
 extern "C" rps_progarg_sig_t rpspa_syslog;
 extern "C" rps_progarg_sig_t rpspa_version;
+extern "C" rps_progarg_sig_t rpspa_print_short_git_exit;
+extern "C" rps_progarg_sig_t rpspa_print_full_git_exit;
+
 extern "C" const char*rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag);
 
 ////////////////////////////////////////////////////////////////
@@ -87,12 +90,21 @@ struct rps_progarg_st
   },
 
   {
-    .prar_str=(const char*)"debug-at-start",
-    .prar_letter=(char)'D',
-    .prar_argname="DBGFLAGS",
-    .prar_expl=(const char*)"comma separated options of debugging names; list them with --debug-help",
+    .prar_str=(const char*)"short-git",
+    .prar_letter=(char)0,
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"print the short gitid and exit",
     .prar_data=nullptr,
-    .prar_rout=(rps_progarg_sig_t*)rpspa_set_debugging_at_start
+    .prar_rout=(rps_progarg_sig_t*)rpspa_print_short_git_exit
+  },
+
+  {
+    .prar_str=(const char*)"full-git",
+    .prar_letter=(char)0,
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"print the full gitid and exit",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_print_full_git_exit
   },
 
   {
@@ -153,13 +165,14 @@ rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag)
     return nullptr;
   RPS_ASSERT(curarg);
   if (isalpha(prag->prar_letter) && curarg[0]=='-'
-      && curarg[1] == prag->prar_letter) {
-    if (curarg[2] && curarg[2] == '=')
-      return curarg+2;
-  }
+      && curarg[1] == prag->prar_letter)
+    {
+      if (curarg[2] && curarg[2] == '=')
+        return curarg+2;
+    }
 #warning should use pix and rps_prog_argcount and rps_prog_nth_arg
-    RPS_FATALOUT("unimplemented rps_progarg_get_argval curarg=" << curarg
-		 << " pix=" << pix);
+  RPS_FATALOUT("unimplemented rps_progarg_get_argval curarg=" << curarg
+               << " pix=" << pix);
   return nullptr;
 } // end rps_progarg_get_argval
 
@@ -228,6 +241,31 @@ rpspa_version (const char*curarg, int& pix, struct rps_progarg_st*prag)
   RPS_ASSERT(prag && prag->prar_letter == 'V');
   rps_show_version();
 } // end rpspa_version
+
+void
+rpspa_print_full_git_exit (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(prag && !prag->prar_letter
+             && !strcmp(prag->prar_str, "full-git"));
+  if (puts(rps_gitid)<0)
+    RPS_FATALOUT("puts failure pix=" << pix
+                 << " curarg=" << Rps_QuotedC_String(curarg));
+  exit(EXIT_SUCCESS);
+} // end rpspa_print_full_git_exit
+
+void
+rpspa_print_short_git_exit (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(prag && !prag->prar_letter
+             && !strcmp(prag->prar_str, "short-git"));
+  if (puts(rps_shortgitid)<0)
+    RPS_FATALOUT("puts failure pix=" << pix
+                 << " curarg=" << Rps_QuotedC_String(curarg));;
+  exit(EXIT_SUCCESS);
+
+} // end rpspa_print_short_git_exit
 
 ////////////////////////////////////////////////////////////////
 bool rps_helpwanted;
