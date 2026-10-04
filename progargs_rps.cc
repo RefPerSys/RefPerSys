@@ -270,38 +270,14 @@ rpspa_print_short_git_exit (const char*curarg, int& pix, struct rps_progarg_st*p
 ////////////////////////////////////////////////////////////////
 bool rps_helpwanted;
 
-
-
-
-
-/// rps_early_initialization is called by rps_parse_program_arguments
-/// which is called early from main (before loading of the persistent heap)
+// fetch the working directory and dlopen to th self
 static void
-rps_early_initialization(int argc, char** argv)
+rps_very_early_init(char cwdbuf[])
 {
-  char*inside_emacs =
-    getenv("INSIDE_EMACS"); /// GNU emacs is supposed to set this (.emacs)
-  rps_argc = argc;
-  rps_argv = argv;
-  rps_progname = argv[0];
-  char cwdbuf[rps_path_byte_size];
-  memset (cwdbuf, 0, sizeof(cwdbuf));
-  if (argc == 2 && !strcmp(argv[1], "--full-git"))   /// see also rps_parse1opt
-    {
-      printf("%s\n", rps_gitid);
-      fflush(nullptr);
-      exit(EXIT_SUCCESS);
-    }
-  else if (argc == 2 && !strcmp(argv[1], "--short-git"))  /// see also rps_parse1opt
-    {
-      printf("%s\n", rps_shortgitid);
-      fflush(nullptr);
-      exit(EXIT_SUCCESS);
-    }
-  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+  if (!getcwd(cwdbuf, rps_path_byte_size))
     {
       fprintf(stderr, "%s: failed to getcwd: %s (%d bytes cwdbuf) [%s:%d git %s]\n",
-              rps_progname, strerror(errno), (int)sizeof(cwdbuf),
+              rps_progname, strerror(errno), (int)rps_path_byte_size,
               __FILE__, __LINE__-2, rps_progargs_shortgitid);
       fflush(nullptr);
       exit(EXIT_FAILURE);
@@ -321,9 +297,25 @@ rps_early_initialization(int argc, char** argv)
              __FILE__, __LINE__-2, rps_progargs_shortgitid);
       exit(EXIT_FAILURE);
     };
+} // end rps_very_early_init
+
+
+/// rps_early_initialization is called by rps_parse_program_arguments
+/// which is called early from main (before loading of the persistent heap)
+static void
+rps_early_initialization(int argc, char** argv)
+{
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  char*inside_emacs =
+    getenv("INSIDE_EMACS"); /// GNU emacs is supposed to set this (.emacs)
+  rps_argc = argc;
+  rps_argv = argv;
+  rps_progname = argv[0];
   ///
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
+  rps_very_early_init (cwdbuf);
   /// https://man.archlinux.org/man/elf_version.3.en
   {
     unsigned ev = elf_version(EV_CURRENT);
@@ -343,11 +335,6 @@ rps_early_initialization(int argc, char** argv)
       rps_stdin_istty = isatty(STDIN_FILENO);
       rps_stderr_istty = isatty(STDERR_FILENO);
       rps_stdout_istty = isatty(STDOUT_FILENO);
-      std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
-                << ", "<< (rps_stdin_istty?"tty stdin":"plain stdin")
-                << ", "<< (rps_stderr_istty?"tty stderr":"plain stderr")
-                << ", "<< (rps_stdout_istty?"tty stdout":"plain stdout")
-                << ", " << __FILE__ << ":" << __LINE__ << std::endl;
       if (rps_stdin_istty && rps_stdout_istty)
         rps_readline_initialize();
     }
@@ -376,31 +363,19 @@ rps_early_initialization(int argc, char** argv)
              strerror(errno));
       exit(EXIT_FAILURE);
     };
+  RPS_UNIQUE_BREAKPOINT();
   // compute the program invocation string
   rps_compute_program_invocation(argc, (const char**)argv);
   rps_main_thread_handle = pthread_self();
   {
-    RPS_ASSERTPRINTF(strlen(cwdbuf)>0, "empty cwdbuf");
     char tmbfr[64];   // the time buffer string
     memset(tmbfr, 0, sizeof (tmbfr));
-    if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
-      strcpy(cwdbuf, "./");
     rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
     std::cout << std::endl << "** STARTING RefPerSys git "
               << rps_shortgitid << " on " << rps_hostname()
               << " pid#" << getpid() << std::endl
               << " in " << cwdbuf << " at " << tmbfr << std::endl;
   }
-  /// handle early a debug flag request
-  if (argc > 1
-      && !strncmp(argv[1], "--debug=", strlen("--debug=")))
-    {
-      rps_add_debug_cstr(argv[1]+strlen("--debug="));
-    }
-  else if (argc > 1 && argv[1][0]=='-' && argv[1][1]=='D')
-    {
-      rps_add_debug_cstr(argv[1]+2);
-    };
   // also use REFPERSYS_DEBUG
   {
     const char*debugenv = getenv("REFPERSYS_DEBUG");
@@ -428,14 +403,15 @@ rps_early_initialization(int argc, char** argv)
       {
         const char*curarg=argv[ix];
         assert(curarg != nullptr);
-        if (curarg[0] != '-') break;
+        if (curarg[0] != '-')
+	  break;
         for (struct rps_progarg_st* pa = rps_progarg_array;
              pa->prar_str || pa->prar_letter;
              pa++)
           {
 #warning incomplete code related to rps_progarg_array and argv
             int slen = pa->prar_str ? strlen(pa->prar_str) : 0;
-
+	    RPS_UNIQUE_BREAKPOINT();
             bool matched = false;
 
             if (pa->prar_letter != 0
@@ -454,6 +430,7 @@ rps_early_initialization(int argc, char** argv)
 
             if (matched)
               {
+		RPS_UNIQUE_BREAKPOINT();
                 RPS_ASSERT(pa->prar_rout != nullptr);
                 pa->prar_rout(curarg, ix, pa);
                 break;
@@ -469,6 +446,11 @@ rps_early_initialization(int argc, char** argv)
       }
   }
   Rps_Agenda::initialize();
+  std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
+	    << ", "<< (rps_stdin_istty?"tty stdin":"plain stdin")
+	    << ", "<< (rps_stderr_istty?"tty stderr":"plain stderr")
+	    << ", "<< (rps_stdout_istty?"tty stdout":"plain stdout")
+	    << ", " << __FILE__ << ":" << __LINE__ << std::endl;
   unsetenv("LANG");
   unsetenv("LC_ADDRESS");
   unsetenv("LC_ALL");
