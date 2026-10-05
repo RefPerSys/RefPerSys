@@ -198,17 +198,26 @@ rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag)
   return nullptr;
 } // end rps_progarg_get_argval
 
+static void
+rpspado_after_load_set_debug (const char*srcfil,int srclin, const char*funame, void*data)
+{
+  const char*dbgstr = (const char*)data;
+  RPS_ASSERT(dbgstr && isalpha(dbgstr[0]));
+  RPS_INFORMOUT("setting debug to " << dbgstr << " from "
+		<< srcfil << ":" << srclin << " " << funame);
+  rps_add_debug_cstr(dbgstr);
+  RPS_INFORMOUT("set debug flags to "
+		<< rps_debug_level_string(rps_debug_flags.load()));
+} // end rpspado_after_load_set_debug
+
 void
 rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_set_debugging_after_load
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
   const char*arg = rps_progarg_get_argval (curarg, pix, prag);
-  // TODO: call rps_add_debug_cstr appropriately
-  RPS_FATALOUT("unimplemented rpspa_set_debugging_after_load curarg=" << curarg
-               << " pix=" << pix);
+  RPS_DO_AFTER_LOAD_CFUN(rpspado_after_load_set_debug,(void*)arg);
 } // end rpspa_set_debugging_after_load
 
 void
