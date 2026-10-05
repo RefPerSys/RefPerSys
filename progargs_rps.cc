@@ -206,7 +206,7 @@ rpspado_after_load_set_debug (const char*srcfil,int srclin, const char*funame, v
   RPS_INFORMOUT("setting debug to " << dbgstr << " from "
 		<< srcfil << ":" << srclin << " " << funame);
   rps_add_debug_cstr(dbgstr);
-  RPS_INFORMOUT("set debug flags to "
+  RPS_INFORMOUT("after loading heap, set debug flags to "
 		<< rps_debug_level_string(rps_debug_flags.load()));
 } // end rpspado_after_load_set_debug
 
