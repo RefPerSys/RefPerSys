@@ -161,6 +161,7 @@ rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
   RPS_ASSERT(prag);
   RPS_ASSERT(curarg);
+  const int prargc = rps_prog_argcount();
   if (prag->prar_argname == nullptr)
     return nullptr;
   RPS_ASSERT(curarg);
@@ -168,7 +169,31 @@ rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag)
       && curarg[1] == prag->prar_letter)
     {
       if (curarg[2] && curarg[2] == '=')
-        return curarg+2;
+        {
+          if (curarg[3])
+            return curarg+3;
+          if (pix++ < prargc)
+            return rps_prog_nth_arg(pix);
+          else
+            return nullptr;
+        }
+    };
+  if (prag->prar_str && isalpha(prag->prar_str[0])
+      && curarg[0] == '-'
+      && curarg[1] == '-' && curarg[2])
+    {
+      int slen=strlen(prag->prar_str);
+      if (strncmp(curarg+2,prag->prar_str,slen))
+        return nullptr;
+      if (curarg[2+slen]== '=')
+        {
+          if (curarg[slen+3])
+            return curarg+slen+3;
+          if (pix++ < prargc)
+            return rps_prog_nth_arg(pix);
+          else
+            return nullptr;
+        }
     }
 #warning should use pix and rps_prog_argcount and rps_prog_nth_arg
   RPS_FATALOUT("unimplemented rps_progarg_get_argval curarg=" << curarg
