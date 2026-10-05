@@ -107,7 +107,7 @@ Rps_Backtracer::output(std::ostream&outs)
     RPS_FASTABORT("corrupted Rps_Backtracer");
   if (&outs == &std::cerr || &outs == &std::clog)
     backtr_ontty = rps_without_terminal_escape
-      ? false : (rps_stdin_istty && rps_stderr_istty);
+                   ? false : (rps_stdin_istty && rps_stderr_istty);
   else if (&outs == &std::cout)
     backtr_ontty = rps_without_terminal_escape
                    ? false : rps_stdout_istty;
@@ -414,7 +414,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullOut_Tag,
   backtr_depth(0),
   backtr_name(name)
 {
-
+  RPS_UNIQUE_BREAKPOINT();
   if (bkind() != Kind::FullOut_Kind)
     RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullOutTag kind=" << bkindname());
 } // end Rps_Backtracer::Rps_Backtracer/FullOut_Tag
@@ -440,6 +440,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClos_Tag,
     backtr_depth(0),
     backtr_name(name)
 {
+  RPS_UNIQUE_BREAKPOINT();
   if (bkind() != Kind::FullClos_Kind)
     RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullClos_Tag");
 } // end Rps_Backtracer::Rps_Backtracer/FullClos_Tag
@@ -697,6 +698,7 @@ Rps_Backtracer::backtrace_error_cb(void* data, const char*msg, int errnum)
 Rps_Backtracer::~Rps_Backtracer()
 {
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
+  RPS_UNIQUE_BREAKPOINT();
   if (this->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
   if (backtr_outs)
