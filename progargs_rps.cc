@@ -195,9 +195,6 @@ rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag)
             return nullptr;
         }
     }
-#warning should use pix and rps_prog_argcount and rps_prog_nth_arg
-  RPS_FATALOUT("unimplemented rps_progarg_get_argval curarg=" << curarg
-               << " pix=" << pix);
   return nullptr;
 } // end rps_progarg_get_argval
 
@@ -208,6 +205,7 @@ rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
+  const char*arg = rps_progarg_get_argval (curarg, pix, prag);
   // TODO: call rps_add_debug_cstr appropriately
   RPS_FATALOUT("unimplemented rpspa_set_debugging_after_load curarg=" << curarg
                << " pix=" << pix);
@@ -216,12 +214,15 @@ rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_
 void
 rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_set_debugging_at_start
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
+  const char*arg = rps_progarg_get_argval (curarg, pix, prag);
+  if (arg)
+    rps_add_debug_cstr(arg);
+  else
   // TODO: call rps_add_debug_cstr appropriately
-  RPS_FATALOUT("unimplemented rpspa_set_debugging_at_start curarg=" << curarg
+    RPS_FATALOUT("rpspa_set_debugging_at_start needs arg, curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_set_debugging_at_start
 
