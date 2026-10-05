@@ -218,6 +218,7 @@ rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_
   RPS_ASSERT(prag != nullptr);
   const char*arg = rps_progarg_get_argval (curarg, pix, prag);
   RPS_DO_AFTER_LOAD_CFUN(rpspado_after_load_set_debug,(void*)arg);
+  RPS_INFORMOUT("after load of heap debug flags should be " << arg);
 } // end rpspa_set_debugging_after_load
 
 void
