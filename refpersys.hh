@@ -616,7 +616,7 @@ typedef void rps_do_after_load_sig_t (const char*srcfil,int srclin, const char*f
 // in load_rps.cc - probably clos should accept fil&lin&fun
 extern "C" void rps_do_after_load_cfun_at(const char*fil,int lin,const char*fun,rps_do_after_load_sig_t*cfun,void*data);
 
-#define RPS_DO_AFTER_LOAD_CFUN(Fun,Data) rps_do_after_load_cfun_at(__FILE__,__builtin_line(),__FUNCTION__,(Fun),(Data))
+#define RPS_DO_AFTER_LOAD_CFUN(Fun,Data) rps_do_after_load_cfun_at(__FILE__,__LINE__,__FUNCTION__,(Fun),(Data))
 
 
 /// the initial copy-right year of RefPerSys
