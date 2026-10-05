@@ -695,7 +695,12 @@ rps_string_version_handwritten_source_files(void)
                 << " plugins"
                 << " handwritten C++ source files (git "
                 << rps_utilities_shortgitid
-                << " from " __FILE__ << ":" << __LINE__ << ")");
+                << " from " __FILE__ << ":" << __LINE__ << ")"
+		<< std::endl
+	      /// in commit bef66bd686310c08 (oct 5, 2026) uncommenting this backtrace
+	      /// make ./refpersys --version core dump
+//  << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files")
+	       );
   RPS_DEBUG_LOG(PROGARG, "starting " << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files/start"));
   //// show gitid of individual handwritten *cc files, using dlsym
