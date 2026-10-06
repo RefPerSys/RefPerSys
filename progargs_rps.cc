@@ -58,6 +58,7 @@ extern "C" rps_progarg_sig_t rpspa_set_debugging_after_load;
 extern "C" rps_progarg_sig_t rpspa_set_debugging_at_start;
 extern "C" rps_progarg_sig_t rpspa_debugging_help;
 extern "C" rps_progarg_sig_t rpspa_dump;
+extern "C" rps_progarg_sig_t rpspa_batch;
 extern "C" rps_progarg_sig_t rpspa_help;
 extern "C" rps_progarg_sig_t rpspa_syslog;
 extern "C" rps_progarg_sig_t rpspa_version;
@@ -71,6 +72,15 @@ extern "C" const char*rps_progarg_get_argval(const char*curarg, int& pix, struct
 struct rps_progarg_st
   rps_progarg_array[] =
 {
+  {
+    .prar_str=(const char*)"batch",
+    .prar_letter=(char)'B',
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"run in batch mode without interaction",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_batch
+  },
+
   {
     .prar_str=(const char*)"debug-after-load",
     .prar_letter=(char)'A',
@@ -204,10 +214,10 @@ rpspado_after_load_set_debug (const char*srcfil,int srclin, const char*funame, v
   const char*dbgstr = (const char*)data;
   RPS_ASSERT(dbgstr && isalpha(dbgstr[0]));
   RPS_INFORMOUT("setting debug to " << dbgstr << " from "
-		<< srcfil << ":" << srclin << " " << funame);
+                << srcfil << ":" << srclin << " " << funame);
   rps_add_debug_cstr(dbgstr);
   RPS_INFORMOUT("after loading heap, set debug flags to "
-		<< rps_debug_level_string(rps_debug_flags.load()));
+                << rps_debug_level_string(rps_debug_flags.load()));
 } // end rpspado_after_load_set_debug
 
 void
@@ -231,9 +241,9 @@ rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st
   if (arg)
     rps_add_debug_cstr(arg);
   else
-  // TODO: call rps_add_debug_cstr appropriately
+    // TODO: call rps_add_debug_cstr appropriately
     RPS_FATALOUT("rpspa_set_debugging_at_start needs arg, curarg=" << curarg
-               << " pix=" << pix);
+                 << " pix=" << pix);
 } // end rpspa_set_debugging_at_start
 
 void
@@ -246,6 +256,18 @@ rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
   RPS_FATALOUT("unimplemented rpspa_debugging_help curarg=" << curarg
                << " pix=" << pix);
 } // end rpspa_debugging_help
+
+void
+rpspa_batch (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+#warning unimplemented rpspa_batch
+  RPS_UNIQUE_BREAKPOINT();
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
+  RPS_ASSERT(prag && prag->prar_letter == 'B');
+  RPS_FATALOUT("unimplemented rpspa_batch curarg=" << curarg
+               << " pix=" << pix);
+} // end rpspa_batch
 
 void
 rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
