@@ -473,6 +473,7 @@ rps_early_initialization(int argc, char** argv)
       {
         const char*curarg=argv[ix];
         assert(curarg != nullptr);
+	RPS_UNIQUE_BREAKPOINT();
         if (curarg[0] != '-')
           break;
         for (struct rps_progarg_st* pa = rps_progarg_array;

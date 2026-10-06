@@ -885,6 +885,8 @@ extern "C" void rps_curl_publish_me(const char*url);
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C" bool rps_is_set_debug(const std::string &deblev);
+extern "C" bool rps_is_valid_single_debug_string(const std::string&str);
+extern "C" bool rps_is_valid_comma_debug_string(const std::string&str);
 extern "C" Rps_Debug rps_debug_of_string(const std::string &deblev);
 extern "C" const char*rps_cstr_of_debug(Rps_Debug); /* gives null for
                    non-debug options */
@@ -893,8 +895,9 @@ extern "C" const char*rps_cstr_of_debug(Rps_Debug); /* gives null for
 extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
 
 /// add or remove a comma or space separated list of debug flags
-extern "C" void rps_add_debug_cstr(const char*);
-extern "C" void rps_remove_debug_cstr(const char*);
+/// if checkdbg is true, abort on unknown debug flag
+extern "C" void rps_add_debug_cstr(const char*flagstr, bool checkdbg=false);
+extern "C" void rps_remove_debug_cstr(const char*flagstr, bool checkdbg=false);
 
 extern "C" double rps_start_monotonic_time;
 extern "C" double rps_start_wallclock_real_time;

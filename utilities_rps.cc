@@ -1782,6 +1782,38 @@ rps_is_set_debug(const std::string &curlev)
   return false;
 } // end rps_is_set_debug
 
+
+bool
+rps_is_valid_single_debug_string(const std::string&str)
+{
+  if (str.empty())
+    return true;
+#define Rps_IsValidSingle_DEBUG(Opt,Help) else if (str == #Opt) \
+    return true;
+  RPS_DEBUG_OPTIONS(Rps_IsValidSingle_DEBUG);
+#undef Rps_IsValidSingle_DEBUG
+  return false;
+} // end rps_is_valid_single_debug_string
+
+bool
+rps_is_valid_comma_debug_string(const std::string&str)
+{
+  if (str.empty())
+    return true;
+  const char*pc = str.c_str();
+  const char*comma = nullptr;
+  while (pc != nullptr && *pc != (char)0) {
+    comma = strchr(pc, ',');
+    if (!comma)
+      return rps_is_valid_single_debug_string(std::string(pc));
+    std::string curopt(pc, comma-pc-1);
+    if (rps_is_valid_single_debug_string(curopt))
+      return true;
+    pc = comma+1;
+  }
+  return false;
+} // end rps_is_valid_comma_debug_string
+
 Rps_Debug
 rps_debug_of_string(const std::string &deblev)
 {
@@ -1877,9 +1909,9 @@ rps_set_debug(const std::string &deblev)
 } // end rps_set_debug
 
 void
-rps_add_debug_cstr(const char*d)
+rps_add_debug_cstr(const char*dbgstr, bool checkdbg)
 {
-  rps_set_debug(std::string(d));
+  rps_set_debug(std::string(dbgstr));
 } // end rps_add_debug_cstr
 
 
