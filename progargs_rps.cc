@@ -227,8 +227,16 @@ rpspa_set_debugging_after_load (const char*curarg, int& pix, struct rps_progarg_
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
   const char*arg = rps_progarg_get_argval (curarg, pix, prag);
-  RPS_DO_AFTER_LOAD_CFUN(rpspado_after_load_set_debug,(void*)arg);
-  RPS_INFORMOUT("after load of heap debug flags should be " << arg);
+  if (arg)
+    {
+      if (!rps_is_valid_comma_debug_string(arg))
+        RPS_FATALOUT("invalid after load debugging options " << arg);
+
+      RPS_DO_AFTER_LOAD_CFUN(rpspado_after_load_set_debug,(void*)arg);
+      RPS_INFORMOUT("after load of heap debug flags should be " << arg);
+    }
+  else
+    RPS_FATALOUT("missing after load debugging options [curarg=" << Rps_QuotedC_String(curarg));
 } // end rpspa_set_debugging_after_load
 
 void
@@ -238,8 +246,14 @@ rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
   const char*arg = rps_progarg_get_argval (curarg, pix, prag);
+  RPS_UNIQUE_BREAKPOINT();
   if (arg)
-    rps_add_debug_cstr(arg);
+    {
+      if (!rps_is_valid_comma_debug_string(arg))
+        RPS_FATALOUT("invalid starting debugging options " << arg);
+      RPS_UNIQUE_BREAKPOINT();
+      rps_add_debug_cstr(arg);
+    }
   else
     // TODO: call rps_add_debug_cstr appropriately
     RPS_FATALOUT("rpspa_set_debugging_at_start needs arg, curarg=" << curarg
@@ -253,8 +267,10 @@ rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
-  RPS_FATALOUT("unimplemented rpspa_debugging_help curarg=" << curarg
-               << " pix=" << pix);
+  for (struct rps_progarg_st*pa =  rps_progarg_array;
+       pa && pa->prar_rout && (pa->prar_letter || pa->prar_str))
+    {
+    }
 } // end rpspa_debugging_help
 
 void
@@ -473,7 +489,7 @@ rps_early_initialization(int argc, char** argv)
       {
         const char*curarg=argv[ix];
         assert(curarg != nullptr);
-	RPS_UNIQUE_BREAKPOINT();
+        RPS_UNIQUE_BREAKPOINT();
         if (curarg[0] != '-')
           break;
         for (struct rps_progarg_st* pa = rps_progarg_array;
