@@ -1448,7 +1448,8 @@ main (int argc, char** argv)
       std::cout << std::endl
                 << "!-!-! starting RefPerSys !-!-!" << std::endl;
     };
-  RPS_INFORMOUT(argv[0] << " process " <<  (int)getpid() << " on " << rps_hostname()
+  RPS_INFORMOUT(argv[0] << " process "
+		<<  rps_decimal_string((int)getpid()) << " on " << rps_hostname()
                 << " in " << Rps_Cjson_String(mycwd?mycwd:"./") <<std::endl
                 << "executable " << rps_progexe << " git " << rps_shortgitid
                 << " version " << rps_get_major_version()

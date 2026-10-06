@@ -65,6 +65,9 @@ extern "C" rps_progarg_sig_t rpspa_version;
 extern "C" rps_progarg_sig_t rpspa_print_short_git_exit;
 extern "C" rps_progarg_sig_t rpspa_print_full_git_exit;
 
+extern "C" bool rps_helpwanted; // also in main_rps.cc
+bool rps_helpwanted;
+
 extern "C" const char*rps_progarg_get_argval(const char*curarg, int& pix, struct rps_progarg_st*prag);
 
 ////////////////////////////////////////////////////////////////
@@ -263,14 +266,15 @@ rpspa_set_debugging_at_start (const char*curarg, int& pix, struct rps_progarg_st
 void
 rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_debugging_help
+  std::ostringstream outstr;
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
-  for (struct rps_progarg_st*pa =  rps_progarg_array;
-       pa && pa->prar_rout && (pa->prar_letter || pa->prar_str))
-    {
-    }
+  RPS_ASSERT(pix>=0);
+  std::cout << rps_progname << " git " << rps_shortgitid <<  " debugging options"
+	    << std::endl
+	    << "are now" << std::endl;
+  
 } // end rpspa_debugging_help
 
 void
@@ -288,13 +292,41 @@ rpspa_batch (const char*curarg, int& pix, struct rps_progarg_st*prag)
 void
 rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_help
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
+  std::ostringstream outstr;
   RPS_ASSERT(prag && prag->prar_letter == 'H');
-  RPS_FATALOUT("unimplemented rpspa_help curarg=" << curarg
-               << " pix=" << pix);
+  for (struct rps_progarg_st*pa =  rps_progarg_array;
+       pa && pa->prar_rout && (pa->prar_letter || pa->prar_str);
+       pa++)
+    {
+      bool filled=false;
+      const char*argnam = pa->prar_argname;
+      RPS_ASSERT(pa->prar_expl);
+      if (pa->prar_letter) {
+	filled = true;
+	outstr << "-" << pa->prar_letter;
+      };
+      if (pa->prar_str) {
+	if (filled)
+	  outstr << ", ";
+	outstr << "--" << pa->prar_str;
+      };
+      if (argnam)
+	outstr << " " << argnam << " ";
+      outstr << ":";
+      outstr << pa->prar_expl << std::endl;
+    };
+  outstr << std::endl;
+  std::cout << rps_progname << " git " << rps_shortgitid
+	    << " is an open source expert system shell" << std::endl;
+  std::cout << "See refpersys.org and github.com/RefPerSys" << std::endl;
+  std::cout << outstr.str();
+  std::cout << "old help:" << std::endl;
+  rps_helpwanted = true;
+  /// the calling routine (commit 4804ecec9b3a59, Oct 2026) will
+  /// probably give the old help message
 } // end rpspa_help
 
 void
@@ -361,7 +393,6 @@ rpspa_print_short_git_exit (const char*curarg, int& pix, struct rps_progarg_st*p
 } // end rpspa_print_short_git_exit
 
 ////////////////////////////////////////////////////////////////
-bool rps_helpwanted;
 
 // fetch the working directory and dlopen to  self process for future dlsym
 static void
