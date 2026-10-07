@@ -70,6 +70,8 @@ with the `refpersys` program.
 Perhaps some indian investors prefer cnsidering [github.com/bstarynk/yarefpersys](https://github.com/bstarynk/yarefpersys).
 that YaRefPerSys can be considered as an exercise ...
 
+See also [github.com/RefPerSys/gccjit-refpersys](https://RefPerSys/gccjit-refpersys).
+
 ## A research project
 
 The Reflective Persistent System language is a **research project**,
