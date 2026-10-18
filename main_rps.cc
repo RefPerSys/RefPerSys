@@ -60,6 +60,7 @@ const char rps_main_baseid[] = RPS_BASEID;
 
 
 extern "C" bool rps_helpwanted; // in progargs_rps.cc
+extern "C" rps_progarg_sig_t rpspa_help;
 
 ////////////////
 extern "C" char rps_buffer_proc_version[];
@@ -1305,8 +1306,11 @@ main (int argc, char** argv)
   _Pragma("message \"start of main\"");
   // https://fossies.org/linux/glibmm/glib/glibmm/init.h
   Glib::init(); /// initialize glibmm ....
-  if (argc>1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-?")))
-    rps_helpwanted = true;
+  for (int lix=1; lix<argc; lix++)
+    {
+      if (!strcmp(argv[lix], "--help") || !strcmp(argv[lix], "-?"))
+        rps_helpwanted = true;
+    }
   if (argc>1 && !strcmp(argv[1], "--version"))
     versionwanted = true;
   /// we require the at(1) utility linuxize.com/post/at-command-in-linux/
@@ -1375,6 +1379,11 @@ main (int argc, char** argv)
     {
       rps_show_version();
       return EXIT_SUCCESS;
+    }
+  if (rps_helpwanted)
+    {
+      int helpix = 1;
+      rpspa_help("--help", helpix, &rps_progarg_array[0]);
     }
   RPS_POSSIBLE_BREAKPOINT();
   rps_parse_program_arguments(argc, argv);

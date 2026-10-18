@@ -76,6 +76,14 @@ struct rps_progarg_st
   rps_progarg_array[] =
 {
   {
+    .prar_str=(const char*)"help",
+    .prar_letter=(char)'H',
+    .prar_argname=nullptr,
+    .prar_expl=(const char*)"give help and usage message",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_help
+  },
+  {
     .prar_str=(const char*)"batch",
     .prar_letter=(char)'B',
     .prar_argname=nullptr,
@@ -323,10 +331,9 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 	    << " is an open source expert system shell" << std::endl;
   std::cout << "See refpersys.org and github.com/RefPerSys" << std::endl;
   std::cout << outstr.str();
-  std::cout << "old help:" << std::endl;
   rps_helpwanted = true;
-  /// the calling routine (commit 4804ecec9b3a59, Oct 2026) will
-  /// probably give the old help message
+  std::cout.flush();
+  std::exit(EXIT_SUCCESS);
 } // end rpspa_help
 
 void
@@ -531,7 +538,11 @@ rps_early_initialization(int argc, char** argv)
             int slen = pa->prar_str ? strlen(pa->prar_str) : 0;
             RPS_UNIQUE_BREAKPOINT();
             bool matched = false;
-
+            if (pa->prar_letter == 'H'
+                && pa->prar_str != nullptr
+                && !strcmp(pa->prar_str, "help")
+                && !strcmp(curarg, "-?"))
+              matched = true;
             if (pa->prar_letter != 0
                 && curarg[0] == '-'
                 && curarg[1] == pa->prar_letter
