@@ -154,21 +154,24 @@ rps_readline_esc(int cnt, int key)
 void
 Rps_ReadlineTokenSource::fill_current_line_buffer(void)
 {
-#warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
-  RPS_UNIQUE_BREAKPOINT();
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
   std::string prompt = rps_readline_fetch_string_prompt();
-  RPS_DEBUG_LOG(REPL, "readline prompt=" << Rps_QuotedC_String(prompt));
   RPS_ASSERT(!prompt.empty());
+
   char* rl = readline(prompt.c_str());
-  RPS_DEBUG_LOG(REPL, "did readline " << Rps_QuotedC_String(rl));
-  RPS_UNIQUE_BREAKPOINT();
-  RPS_WARNOUT("incomplete Readline fill_current_line_buffer @"
-              << rps_unsigned_hex_string((uintptr_t)this)
-              << " rl=" << Rps_QuotedC_String(rl)
-              << " readlinbuf=" << Rps_QuotedC_String(rl_line_buffer)
-              << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "readline fillcurlinbuf"));
-#warning incomplete Rps_ReadlineTokenSource::fill_current_line_buffer
+
+  if (toksrc_lincbuf)
+    free(toksrc_lincbuf);
+  toksrc_lincbuf = nullptr;
+
+  if (rl == nullptr) {
+    toksrc_readline_eof = true;
+    return;
+  }
+
+  toksrc_readline_eof = false;
+  toksrc_lincbuf = strdup(rl);
+  free(rl);
 } // end Rps_ReadlineTokenSource::fill_current_line_buffer
 
 
@@ -190,7 +193,8 @@ Rps_ReadlineTokenSource::output(std::ostream&out, unsigned depth,
 
 
 Rps_ReadlineTokenSource::Rps_ReadlineTokenSource()
-  : Rps_TokenSource(std::string{"*readline*"})
+  : Rps_TokenSource(std::string{"*readline*"}),
+    toksrc_readline_eof(false)
 {
   static std::atomic_int cnt;
   RPS_ASSERT(cnt==0);
@@ -212,18 +216,17 @@ bool
 Rps_ReadlineTokenSource::get_line(void)
 {
   std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
-  RPS_UNIQUE_BREAKPOINT();
-#warning Rps_ReadlineTokenSource::get_line unimplemented
-  // TODO: use readline()
+  if (toksrc_readline_eof)
+    return false;
   starting_new_input_line();
-  return true;
+  return !toksrc_readline_eof;
 } // end Rps_ReadlineTokenSource::get_line
 
 bool
 Rps_ReadlineTokenSource::reached_end(void) const
 {
-#warning Rps_ReadlineTokenSource::reached_end unimplemented
-  return false;
+  std::lock_guard<std::recursive_mutex> gu(toksrc_mtx);
+  return toksrc_readline_eof;
 } // end Rps_ReadlineTokenSource::reached_end
 
 void

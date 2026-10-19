@@ -72,6 +72,42 @@ extern "C" const char*rps_progarg_get_argval(const char*curarg, int& pix, struct
 
 ////////////////////////////////////////////////////////////////
 
+static void
+rpspa_run_delay (const char*curarg, int& pix, struct rps_progarg_st*prag)
+{
+  RPS_ASSERT(curarg != nullptr);
+  RPS_ASSERT(prag != nullptr);
+  const char* arg = rps_progarg_get_argval(curarg, pix, prag);
+  if (!arg || !*arg)
+    RPS_FATALOUT("missing value for --run-delay (examples: 25s, 2m, 1h)");
+
+  char* end = nullptr;
+  errno = 0;
+  unsigned long value = strtoul(arg, &end, 10);
+  if (errno != 0 || end == arg || value == 0)
+    RPS_FATALOUT("invalid --run-delay value " << arg);
+
+  unsigned long multiplier = 1;
+  if (*end == '\0')
+    multiplier = 1;
+  else if (*end == 's' && end[1] == '\0')
+    multiplier = 1;
+  else if (*end == 'm' && end[1] == '\0')
+    multiplier = 60;
+  else if (*end == 'h' && end[1] == '\0')
+    multiplier = 3600;
+  else
+    RPS_FATALOUT("invalid --run-delay suffix in " << arg);
+
+  if (value > UINT_MAX / multiplier)
+    RPS_FATALOUT("--run-delay value is too large: " << arg);
+
+  rps_run_delay = (unsigned int)(value * multiplier);
+  RPS_INFORMOUT("run delay set to " << rps_run_delay << " seconds");
+} // end rpspa_run_delay
+
+////////////////////////////////////////////////////////////////
+
 struct rps_progarg_st
   rps_progarg_array[] =
 {
@@ -144,6 +180,15 @@ struct rps_progarg_st
     .prar_expl=(const char*)"list possible debugging flags (DBGFLAGS)",
     .prar_data=nullptr,
     .prar_rout=(rps_progarg_sig_t*)rpspa_debugging_help
+  },
+
+  {
+    .prar_str=(const char*)"run-delay",
+    .prar_letter=(char)0,
+    .prar_argname=(const char*)"SECONDS",
+    .prar_expl=(const char*)"stop event loop after a delay, e.g. 25s, 2m, or 1h",
+    .prar_data=nullptr,
+    .prar_rout=(rps_progarg_sig_t*)rpspa_run_delay
   },
 
   {
@@ -288,13 +333,11 @@ rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 void
 rpspa_batch (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_batch
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
   RPS_ASSERT(prag && prag->prar_letter == 'B');
-  RPS_FATALOUT("unimplemented rpspa_batch curarg=" << curarg
-               << " pix=" << pix);
+  rps_batch = true;
 } // end rpspa_batch
 
 void
@@ -554,7 +597,9 @@ rps_early_initialization(int argc, char** argv)
                 && curarg[1] == '-'
                 && slen >= 1
                 && !strncmp(curarg + 2, pa->prar_str, slen)
-                && curarg[2 + slen] == '\0')
+                && (curarg[2 + slen] == '\0'
+                    || (pa->prar_argname != nullptr
+                        && curarg[2 + slen] == '=')))
               matched = true;
 
             if (matched)

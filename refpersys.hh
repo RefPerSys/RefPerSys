@@ -3408,6 +3408,7 @@ extern "C" const std::string rps_readline_fetch_string_prompt(void);
 class Rps_ReadlineTokenSource : public Rps_TokenSource
 {
   // implemented in readline_rps.cc
+  bool toksrc_readline_eof = false;
 public:
   virtual void fill_current_line_buffer(void);
   virtual void output(std::ostream&out, unsigned depth,
