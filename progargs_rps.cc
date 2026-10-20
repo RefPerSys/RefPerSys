@@ -379,6 +379,7 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
       bool filled=false;
       const char*argnam = pa->prar_argname;
       RPS_ASSERT(pa->prar_expl);
+      outstr << " ";
       if (pa->prar_letter)
         {
           filled = true;
@@ -392,7 +393,7 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
         };
       if (argnam)
         outstr << " " << argnam << " ";
-      outstr << ":";
+      outstr << ": ";
       outstr << pa->prar_expl << std::endl;
     };
   outstr << std::endl;
@@ -408,14 +409,14 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 void
 rpspa_dump (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_dump
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
   RPS_UNIQUE_BREAKPOINT ();
-  RPS_ASSERT(prag && prag->prar_letter == 'D');
-  RPS_FATALOUT("unimplemented rpspa_dump curarg=" << curarg
-               << " pix=" << pix);
+  const char*dumpath = rps_progarg_get_argval(curarg, pix, prag);
+  RPS_ASSERT(prag && prag->prar_letter == 'd');
+  rps_dumpdir_str = std::string(dumpath);
+  RPS_INFORMOUT("will dump into " <<  Rps_QuotedC_String(dumpath));
 } // end rpspa_dump
 
 void
