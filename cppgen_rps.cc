@@ -268,28 +268,29 @@ Rps_PayloadCplusplusGen::checked_nth_data(int n)
     }
   return cppgen_datavect.at(n);
 } // end Rps_PayloadCplusplusGen::checked_nth_data
-
 void
 Rps_PayloadCplusplusGen::output(std::function<void(std::ostringstream&out)> fun,
                                 bool raw)
 {
-  std::string buf;
-  std::ostringstream out(buf);
+  std::ostringstream out;
   fun(out);
+  const std::string buf = out.str();
+
   if (raw)
     {
       cppgen_outcod << buf;
     }
   else
     {
-      for (char c: buf)
+      for (char c : buf)
         {
-          if (c=='\n')
+          if (c == '\n')
             cppgen_outcod << eol_indent();
           else
             cppgen_outcod << c;
-        };
+        }
     }
+
   cppgen_outcod.flush();
 } // end Rps_PayloadCplusplusGen::output
 

@@ -789,11 +789,24 @@ rps_gccjit_try_simple_jit_in_tempdir(const char*tempdir)
   RPS_POSSIBLE_BREAKPOINT();
   gcc_jit_context_dump_to_file(memjitctxt, genfile,
                                1 /*update locations*/);
-  memjitresult = gcc_jit_context_compile(memjitctxt);
+    memjitresult = gcc_jit_context_compile(memjitctxt);
+
+  if (!memjitresult) {
+    const char *err = gcc_jit_context_get_first_error(memjitctxt);
+    RPS_FATALOUT("GCCJIT in-memory compilation failed: "
+                 << (err ? err : "unknown error"));
+  }
+
+  void* memjitresfunad =
+    gcc_jit_result_get_code(memjitresult, memjitfuname);
+
+  if (!memjitresfunad)
+    RPS_FATALOUT("GCCJIT generated function not found: "
+                 << memjitfuname);
+
   gcc_jit_context_release(memjitctxt);
   memjitctxt = nullptr;
-  void* memjitresfunad = gcc_jit_result_get_code(memjitresult, memjitfuname);
-  RPS_ASSERT(memjitresfunad != nullptr);
+
   RPS_POSSIBLE_BREAKPOINT();
   typedef const char* resfuntype_sig_t(void);
   resfuntype_sig_t*memjitfunptr = (resfuntype_sig_t*)memjitresfunad;
