@@ -166,7 +166,7 @@ struct rps_progarg_st
 
   {
     .prar_str=(const char*)"dump",
-    .prar_letter=(char)0,
+    .prar_letter=(char)'d',
     .prar_argname="DUMPDIR",
     .prar_expl=(const char*)"dump state into given directory",
     .prar_data=nullptr,
@@ -325,9 +325,9 @@ rpspa_debugging_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
   RPS_ASSERT(prag != nullptr);
   RPS_ASSERT(pix>=0);
   std::cout << rps_progname << " git " << rps_shortgitid <<  " debugging options"
-	    << std::endl
-	    << "are now" << std::endl;
-  
+            << std::endl
+            << "are now" << std::endl;
+
 } // end rpspa_debugging_help
 
 void
@@ -343,6 +343,7 @@ rpspa_batch (const char*curarg, int& pix, struct rps_progarg_st*prag)
 void
 rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
+  std::vector<struct rps_progarg_st*> vecpa;
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
@@ -352,26 +353,52 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
        pa && pa->prar_rout && (pa->prar_letter || pa->prar_str);
        pa++)
     {
+      vecpa.push_back(pa);
+    };
+  std::stable_sort(vecpa.begin(), vecpa.end(),
+                   [=](struct rps_progarg_st*left,
+                       struct rps_progarg_st*right)
+  {
+    assert(left);
+    assert(right);
+    if (left == right)
+      return false;
+    if (left->prar_letter)
+      {
+        if (!right->prar_letter)
+          return true;
+        return left->prar_letter < right->prar_letter;
+      };
+    assert(left->prar_str);
+    if (right->prar_str)
+      return strcmp(left->prar_str, right->prar_str)<0;
+    return false;
+  });
+  for (struct rps_progarg_st*pa : vecpa)
+    {
       bool filled=false;
       const char*argnam = pa->prar_argname;
       RPS_ASSERT(pa->prar_expl);
-      if (pa->prar_letter) {
-	filled = true;
-	outstr << "-" << pa->prar_letter;
-      };
-      if (pa->prar_str) {
-	if (filled)
-	  outstr << ", ";
-	outstr << "--" << pa->prar_str;
-      };
+      outstr << " ";
+      if (pa->prar_letter)
+        {
+          filled = true;
+          outstr << "-" << pa->prar_letter;
+        };
+      if (pa->prar_str)
+        {
+          if (filled)
+            outstr << ", ";
+          outstr << "--" << pa->prar_str;
+        };
       if (argnam)
-	outstr << " " << argnam << " ";
-      outstr << ":";
+        outstr << " " << argnam << " ";
+      outstr << ": ";
       outstr << pa->prar_expl << std::endl;
     };
   outstr << std::endl;
   std::cout << rps_progname << " git " << rps_shortgitid
-	    << " is an open source expert system shell" << std::endl;
+            << " is an open source expert system shell" << std::endl;
   std::cout << "See refpersys.org and github.com/RefPerSys" << std::endl;
   std::cout << outstr.str();
   rps_helpwanted = true;
@@ -382,13 +409,14 @@ rpspa_help (const char*curarg, int& pix, struct rps_progarg_st*prag)
 void
 rpspa_dump (const char*curarg, int& pix, struct rps_progarg_st*prag)
 {
-#warning unimplemented rpspa_dump
   RPS_UNIQUE_BREAKPOINT();
   RPS_ASSERT(curarg != nullptr);
   RPS_ASSERT(prag != nullptr);
-  RPS_ASSERT(prag && prag->prar_letter == 'D');
-  RPS_FATALOUT("unimplemented rpspa_dump curarg=" << curarg
-               << " pix=" << pix);
+  RPS_UNIQUE_BREAKPOINT ();
+  const char*dumpath = rps_progarg_get_argval(curarg, pix, prag);
+  RPS_ASSERT(prag && prag->prar_letter == 'd');
+  rps_dumpdir_str = std::string(dumpath);
+  RPS_INFORMOUT("will dump into " <<  Rps_QuotedC_String(dumpath));
 } // end rpspa_dump
 
 void

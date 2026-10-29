@@ -548,12 +548,13 @@ that very good GC implementation seems unmaintained, and with almost a
 hundred thousand lines of code is very difficult to grasp, understand,
 and adopt. Finally, using MPS is not reasonable in our eyes.
 
-We also did consider using [Boehm
-GC](http://www.hboehm.info/gc/). That conservative GC is really simple
-to use (basically, use `GC_MALLOC` instead of `malloc`, etc...) and is
-[C++ friendly](https://stackoverflow.com/a/8019003/841108). However,
-it is rather slow (even for allocations of GC-ed zones, and we would
-have *many* of them) and might be quite unsuitable for programs having
+We also did consider using [Boehm GC](http://www.hboehm.info/gc/) see
+[boehm-rps](https://github.com/bstarynk/boehm-rps).  That conservative
+GC is really simple to use (basically, use `GC_MALLOC` instead of
+`malloc`, etc...) and is [C++
+friendly](https://stackoverflow.com/a/8019003/841108). However, it is
+rather slow (even for allocations of GC-ed zones, and we would have
+*many* of them) and might be quite unsuitable for programs having
 *lots* of [circular
 references](https://en.wikipedia.org/wiki/Circular_reference), and
 reflexive programs have lots of them.

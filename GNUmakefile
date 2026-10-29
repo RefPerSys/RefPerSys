@@ -249,7 +249,7 @@ everything: all
 	$(MAKE) fltk-refpersys
 
 
-fox-refpersys: tools/fox-refpersys.cc obj/obj/__buildinfo.o | GNUmakefile
+fox-refpersys: tools/fox-refpersys.cc obj/__buildinfo.o | GNUmakefile
 	$(CXX) -rdynamic -I. -fPIE -fPIC -g -O -Wall -Wextra $(CXXFLAGS) \
 	-U_Rps_FoX_RefPerSys \
 	-DSELF_FILE='"$(realpath $<)"' \
@@ -395,6 +395,25 @@ obj/%rps.ana.o: %_rps.cc refpersys.hh | GNUmakefile _config-refpersys.mk
 
 #### temporary explicit rule
 obj/rps-parser-impl.o: generated/rps-parser-impl.cc refpersys.hh  | GNUmakefile _config-refpersys.mk
+	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
+              -DRPS_WITH_FLTK=0 -DRPS_IS_ANALYZED=0  \
+              -U_Rps_for_parser_impl \
+              $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+            -DRPS_THIS_SOURCE=\"$<\" \
+            -DRPS_GITID=\"$(shell ./rps-generate-gitid.sh -F$<)\"  \
+            -DRPS_SHORTGITID=\"$(shell ./rps-generate-gitid.sh -s -F$<)\" \
+	    -DRPS_BASENAME=\"$(notdir $(basename $(<F)))\" \
+	    -DRPS_BASEID=\"$(subst -,_,$(notdir $(basename $(<F))))\" \
+            -DRPS_HOST=\"$(RPS_HOST)\" \
+            -DRPS_ARCH=\"$(RPS_ARCH)\" -DRPS_HAS_ARCH_$(RPS_ARCH)  \
+            -DRPS_OPERSYS=\"$(RPS_OPERSYS)\"  -DRPS_HAS_OPERSYS_$(RPS_OPERSYS) \
+	       -c -o $@ $<
+	$(SYNC)
+
+obj/%.o: generated/%.cc refpersys.hh  | GNUmakefile _config-refpersys.mk
 	$(REFPERSYS_CXX) $(REFPERSYS_CXX_STANDARD) \
               -DRPS_WITH_FLTK=0 -DRPS_IS_ANALYZED=0  \
               -U_Rps_for_parser_impl \

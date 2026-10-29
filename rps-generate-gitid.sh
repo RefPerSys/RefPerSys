@@ -108,7 +108,7 @@ output()
 	isdirty
 
 	if [ $isshort -eq 1 ]; then
-    		printf "%.12s%s\n" "${gitid}" "${dirty}"
+    		printf "%.10s%s\n" "${gitid}" "${dirty}"
 	else
     		printf "%s%s\n" "${gitid}" "${dirty}"
 	fi
