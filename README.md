@@ -66,6 +66,8 @@ with the RefPerSys engine. That `q6refpersys` has now (march 2026) its
 source code under `tools/`. It is a Qt6 based software communicating
 with the `refpersys` program.
 
+[github.com/bstarynk/boehm-rps](https://github.com/bstarynk/boehm-rps) contains code using the Boehm garbage collector (in C, hopefully to generate C code also later in 2026 or 2027)
+
 
 Perhaps some indian investors prefer cnsidering [github.com/bstarynk/yarefpersys](https://github.com/bstarynk/yarefpersys).
 that YaRefPerSys can be considered as an exercise ...
