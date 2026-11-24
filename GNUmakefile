@@ -198,7 +198,7 @@ endif
 
 ## Use libcurl, it is a web client library
 ## use also libelf (to analyze ELF binaries) https://directory.fsf.org/wiki/Libelf
-REFPERSYS_NEEDED_LIBRARIES=  -llightning -lopcodes -lbfd -lgccjit \
+REFPERSYS_NEEDED_LIBRARIES=  -lopcodes -llightning -lbfd -lgccjit \
   -lunistring -lgmp -lcurl -lelf
 
 ### desired plugins (their basename under plugins_dir/)
