@@ -683,7 +683,7 @@ rps_string_version_handwritten_source_files(void)
         continue;
       if (strstr(*curfileptr, "plugins"))
         nbpluginfiles++;
-      if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
+      else if (strstr(*curfileptr, ".cc") || strstr(*curfileptr, ".hh"))
         {
           nbsourcefiles++;
           RPS_POSSIBLE_BREAKPOINT();
@@ -696,7 +696,7 @@ rps_string_version_handwritten_source_files(void)
                 << " handwritten C++ source files (git "
                 << rps_utilities_shortgitid
                 << " from " __FILE__ << ":" << __LINE__ << ")"
-		<< std::endl
+		// << std::endl
 	      /// in commit bef66bd686310c08 (oct 5, 2026) uncommenting this backtrace
 	      /// make ./refpersys --version core dump
 //  << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files")
@@ -717,7 +717,6 @@ rps_string_version_handwritten_source_files(void)
       if (!curfile)
         break;
       RPS_POSSIBLE_BREAKPOINT();
-      curfilno++;
       char cursuffix[16];
       memset (cursuffix, 0, sizeof(cursuffix));
       RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile));
@@ -752,9 +751,14 @@ rps_string_version_handwritten_source_files(void)
         continue;
       if (!isalpha(curbase[0]))
         continue;
+      curfilno++;
       RPS_UNIQUE_BREAKPOINT();
+      RPS_DEBUG_LOG(PROGARG, "curbase=" << curbase
+		    << " curfilno=" << curfilno);
       rps_out_version_one_source_file(outs, curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
-      if (!nl)
+      if (nl)
+	outs << " #" << curfilno;
+      else
         outs << " ";
     };        // end major loop of rps_show_version_handwritten_source_files
   ////
