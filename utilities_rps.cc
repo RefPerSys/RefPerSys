@@ -362,7 +362,7 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-                       "General Public License"
+       "General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -437,7 +437,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-                       "Lesser General Public License"
+       "Lesser General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -696,11 +696,11 @@ rps_string_version_handwritten_source_files(void)
                 << " handwritten C++ source files (git "
                 << rps_utilities_shortgitid
                 << " from " __FILE__ << ":" << __LINE__ << ")"
-		// << std::endl
-	      /// in commit bef66bd686310c08 (oct 5, 2026) uncommenting this backtrace
-	      /// make ./refpersys --version core dump
+                // << std::endl
+                /// in commit bef66bd686310c08 (oct 5, 2026) uncommenting this backtrace
+                /// make ./refpersys --version core dump
 //  << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files")
-	       );
+               );
   RPS_DEBUG_LOG(PROGARG, "starting " << std::endl
                 << RPS_FULL_BACKTRACE(1, "rps_show_version_handwritten_source_files/start"));
   //// show gitid of individual handwritten *cc files, using dlsym
@@ -719,7 +719,7 @@ rps_string_version_handwritten_source_files(void)
       RPS_POSSIBLE_BREAKPOINT();
       char cursuffix[16];
       memset (cursuffix, 0, sizeof(cursuffix));
-      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_Cjson_String(curfile));
+      RPS_DEBUG_LOG(PROGARG, "curfile#" << curfilno << " =" << Rps_QuotedC_String(curfile));
       if (!isalpha(curfile[0]))
         continue;
       if (strchr(curfile, '/'))
@@ -734,6 +734,7 @@ rps_string_version_handwritten_source_files(void)
       // ignore header files
       if (strstr(curfile, ".hh"))
         continue;
+      RPS_POSSIBLE_BREAKPOINT();
       // ignore markdown documentation
       if (strstr(curfile, ".md"))
         continue;
@@ -753,11 +754,11 @@ rps_string_version_handwritten_source_files(void)
         continue;
       curfilno++;
       RPS_UNIQUE_BREAKPOINT();
-      RPS_DEBUG_LOG(PROGARG, "curbase=" << curbase
-		    << " curfilno=" << curfilno);
-      rps_out_version_one_source_file(outs, curfile, curfilno, curbase, cursuffix, nbshownfiles, nl);
+      RPS_DEBUG_LOG(PROGARG, "curbase=" << curbase << " curfilno=" << curfilno << " curfile=" << curfile);
+      rps_out_version_one_source_file(outs, curfile, curfilno,
+                                      curbase, cursuffix, nbshownfiles, nl);
       if (nl)
-	outs << " #" << curfilno;
+        outs << " #" << curfilno;
       else
         outs << " ";
     };        // end major loop of rps_show_version_handwritten_source_files
@@ -1233,7 +1234,7 @@ rps_schedule_files_postponed_removal(void)
     };
   if (rps_syslog_enabled)
     syslog(LOG_NOTICE, "RefPerSys will later remove %d files "
-                       "(in four minutes, with /bin/at)",
+           "(in four minutes, with /bin/at)",
            (int) rps_postponed_removed_files_vector.size());
   else
     RPS_INFORM("RefPerSys will later remove %d files "
@@ -1272,8 +1273,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
             filnam, lin, rps_current_pthread_name().c_str());
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
-                    "… pid %d on %s,\n"
-                    "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
+         "… pid %d on %s,\n"
+         "… elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
          filnam, lin, rps_shortgitid,
          (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
@@ -1293,9 +1294,9 @@ rps_fatal_stop_at (const char *filnam, int lin)
     }
   if (!rps_syslog_enabled)
     fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
-                    " RefPerSys gitid %s,\n"
-                    "\t on host %s, md5sum %s,\n"
-                    "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
+            " RefPerSys gitid %s,\n"
+            "\t on host %s, md5sum %s,\n"
+            "\t elapsed %.3f, process %.3f sec in %s thread %s\n",
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
             ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
@@ -1399,8 +1400,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   fprintf(stderr, "RefPerSys (git %s run %s) fatal stop\n"
-                  "… °aborting at %s:%d\n"
-                  "… invocation %s\n",
+          "… °aborting at %s:%d\n"
+          "… invocation %s\n",
           rps_shortgitid, rps_run_name.c_str(), filnam, lin,
           rps_program_invocation);
   fflush(nullptr);
@@ -1421,7 +1422,7 @@ void rps_debug_warn_at_msg(const char*file, int line, const char*msg)
                rps_shortgitid, (int)getpid());
       else
         syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d\n"
-                            " (git %s pid %d) **", file, line,
+               " (git %s pid %d) **", file, line,
                rps_shortgitid, (int)getpid());
     }
   else
@@ -1806,15 +1807,16 @@ rps_is_valid_comma_debug_string(const std::string&str)
     return true;
   const char*pc = str.c_str();
   const char*comma = nullptr;
-  while (pc != nullptr && *pc != (char)0) {
-    comma = strchr(pc, ',');
-    if (!comma)
-      return rps_is_valid_single_debug_string(std::string(pc));
-    std::string curopt(pc, comma-pc-1);
-    if (rps_is_valid_single_debug_string(curopt))
-      return true;
-    pc = comma+1;
-  }
+  while (pc != nullptr && *pc != (char)0)
+    {
+      comma = strchr(pc, ',');
+      if (!comma)
+        return rps_is_valid_single_debug_string(std::string(pc));
+      std::string curopt(pc, comma-pc-1);
+      if (rps_is_valid_single_debug_string(curopt))
+        return true;
+      pc = comma+1;
+    }
   return false;
 } // end rps_is_valid_comma_debug_string
 
@@ -1872,7 +1874,7 @@ rps_set_debug(const std::string &deblev)
       fprintf(stderr, "%s debugging options for git %s ...\n",
               rps_progname, rps_shortgitid);
       fprintf(stderr, "Comma separated debugging levels with -D<debug-level>\n"
-                      "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
+              "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
 
 #define Rps_SHOW_DEBUG(Opt,Hlp) fprintf(stderr, "\t%s [%s]\n", #Opt, Hlp);
       RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
