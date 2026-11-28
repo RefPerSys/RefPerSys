@@ -87,6 +87,7 @@ const char rps_lightgen_baseid[]= RPS_BASEID;
 /// that identifier is a pointer to the abstract jit_state_t ...
 ////////////////////////////////////////////////////////////////
 
+#warning lightgen_rps.cc should probably become obsolete at end of 2026
 
 extern "C" void rpsldpy_lightning_code_generator(Rps_ObjectZone*obz,
     Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno);
@@ -213,11 +214,17 @@ Rps_PayloadLightningCodeGen::Rps_PayloadLightningCodeGen(Rps_ObjectZone*owner)
 {
   lightg_jist = jit_new_state();
   RPSJITLIGHTPAYLOAD_LOCKGUARD();
+  RPS_WARNOUT("probably obsolete Rps_PayloadLightningCodeGen for "
+	      << owner);
+#warning probably obsolete Rps_PayloadLightningCodeGen
 } // end of Rps_PayloadLightningCodeGen::Rps_PayloadLightningCodeGen
 
 Rps_PayloadLightningCodeGen::~Rps_PayloadLightningCodeGen()
 {
   RPSJITLIGHTPAYLOAD_LOCKGUARD();
+  RPS_WARNOUT("probably obsolete ~Rps_PayloadLightningCodeGen for "
+	      << owner());
+#warning probably obsolete Rps_PayloadLightningCodeGen
   for (auto itnod: lightg_nod2num_map)
     {
       jit_node_t*curjnod = itnod.first;
