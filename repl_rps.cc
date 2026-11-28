@@ -1050,6 +1050,7 @@ rps_repl_builtin_version_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg
                  Rps_ObjectRef obenv;
                 );
   _f.obenv = obenvarg;
+  RPS_ASSERT(title);
   rps_show_version();
 } // end rps_repl_builtin_version_command
 
